@@ -1,0 +1,17 @@
+package org.apoiasuas.importacao;
+
+public enum ColunasParaImportacao {
+	CODIGO_FAMILIA,
+	TIPO_LOGRADOURO,
+	NOME_LOGRADOURO,
+	NUMERO,
+	COMPLEMENTO,
+	BAIRRO,
+	CEP,
+	MUNICIPIO,
+	UF,
+	NOME_CIDADAO,
+	PARENTESCO,
+	REFERENCIA,
+	DATA_NASCIMENTO;
+}

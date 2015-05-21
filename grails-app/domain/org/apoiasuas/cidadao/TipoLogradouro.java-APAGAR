@@ -1,0 +1,6 @@
+package org.apoiasuas.cidadao;
+
+public enum TipoLogradouro {
+	RUA, AVENIDA, BECO
+	//TODO: ver cadunico
+}

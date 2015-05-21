@@ -1,0 +1,100 @@
+.wrap{
+    width:95%;
+    margin: -13px auto ; /*TODO: Porque a necessidade da margem do topo do css metro precisa ser negativa? */
+}
+
+#menu {
+    margin-bottom: 0px;
+    font-weight: bold;
+    list-style-type: none;
+}
+
+#menu a {
+    float: left;
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    text-align:center;
+    display:block;
+    text-align:center;
+    padding-top:20px;
+}
+
+#menu a.verde_oliva, #menu a.laranja, #menu a.verde_agua, #menu a.azul, #menu a.magenta, #menu a.marrom
+{
+    margin: 2px;
+    padding: 20px;
+    width: 137px;
+    height: 137px;
+
+}
+
+#menu a.verde_oliva {
+    background: #A6C91C;
+    /*background: #A6C91C url('http://wsnippets.com/wp-content/uploads/2013/11/logo.png') no-repeat center center;*/
+}
+
+#menu a.laranja {
+    background: #D87426;
+}
+
+#menu a.verde_agua {
+    background: #086A77;
+}
+
+#menu a.azul {
+    background: #5375CA;
+}
+
+#menu a.magenta {
+    background: #DA3DF8;
+}
+
+#menu .marrom {
+    background: #9C3939;
+}
+
+/* CSS3 Effects */
+#menu  a {
+    -webkit-transition: all 0.4s linear;
+    -moz-transition: all 0.4s linear;
+    -o-transition: all 0.4s linear;
+    -ms-transition: all 0.4s linear;
+    transition: all 0.4s linear;
+}
+#menu  a:hover {
+    -webkit-transform: scale(0.85,0.85);
+    -moz-transform: scale(0.85,0.85);
+    -o-transform: scale(0.85,0.85);
+    -ms-transform: scale(0.85,0.85);
+    transform: scale(0.85,0.85);
+}
+#menu  a {
+    -webkit-transition: all 0.4s linear;
+    -moz-transition: all 0.4s linear;
+    -o-transition: all 0.4s linear;
+    -ms-transition: all 0.4s linear;
+    transition: all 0.4s linear;
+}
+@media (max-width:768px){
+    #menu a i{
+        font-size:16px;
+    }
+    #menu .verde_oliva,
+    #menu .laranja,
+    #menu .verde_agua,
+    #menu .azul,
+    #menu .magenta,
+    #menu .marrom {
+        height:73px;
+    }
+    #men.a.verde_oliva,
+    #menu a.laranja,
+    #menu a.verde_agua,
+    #menu a.azul,
+    #menu a.magenta,
+    #menu a.marrom
+    {
+        width:22%;
+    }
+}

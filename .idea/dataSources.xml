@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="214788001">
+    <data-source source="LOCAL" name="PostgreSQL - apoiasuas@localhost" uuid="c6373f71-d68d-4a35-afe7-4ef27b82554c">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/apoiasuas</jdbc-url>
+      <libraries />
+    </data-source>
+    <data-source source="LOCAL" name="PostgreSQL - valid@AppFog" uuid="7eacd4e1-666a-4fba-8ee4-fb36ee964f96">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:10001/d88a5972747f54b609ad2306659562bf7</jdbc-url>
+      <libraries />
+    </data-source>
+  </component>
+</project>

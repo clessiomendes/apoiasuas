@@ -1,0 +1,8 @@
+package org.apoiasuas.importacao
+
+/**
+ * Created by home64 on 12/03/2015.
+ */
+enum StatusImportacao {
+    ENVIANDO_ARQUIVO, PROCESSANDO_ARQUIVO, ARQUIVO_PROCESSADO, INCLUINDO_FAMILIAS, CONCLUIDA, CANCELADA_ERRO, CANCELADA_OPERADOR
+}
