@@ -19,4 +19,9 @@ class CampoFormularioEmitido {
         conteudoImpresso(nullable: true)
     }
 
+    static mapping = {
+        id generator: 'native', params: [sequence: 'sq_campo_formulario_emitido']
+        conteudoImpresso length: 100000
+    }
+
 }
