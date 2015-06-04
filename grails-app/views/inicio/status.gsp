@@ -84,7 +84,7 @@
         <li>Ambiente de hospedagem: ${org.apoiasuas.util.AmbienteExecucao.ambienteHospedagem}</li>
         <li>Ambiente de execução: ${org.apoiasuas.util.AmbienteExecucao.ambienteExecucao}</li>
         <li>Versão: <g:render template="versao"/></li>
-        %{--<li>Rodando desde:</li>--}%
+        <li>Rodando desde: <g:formatDate format="dd/MM/yyyy HH:mm:ss" date="${org.apoiasuas.util.AmbienteExecucao.inicioAplicacao}"/></li>
     </ul>
 
     <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.SUPER_USER}">

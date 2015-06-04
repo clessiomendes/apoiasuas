@@ -29,6 +29,8 @@ class AmbienteExecucao {
     public static final Integer[] VALIDACAO = [APPFOG_POSTGRES_VALID]
     public static final Integer[] PRODUCAO = [APPFOG_POSTGRES_PROD]
 
+    public static final Date inicioAplicacao = new Date()
+
     /**
      * Usado para testes que simulam erros. Garantimos que nunca esses testes serão levados para producao por engano
      */

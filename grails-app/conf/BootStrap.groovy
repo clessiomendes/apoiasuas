@@ -15,6 +15,8 @@ class BootStrap {
 
     def init = { servletContext ->
 
+        AmbienteExecucao.inicioAplicacao
+
         //Criando um novo metodo "update" em todos os objetos groovy da aplicacao
         Object.metaClass.update = {
             updateAttributesFromMap delegate, it
@@ -83,9 +85,8 @@ class BootStrap {
     def destroy = {
     }
 
-
     /**
-     * M�todo a ser injetado em todos os objetos groovy da aplicacao para atualizar atributos quaisquer � partir de um mapa:
+     * Metodo a ser injetado em todos os objetos groovy da aplicacao para atualizar atributos quaisquer aa partir de um mapa:
      * Exemplo de uso:
      * meuObjeto.update([campo1: 'valor1', campo2: 'valor2']
      */
