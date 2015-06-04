@@ -51,8 +51,12 @@ body {
 	background-color: #abbf78;
 }
 
-#grailsLogoNonProd {
+#grailsLogoValid {
     background-color: #bf5858;
+}
+
+#grailsLogoLocal {
+    background-color: #7e80bf;
 }
 
 /* replace with .no-boxshadow body if you have modernizr available */
@@ -121,8 +125,18 @@ img {
     min-height: 1em;
 }
 
-.footerNonProd {
+.footerValid {
     background: #bf5858;
+    color: #000;
+    clear: both;
+    font-size: 0.8em;
+    margin-top: 1.5em;
+    padding: 1em;
+    min-height: 1em;
+}
+
+.footerLocal {
+    background: #7e80bf;
     color: #000;
     clear: both;
     font-size: 0.8em;

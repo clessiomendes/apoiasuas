@@ -18,7 +18,7 @@
 		<r:layoutResources/>
 	</head>
 	<body>
-	<div id=${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "grailsLogoProd" : "grailsLogoNonProd"} role="banner">
+	<div id=${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "grailsLogoProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "grailsLogoValid" : "grailsLogoLocal" } role="banner">
 		<table><tr><td>
 			%{--FIXME: como direcionar para a raiz da aplicacao--}%
 			<a href="${createLink(uri: '/')}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a>
@@ -28,10 +28,10 @@
 		</td></tr></table>
 	</div>
 	<g:layoutBody/>
-		<div class=${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "footerProd" : "footerNonProd"} role="contentinfo">
+		<div class=${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "footerProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "footerValid" : "footerLocal"} role="contentinfo">
         <form name="logout" method="POST" action="${createLink(controller: 'logout')}">
             %{--TODO: Alinhar botao de logout aa direita e estilizar SEM USAR TABELAS--}%
-            Usuário: <sec:loggedInUserInfo field="username"/> ${org.apoiasuas.util.AmbienteExecucao.toString()}
+            Usuário: <sec:loggedInUserInfo field="username"/>
             <input type="submit" value="sair">
         </form>
         </div>
