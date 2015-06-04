@@ -15655,6 +15655,9 @@
       <column name="enumtypid" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="enumsortorder" sqlType="float4" precision="8" scale="8" nullable="false" jdbcType="7"/>
       <column name="enumlabel" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <index name="pg_enum_oid_index" unique="true" columns="oid"/>
+      <index name="pg_enum_typid_label_index" unique="true" columns="enumtypid,enumlabel"/>
+      <index name="pg_enum_typid_sortorder_index" unique="true" columns="enumtypid,enumsortorder"/>
     </table>
     <table name="pg_enum_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15675,6 +15678,8 @@
       <column name="extversion" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
       <column name="extconfig" sqlType="_oid" precision="10" scale="0" nullable="true" jdbcType="2003"/>
       <column name="extcondition" sqlType="_text" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_extension_name_index" unique="true" columns="extname"/>
+      <index name="pg_extension_oid_index" unique="true" columns="oid"/>
     </table>
     <table name="pg_extension_name_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="extname" sqlType="cstring" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
@@ -15689,6 +15694,8 @@
       <column name="fdwvalidator" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="fdwacl" sqlType="_aclitem" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
       <column name="fdwoptions" sqlType="_text" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_foreign_data_wrapper_name_index" unique="true" columns="fdwname"/>
+      <index name="pg_foreign_data_wrapper_oid_index" unique="true" columns="oid"/>
     </table>
     <table name="pg_foreign_data_wrapper_name_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="fdwname" sqlType="cstring" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
@@ -15704,6 +15711,8 @@
       <column name="srvversion" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
       <column name="srvacl" sqlType="_aclitem" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
       <column name="srvoptions" sqlType="_text" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_foreign_server_name_index" unique="true" columns="srvname"/>
+      <index name="pg_foreign_server_oid_index" unique="true" columns="oid"/>
     </table>
     <table name="pg_foreign_server_name_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="srvname" sqlType="cstring" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
@@ -15715,6 +15724,7 @@
       <column name="ftrelid" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="ftserver" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="ftoptions" sqlType="_text" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_foreign_table_relid_index" unique="true" columns="ftrelid"/>
     </table>
     <table name="pg_foreign_table_relid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="ftrelid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15742,6 +15752,8 @@
       <column name="indoption" sqlType="int2vector" precision="2147483647" scale="0" nullable="false" jdbcType="1111"/>
       <column name="indexprs" sqlType="pg_node_tree" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
       <column name="indpred" sqlType="pg_node_tree" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
+      <index name="pg_index_indexrelid_index" unique="true" columns="indexrelid"/>
+      <index name="pg_index_indrelid_index" unique="false" columns="indrelid"/>
     </table>
     <table name="pg_index_indexrelid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="indexrelid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15760,6 +15772,8 @@
       <column name="inhrelid" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="inhparent" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="inhseqno" sqlType="int4" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <index name="pg_inherits_relid_seqno_index" unique="true" columns="inhrelid,inhseqno"/>
+      <index name="pg_inherits_parent_index" unique="false" columns="inhparent"/>
     </table>
     <table name="pg_inherits_parent_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="inhparent" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15777,6 +15791,8 @@
       <column name="laninline" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="lanvalidator" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="lanacl" sqlType="_aclitem" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_language_name_index" unique="true" columns="lanname"/>
+      <index name="pg_language_oid_index" unique="true" columns="oid"/>
     </table>
     <table name="pg_language_name_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="lanname" sqlType="cstring" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
@@ -15788,6 +15804,7 @@
       <column name="loid" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="pageno" sqlType="int4" precision="10" scale="0" nullable="false" jdbcType="4"/>
       <column name="data" sqlType="bytea" precision="2147483647" scale="0" nullable="true" jdbcType="-2"/>
+      <index name="pg_largeobject_loid_pn_index" unique="true" columns="loid,pageno"/>
     </table>
     <table name="pg_largeobject_loid_pn_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="loid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15796,6 +15813,7 @@
     <table name="pg_largeobject_metadata" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM TABLE">
       <column name="lomowner" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="lomacl" sqlType="_aclitem" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_largeobject_metadata_oid_index" unique="true" columns="oid"/>
     </table>
     <table name="pg_largeobject_metadata_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15820,6 +15838,8 @@
       <column name="nspname" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
       <column name="nspowner" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="nspacl" sqlType="_aclitem" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_namespace_nspname_index" unique="true" columns="nspname"/>
+      <index name="pg_namespace_oid_index" unique="true" columns="oid"/>
     </table>
     <table name="pg_namespace_nspname_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="nspname" sqlType="cstring" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
@@ -15836,6 +15856,8 @@
       <column name="opcintype" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="opcdefault" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
       <column name="opckeytype" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
+      <index name="pg_opclass_am_name_nsp_index" unique="true" columns="opcmethod,opcname,opcnamespace"/>
+      <index name="pg_opclass_oid_index" unique="true" columns="oid"/>
     </table>
     <table name="pg_opclass_am_name_nsp_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="opcmethod" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15860,6 +15882,8 @@
       <column name="oprcode" sqlType="regproc" precision="2147483647" scale="0" nullable="false" jdbcType="1111"/>
       <column name="oprrest" sqlType="regproc" precision="2147483647" scale="0" nullable="false" jdbcType="1111"/>
       <column name="oprjoin" sqlType="regproc" precision="2147483647" scale="0" nullable="false" jdbcType="1111"/>
+      <index name="pg_operator_oid_index" unique="true" columns="oid"/>
+      <index name="pg_operator_oprname_l_r_n_index" unique="true" columns="oprname,oprleft,oprright,oprnamespace"/>
     </table>
     <table name="pg_operator_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15875,6 +15899,8 @@
       <column name="opfname" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
       <column name="opfnamespace" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="opfowner" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
+      <index name="pg_opfamily_am_name_nsp_index" unique="true" columns="opfmethod,opfname,opfnamespace"/>
+      <index name="pg_opfamily_oid_index" unique="true" columns="oid"/>
     </table>
     <table name="pg_opfamily_am_name_nsp_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="opfmethod" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15893,6 +15919,7 @@
       <column name="tmplvalidator" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
       <column name="tmpllibrary" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
       <column name="tmplacl" sqlType="_aclitem" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_pltemplate_name_index" unique="true" columns="tmplname"/>
     </table>
     <table name="pg_pltemplate_name_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="tmplname" sqlType="cstring" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
@@ -15937,6 +15964,8 @@
       <column name="probin" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
       <column name="proconfig" sqlType="_text" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
       <column name="proacl" sqlType="_aclitem" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_proc_oid_index" unique="true" columns="oid"/>
+      <index name="pg_proc_proname_args_nsp_index" unique="true" columns="proname,proargtypes,pronamespace"/>
     </table>
     <table name="pg_proc_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15955,6 +15984,8 @@
       <column name="is_instead" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
       <column name="ev_qual" sqlType="pg_node_tree" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
       <column name="ev_action" sqlType="pg_node_tree" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
+      <index name="pg_rewrite_oid_index" unique="true" columns="oid"/>
+      <index name="pg_rewrite_rel_rulename_index" unique="true" columns="ev_class,rulename"/>
     </table>
     <table name="pg_rewrite_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -15990,6 +16021,7 @@
       <column name="objsubid" sqlType="int4" precision="10" scale="0" nullable="false" jdbcType="4"/>
       <column name="provider" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
       <column name="label" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <index name="pg_seclabel_object_index" unique="true" columns="objoid,classoid,objsubid,provider"/>
     </table>
     <table name="pg_seclabel_object_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="objoid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16044,6 +16076,8 @@
       <column name="refclassid" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="refobjid" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="deptype" sqlType="char" precision="1" scale="0" nullable="false" jdbcType="1"/>
+      <index name="pg_shdepend_depender_index" unique="false" columns="dbid,classid,objid,objsubid"/>
+      <index name="pg_shdepend_reference_index" unique="false" columns="refclassid,refobjid"/>
     </table>
     <table name="pg_shdepend_depender_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="dbid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16059,6 +16093,7 @@
       <column name="objoid" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="classoid" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="description" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <index name="pg_shdescription_o_c_index" unique="true" columns="objoid,classoid"/>
     </table>
     <table name="pg_shdescription_o_c_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="objoid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16397,6 +16432,7 @@
       <column name="stavalues2" sqlType="anyarray" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
       <column name="stavalues3" sqlType="anyarray" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
       <column name="stavalues4" sqlType="anyarray" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
+      <index name="pg_statistic_relid_att_inh_index" unique="true" columns="starelid,staattnum,stainherit"/>
     </table>
     <table name="pg_statistic_relid_att_inh_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="starelid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16431,6 +16467,8 @@
       <column name="spclocation" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
       <column name="spcacl" sqlType="_aclitem" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
       <column name="spcoptions" sqlType="_text" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_tablespace_oid_index" unique="true" columns="oid"/>
+      <index name="pg_tablespace_spcname_index" unique="true" columns="spcname"/>
     </table>
     <table name="pg_tablespace_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16465,6 +16503,9 @@
       <column name="tgattr" sqlType="int2vector" precision="2147483647" scale="0" nullable="false" jdbcType="1111"/>
       <column name="tgargs" sqlType="bytea" precision="2147483647" scale="0" nullable="true" jdbcType="-2"/>
       <column name="tgqual" sqlType="pg_node_tree" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
+      <index name="pg_trigger_oid_index" unique="true" columns="oid"/>
+      <index name="pg_trigger_tgrelid_tgname_index" unique="true" columns="tgrelid,tgname"/>
+      <index name="pg_trigger_tgconstraint_index" unique="false" columns="tgconstraint"/>
     </table>
     <table name="pg_trigger_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16481,6 +16522,8 @@
       <column name="cfgnamespace" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="cfgowner" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="cfgparser" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
+      <index name="pg_ts_config_cfgname_index" unique="true" columns="cfgname,cfgnamespace"/>
+      <index name="pg_ts_config_oid_index" unique="true" columns="oid"/>
     </table>
     <table name="pg_ts_config_cfgname_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="cfgname" sqlType="cstring" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
@@ -16491,6 +16534,7 @@
       <column name="maptokentype" sqlType="int4" precision="10" scale="0" nullable="false" jdbcType="4"/>
       <column name="mapseqno" sqlType="int4" precision="10" scale="0" nullable="false" jdbcType="4"/>
       <column name="mapdict" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
+      <index name="pg_ts_config_map_index" unique="true" columns="mapcfg,maptokentype,mapseqno"/>
     </table>
     <table name="pg_ts_config_map_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="mapcfg" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16506,6 +16550,8 @@
       <column name="dictowner" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="dicttemplate" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="dictinitoption" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <index name="pg_ts_dict_dictname_index" unique="true" columns="dictname,dictnamespace"/>
+      <index name="pg_ts_dict_oid_index" unique="true" columns="oid"/>
     </table>
     <table name="pg_ts_dict_dictname_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="dictname" sqlType="cstring" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
@@ -16522,6 +16568,8 @@
       <column name="prsend" sqlType="regproc" precision="2147483647" scale="0" nullable="false" jdbcType="1111"/>
       <column name="prsheadline" sqlType="regproc" precision="2147483647" scale="0" nullable="false" jdbcType="1111"/>
       <column name="prslextype" sqlType="regproc" precision="2147483647" scale="0" nullable="false" jdbcType="1111"/>
+      <index name="pg_ts_parser_oid_index" unique="true" columns="oid"/>
+      <index name="pg_ts_parser_prsname_index" unique="true" columns="prsname,prsnamespace"/>
     </table>
     <table name="pg_ts_parser_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16535,6 +16583,8 @@
       <column name="tmplnamespace" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="tmplinit" sqlType="regproc" precision="2147483647" scale="0" nullable="false" jdbcType="1111"/>
       <column name="tmpllexize" sqlType="regproc" precision="2147483647" scale="0" nullable="false" jdbcType="1111"/>
+      <index name="pg_ts_template_oid_index" unique="true" columns="oid"/>
+      <index name="pg_ts_template_tmplname_index" unique="true" columns="tmplname,tmplnamespace"/>
     </table>
     <table name="pg_ts_template_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16573,6 +16623,8 @@
       <column name="typcollation" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="typdefaultbin" sqlType="pg_node_tree" precision="2147483647" scale="0" nullable="true" jdbcType="1111"/>
       <column name="typdefault" sqlType="text" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <index name="pg_type_oid_index" unique="true" columns="oid"/>
+      <index name="pg_type_typname_nsp_index" unique="true" columns="typname,typnamespace"/>
     </table>
     <table name="pg_type_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16596,6 +16648,8 @@
       <column name="umuser" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="umserver" sqlType="oid" precision="10" scale="0" nullable="false" jdbcType="-5"/>
       <column name="umoptions" sqlType="_text" precision="2147483647" scale="0" nullable="true" jdbcType="2003"/>
+      <index name="pg_user_mapping_oid_index" unique="true" columns="oid"/>
+      <index name="pg_user_mapping_user_server_index" unique="true" columns="umuser,umserver"/>
     </table>
     <table name="pg_user_mapping_oid_index" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="SYSTEM INDEX">
       <column name="oid" sqlType="oid" precision="10" scale="0" nullable="true" jdbcType="-5"/>
@@ -16631,6 +16685,9 @@
       <column name="origem" sqlType="varchar" precision="255" scale="0" nullable="false" jdbcType="12"/>
       <column name="tamanho_personalizado" sqlType="int4" precision="10" scale="0" nullable="false" jdbcType="4"/>
       <column name="tipo_personalizado" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="campo_formulario_pkey" columns="id"/>
+      <foreign-key name="fk_1rvtfmohx49wybiwxo3dporwj" columns="formulario_id" ref-table="formulario" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="unique_codigo" unique="true" columns="origem,formulario_id,codigo"/>
     </table>
     <table name="cidadao" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -16655,6 +16712,11 @@
       <column name="estado_civil" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="numeroctps" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="seriectps" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="cidadao_pkey" columns="id"/>
+      <foreign-key name="fk_bvgeh8gx2nhulix0gx3226foh" columns="familia_id" ref-table="familia" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_6o0krmymddbrb9e4hx9rc7tr1" columns="criador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_ckox6e8gcq9obp8gfascmdr79" columns="ultimo_alterador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="unique_familia_id" unique="true" columns="nome_completo,familia_id"/>
     </table>
     <table name="definicoes_importacao_familias" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -16680,6 +16742,8 @@
       <column name="last_updated" sqlType="timestamp" precision="29" scale="6" nullable="false" jdbcType="93"/>
       <column name="linha_do_cabecalho" sqlType="int4" precision="10" scale="0" nullable="true" jdbcType="4" def="MQ=="/>
       <column name="ultimo_alterador_id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <primary-key name="definicoes_importacao_familias_pkey" columns="id"/>
+      <foreign-key name="fk_12p49be17nlj1ax68rwbdvuut" columns="ultimo_alterador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
     </table>
     <table name="endereco" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -16692,6 +16756,7 @@
       <column name="nome_logradouro" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="numero" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="tipo_logradouro" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="endereco_pkey" columns="id"/>
     </table>
     <table name="familia" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -16716,6 +16781,14 @@
       <column name="ultimo_alterador_id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="familia_acompanhada" sqlType="bool" precision="1" scale="0" nullable="true" jdbcType="-7"/>
       <column name="tecnico_acompanhamento_id" sqlType="int8" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <primary-key name="familia_pkey" columns="id"/>
+      <foreign-key name="fk_9agogvob2fq1jb0y4bibryt5c" columns="criador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_kundoo9jnawdj8t6e8ry14tu8" columns="tecnico_acompanhamentopaif_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_midxeps90g3tseq64kjdnoa8m" columns="ultimo_alterador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_a3n7yu3yad225n597sws2pdq0" columns="tecnico_acompanhamento_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="fk_bvgeh8gx2nhulix0gx3226foh" table="cidadao" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="familia_id"/>
+      <exported-key name="fk_eolkfi4e2luoxu4e0nuit46qo" table="telefone" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="familia"/>
+      <index name="uk_p4vc21ksp928l6mmssxs80um6" unique="true" columns="codigo_legado"/>
     </table>
     <table name="formulario" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -16725,6 +16798,9 @@
       <column name="nome" sqlType="varchar" precision="255" scale="0" nullable="false" jdbcType="12"/>
       <column name="template" sqlType="bytea" precision="2147483647" scale="0" nullable="true" jdbcType="-2"/>
       <column name="tipo" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="formulario_pkey" columns="id"/>
+      <exported-key name="fk_1rvtfmohx49wybiwxo3dporwj" table="campo_formulario" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="formulario_id"/>
+      <index name="uk_8ukwxr2930u8ki7i5ktbcn022" unique="true" columns="nome"/>
     </table>
     <table name="hibernate_sequence" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="SEQUENCE">
       <column name="sequence_name" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
@@ -16744,6 +16820,9 @@
       <column name="json" sqlType="varchar" precision="100000" scale="0" nullable="true" jdbcType="12"/>
       <column name="ordem" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="tentativaimportacao" sqlType="int8" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <primary-key name="linha_tentativa_importacao_pkey" columns="id"/>
+      <foreign-key name="fk_b6oinaj00ohea0b23obug07ve" columns="tentativaimportacao" ref-table="tentativa_importacao" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="linha_tent_import_idx" unique="false" columns="tentativaimportacao"/>
     </table>
     <table name="link" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -16751,11 +16830,15 @@
       <column name="descricao" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="instrucoes" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="url" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="link_pkey" columns="id"/>
     </table>
     <table name="papel" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="version" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="authority" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="papel_pkey" columns="id"/>
+      <exported-key name="fk_b9tlt20kftlyvfcvnshq5wdbf" table="usuario_sistema_papel" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="papel_id"/>
+      <index name="uk_reyevpvhxyb8p4v5331epnt1y" unique="true" columns="authority"/>
     </table>
     <table name="servico" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -16771,6 +16854,7 @@
       <column name="endereco_numero" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="endereco_tipo_logradouro" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="nome_formal" sqlType="varchar" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="servico_pkey" columns="id"/>
     </table>
     <table name="sq_campo_formulario" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="SEQUENCE">
       <column name="sequence_name" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
@@ -16915,6 +16999,11 @@
       <column name="last_updated" sqlType="timestamp" precision="29" scale="6" nullable="false" jdbcType="93"/>
       <column name="numero" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="ultimo_alterador_id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <primary-key name="telefone_pkey" columns="id"/>
+      <foreign-key name="fk_eolkfi4e2luoxu4e0nuit46qo" columns="familia" ref-table="familia" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_rpxn76jm2v9ucao6w1c7k6a7j" columns="criador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_7c79t9syctlulvul0ggjcnv9y" columns="ultimo_alterador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="telefone_familia_idx" unique="false" columns="familia"/>
     </table>
     <table name="tentativa_importacao" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -16927,6 +17016,9 @@
       <column name="linhas_processadas_conclusao" sqlType="int4" precision="10" scale="0" nullable="true" jdbcType="4" def="MA=="/>
       <column name="status" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="total_erros" sqlType="int4" precision="10" scale="0" nullable="true" jdbcType="4" def="MA=="/>
+      <primary-key name="tentativa_importacao_pkey" columns="id"/>
+      <foreign-key name="fk_3bhqceev574677d90v7q7y487" columns="criador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="fk_b6oinaj00ohea0b23obug07ve" table="linha_tentativa_importacao" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="tentativaimportacao"/>
     </table>
     <table name="usuario_sistema" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -16942,10 +17034,30 @@
       <column name="password_expired" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
       <column name="ultimo_alterador_id" sqlType="int8" precision="19" scale="0" nullable="true" jdbcType="-5"/>
       <column name="username" sqlType="varchar" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="usuario_sistema_pkey" columns="id"/>
+      <foreign-key name="fk_lh3j8n1qo7b4rqwj4pggjh612" columns="criador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_p879v2otnhf6krbdoj9g579el" columns="ultimo_alterador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="fk_6o0krmymddbrb9e4hx9rc7tr1" table="cidadao" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="criador_id"/>
+      <exported-key name="fk_ckox6e8gcq9obp8gfascmdr79" table="cidadao" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="ultimo_alterador_id"/>
+      <exported-key name="fk_12p49be17nlj1ax68rwbdvuut" table="definicoes_importacao_familias" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="ultimo_alterador_id"/>
+      <exported-key name="fk_9agogvob2fq1jb0y4bibryt5c" table="familia" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="criador_id"/>
+      <exported-key name="fk_kundoo9jnawdj8t6e8ry14tu8" table="familia" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="tecnico_acompanhamentopaif_id"/>
+      <exported-key name="fk_midxeps90g3tseq64kjdnoa8m" table="familia" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="ultimo_alterador_id"/>
+      <exported-key name="fk_a3n7yu3yad225n597sws2pdq0" table="familia" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="tecnico_acompanhamento_id"/>
+      <exported-key name="fk_rpxn76jm2v9ucao6w1c7k6a7j" table="telefone" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="criador_id"/>
+      <exported-key name="fk_7c79t9syctlulvul0ggjcnv9y" table="telefone" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="ultimo_alterador_id"/>
+      <exported-key name="fk_3bhqceev574677d90v7q7y487" table="tentativa_importacao" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="criador_id"/>
+      <exported-key name="fk_lh3j8n1qo7b4rqwj4pggjh612" table="usuario_sistema" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="criador_id"/>
+      <exported-key name="fk_p879v2otnhf6krbdoj9g579el" table="usuario_sistema" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="ultimo_alterador_id"/>
+      <exported-key name="fk_2ow8nww0ah0h3bt96hbhk59n6" table="usuario_sistema_papel" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" columns="usuario_sistema_id"/>
+      <index name="uk_mbpmijueoh4yek1172jgphi3s" unique="true" columns="username"/>
     </table>
     <table name="usuario_sistema_papel" schema="public" catalog="d88a5972747f54b609ad2306659562bf7" type="TABLE">
       <column name="papel_id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="usuario_sistema_id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <primary-key name="usuario_sistema_papel_pkey" columns="papel_id,usuario_sistema_id"/>
+      <foreign-key name="fk_b9tlt20kftlyvfcvnshq5wdbf" columns="papel_id" ref-table="papel" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_2ow8nww0ah0h3bt96hbhk59n6" columns="usuario_sistema_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
     </table>
     <procedure name="RI_FKey_cascade_del" schema="pg_catalog" catalog="d88a5972747f54b609ad2306659562bf7" type="2" remarks="cmVmZXJlbnRpYWwgaW50ZWdyaXR5IE9OIERFTEVURSBDQVNDQURF">
       <prototype>

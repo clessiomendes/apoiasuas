@@ -133,12 +133,12 @@
             <g:link class="azul" controller="link" action="exibeLinks">Atalhos Externos</g:link>
             <sec:ifAnyGranted roles="${DefinicaoPapeis.SUPER_USER}">
                 <g:link class="magenta" controller="formulario" action="list">Configuração de formulários</g:link>
-                <g:link class="marrom" controller="formulario"
-                        action="reinicializarFormulariosPreDefinidos">Reinstalar formulários pré-definidos</g:link>
+                <g:link class="marrom" controller="formulario" action="reinicializarFormulariosPreDefinidos">Reinstalar formulários pré-definidos</g:link>
                 <g:link class="verde_oliva" controller="importacaoFamilias"
                         action="list">Importação de famílias</g:link>
                 <g:link class="laranja" controller="usuarioSistema" action="list">Operadores do sistema</g:link>
             </sec:ifAnyGranted>
+            <g:link class="verde_agua" controller="inicio" action="status">Status do sistema</g:link>
         </div>
     </div>
     <div id="controller-list" role="navigation">

@@ -6,7 +6,7 @@ import grails.util.Environment
  * Created by home64 on 19/03/2015.
  */
 class AmbienteExecucao {
-    public static final Integer DEFAULT = LOCAL_H2
+//    public static final Integer DEFAULT = LOCAL_H2
 
     public static final Integer CURRENT = escolheTipoBD()
 
@@ -21,6 +21,10 @@ class AmbienteExecucao {
     public static final Integer[] LOCAL = [LOCAL_H2, LOCAL_MYSQL, LOCAL_POSTGRES]
     public static final Integer[] APPFOG = [APPFOG_POSTGRES_VALID, APPFOG_MYSQL, CLEARDB_MYSQL, APPFOG_POSTGRES_PROD]
 
+    public static final Integer[] H2 = [LOCAL_H2]
+    public static final Integer[] MYSQL = [LOCAL_MYSQL, APPFOG_MYSQL, CLEARDB_MYSQL]
+    public static final Integer[] POSTGRES = [APPFOG_POSTGRES_VALID, APPFOG_POSTGRES_PROD, LOCAL_POSTGRES]
+
     public static final Integer[] DESENVOLVIMENTO = [LOCAL_H2, LOCAL_MYSQL, LOCAL_POSTGRES]
     public static final Integer[] VALIDACAO = [APPFOG_POSTGRES_VALID]
     public static final Integer[] PRODUCAO = [APPFOG_POSTGRES_PROD]
@@ -30,11 +34,35 @@ class AmbienteExecucao {
      */
     public static final boolean SABOTAGEM = sysProperties('org.apoiasuas.sabotagem') == "TRUE" && (Environment.current != Environment.PRODUCTION)
 
-    static def getFalse() {
+    public static String getForncedorBancoDados() {
+        if (CURRENT in H2) return "H2"
+        if (CURRENT in POSTGRES) return 'Postgres'
+        if (CURRENT in MYSQL) return 'MySql'
+        throw new RuntimeException("tipo de banco de dados não definido: ${CURRENT}")
+    }
+
+    public static String getAmbienteHospedagem() {
         switch (CURRENT) {
-            case [LOCAL_H2, LOCAL_MYSQL, APPFOG_MYSQL, CLEARDB_MYSQL]: return "0"
-            case [APPFOG_POSTGRES_VALID, LOCAL_POSTGRES]: return 'FALSE'
-            default: throw new RuntimeException(["tipo de banco de dados não definido ",CURRENT])
+            case LOCAL: return "Local"
+            case APPFOG: return 'AppFog'
+            default: throw new RuntimeException("ambiente de hospedagem não definido: ${CURRENT}")
+        }
+    }
+
+    public static String getAmbienteExecucao() {
+        switch (CURRENT) {
+            case DESENVOLVIMENTO: return "Desenvolvimento"
+            case VALIDACAO: return "Validação"
+            case PRODUCAO: return "Produção"
+            default: throw new RuntimeException("ambiente de execução não definido: ${CURRENT}")
+        }
+    }
+
+    public static String getFalse() {
+        switch (CURRENT) {
+            case H2 + MYSQL: return "0"
+            case POSTGRES: return 'FALSE'
+            default: throw new RuntimeException("tipo de banco de dados não definido: ${CURRENT}")
         }
     }
 
@@ -51,7 +79,9 @@ class AmbienteExecucao {
      * @return
      */
     private static int escolheTipoBD() {
-        switch (sysProperties('org.apoiasuas.datasource')?.toUpperCase()) {
+        String ds = sysProperties('org.apoiasuas.datasource')?.toUpperCase()
+        System.out.println("Definicao de banco de dados: ${ds}")
+        switch (ds) {
             case 'APPFOG_POSTGRES_PROD': return APPFOG_POSTGRES_PROD
             case 'APPFOG_POSTGRES_VALID': return APPFOG_POSTGRES_VALID
             case 'LOCAL_POSTGRES': return LOCAL_POSTGRES
@@ -59,7 +89,7 @@ class AmbienteExecucao {
             case 'LOCAL_MYSQL': return LOCAL_MYSQL
             case 'APPFOG_MYSQL': return APPFOG_MYSQL
             case 'CLEARDB_MYSQL': return CLEARDB_MYSQL
-            default: return DEFAULT
+            default: throw new RuntimeException("Definicao de banco de dados nao prevista: ${ds}")
         }
     }
 

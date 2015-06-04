@@ -47,8 +47,12 @@ body {
 	        box-shadow: 0 0 0.3em #255b17;
 }
 
-#grailsLogo {
+#grailsLogoProd {
 	background-color: #abbf78;
+}
+
+#grailsLogoNonProd {
+    background-color: #bf5858;
 }
 
 /* replace with .no-boxshadow body if you have modernizr available */
@@ -107,14 +111,24 @@ img {
 	border: none;
 }
 
-.footer {
-	background: #abbf78;
-	color: #000;
-	clear: both;
-	font-size: 0.8em;
-	margin-top: 1.5em;
-	padding: 1em;
-	min-height: 1em;
+.footerProd {
+    background: #abbf78;
+    color: #000;
+    clear: both;
+    font-size: 0.8em;
+    margin-top: 1.5em;
+    padding: 1em;
+    min-height: 1em;
+}
+
+.footerNonProd {
+    background: #bf5858;
+    color: #000;
+    clear: both;
+    font-size: 0.8em;
+    margin-top: 1.5em;
+    padding: 1em;
+    min-height: 1em;
 }
 
 .footer a {

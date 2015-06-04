@@ -38,6 +38,9 @@ class InicioController {
         render view:'index', model: [/*opcoes: opcoes,*/ outrasOpcoes: outrasOpcoes]
     }
 
+    def status() {
+    }
+
     private ItemMenuDTO[] itemMenu(String descricao, Class classeController, String[] papeisAcesso) {
         String url = grailsApplication.getControllerClass(classeController.name)
         log.debug("Novo item de menu: descricao ${descricao}, url ${url}, papeisAcesso ${papeisAcesso}")

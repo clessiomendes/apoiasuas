@@ -25,9 +25,6 @@ hibernate {
     flush.mode = 'manual' // OSIV session flush mode outside of transactional context
 }
 
-// environment specific settings
-environments {
-    development {
         dataSource {
             switch (AmbienteExecucao.CURRENT) {
                 case AmbienteExecucao.LOCAL_MYSQL:
@@ -123,7 +120,6 @@ environments {
             format_sql = false //sql em multiplas linhas e identada
             use_sql_comments = true
         }
-    }
 /*
     test {
         dataSource {
@@ -159,8 +155,6 @@ environments {
         }
     }
 */
-}
-
 
 /*                                                OPENSHIFT
 MySQL 5.5 database added.  Please make note of these credentials:

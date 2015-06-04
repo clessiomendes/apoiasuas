@@ -12,12 +12,13 @@ grails.project.source.level = 1.6
 //grails.project.war.exploded.dir = "C:/workspaces/openshift/webapps/ROOT"    //openshift
 
 grails.war.exploded = true
+/* Estes parametros nao serao mais definidos em arquivo de configuracao, e sim no script de deploy (deploy-af.bat)
 if (Environment.current == Environment.DEVELOPMENT) {
     grails.project.war.exploded.dir = "C:/workspaces/appfog/apoiasuas/validacao"    //appfog
 } else if(Environment.current == Environment.PRODUCTION) {
     grails.project.war.exploded.dir = "C:/workspaces/appfog/apoiasuas/producao"    //appfog
 }
-
+*/
 
 grails.project.fork = [
         test: false,
@@ -154,11 +155,13 @@ grails.project.dependency.resolution = {
         //compile ":coffee-asset-pipeline:1.8.0"
         //compile ":handlebars-asset-pipeline:1.3.0.3"
 
+        //compile ":app-info:1.1.1" --INCONPATIVEL COM GRAILS 2.4
+        //compile ":app-info-hibernate:0.4.1"
+
         environments {
             development {
 //                runtime ":war-exec:1.0.3" //Permite rodar como um servico web jetty a partir da linha de comando
 //                compile ":grails-melody:1.54.0" //plugin para profiling
-//                compile ":app-info:1.1.1"
 //                compile ":app-info-hibernate:0.4.1"
             }
         }
