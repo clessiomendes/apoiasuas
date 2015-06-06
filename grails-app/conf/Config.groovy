@@ -142,9 +142,6 @@ log4j.main = {
 
     }
 
-    trace 'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
-            'org.hibernate.engine.transaction.spi.AbstractTransactionImpl', //inicio e fim das transacoes
-            'org.springframework.transaction.interceptor.TransactionInterceptor' //Mostra inicio e fim das transacoes e a que metodos elas estao associadas
 
     all     'org.apoiasuas',
             'com.mysql.jdbc.log.StandardLogger', //mysql (inclui tempos das SQL se parametro profileSQL=true for passado na url de conexao
@@ -162,9 +159,12 @@ log4j.main = {
             'org.hibernate.stat',                            // tempo e numero de registros em cada SQL
             'org.hibernate.type.descriptor.sql',             //mostra os valores passados como parametros para as SQLs
             'org.hibernate.SQL',
+            'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
+            'org.hibernate.engine.transaction.spi.AbstractTransactionImpl', //inicio e fim das transacoes
+            'org.springframework.transaction.interceptor.TransactionInterceptor', //Mostra inicio e fim das transacoes e a que metodos elas estao associadas
             'org.springframework.webflow.engine',
             'org.springframework.webflow',
-            'org.springframework.security'                  //login, seguranca, etc
+            'org.springframework.security',                  //login, seguranca, etc
             'com.myjeeva.poi' //debug para o extrator excel
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers

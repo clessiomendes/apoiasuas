@@ -71,7 +71,7 @@ class Cidadao implements Serializable {
     }
 
     static mapping = {
-        referencia(defaultValue: AmbienteExecucao.getFalse())
+        referencia(defaultValue: AmbienteExecucao.getBoolean(false))
         id generator: 'native', params: [sequence: 'sq_cidadao']
 //        origemImportacaoAutomatica(defaultValue: AmbienteExecucao.getFalse())
 //        familia column:'familia', index:'Cidadao_Familia_Idx'

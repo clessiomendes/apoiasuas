@@ -7,7 +7,7 @@
 		<g:message code="servico.apelido.label" default="Apelido" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="apelido" size="20" required="" value="${servicoInstance?.apelido}"/>
+	<g:textField name="apelido" size="20" maxlength="60" required="" value="${servicoInstance?.apelido}"/>
 
 </div>
 

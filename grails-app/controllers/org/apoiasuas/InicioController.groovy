@@ -2,10 +2,15 @@ package org.apoiasuas
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.sql.Sql
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.ItemMenuDTO
 import org.apoiasuas.util.AmbienteExecucao
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
+import org.hibernate.SessionFactory
+import org.hibernate.cfg.Configuration
+import org.hibernate.dialect.PostgreSQL81Dialect
+import org.hibernate.tool.hbm2ddl.DatabaseMetadata
 
 @Secured([DefinicaoPapeis.USUARIO_LEITURA])
 class InicioController {
@@ -13,6 +18,9 @@ class InicioController {
     public static final A = "A"
 
     def springSecurityService
+    SessionFactory sessionFactory
+    def grailsApplication
+    def apoiaSuasService
 
     /**
      * Exibicao da tela de menu inicial
@@ -39,6 +47,7 @@ class InicioController {
     }
 
     def status() {
+        request.setAttribute("atualizacoesPendentesBD", apoiaSuasService.atualizacoesPendentes);
     }
 
     private ItemMenuDTO[] itemMenu(String descricao, Class classeController, String[] papeisAcesso) {

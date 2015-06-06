@@ -158,12 +158,5 @@ grails.project.dependency.resolution = {
         //compile ":app-info:1.1.1" --INCONPATIVEL COM GRAILS 2.4
         //compile ":app-info-hibernate:0.4.1"
 
-        environments {
-            development {
-//                runtime ":war-exec:1.0.3" //Permite rodar como um servico web jetty a partir da linha de comando
-//                compile ":grails-melody:1.54.0" //plugin para profiling
-//                compile ":app-info-hibernate:0.4.1"
-            }
-        }
     }
 }

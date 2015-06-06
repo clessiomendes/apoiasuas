@@ -22,6 +22,7 @@
     <label>
     </label>
     <g:select optionKey='id' optionValue="apelido" name="servico" id="servico" from="${Servico.list()}" noSelection="['null': '']"
+              style="max-width:400px;"
               onchange="${remoteFunction(controller: 'servico', action:'getServico', params:"'idServico='+escape(this.value)", onSuccess:'preencheEncaminhamentos(data)')}"/>
 </div>
 

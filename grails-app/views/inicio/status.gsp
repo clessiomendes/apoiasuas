@@ -89,10 +89,22 @@
 
     <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.SUPER_USER}">
     <div id="controllerList" class="dialog">
+        <h2>Atualizações de Banco de Dados Pendentes:</h2>
+        <ul>
+            <g:each var="c" in="${atualizacoesPendentesBD}">
+                <li class="controller">${c}</li>
+            </g:each>
+        </ul>
         <h2>Controllers disponíveis:</h2>
         <ul>
             <g:each var="c" in="${grailsApplication.controllerClasses}">
                 <li class="controller"><g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link></li>
+            </g:each>
+        </ul>
+        <h2>Beans disponíveis:</h2>
+        <ul>
+            <g:each var="c" in="${grailsApplication.mainContext.beanDefinitionNames}">
+                <li class="controller">${c}</li>
             </g:each>
         </ul>
     </div>

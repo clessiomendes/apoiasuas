@@ -1228,6 +1228,16 @@
       <foreign-key name="fk_1rvtfmohx49wybiwxo3dporwj" columns="formulario_id" ref-table="formulario" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <index name="unique_codigo" unique="true" columns="origem,formulario_id,codigo"/>
     </table>
+    <table name="campo_formulario_emitido" schema="public" catalog="apoiasuas" type="TABLE">
+      <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="version" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="conteudo_impresso" sqlType="varchar" precision="100000" scale="0" nullable="true" jdbcType="12"/>
+      <column name="descricao" sqlType="varchar" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="formulario_id" sqlType="int8" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="grupo" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="campo_formulario_emitido_pkey" columns="id"/>
+      <foreign-key name="fk_1xr3lgu2m4gnrirysd7c7r7nh" columns="formulario_id" ref-table="formulario_emitido" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
     <table name="cidadao" schema="public" catalog="apoiasuas" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="version" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -1255,6 +1265,7 @@
       <foreign-key name="fk_bvgeh8gx2nhulix0gx3226foh" columns="familia_id" ref-table="familia" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_6o0krmymddbrb9e4hx9rc7tr1" columns="criador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_ckox6e8gcq9obp8gfascmdr79" columns="ultimo_alterador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="fk_i39dhce2llu63jokkscwxbfpl" table="formulario_emitido" schema="public" catalog="apoiasuas" columns="cidadao_id"/>
       <index name="unique_familia_id" unique="true" columns="nome_completo,familia_id"/>
     </table>
     <table name="definicoes_importacao_familias" schema="public" catalog="apoiasuas" type="TABLE">
@@ -1326,6 +1337,7 @@
       <foreign-key name="fk_midxeps90g3tseq64kjdnoa8m" columns="ultimo_alterador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_a3n7yu3yad225n597sws2pdq0" columns="tecnico_acompanhamento_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_bvgeh8gx2nhulix0gx3226foh" table="cidadao" schema="public" catalog="apoiasuas" columns="familia_id"/>
+      <exported-key name="fk_ggxq05b9vcw8i1cncnxyy49bt" table="formulario_emitido" schema="public" catalog="apoiasuas" columns="familia_id"/>
       <exported-key name="fk_eolkfi4e2luoxu4e0nuit46qo" table="telefone" schema="public" catalog="apoiasuas" columns="familia"/>
       <index name="uk_p4vc21ksp928l6mmssxs80um6" unique="true" columns="codigo_legado"/>
     </table>
@@ -1343,6 +1355,22 @@
       <primary-key name="formulario_pkey" columns="id"/>
       <exported-key name="fk_1rvtfmohx49wybiwxo3dporwj" table="campo_formulario" schema="public" catalog="apoiasuas" columns="formulario_id"/>
       <index name="uk_8ukwxr2930u8ki7i5ktbcn022" unique="true" columns="nome"/>
+    </table>
+    <table name="formulario_emitido" schema="public" catalog="apoiasuas" type="TABLE">
+      <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="version" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="cidadao_id" sqlType="int8" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="data_preenchimento" sqlType="timestamp" precision="29" scale="6" nullable="true" jdbcType="93"/>
+      <column name="descricao" sqlType="varchar" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="familia_id" sqlType="int8" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="formulario_pre_definido" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="operador_logado_id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="tipo" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="formulario_emitido_pkey" columns="id"/>
+      <foreign-key name="fk_i39dhce2llu63jokkscwxbfpl" columns="cidadao_id" ref-table="cidadao" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_ggxq05b9vcw8i1cncnxyy49bt" columns="familia_id" ref-table="familia" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_fxfkmawtp8367t5hj7gswcme7" columns="operador_logado_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="fk_1xr3lgu2m4gnrirysd7c7r7nh" table="campo_formulario_emitido" schema="public" catalog="apoiasuas" columns="formulario_id"/>
     </table>
     <table name="hibernate_sequence" schema="public" catalog="apoiasuas" type="SEQUENCE">
       <column name="sequence_name" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
@@ -1385,7 +1413,7 @@
     <table name="servico" schema="public" catalog="apoiasuas" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="version" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="apelido" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="apelido" sqlType="varchar" precision="80" scale="0" nullable="true" jdbcType="12"/>
       <column name="endereco_cep" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="endereco_uf" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="endereco_bairro" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
@@ -1396,16 +1424,24 @@
       <column name="endereco_tipo_logradouro" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="nome_formal" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="encaminhamento_padrao" sqlType="varchar" precision="100000" scale="0" nullable="true" jdbcType="12"/>
+      <column name="pode_encaminhar" sqlType="bool" precision="1" scale="0" nullable="true" jdbcType="-7"/>
+      <column name="telefones" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="descricao" sqlType="varchar" precision="100000" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="servico_pkey" columns="id"/>
-      <exported-key name="fk_m2c0iy4jchaysrw74ktow0k0w" table="servico_telefone" schema="public" catalog="apoiasuas" columns="servico_telefones_id"/>
-    </table>
-    <table name="servico_telefone" schema="public" catalog="apoiasuas" type="TABLE">
-      <column name="servico_telefones_id" sqlType="int8" precision="19" scale="0" nullable="true" jdbcType="-5"/>
-      <column name="telefone_id" sqlType="int8" precision="19" scale="0" nullable="true" jdbcType="-5"/>
-      <foreign-key name="fk_m2c0iy4jchaysrw74ktow0k0w" columns="servico_telefones_id" ref-table="servico" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
-      <foreign-key name="fk_m6xib08sxavpoeb2x0vy7q8i1" columns="telefone_id" ref-table="telefone" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
     </table>
     <table name="sq_campo_formulario" schema="public" catalog="apoiasuas" type="SEQUENCE">
+      <column name="sequence_name" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="last_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="start_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="increment_by" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="max_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="min_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="cache_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="log_cnt" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="is_cycled" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
+      <column name="is_called" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
+    </table>
+    <table name="sq_campo_formulario_emitido" schema="public" catalog="apoiasuas" type="SEQUENCE">
       <column name="sequence_name" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
       <column name="last_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="start_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -1552,7 +1588,6 @@
       <foreign-key name="fk_eolkfi4e2luoxu4e0nuit46qo" columns="familia" ref-table="familia" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_rpxn76jm2v9ucao6w1c7k6a7j" columns="criador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_7c79t9syctlulvul0ggjcnv9y" columns="ultimo_alterador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
-      <exported-key name="fk_m6xib08sxavpoeb2x0vy7q8i1" table="servico_telefone" schema="public" catalog="apoiasuas" columns="telefone_id"/>
       <index name="telefone_familia_idx" unique="false" columns="familia"/>
     </table>
     <table name="tentativa_importacao" schema="public" catalog="apoiasuas" type="TABLE">
@@ -1594,6 +1629,7 @@
       <exported-key name="fk_kundoo9jnawdj8t6e8ry14tu8" table="familia" schema="public" catalog="apoiasuas" columns="tecnico_acompanhamentopaif_id"/>
       <exported-key name="fk_midxeps90g3tseq64kjdnoa8m" table="familia" schema="public" catalog="apoiasuas" columns="ultimo_alterador_id"/>
       <exported-key name="fk_a3n7yu3yad225n597sws2pdq0" table="familia" schema="public" catalog="apoiasuas" columns="tecnico_acompanhamento_id"/>
+      <exported-key name="fk_fxfkmawtp8367t5hj7gswcme7" table="formulario_emitido" schema="public" catalog="apoiasuas" columns="operador_logado_id"/>
       <exported-key name="fk_rpxn76jm2v9ucao6w1c7k6a7j" table="telefone" schema="public" catalog="apoiasuas" columns="criador_id"/>
       <exported-key name="fk_7c79t9syctlulvul0ggjcnv9y" table="telefone" schema="public" catalog="apoiasuas" columns="ultimo_alterador_id"/>
       <exported-key name="fk_3bhqceev574677d90v7q7y487" table="tentativa_importacao" schema="public" catalog="apoiasuas" columns="criador_id"/>

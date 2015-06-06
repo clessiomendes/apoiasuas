@@ -11,7 +11,9 @@ class BootStrap {
     def segurancaService
     def importarFamiliasService
     def formularioService
+    def grailsApplication
     def roleHierarchy
+    def apoiaSuasService
 
     def init = { servletContext ->
 
@@ -22,39 +24,14 @@ class BootStrap {
             updateAttributesFromMap delegate, it
         }
 
-/*
-        new Formulario(
-                nome: 'Guia de identidade 2',
-                descricao: 'blablabla',
-                template: buscaArquivo("classpath:/org/apoiasuas/report/GuiaIdentidade-Template.docx"),
-                campos: [
-                        new CampoFormulario(
-                                codigoPropriedade: 'teste1',
-                                obrigatorio: false
-                        )
-                ]
-        ).save()
-            identidade(Formulario) {
-                campos = [
-                ]
-            }
+        //Validando esquema de banco de dados
+        String[] atualizacoesPendentes = apoiaSuasService.atualizacoesPendentes
+        if (atualizacoesPendentes) {
+            String erro = "Detectadas atualizacoes pendentes no banco de dados:"
+            atualizacoesPendentes.each { erro += "\n"+it }
+            log.error(erro);
+            throw new RuntimeException("Banco de dados fora de sincronia com a aplicação (ver mensagens anteriores). Startup interrompido.")
         }
-
-        def fixture = fixtureLoader.load {
-            identidade(Formulario) {
-                nome = 'Guia de identidade 2'
-                descricao = 'blablabla'
-                template = buscaArquivo("classpath:/org/apoiasuas/report/GuiaIdentidade-Template.docx")
-                campos = [
-                        new CampoFormulario(
-                                codigoPropriedade: ''
-                        )
-                ]
-            }
-        }
-
-        fixture.identidade.save()
-*/
 
         //sobrescrevendo a configuracao de seguranca (hierarquia de papeis)
         roleHierarchy.setHierarchy(DefinicaoPapeis.hierarquiaFormatada)

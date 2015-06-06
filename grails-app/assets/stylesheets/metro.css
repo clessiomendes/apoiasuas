@@ -20,7 +20,7 @@
     padding-top:20px;
 }
 
-#menu a.verde_oliva, #menu a.laranja, #menu a.verde_agua, #menu a.azul, #menu a.magenta, #menu a.marrom
+#menu a.verde_oliva, #menu a.laranja, #menu a.verde_agua, #menu a.azul, #menu a.magenta, #menu a.marrom, #menu a.lilas, #menu a.rosa, #menu a.beje
 {
     margin: 2px;
     padding: 20px;
@@ -54,6 +54,20 @@
     background: #9C3939;
 }
 
+#menu .lilas {
+    background: #363996;
+}
+
+#menu .rosa {
+    background: #EC2141;
+}
+
+#menu .beje {
+    background: #F4B32A;
+}
+
+
+
 /* CSS3 Effects */
 #menu  a {
     -webkit-transition: all 0.4s linear;
@@ -85,6 +99,9 @@
     #menu .verde_agua,
     #menu .azul,
     #menu .magenta,
+    #menu .lilas,
+    #menu .rosa,
+    #menu .beje,
     #menu .marrom {
         height:73px;
     }
@@ -93,6 +110,9 @@
     #menu a.verde_agua,
     #menu a.azul,
     #menu a.magenta,
+    #menu a.lilas,
+    #menu a.rosa,
+    #menu a.beje,
     #menu a.marrom
     {
         width:22%;
