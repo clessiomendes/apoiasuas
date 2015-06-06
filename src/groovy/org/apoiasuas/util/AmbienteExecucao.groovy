@@ -63,7 +63,7 @@ class AmbienteExecucao {
     public static String getBoolean(boolean valor) {
         switch (CURRENT) {
             case H2 + MYSQL: return valor ? "1" : "0"
-            case POSTGRES: return valor ? "FALSE" : "TRUE"
+            case POSTGRES: return valor ? "TRUE" : "FALSE"
             default: throw new RuntimeException("tipo de banco de dados não definido: ${CURRENT}")
         }
     }
