@@ -3,99 +3,56 @@
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Transactional(readOnly = true)
 class ${className}Controller {
 
-//    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-    def index(Integer max) {
+    static defaultAction = "list"
+    def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond ${className}.list(params), model:[${propertyName}Count: ${className}.count()]
+        render view: "list", model:[${propertyName}InstanceList:${className}.list(params), ${propertyName}Count: ${className}.count()]
     }
 
     def show(${className} ${propertyName}) {
-        respond ${propertyName}
+        render view: "show", model: [${propertyName}Instance:${propertyName}Instance]
     }
 
     def create() {
-        respond new ${className}(params)
+        render view:"create", model: [${propertyName}Instance:new ${className}(params)]
     }
 
-    @Transactional
     def save(${className} ${propertyName}) {
+        boolean modoCriacao = ${propertyName}.id == null
+
         if (${propertyName} == null) {
             notFound()
             return
         }
 
-        if (${propertyName}.hasErrors()) {
-            respond ${propertyName}.errors, view:'create'
-            return
+        if (! $implementarServico$.grava(${propertyName})) {
+            //exibe o formulario novamente em caso de problemas na validacao
+            return render(view: modoCriacao ? "create" : "edit" , model: [${propertyName}:${propertyName}])
         }
-
-        ${propertyName}.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.id])
-                redirect ${propertyName}
-            }
-            '*' { respond ${propertyName}, [status: CREATED] }
-        }
+        flash.message = message(code: 'default.created.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.id])
+        render view: "show", model: [${propertyName}Instance: ${propertyName}Instance]
     }
 
     def edit(${className} ${propertyName}) {
-        respond ${propertyName}
+        render view:"edit", model: [${propertyName}Instance:${propertyName}Instance]
     }
 
-    @Transactional
-    def update(${className} ${propertyName}) {
-        if (${propertyName} == null) {
-            notFound()
-            return
-        }
-
-        if (${propertyName}.hasErrors()) {
-            respond ${propertyName}.errors, view:'edit'
-            return
-        }
-
-        ${propertyName}.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: '${className}.label', default: '${className}'), ${propertyName}.id])
-                redirect ${propertyName}
-            }
-            '*'{ respond ${propertyName}, [status: OK] }
-        }
-    }
-
-    @Transactional
     def delete(${className} ${propertyName}) {
-
         if (${propertyName} == null) {
             notFound()
             return
         }
 
-        ${propertyName}.delete flush:true
+        $implementarServico$.apaga(${propertyName})
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: '${className}.label', default: '${className}'), ${propertyName}.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
+        flash.message = message(code: 'default.deleted.message', args: [message(code: '${className}.label', default: '${className}'), ${propertyName}.id])
+        redirect action:"list"
     }
 
     protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND }
-        }
+        flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
+        redirect action: "list", method: "GET"
     }
 }
