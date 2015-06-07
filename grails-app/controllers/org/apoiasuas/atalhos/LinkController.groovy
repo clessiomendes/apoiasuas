@@ -10,8 +10,6 @@ import grails.transaction.Transactional
 @Transactional(readOnly = true)
 class LinkController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-
     def exibeLinks() {
         respond Link.list(params).sort { it.id }
     }
@@ -26,7 +24,8 @@ class LinkController {
     }
 
     def create() {
-        respond new Link(params)
+        Link link = new Link(params)
+        respond link
     }
 
     @Transactional

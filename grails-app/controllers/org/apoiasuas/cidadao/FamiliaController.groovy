@@ -11,8 +11,6 @@ import grails.transaction.Transactional
 @Secured([DefinicaoPapeis.USUARIO_LEITURA])
 class FamiliaController extends AncestralController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
         render view: 'list', model: [familiaInstanceList: Familia.list(params), familiaInstanceCount: Familia.count()]
