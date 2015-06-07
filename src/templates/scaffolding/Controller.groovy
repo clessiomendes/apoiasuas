@@ -12,11 +12,19 @@ class ${className}Controller {
     }
 
     def show(${className} ${propertyName}) {
+        if (! ${propertyName})
+            return notFound()
         render view: "show", model: [${propertyName}Instance:${propertyName}Instance]
     }
 
     def create() {
         render view:"create", model: [${propertyName}Instance:new ${className}(params)]
+    }
+
+    def edit(${className} ${propertyName}) {
+        if (! ${propertyName})
+            return notFound()
+        render view:"edit", model: [${propertyName}Instance:${propertyName}Instance]
     }
 
     def save(${className} ${propertyName}) {
@@ -35,15 +43,9 @@ class ${className}Controller {
         render view: "show", model: [${propertyName}Instance: ${propertyName}Instance]
     }
 
-    def edit(${className} ${propertyName}) {
-        render view:"edit", model: [${propertyName}Instance:${propertyName}Instance]
-    }
-
     def delete(${className} ${propertyName}) {
-        if (${propertyName} == null) {
-            notFound()
-            return
-        }
+        if (! ${propertyName})
+            return notFound()
 
         $implementarServico$.apaga(${propertyName})
 
@@ -51,8 +53,8 @@ class ${className}Controller {
         redirect action:"list"
     }
 
-    protected void notFound() {
+    protected def notFound() {
         flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
-        redirect action: "list", method: "GET"
+        redirect action: "list"
     }
 }
