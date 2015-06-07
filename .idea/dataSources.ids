@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="dataSourceStorage">
-  <data-source name="PostgreSQL - apoiasuas@localhost" uuid="c6373f71-d68d-4a35-afe7-4ef27b82554c">
+  <data-source name="desenvolvimento" uuid="c6373f71-d68d-4a35-afe7-4ef27b82554c">
     <database-info product="PostgreSQL" version="8.4.22" jdbc-version="4.0" driver-name="PostgreSQL Native Driver" driver-version="PostgreSQL 8.4 JDBC4 (build 703)">
       <identifier-quote-string>&quot;</identifier-quote-string>
     </database-info>
@@ -1295,19 +1295,6 @@
       <primary-key name="definicoes_importacao_familias_pkey" columns="id"/>
       <foreign-key name="fk_12p49be17nlj1ax68rwbdvuut" columns="ultimo_alterador_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
     </table>
-    <table name="endereco" schema="public" catalog="apoiasuas" type="TABLE">
-      <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="version" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="cep" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="uf" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="bairro" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="complemento" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="municipio" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="nome_logradouro" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="numero" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="tipo_logradouro" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <primary-key name="endereco_pkey" columns="id"/>
-    </table>
     <table name="familia" schema="public" catalog="apoiasuas" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="version" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -1372,18 +1359,6 @@
       <foreign-key name="fk_fxfkmawtp8367t5hj7gswcme7" columns="operador_logado_id" ref-table="usuario_sistema" ref-schema="public" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_1xr3lgu2m4gnrirysd7c7r7nh" table="campo_formulario_emitido" schema="public" catalog="apoiasuas" columns="formulario_id"/>
     </table>
-    <table name="hibernate_sequence" schema="public" catalog="apoiasuas" type="SEQUENCE">
-      <column name="sequence_name" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
-      <column name="last_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="start_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="increment_by" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="max_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="min_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="cache_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="log_cnt" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="is_cycled" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
-      <column name="is_called" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
-    </table>
     <table name="linha_tentativa_importacao" schema="public" catalog="apoiasuas" type="TABLE">
       <column name="id" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="version" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -1424,9 +1399,10 @@
       <column name="endereco_tipo_logradouro" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="nome_formal" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="encaminhamento_padrao" sqlType="varchar" precision="100000" scale="0" nullable="true" jdbcType="12"/>
-      <column name="pode_encaminhar" sqlType="bool" precision="1" scale="0" nullable="true" jdbcType="-7"/>
       <column name="telefones" sqlType="varchar" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="descricao" sqlType="varchar" precision="100000" scale="0" nullable="true" jdbcType="12"/>
+      <column name="site" sqlType="varchar" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="pode_encaminhar" sqlType="bool" precision="1" scale="0" nullable="true" jdbcType="-7" def="dHJ1ZQ=="/>
       <primary-key name="servico_pkey" columns="id"/>
     </table>
     <table name="sq_campo_formulario" schema="public" catalog="apoiasuas" type="SEQUENCE">
@@ -1537,6 +1513,18 @@
       <column name="is_cycled" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
       <column name="is_called" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
     </table>
+    <table name="sq_papel" schema="public" catalog="apoiasuas" type="SEQUENCE">
+      <column name="sequence_name" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="last_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="start_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="increment_by" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="max_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="min_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="cache_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="log_cnt" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="is_cycled" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
+      <column name="is_called" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
+    </table>
     <table name="sq_servico" schema="public" catalog="apoiasuas" type="SEQUENCE">
       <column name="sequence_name" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
       <column name="last_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -1562,6 +1550,18 @@
       <column name="is_called" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
     </table>
     <table name="sq_tentativa_importacao" schema="public" catalog="apoiasuas" type="SEQUENCE">
+      <column name="sequence_name" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="last_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="start_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="increment_by" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="max_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="min_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="cache_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="log_cnt" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="is_cycled" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
+      <column name="is_called" sqlType="bool" precision="1" scale="0" nullable="false" jdbcType="-7"/>
+    </table>
+    <table name="sq_usuario_sistema" schema="public" catalog="apoiasuas" type="SEQUENCE">
       <column name="sequence_name" sqlType="name" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
       <column name="last_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="start_value" sqlType="int8" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -15258,7 +15258,7 @@
       </prototype>
     </procedure>
   </data-source>
-  <data-source name="PostgreSQL - valid@AppFog" uuid="7eacd4e1-666a-4fba-8ee4-fb36ee964f96">
+  <data-source name="validacao" uuid="7eacd4e1-666a-4fba-8ee4-fb36ee964f96">
     <database-info product="PostgreSQL" version="9.1.9" jdbc-version="4.0" driver-name="PostgreSQL Native Driver" driver-version="PostgreSQL 8.4 JDBC4 (build 703)">
       <identifier-quote-string>&quot;</identifier-quote-string>
     </database-info>
@@ -31425,5 +31425,11 @@
         <parameter name="returnValue" sqlType="bool" precision="0" scale="0" nullable="true" jdbcType="-7" type="5" index="-1"/>
       </prototype>
     </procedure>
+  </data-source>
+  <data-source name="PRODUCAO - Atencao ambiente de producao" uuid="2d2c7e88-dc7e-4149-955e-cdaeb2573130">
+    <database-info product="PostgreSQL" version="9.1.9" jdbc-version="4.0" driver-name="PostgreSQL Native Driver" driver-version="PostgreSQL 9.4 JDBC4 (build 1201)">
+      <identifier-quote-string>&quot;</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact"/>
   </data-source>
 </component>
