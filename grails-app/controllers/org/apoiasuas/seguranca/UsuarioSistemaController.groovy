@@ -14,7 +14,7 @@ class UsuarioSistemaController {
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def show(UsuarioSistema usuarioSistemaInstance) {
         preenchePapel(usuarioSistemaInstance)
-        respond usuarioSistemaInstance
+        render view: "show", model: [usuarioSistemaInstance:usuarioSistemaInstance]
     }
 
     private void preenchePapel(UsuarioSistema usuarioSistemaInstance) {
@@ -66,30 +66,6 @@ class UsuarioSistemaController {
         flash.message = message(code: 'default.updated.message', args: [message(code: 'UsuarioSistema.label', default: 'Operador do sistema'), usuarioSistemaInstance.id])
         render view: "show", model: [usuarioSistemaInstance: usuarioSistemaInstance]
     }
-
-/*
-    def update(UsuarioSistema usuarioSistemaInstance) {
-        if (usuarioSistemaInstance == null) {
-            notFound()
-            return
-        }
-
-        //exibe o formulario novamente em caso de problemas na validacao
-        if (! segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2"))) {
-            preenchePapel(usuarioSistemaInstance)
-            return render(view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance])
-        }
-
-        request.withFormat {
-            form multipartForm {
-                //Resposta padrao para posts html
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'UsuarioSistema.label'), usuarioSistemaInstance.id])
-                redirect usuarioSistemaInstance
-            }
-            '*'{ respond usuarioSistemaInstance, [status: OK] } //Resposta para restfull applications
-        }
-    }
-*/
 
     def delete(UsuarioSistema usuarioSistemaInstance) {
 
