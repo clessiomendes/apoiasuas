@@ -17,11 +17,11 @@ class ApoiaSuasService {
     SessionFactory sessionFactory
 
     static final String MISSING_SEQUENCES_SQL =
-                    "SELECT table_name\n" +
-                    "  FROM information_schema.tables\n" +
+            "SELECT table_name\n" +
+                    "  FROM information_schema.columns\n" +
                     " WHERE table_schema='public'\n" +
-                    "   AND table_type='BASE TABLE'\n" +
-                    "   and 'sq_' || table_name not IN (SELECT a.sequence_name FROM information_schema.sequences a);"
+                    "   and column_name='id'   \n" +
+                    "   and 'sq_' || table_name not IN ( SELECT a.sequence_name FROM information_schema.sequences a )"
 
     @Transactional(readOnly = true)
     String[] getAtualizacoesPendentes() {
