@@ -1,29 +1,17 @@
 package org.apoiasuas.seguranca
 
 import grails.plugin.springsecurity.annotation.Secured
-import org.apoiasuas.seguranca.UsuarioSistema
 
 import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
 
 @Secured([DefinicaoPapeis.SUPER_USER])
 class UsuarioSistemaController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
     static defaultAction = "list"
 
-// Servicos ==========>>
-    def importarFamiliasJavaService
-    def daoServiceForJava
     def segurancaService
-// <<========== Servi�os
 
-    def afterInterceptor = { model, modelAndView ->
-        println "Current view is ${modelAndView?.viewName}"
-//		if (model.someVar) modelAndView.viewName = "/mycontroller/someotherview"
-//		println "View is now ${modelAndView.viewName}"
-    }
-
+    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def show(UsuarioSistema usuarioSistemaInstance) {
         preenchePapel(usuarioSistemaInstance)
         respond usuarioSistemaInstance
@@ -34,75 +22,63 @@ class UsuarioSistemaController {
         usuarioSistemaInstance.papel = papeis ? papeis.first().authority : null
     }
 
-    def teste() {
-//		def classeJava = new TestJavaClass();
-//		classeJava.faca();
-        log.error "calling teste"
-        importarFamiliasJavaService.excelStreamedReader(null);
-        redirect action:"list"
-    }
-
     def list(Integer max) {
         //Atualiza o parametro do request "max"
         //http://groovy.codehaus.org/Operators#Operators-ElvisOperator(?:)
         params.max = max ?: 20
 
         //Gerando resposta � partir de uma listagem de usuarioSistema filtrada por params
-        //Parametro model define quaisquer outros objetos que se deseja passar MAS EXCLUSIVAMENTE PARA RESPOSTAS HTML
-        //http://grails.org/doc/2.3.x/ref/Controllers/respond.html
-        respond UsuarioSistema.list(params), model:[usuarioSistemaInstanceCount: UsuarioSistema.count()]
+        render view: "list", model:[usuarioSistemaInstanceList:UsuarioSistema.list(params), usuarioSistemaInstanceCount: UsuarioSistema.count()]
     }
 
     def create() {
         UsuarioSistema novoUsuario = new UsuarioSistema(params)
-        respond novoUsuario
+        novoUsuario.enabled = true
+        render view:"create", model: [usuarioSistemaInstance:novoUsuario]
     }
 
+    def edit(UsuarioSistema usuarioSistemaInstance) {
+        preenchePapel(usuarioSistemaInstance)
+        render view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance]
+    }
+
+    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    def alteraPerfil(UsuarioSistema usuarioSistemaInstance) {
+        preenchePapel(usuarioSistemaInstance)
+        render view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance]
+    }
+
+    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def save(UsuarioSistema usuarioSistemaInstance) {
+        boolean modoCriacao = usuarioSistemaInstance.id == null
 
         if (usuarioSistemaInstance == null) {
             notFound()
             return
         }
 
-        if (usuarioSistemaInstance.hasErrors()) {
-            respond usuarioSistemaInstance.errors, view:'create'
-            return
+        //Grava
+        if (! segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2"))) {
+            //exibe o formulario novamente em caso de problemas na validacao
+            return render(view: modoCriacao ? "create" : "edit" , model: [usuarioSistemaInstance:usuarioSistemaInstance])
         }
 
-        segurancaService.gravaNovoUsuario(usuarioSistemaInstance)
-
-//        //Define o papel no sistema de seguranca
-//        Papel papel = Papel.findByAuthority(usuarioSistemaInstance.papel)
-//        new UsuarioSistemaPapel(usuarioSistema: usuarioSistemaInstance, papel: papel).save()
-
-        request.withFormat {
-            form multipartForm {
-                //Resposta padr�o para posts html
-                flash.message = message(code: 'default.created.message', args: [message(code: 'UsuarioSistema.label', default: 'Usuário do sistema'), usuarioSistemaInstance.id])
-                redirect usuarioSistemaInstance
-            }
-            '*' { respond usuarioSistemaInstance, [status: CREATED] } //Resposta para restfull applications
-        }
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'UsuarioSistema.label', default: 'Operador do sistema'), usuarioSistemaInstance.id])
+        render view: "show", model: [usuarioSistemaInstance: usuarioSistemaInstance]
     }
 
-    def edit(UsuarioSistema usuarioSistemaInstance) {
-        preenchePapel(usuarioSistemaInstance)
-        respond usuarioSistemaInstance
-    }
-
+/*
     def update(UsuarioSistema usuarioSistemaInstance) {
         if (usuarioSistemaInstance == null) {
             notFound()
             return
         }
 
-        if (usuarioSistemaInstance.hasErrors()) {
-            respond usuarioSistemaInstance.errors, view:'edit'
-            return
+        //exibe o formulario novamente em caso de problemas na validacao
+        if (! segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2"))) {
+            preenchePapel(usuarioSistemaInstance)
+            return render(view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance])
         }
-
-        segurancaService.atualizaUsuario(usuarioSistemaInstance)
 
         request.withFormat {
             form multipartForm {
@@ -113,6 +89,7 @@ class UsuarioSistemaController {
             '*'{ respond usuarioSistemaInstance, [status: OK] } //Resposta para restfull applications
         }
     }
+*/
 
     def delete(UsuarioSistema usuarioSistemaInstance) {
 
@@ -121,7 +98,12 @@ class UsuarioSistemaController {
             return
         }
 
-        segurancaService.apagaUsuario(usuarioSistemaInstance)
+        //Remove
+        if (! segurancaService.apagaUsuario(usuarioSistemaInstance)) {
+            //exibe o formulario novamente em caso de problemas na validacao
+            preenchePapel(usuarioSistemaInstance)
+            return render(view:"show", model: [usuarioSistemaInstance:usuarioSistemaInstance])
+        }
 
         request.withFormat {
             form multipartForm {

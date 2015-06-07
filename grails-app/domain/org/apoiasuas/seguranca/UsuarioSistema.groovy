@@ -22,6 +22,7 @@ class UsuarioSistema {
 	boolean enabled
 
 	static mapping = {
+        id generator: 'native', params: [sequence: 'sq_usuario_sistema']
 //		accountExpired(defaultValue:DataSourceType.getFalse())
 //		accountLocked(defaultValue:DataSourceType.getFalse())
 //		passwordExpired(defaultValue:DataSourceType.getFalse())

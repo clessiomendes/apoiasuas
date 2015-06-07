@@ -31,7 +31,7 @@
 		<div class=${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "footerProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "footerValid" : "footerLocal"} role="contentinfo">
         <form name="logout" method="POST" action="${createLink(controller: 'logout')}">
             %{--TODO: Alinhar botao de logout aa direita e estilizar SEM USAR TABELAS--}%
-            Usuário: <sec:loggedInUserInfo field="username"/>
+            Operador: <sec:loggedInUserInfo field="username"/>
             <input type="submit" value="sair">
         </form>
         </div>

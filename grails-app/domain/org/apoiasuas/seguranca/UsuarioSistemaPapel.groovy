@@ -84,7 +84,8 @@ class UsuarioSistemaPapel implements Serializable {
 			if (usuarioPapel.usuarioSistema == null) return
 			boolean existing = false
 			UsuarioSistemaPapel.withNewSession {
-				existing = UsuarioSistemaPapel.exists(usuarioPapel.usuarioSistema.id, papel.id)
+                if (usuarioPapel?.usuarioSistema && papel)
+				    existing = UsuarioSistemaPapel.exists(usuarioPapel.usuarioSistema.id, papel.id)
 			}
 			if (existing) {
 				return 'userRole.exists'

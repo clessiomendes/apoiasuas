@@ -1,11 +1,14 @@
 package org.apoiasuas.seguranca
 
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.Transactional
 import grails.util.Environment
 import org.apoiasuas.util.AmbienteExecucao
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 class SegurancaService {
 
+    public static final int MIN_TAMANHO_SENHA = 4
     def springSecurityService
 
     static transactional = false
@@ -77,18 +80,70 @@ class SegurancaService {
     }
 
     @Transactional
-    void gravaNovoUsuario(UsuarioSistema usuarioSistema) {
-        usuarioSistema.accountExpired = false
-        usuarioSistema.accountLocked = false
-        usuarioSistema.passwordExpired = false
-        usuarioSistema.enabled = true
-        usuarioSistema.criador = getUsuarioLogado()
-        usuarioSistema.ultimoAlterador = getUsuarioLogado()
-        usuarioSistema.save()
+    /**
+     * Grava usuário ou retorna uma mensagem de erro em caso de violacao de regras de integridade
+     */
+    boolean gravaUsuario(UsuarioSistema usuarioSistema, String senha, String confirmacaoSenha) {
+        String erroSenha = null
 
-        gravaPapel(usuarioSistema)
+        //Criacao de novo usuario
+        if (! usuarioSistema.id) {
+            usuarioSistema.accountExpired = false
+            usuarioSistema.accountLocked = false
+            usuarioSistema.passwordExpired = false
+            usuarioSistema.criador = getUsuarioLogado()
+            if (! senha)
+                erroSenha = "Senha é ogragatória"
+        }
+
+        usuarioSistema.ultimoAlterador = getUsuarioLogado()
+
+        if (senha || confirmacaoSenha) {
+            if (senha != confirmacaoSenha)
+                erroSenha = "Senhas digitadas não conferem"
+            if (senha?.length() < MIN_TAMANHO_SENHA)
+                erroSenha = "Senhas devem ter pelo menos ${MIN_TAMANHO_SENHA} dígitos"
+            usuarioSistema.password = senha
+        }
+
+        usuarioSistema.validate()
+
+        validacoesEspecificas: { //Validacoes especificas
+
+            //permissoes exclusivas de administradores
+            if (SpringSecurityUtils.ifNotGranted(DefinicaoPapeis.SUPER_USER)) {
+
+                //Valida se um operador esta tentando alterar outro operador que nao ele proprio
+                if (usuarioLogado.id != usuarioSistema.id)
+                    usuarioSistema.errors.reject("", "Você não tem permissão para alterar outros operadores")
+
+                //Valida se um operador esta tentando modificar campos que ele nao pode
+                if (usuarioSistema.enabled != usuarioSistema.getPersistentValue("enabled"))
+                    usuarioSistema.errors.reject("", "Você não tem permissão para habilitar/desabilitar operadores")
+                if (usuarioSistema.username != usuarioSistema.getPersistentValue("username"))
+                    usuarioSistema.errors.reject("", "Você não tem permissão para alterar um apelido de operador")
+                if (usuarioSistema.papel)
+                    usuarioSistema.errors.reject("", "Você não tem permissão para definir papeis de operadores")
+            }
+
+            //TODO: Validacoes pendentes -> Pelo menos um usuario administrador habilitado.
+//                  usuarioSistema.errors.reject("Deve haver pelo menos um operador administrador habilitado")
+        }
+
+        if (erroSenha || usuarioSistema.errors.hasErrors()) {
+            usuarioSistema.discard()
+            if (erroSenha)
+                usuarioSistema.errors.rejectValue("password", "", erroSenha)
+            return false
+        } else {
+            usuarioSistema.save()
+            gravaPapel(usuarioSistema)
+            return true //registro gravado com sucesso
+        }
+
     }
 
+/*
     @Transactional
     void atualizaUsuario(UsuarioSistema usuarioSistema) {
         usuarioSistema.ultimoAlterador = getUsuarioLogado()
@@ -96,17 +151,23 @@ class SegurancaService {
 
         gravaPapel(usuarioSistema)
     }
+*/
 
     @Transactional
-    void apagaUsuario(UsuarioSistema usuarioSistema) {
-        //TODO: Validar que exista pelo menos um usuario com papel de administrador
+    boolean apagaUsuario(UsuarioSistema usuarioSistema) {
         UsuarioSistemaPapel.findAllByUsuarioSistema(usuarioSistema)?.each {
             it.delete() //apaga papeis existentes
         }
+        //TODO: Validacoes pendentes -> Pelo menos um usuario administrador habilitado.
         usuarioSistema.delete()
+
+        return true
     }
 
     private void gravaPapel(UsuarioSistema usuarioSistemaInstance) {
+        if (! usuarioSistemaInstance.papel)
+            return //Papel eh obrigatorio na tela do CRUD QUANDO ELE EH EXIBIDO. Logo, a ausencia desta informacao indica que ela nao eh para ser modificada.
+
 //Define o papel no sistema de seguranca
         Papel papel = Papel.findByAuthority(usuarioSistemaInstance.papel)
         boolean papelExistente = false
@@ -142,7 +203,8 @@ class SegurancaService {
         if (! usuarioSistema)
             usuarioSistema = usuarioLogado
         List<Papel> result = []
-        UsuarioSistemaPapel.findAllByUsuarioSistema(usuarioSistema).each { result << it.papel}
+        if (usuarioSistema.id)
+            UsuarioSistemaPapel.findAllByUsuarioSistema(usuarioSistema).each { result << it.papel}
         return result
     }
 }

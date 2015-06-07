@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.seguranca.UsuarioSistema" %>
+<%@ page import="org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.seguranca.UsuarioSistema" %>
 
 <!DOCTYPE html>
 <html>
@@ -12,7 +12,9 @@
 		<a href="#list-usuarioSistema" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.SUPER_USER}">
+				    <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                </sec:ifAnyGranted>
 			</ul>
 		</div>
 		<div id="list-usuarioSistema" class="content scaffold-list" role="main">

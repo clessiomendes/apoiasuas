@@ -1,5 +1,5 @@
 
-<%@ page import="org.apoiasuas.seguranca.UsuarioSistema" %>
+<%@ page import="org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.seguranca.UsuarioSistema" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -11,8 +11,10 @@
 		<a href="#show-usuarioSistema" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.SUPER_USER}">
+				    <li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+				    <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                </sec:ifAnyGranted>
 			</ul>
 		</div>
 		<div id="show-usuarioSistema" class="content scaffold-show" role="main">
@@ -42,44 +44,34 @@
 				<g:if test="${usuarioSistemaInstance?.papel}">
 					<li class="fieldcontain">
 						<span id="papel-label" class="property-label"><g:message code="usuarioSistema.papel.label" default="Perfil de acesso" /></span>
-
 						<span class="property-value" aria-labelledby="papel-label">
-							%{--<g:fieldValue bean="${usuarioSistemaInstance}" field="papel"/>--}%
 							${message(code:'DefinicaoPapeis.'+fieldValue(bean: usuarioSistemaInstance, field: "papel"))}
 						</span>
-
 					</li>
 				</g:if>
 
-			%{--
-                            <g:if test="${usuarioSistemaInstance?.perfil}">
-                            <li class="fieldcontain">
-                                <span id="perfil-label" class="property-label"><g:message code="usuarioSistema.perfil.label" default="Perfil" /></span>
+                <li class="fieldcontain">
+                    <span id="enabled-label" class="property-label"></span>
+                    <span class="property-value" aria-labelledby="criador-label">${usuarioSistemaInstance?.enabled ? "Operador habilitado" : "Operador desabilitado"}</span>
+                </li>
 
-                                    <span class="property-value" aria-labelledby="situacao-label">
-                                    ${message(code:'PerfilUsuarioSistema.'+fieldValue(bean: usuarioSistemaInstance, field: "perfil"))}
-                                    </span>
+                <li class="fieldcontain">
+                    <span id="criador-label" class="property-label"><g:message code="usuarioSistema.criador.label" default="Criação" /></span>
+                    <span class="property-value" aria-labelledby="criador-label">${usuarioSistemaInstance?.criador?.username?.encodeAsHTML()} em <g:formatDate date="${usuarioSistemaInstance?.dateCreated}" format="dd/MM/yyyy HH:mm" /></span>
+                </li>
 
-
-                            </li>
-                            </g:if>
-            --}%
-
-				<li class="fieldcontain">
-					<span id="criador-label" class="property-label"><g:message code="usuarioSistema.criador.label" default="Criação" /></span>
-					<span class="property-value" aria-labelledby="criador-label"><g:link controller="usuarioSistema" action="show" id="${usuarioSistemaInstance?.criador?.id}">${usuarioSistemaInstance?.criador?.username?.encodeAsHTML()}</g:link> em <g:formatDate date="${usuarioSistemaInstance?.dateCreated}" format="dd/MM/yyyy HH:mm" /></span>
-				</li>
-				
-				<li class="fieldcontain">
+                <li class="fieldcontain">
 					<span id="ultimoAlterador-label" class="property-label"><g:message code="usuarioSistema.ultimoAlterador.label" default="Alteração" /></span>
-					<span class="property-value" aria-labelledby="ultimoAlterador-label"><g:link controller="usuarioSistema" action="show" id="${usuarioSistemaInstance?.ultimoAlterador?.id}">${usuarioSistemaInstance?.ultimoAlterador?.username?.encodeAsHTML()}</g:link> em <g:formatDate date="${usuarioSistemaInstance?.lastUpdated}" format="dd/MM/yyyy HH:mm" /></span>
+					<span class="property-value" aria-labelledby="ultimoAlterador-label">${usuarioSistemaInstance?.ultimoAlterador?.username?.encodeAsHTML()} em <g:formatDate date="${usuarioSistemaInstance?.lastUpdated}" format="dd/MM/yyyy HH:mm" /></span>
 				</li>
 			
 			</ol>
 			<g:form url="[resource:usuarioSistemaInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">
+                <sec:ifAnyGranted roles="${DefinicaoPapeis.SUPER_USER}">
 					<g:link class="edit" action="edit" resource="${usuarioSistemaInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                </sec:ifAnyGranted>
 				</fieldset>
 			</g:form>
 		</div>

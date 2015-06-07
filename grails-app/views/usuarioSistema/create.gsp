@@ -1,3 +1,4 @@
+<%@ page import="org.apoiasuas.seguranca.DefinicaoPapeis" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -9,7 +10,9 @@
 		<a href="#create-usuarioSistema" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+                <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.SUPER_USER}">
+				    <li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+                </sec:ifAnyGranted>
 			</ul>
 		</div>
 		<div id="create-usuarioSistema" class="content scaffold-create" role="main">
@@ -27,15 +30,6 @@
 			<g:form url="[resource:usuarioSistemaInstance, action:'save']" >
 				<fieldset class="form">
 					<g:render template="form"/>
-
-					<div class="fieldcontain ${hasErrors(bean: usuarioSistemaInstance, field: 'password', 'error')} required">
-						<label for="password">
-							<g:message code="usuarioSistema.password.label" default="Senha" />
-							<span class="required-indicator">*</span>
-						</label>
-						<g:passwordField name="password" required="required"/>
-					</div>
-
 				</fieldset>
 				<fieldset class="buttons">
 					<g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />
