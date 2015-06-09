@@ -16,7 +16,6 @@ class CidadaoService {
     grails.gorm.PagedResultList procurarCidadao(GrailsParameterMap params, FiltroCidadaoCommand filtro) {
 
         String hql = 'from Cidadao a where 1=1 '
-        String hqlOrder = ' order by a.nomeCompleto'
 
         def filtros = [:]
 
@@ -28,14 +27,14 @@ class CidadaoService {
         String[] nomes = filtro?.nome?.split(" ");
         nomes?.eachWithIndex { nome, i ->
             String label = 'nome'+i
-            hql += " and lower(a.nomeCompleto) like :"+label
+            hql += " and lower(remove_acento(a.nomeCompleto)) like remove_acento(:"+label+")"
             filtros.put(label, '%'+nome?.toLowerCase()+'%')
         }
 
         String[] logradouros = filtro?.logradouro?.split(" ");
         logradouros?.eachWithIndex { logradouro, i ->
             String label = 'logradouro'+i
-            hql += " and lower(a.familia.endereco.nomeLogradouro) like :"+label
+            hql += " and lower(remove_acento(a.familia.endereco.nomeLogradouro)) like remove_acento(:"+label+")"
             //TODO: nomeLogradouro or complemento
             filtros.put(label, '%'+logradouro?.toLowerCase()+'%')
         }
@@ -45,8 +44,7 @@ class CidadaoService {
             filtros << [numero: filtro.numero]
         }
 
-        if (filtro.logradouro)
-            hqlOrder = 'order by a.familia.endereco.numero'
+        String hqlOrder = filtro.logradouro ? 'order by a.familia.endereco.numero' : ' order by a.nomeCompleto'
 
         int count = Cidadao.executeQuery("select count(*) " + hql, filtros)[0]
         List cidadaos = Cidadao.executeQuery(hql + ' ' + hqlOrder, filtros, params)
