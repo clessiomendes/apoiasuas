@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.cidadao.FamiliaController; org.apoiasuas.cidadao.Cidadao" %>
+<%@ page import="org.apoiasuas.util.CollectionUtils; org.apoiasuas.cidadao.FamiliaController; org.apoiasuas.cidadao.Cidadao" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -59,12 +59,16 @@
                 </g:link></td>
 
                 <td><g:link title="${cidadaoInstance?.familia?.mostraTecnicoAcompanhamento()}" controller="cidadao" action="show" id="${cidadaoInstance.id}">
-                    ${fieldValue(bean: cidadaoInstance, field: "nomeCompleto")}
+                    ${raw(cidadaoInstance.nomeCompleto)}
                 </g:link></td>
 
                 <td>${fieldValue(bean: cidadaoInstance, field: "parentescoReferencia")}</td>
 
-                <td>${fieldValue(bean: cidadaoInstance, field: "familia.endereco")}</td>
+                <td>${raw( org.apoiasuas.util.CollectionUtils.join([
+                        cidadaoInstance.familia.endereco.tipoENomeLogradouro,
+                        cidadaoInstance.familia.endereco.numero,
+                        cidadaoInstance.familia.endereco.complemento,
+                        cidadaoInstance.familia.endereco.bairro], ", ") ?: "" )}</td>
 
                 <td>${cidadaoInstance.familia.getTelefonesToString()}</td>
 

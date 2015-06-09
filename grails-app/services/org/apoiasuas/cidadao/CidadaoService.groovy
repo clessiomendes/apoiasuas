@@ -2,9 +2,12 @@ package org.apoiasuas.cidadao
 
 import grails.gorm.DetachedCriteria
 import grails.transaction.Transactional
+import org.apache.commons.lang.StringEscapeUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.apoiasuas.util.HqlPagedResultList
 import org.hibernate.Hibernate
+
+import java.util.regex.Pattern
 
 //TODO: separar servico CidadaoService e FamiliaService
 class CidadaoService {
@@ -34,7 +37,8 @@ class CidadaoService {
         String[] logradouros = filtro?.logradouro?.split(" ");
         logradouros?.eachWithIndex { logradouro, i ->
             String label = 'logradouro'+i
-            hql += " and lower(remove_acento(a.familia.endereco.nomeLogradouro)) like remove_acento(:"+label+")"
+            hql += " and (lower(remove_acento(a.familia.endereco.nomeLogradouro)) like remove_acento(:"+label+")" +
+                    " or lower(remove_acento(a.familia.endereco.complemento)) like remove_acento(:"+label+"))"
             //TODO: nomeLogradouro or complemento
             filtros.put(label, '%'+logradouro?.toLowerCase()+'%')
         }
@@ -48,6 +52,30 @@ class CidadaoService {
 
         int count = Cidadao.executeQuery("select count(*) " + hql, filtros)[0]
         List cidadaos = Cidadao.executeQuery(hql + ' ' + hqlOrder, filtros, params)
+
+        //Coloca em negrito os termos de busca utilizados
+        Iterator<Cidadao> iterator = cidadaos.iterator()
+        List<Endereco> enderecosFormatados = []
+        while (iterator.hasNext()) {
+            Cidadao cidadao = iterator.next()
+            cidadao.discard() //NAO gravar alteracoes
+            //Escapa caracteres html por questoes de seguranca
+            cidadao.nomeCompleto = cidadao.nomeCompleto ? StringEscapeUtils.escapeHtml(cidadao.nomeCompleto) : null
+            nomes?.each {
+                cidadao.nomeCompleto = cidadao.nomeCompleto?.replaceAll("(?i)" + Pattern.quote(it), '<b>$0</b>')
+            }
+            //Para que o mesmo endereco nao seja reformatado varias vezes, precisamos verificar se ele ja foi processado na lista
+            if (! enderecosFormatados.contains(cidadao.familia.endereco) ) {
+                cidadao.familia.endereco.nomeLogradouro = cidadao.familia.endereco.nomeLogradouro ? StringEscapeUtils.escapeHtml(cidadao.familia.endereco.nomeLogradouro) : null
+                cidadao.familia.endereco.complemento = cidadao.familia.endereco.complemento ? StringEscapeUtils.escapeHtml(cidadao.familia.endereco.complemento) : null
+                logradouros?.each {
+                    cidadao.familia.endereco.nomeLogradouro = cidadao.familia.endereco.nomeLogradouro?.replaceAll("(?i)" + Pattern.quote(it), '<b>$0</b>')
+                    cidadao.familia.endereco.complemento = cidadao.familia.endereco.complemento?.replaceAll("(?i)" + Pattern.quote(it), '<b>$0</b>')
+                }
+                enderecosFormatados << cidadao.familia.endereco
+            }
+        }
+
 
         return new HqlPagedResultList(cidadaos, count)
     }
