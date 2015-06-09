@@ -1,115 +1,78 @@
 package org.apoiasuas.servico
 
 import grails.converters.JSON
+import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
+import org.apoiasuas.formulario.PreDefinidos
 import org.apoiasuas.seguranca.DefinicaoPapeis
 
-import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
-
 @Secured([DefinicaoPapeis.USUARIO])
-@Transactional(readOnly = true)
 class ServicoController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    def servicoService
+    def formularioService
+
+    static defaultAction = "list"
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def getServico(Long idServico) {
         Servico servico = Servico.get(idServico)
-
         def endereco = servico.endereco?.toString()
         render servico.properties + [enderecoCompleto: endereco] as JSON
     }
 
-    def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        respond Servico.list(params), model:[servicoInstanceCount: Servico.count()]
+    def list(String palavraChave) {
+        params.max = 3
+        PagedResultList servicos = servicoService.procurarServico(palavraChave, params)
+        render view: 'list', model: [servicoInstanceList: servicos, servicoInstanceCount: servicos.totalCount]
     }
 
     def show(Servico servicoInstance) {
-        respond servicoInstance
+        if (! servicoInstance)
+            return notFound()
+        render view: 'show', model: [servicoInstance: servicoInstance, formularioEncaminhamento: formularioService.getFormularioPreDefinido(PreDefinidos.ENCAMINHAMENTO)]
     }
 
     def create() {
-        respond new Servico(params)
+        Servico servico = new Servico(params)
+        servico.podeEncaminhar = true
+        render view: 'create', model: [servicoInstance: servico]
     }
 
-    @Transactional
+    @Secured([DefinicaoPapeis.USUARIO])
     def save(Servico servicoInstance) {
-        if (servicoInstance == null) {
-            notFound()
-            return
+        if (! servicoInstance)
+            return notFound()
+
+        boolean modoCriacao = servicoInstance.id == null
+
+        //Grava
+        if (! servicoService.grava(servicoInstance)) {
+            //exibe o formulario novamente em caso de problemas na validacao
+            return render(view: modoCriacao ? "create" : "edit" , model: [servicoInstance:servicoInstance])
         }
 
-        if (servicoInstance.hasErrors()) {
-            respond servicoInstance.errors, view:'create'
-            return
-        }
-
-        servicoInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'servico.label', default: 'Servico'), servicoInstance.id])
-                redirect servicoInstance
-            }
-            '*' { respond servicoInstance, [status: CREATED] }
-        }
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'servico.label', default: 'Serviço'), servicoInstance.id])
+        return show(servicoInstance)
     }
 
     def edit(Servico servicoInstance) {
-        respond servicoInstance
+        if (! servicoInstance)
+            return notFound()
+        render view: 'edit', model: [servicoInstance: servicoInstance]
     }
 
-    @Transactional
-    def update(Servico servicoInstance) {
-        if (servicoInstance == null) {
-            notFound()
-            return
-        }
-
-        if (servicoInstance.hasErrors()) {
-            respond servicoInstance.errors, view:'edit'
-            return
-        }
-
-        servicoInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Servico.label', default: 'Servico'), servicoInstance.id])
-                redirect servicoInstance
-            }
-            '*'{ respond servicoInstance, [status: OK] }
-        }
-    }
-
-    @Transactional
     def delete(Servico servicoInstance) {
+        if (! servicoInstance)
+            return notFound()
 
-        if (servicoInstance == null) {
-            notFound()
-            return
-        }
-
-        servicoInstance.delete flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Servico.label', default: 'Servico'), servicoInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
+        servicoService.apaga(servicoInstance)
+        flash.message = message(code: 'default.deleted.message', args: [message(code: 'Servico.label', default: 'Servico'), servicoInstance.id])
+        redirect action:"list"
     }
 
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'servico.label', default: 'Servico'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND }
-        }
+    protected def notFound() {
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'servico.label', default: 'Servico'), params.id])
+        return redirect(action: "list")
     }
 }

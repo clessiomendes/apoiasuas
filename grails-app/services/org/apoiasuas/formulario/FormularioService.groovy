@@ -185,6 +185,7 @@ class FormularioService {
         }
     }
 
+/*
     public Formulario getFormularioPreDefinidoECampos(PreDefinidos codigo) {
         Formulario result = null
         if (codigo) {
@@ -193,6 +194,7 @@ class FormularioService {
         }
         return result
     }
+*/
 
     @Transactional(readOnly = true)
     public Formulario getFormularioComCampos(long idFormulario) {
@@ -205,6 +207,11 @@ class FormularioService {
     }
 
     @Transactional(readOnly = true)
+    public Formulario getFormularioPreDefinido(PreDefinidos codigo) {
+        return Formulario.findByFormularioPreDefinido(codigo)
+    }
+
+    @Transactional(readOnly = true)
     public ArrayList<UsuarioSistema> getOpcoesResponsavelPreenchimento() {
         ArrayList<UsuarioSistema> result = [segurancaService.usuarioLogado]
         ArrayList<UsuarioSistema> usuarios = UsuarioSistema.listOrderByUsername()
@@ -214,7 +221,6 @@ class FormularioService {
         }
         return result
     }
-
 
     @Transactional(readOnly = true)
     WordprocessingMLPackage simularTemplate(Formulario formulario) {

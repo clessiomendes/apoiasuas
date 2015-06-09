@@ -27,6 +27,7 @@ class EmissaoFormularioController extends AncestralController {
 
     def cidadaoService
     def grailsApplication
+    def servicoService
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def escolherFamilia() {
@@ -39,11 +40,14 @@ class EmissaoFormularioController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
-    def preencherFormulario(Long idFormulario, Long membroSelecionado, Long familiaSelecionada) {
-
+    def preencherFormulario(Long idFormulario, Long idServico, Long membroSelecionado, Long familiaSelecionada) {
         Formulario formulario = service(Formulario.get(idFormulario)).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
         guardaUltimoSelecionado(formulario.cidadao, formulario.cidadao.familia)
-        render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, usuarios: service(formulario).getOpcoesResponsavelPreenchimento() ])
+        render(view: 'preencherFormulario',
+                model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
+                        dtoFormulario: formulario,
+                        idServico: idServico,
+                        usuarios: service(formulario).getOpcoesResponsavelPreenchimento() ])
     }
 
     /**
@@ -187,6 +191,5 @@ class EmissaoFormularioController extends AncestralController {
     def mostrarFormularioEmitido(FormularioEmitido formularioEmitidoInstance) {
         render view: "mostrarFormularioEmitido", model: [formularioEmitidoInstance: formularioEmitidoInstance ]
     }
-
 
 }

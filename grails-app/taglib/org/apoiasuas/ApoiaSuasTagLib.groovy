@@ -186,7 +186,7 @@ class ApoiaSuasTagLib {
     Closure actionSubmitOpcaoFomulario = { attrs, body ->
 //        <g:actionSubmit value="${it.nome}" action="preencherFormulario" onclick="this.form.idFormulario.value = '${it.id}'; return true"/>
         Formulario formulario = attrs.formulario
-        out << actionSubmit([value: formulario.nome, action: "preencherFormulario", onclick: "this.form.idFormulario.value = '${formulario.id}'; return true"])
+        out << actionSubmit([value: formulario.nome, onclick: "document.getElementById('preencherFormulario').idFormulario.value = '${formulario.id}'; document.getElementById('preencherFormulario').submit(); return true"])
     }
 
 }

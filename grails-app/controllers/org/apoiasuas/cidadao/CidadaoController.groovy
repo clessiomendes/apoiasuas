@@ -18,7 +18,7 @@ class CidadaoController extends AncestralController {
     def cidadaoService
 
     def procurarCidadao(FiltroCidadaoCommand filtro) {
-        params.max = params.max ?: 10
+        params.max = params.max ?: 20
         PagedResultList cidadaos = cidadaoService.procurarCidadao(params, filtro)
         Map filtrosUsados = params.findAll { it.value }
         return [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]

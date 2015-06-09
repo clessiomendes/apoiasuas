@@ -48,8 +48,8 @@
                         action="list">Importação de famílias</g:link>
                 <g:link class="rosa" controller="usuarioSistema" action="list">Operadores do sistema</g:link>
             </sec:ifAnyGranted>
-            <g:link class="rosa" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
             <g:link class="beje" controller="inicio" action="status">Status do sistema</g:link>
+            <g:link class="verde_oliva" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
         </div>
     </div>
     <div id="controller-list" role="navigation">

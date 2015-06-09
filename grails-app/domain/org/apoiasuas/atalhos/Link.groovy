@@ -12,4 +12,11 @@ class Link {
 
     static constraints = {
     }
+
+    public String getUrlCompleta() {
+        if (! url)
+            return url
+        return url.toLowerCase().startsWith("http") ? url : "http://"+url
+    }
+
 }

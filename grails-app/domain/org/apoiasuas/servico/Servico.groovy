@@ -11,19 +11,21 @@ class Servico {
     String apelido
     String descricao
     String telefones
+    String site
 
     Boolean podeEncaminhar
     String nomeFormal
-    Endereco endereco
     String encaminhamentoPadrao
+    Endereco endereco
+
+    String descricaoCortada //transiente
 
 //    UsuarioSistema criador, ultimoAlterador;
 //    Date dateCreated, lastUpdated;
 
-    //TODO: telefones por servico, com pessoa de contato
-//    static hasMany = [telefones: TelefoneServico]
+    static embedded = ['endereco']
 
-    static embedded = ['endereco'/*, 'despesas'*/]
+    static transients = ['descricaoCortada']
 
     static constraints = {
         apelido(nullable: false, maxSize: 80)
@@ -33,6 +35,13 @@ class Servico {
         id generator: 'native', params: [sequence: 'sq_servico']
         podeEncaminhar(defaultValue: AmbienteExecucao.getBoolean(true))
         encaminhamentoPadrao length: 100000
-        descricao length: 100000
+        descricao length: 1000000
     }
+
+    public String getUrlSite() {
+        if (! site)
+            return site
+        return site.toLowerCase().startsWith("http") ? site : "http://"+site
+    }
+
 }

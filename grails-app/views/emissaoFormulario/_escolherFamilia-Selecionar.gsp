@@ -1,5 +1,4 @@
 <%@ page import="org.apoiasuas.AncestralController" %>
-<fieldset class="form">
 <g:if test="${dtoFamiliaSelecionada}">
     <g:hiddenField name="familiaSelecionada" id="familiaSelecionada" value="${dtoFamiliaSelecionada.id}"/>
         <div class="fieldcontain">
@@ -25,4 +24,3 @@
             <li>Familia não encontrada</li>
     </ul>
 </g:else>
-</fieldset>

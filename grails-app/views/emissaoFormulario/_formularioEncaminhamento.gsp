@@ -4,6 +4,11 @@
 %>
 
 <g:javascript>
+
+    /**
+    * Funcao executada apos a chamada ajax para preencher os campos do formulario com os dados do servico escolhido
+    * @param data
+    */
     function preencheEncaminhamentos(data) {
         //document.getElementById("avulso.descricao_encaminhamento").value = "any shit";
         //alert(document.getElementById("avulso.descricao_encaminhamento").value);
@@ -16,14 +21,32 @@
         } else
             document.getElementById("avulso.descricao_encaminhamento").value = data.encaminhamentoPadrao;
     }
+
+    /**
+    * chamada ajax para obter os dados do cadastro do servico
+    */
+    function ajaxServico(idServico) {
+        ${remoteFunction(controller: 'servico', action: 'getServico', params: "'idServico='+escape(idServico)", onSuccess: 'preencheEncaminhamentos(data)')}
+    }
+
+    /**
+    * Sempre que carregar a página, submete a chamada ajax identica de selecao de servico
+    */
+    $(document).ready(function() {
+        if (document.getElementById("servico").value != '') {
+            ajaxServico(document.getElementById("servico").value)
+        }
+    });
+
 </g:javascript>
 
 <div class="fieldcontain">
     <label>
+        Serviço
     </label>
-    <g:select optionKey='id' optionValue="apelido" name="servico" id="servico" from="${Servico.list()}" noSelection="['null': '']"
-              style="max-width:400px;"
-              onchange="${remoteFunction(controller: 'servico', action:'getServico', params:"'idServico='+escape(this.value)", onSuccess:'preencheEncaminhamentos(data)')}"/>
+    <g:select optionKey='id' optionValue="apelido" name="servico" id="servico" from="${Servico.list().sort({it.apelido})}" noSelection="['null': '']"
+              value="${idServico ?: ''}" style="max-width:400px;"
+              onchange="ajaxServico(this.value)"/>
 </div>
 
 <g:each in="${localDtoFormulario.camposAgrupados}" var="grupo" status="i"> %{-- separa os campos em grupos --}%

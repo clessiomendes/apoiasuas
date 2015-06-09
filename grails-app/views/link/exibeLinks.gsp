@@ -91,7 +91,7 @@
 		<div id="list-link" class="content scaffold-list" role="main">
             <ul>
 				<g:each in="${linkInstanceList}" status="i" var="linkInstance">
-                    <li><g:link url="${linkInstance.url}" id="${linkInstance.id}">${fieldValue(bean: linkInstance, field: "descricao")}</g:link></li>
+                    <li><g:link target="new" url="${linkInstance.urlCompleta}" id="${linkInstance.id}">${fieldValue(bean: linkInstance, field: "descricao")}</g:link></li>
 				</g:each>
             </ul>
 		</div>

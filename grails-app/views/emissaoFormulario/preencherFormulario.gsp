@@ -10,10 +10,9 @@
 <body>
 
 <div class="nav" role="navigation">
-    <ul>
-        <li><g:link class="create" action="escolherFamilia"><g:message code="formulario.iniciar.outro"
-                                                                       default="Novo"/></g:link></li>
-    </ul>
+    <ul><li><g:link class="create" action="escolherFamilia">
+            <g:message code="formulario.iniciar.outro" default="Novo"/>
+    </g:link></li></ul>
 </div>
 
 <h1>${dtoFormulario.nome}</h1>

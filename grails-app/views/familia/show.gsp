@@ -95,7 +95,6 @@
 			</ol>
             <fieldset class="buttons">
                 <g:link class="edit" controller="emissaoFormulario" action="listarFormulariosEmitidos" params="[idFamilia: familiaInstance.id]" >Formulários</g:link>
-                %{--<g:link class="edit" controller="emissaoFormulario" action="escolherFamilia">Formulários</g:link>--}%
                 <g:link class="edit" action="edit" resource="${familiaInstance}"><g:message code="default.button.edit.label" default="Editar" /></g:link>
             </fieldset>
 		</div>

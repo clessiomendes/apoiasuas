@@ -13,6 +13,8 @@ class UsuarioSistemaController {
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def show(UsuarioSistema usuarioSistemaInstance) {
+        if (! usuarioSistemaInstance)
+            return notFound()
         preenchePapel(usuarioSistemaInstance)
         render view: "show", model: [usuarioSistemaInstance:usuarioSistemaInstance]
     }
@@ -38,24 +40,26 @@ class UsuarioSistemaController {
     }
 
     def edit(UsuarioSistema usuarioSistemaInstance) {
+        if (! usuarioSistemaInstance)
+            return notFound()
         preenchePapel(usuarioSistemaInstance)
         render view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance]
     }
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def alteraPerfil(UsuarioSistema usuarioSistemaInstance) {
+        if (! usuarioSistemaInstance)
+            return notFound()
         preenchePapel(usuarioSistemaInstance)
         render view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance]
     }
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def save(UsuarioSistema usuarioSistemaInstance) {
-        boolean modoCriacao = usuarioSistemaInstance.id == null
+        if (! usuarioSistemaInstance)
+            return notFound()
 
-        if (usuarioSistemaInstance == null) {
-            notFound()
-            return
-        }
+        boolean modoCriacao = usuarioSistemaInstance.id == null
 
         //Grava
         if (! segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2"))) {
@@ -68,11 +72,8 @@ class UsuarioSistemaController {
     }
 
     def delete(UsuarioSistema usuarioSistemaInstance) {
-
-        if (usuarioSistemaInstance == null) {
-            notFound()
-            return
-        }
+        if (! usuarioSistemaInstance)
+            return notFound()
 
         //Remove
         if (! segurancaService.apagaUsuario(usuarioSistemaInstance)) {
@@ -81,24 +82,12 @@ class UsuarioSistemaController {
             return render(view:"show", model: [usuarioSistemaInstance:usuarioSistemaInstance])
         }
 
-        request.withFormat {
-            form multipartForm {
-                //Resposta padr�o para posts html
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'UsuarioSistema.label', default: 'Usuário do sistema'), usuarioSistemaInstance.id])
-                redirect action:"list", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT } //Resposta para restfull applications
-        }
+        flash.message = message(code: 'default.deleted.message', args: [message(code: 'UsuarioSistema.label', default: 'Usuário do sistema'), usuarioSistemaInstance.id])
+        redirect action:"list"
     }
 
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                //Resposta padr�o para posts html
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'UsuarioSistema.label', default: 'Usuário do sistema'), params.id])
-                redirect action: "list", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND } //Resposta para restfull applications
-        }
+    protected def notFound() {
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'UsuarioSistema.label', default: 'Usuário do sistema'), params.id])
+        return redirect(action: "list")
     }
 }

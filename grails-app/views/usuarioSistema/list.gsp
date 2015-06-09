@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'usuarioSistema.label', default: 'Usuário do sistema')}" />
+		<g:set var="entityName" value="${message(code: 'usuarioSistema.label', default: 'Operador do sistema')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 		<r:require module="fileuploader"/>
 	</head>
