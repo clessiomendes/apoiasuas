@@ -22,7 +22,7 @@ class ServicoController {
     }
 
     def list(String palavraChave) {
-        params.max = 3
+        params.max = 20
         PagedResultList servicos = servicoService.procurarServico(palavraChave, params)
         render view: 'list', model: [servicoInstanceList: servicos, servicoInstanceCount: servicos.totalCount]
     }
