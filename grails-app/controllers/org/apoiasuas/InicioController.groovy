@@ -3,6 +3,7 @@ package org.apoiasuas
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.sql.Sql
+import groovy.time.TimeCategory
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.ItemMenuDTO
 import org.apoiasuas.util.AmbienteExecucao
@@ -21,6 +22,7 @@ class InicioController {
     SessionFactory sessionFactory
     def grailsApplication
     def apoiaSuasService
+    def importarFamiliasService
 
     /**
      * Exibicao da tela de menu inicial
@@ -42,6 +44,10 @@ class InicioController {
 //        List<ItemMenuDTO> ops = []
 //        ops << itemMenu('Emissão de formulários', EmissaoFormularioController.getClass(), [DefinicaoPapeis.USUARIO_LEITURA])
 //        ops << itemMenu('Emissão de formulários', forward(controller: 'EmissaoFormularioController', action: 'escolherFamilia'), 'meIgnore')
+
+        //armazena na sessao a data e hora da ultima importacao concluida
+        if (! session.ultimaImportacao)
+            session.ultimaImportacao = importarFamiliasService.ultimaImportacao
 
         render view:'index', model: [/*opcoes: opcoes,*/ outrasOpcoes: outrasOpcoes]
     }

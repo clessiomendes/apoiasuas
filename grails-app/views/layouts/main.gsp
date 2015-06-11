@@ -33,6 +33,10 @@
             %{--TODO: Alinhar botao de logout aa direita e estilizar SEM USAR TABELAS--}%
             Operador: <sec:loggedInUserInfo field="username"/>
             <input type="submit" value="sair">
+            Ultima importação do cadastro de cidadãos:
+            <div style="font-weight: bold;display: inline;${session.ultimaImportacao?.atrasada ? 'color:red;' : ''}">
+                <g:formatDate format="dd/MM/yyyy HH:mm" date="${session.ultimaImportacao?.data}"/>
+            </div>
         </form>
         </div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>

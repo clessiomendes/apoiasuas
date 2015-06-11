@@ -678,6 +678,10 @@ class ImportarFamiliasService {
         return result
     }
 
-
+    public Map getUltimaImportacao() {
+        TentativaImportacao ultimaImportacao = TentativaImportacao.find("from TentativaImportacao a where a.status = :status order by a.id desc", [status: StatusImportacao.CONCLUIDA])
+        Date dataUltimaImportacao = ultimaImportacao?.lastUpdated ?: ultimaImportacao?.dateCreated
+        return [data: dataUltimaImportacao, atrasada: new Date() - dataUltimaImportacao > 7]
+    }
 }
 
