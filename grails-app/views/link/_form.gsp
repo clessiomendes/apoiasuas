@@ -18,6 +18,7 @@
 
 </div>
 
+%{--
 <div class="fieldcontain ${hasErrors(bean: linkInstance, field: 'instrucoes', 'error')} ">
 	<label for="instrucoes">
 		<g:message code="link.instrucoes.label" default="Instruções" />
@@ -26,5 +27,6 @@
 	<g:textArea name="instrucoes" rows="60" cols="3" value="${linkInstance?.instrucoes}"/>
 
 </div>
+--}%
 
 

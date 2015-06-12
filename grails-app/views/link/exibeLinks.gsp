@@ -85,6 +85,13 @@
 	</head>
 	<body>
     %{--<div id="page-body" role="main">--}%
+
+    <div class="nav" role="navigation">
+        <ul>
+            <li><g:link class="list" action="index">Configurar</g:link></li>
+        </ul>
+    </div>
+
     <div id="controller-list" role="navigation">
 		<a href="#list-link" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
         <h1>Atalhos Externos</h1>
