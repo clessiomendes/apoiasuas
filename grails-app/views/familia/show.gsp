@@ -86,7 +86,7 @@
 					<span id="telefones-label" class="property-label"><g:message code="familia.telefones.label" default="Telefones" /></span>
 					
 						<g:each in="${familiaInstance.telefones}" var="t">
-						<span class="property-value" aria-labelledby="telefones-label"><g:link controller="telefone" action="show" id="${t.id}">${t?.encodeAsHTML()}</g:link></span>
+						<span class="property-value" aria-labelledby="telefones-label">${t?.encodeAsHTML()}</span>
 						</g:each>
 					
 				</li>
