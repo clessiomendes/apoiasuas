@@ -108,7 +108,8 @@ class FormularioService {
 
         return formularioEmitido
     }
-/**
+
+    /**
      * Metodo que transfere os valores preenchidos em "Formulario" para um mapa (mergeField -> valor a substituir) esperado pelo template
      */
     protected void transfereConteudo(Formulario formulario, ReportDTO reportDTO) {
@@ -249,7 +250,7 @@ class FormularioService {
     }
 
     @Transactional
-    void gravarAlteracoes(Formulario formulario) {
+    public void gravarAlteracoes(Formulario formulario) {
         if (!formulario.cidadao.id)
             return
 
@@ -265,10 +266,11 @@ class FormularioService {
             }.call()
 
             if (!instanciaAfetada)
-                return
+                return //esse return pula para o proximo passo do closure formulario.campos.each{}
 
             def conteudoAnterior = instanciaAfetada."${campo.nomeCampoPersistente}"
             def novoContedudo = campo.valorArmazenado
+            //FIXME https://github.com/clessiomendes/apoiasuas/issues/16
             log.debug("Comparando ${campo.caminhoCampo}: ${conteudoAnterior} => ${novoContedudo} ?")
 
             boolean atualizarInstanciaPersistente

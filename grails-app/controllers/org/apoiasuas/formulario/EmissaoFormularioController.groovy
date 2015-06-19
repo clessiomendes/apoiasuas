@@ -60,13 +60,15 @@ class EmissaoFormularioController extends AncestralController {
         }
     }
 
+/*
     @Secured([DefinicaoPapeis.USUARIO])
     def imprimirFormularioGravando(Long idFormulario) {
         return imprimirFormulario(idFormulario, true)
     }
+*/
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
-    def imprimirFormulario(Long idFormulario, Boolean gravaAlteracoes) {
+    def imprimirFormulario(Long idFormulario) {
         Formulario formulario
 
         instanciamento_dos_objetos: try { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
@@ -91,7 +93,7 @@ class EmissaoFormularioController extends AncestralController {
 
         geraFormularioPreenchidoEgrava: {
             ReportDTO reportDTO = service(formulario).prepararImpressao(formulario)
-            if (gravaAlteracoes && verificaPermissao(DefinicaoPapeis.USUARIO))
+            if (verificaPermissao(DefinicaoPapeis.USUARIO))
                 service(formulario).gravarAlteracoes(formulario)
 
             response.contentType = 'application/octet-stream'

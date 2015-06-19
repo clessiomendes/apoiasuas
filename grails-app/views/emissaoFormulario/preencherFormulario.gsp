@@ -51,13 +51,6 @@
 
     <fieldset class="buttons">
         <g:actionSubmit class="save" action="imprimirFormulario" value="Gerar formulário"/>
-        %{--Botão de imprimir e gravar. Ocultar em alguns formularios (onde a gravação pode causar equívocos) ou se o operador nao tiver permissão.--}%
-        <sec:ifAllGranted roles="${DefinicaoPapeis.USUARIO}">
-            <g:if test="${! [org.apoiasuas.formulario.PreDefinidos.CERTIDOES].contains(dtoFormulario.formularioPreDefinido)}">
-                <g:actionSubmit class="save" action="imprimirFormularioGravando"
-                                value="Gerar formulário atualizando cadastro"/>
-            </g:if>
-        </sec:ifAllGranted>
     </fieldset>
     </div>
 </g:form>

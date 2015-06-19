@@ -1,5 +1,6 @@
 package org.apoiasuas.formulario
 
+import grails.transaction.Transactional
 import org.apoiasuas.bootstrap.FormularioCertidoes
 import org.apoiasuas.bootstrap.FormularioCertidoesPedido
 import org.apoiasuas.cidadao.Cidadao
@@ -19,6 +20,12 @@ class FormularioCertidoesService extends FormularioService {
         formulario.getCampoAvulso(FormularioCertidoes.CODIGO_MAE_NASCIMENTO).valorArmazenado = formulario.cidadao.nomeMae
         formulario.getCampoAvulso(FormularioCertidoes.CODIGO_PAI_NASCIMENTO).valorArmazenado = formulario.cidadao.nomePai
         return formulario
+    }
+
+    @Override
+    public void gravarAlteracoes(Formulario formulario) {
+        //Por via das duvidas, nao gravar alteracoes pois ha o risco de se substituir dados do cidadao no cadastro pelo do declarante no formulario
+        //TODO https://github.com/clessiomendes/apoiasuas/issues/17
     }
 
     @Override
