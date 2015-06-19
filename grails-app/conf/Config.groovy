@@ -190,6 +190,30 @@ grails.plugin.springsecurity.useSecurityEventListener = true
 grails.plugin.springsecurity.onAbstractAuthenticationFailureEvent = { e, appCtx ->   //Exibe eventual mensagem de erro no login
     println "DEBUG auth failed for user $e.authentication.name: $e.exception.message"
 }
+
+switch (AmbienteExecucao.CURRENT) {
+    case AmbienteExecucao.APPFOG:
+        println 'Exigindo canal SEGURO (https)'
+        grails.plugin.springsecurity.secureChannel.definition = [ '/**': 'REQUIRES_SECURE_CHANNEL' ]
+        break
+    default:
+        println 'Permitindo canal NÃO seguro (http)'
+}
+
+/*
+environments {
+    production {
+        security {
+            channelConfig = [secure: ['/**']]
+            httpPort = 80
+            httpsPort = 443
+        }
+    }
+}
+*/
+
+grails.plugin.springsecurity.interceptUrlMap = [ '/importacaoFamilias/restUpload': ['IS_AUTHENTICATED_ANONYMOUSLY']]
+
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':                              ['permitAll'],
 //	'/index':                         ['permitAll'],

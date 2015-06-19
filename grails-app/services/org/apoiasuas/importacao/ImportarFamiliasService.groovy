@@ -7,7 +7,8 @@ import grails.async.Promise
 import grails.async.Promises
 import grails.converters.JSON
 import grails.transaction.Transactional
-import grails.util.Environment
+import org.apache.poi.openxml4j.opc.OPCPackage
+import org.apache.poi.util.IOUtils
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.SituacaoFamilia
@@ -17,14 +18,7 @@ import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.SafeMap
 import org.codehaus.groovy.grails.support.SoftThreadLocalMap
 import org.springframework.transaction.annotation.Isolation
-
-import org.apache.poi.openxml4j.opc.OPCPackage
-import org.apache.poi.ss.usermodel.Workbook
-import org.apache.poi.util.IOUtils
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.transaction.annotation.Propagation
 
 import java.util.regex.Pattern
 
@@ -47,7 +41,7 @@ class ImportarFamiliasService {
 
         //Obtém os cabeçalhos da última importação
         LinhaTentativaImportacao linha = null
-        final int MAX_TEMPO_ESPERA = 3 /*minutos*/ * 60 * 1000
+        final int MAX_TEMPO_ESPERA = AmbienteExecucao.SABOTAGEM ? 5000 : 3 /*minutos*/ * 60 * 1000
         final int INTERVALO_ESPERA = 2 /*segundos*/ * 1000
         long tempoEsperaTotal = 0
         while (!importacao?.cancelada() && linha == null && tempoEsperaTotal < MAX_TEMPO_ESPERA) {
@@ -100,22 +94,34 @@ class ImportarFamiliasService {
         DefinicoesImportacaoFamilias definicoes = getDefinicoes();
 
         paraCadaDefinicaoCampoBD { fieldName, fieldValue ->
-//            if (camposPreenchidos.containsKey(fieldName))
             log.debug("camposPreenchidos.get(fieldName)": camposPreenchidos.get(fieldName))
             definicoes.setProperty("coluna" + fieldName, camposPreenchidos.get(fieldName))
         }
-//        log.debug([colunaBairro: definicoes.colunaBairro])
         definicoes.save()
     }
 
+    Map getDefinicoesImportacaoFamilia() {
+        Map result = [:]
+        DefinicoesImportacaoFamilias definicoes = getDefinicoes();
+        paraCadaDefinicaoCampoBD { fieldName, fieldValue ->
+            if (fieldValue) //despreza campos sem definicao de importacao
+                result.put(fieldName, fieldValue)
+        }
+        return result
+    }
+
     //NÃO TRANSACIONAL
-    void concluiImportacao(Map camposPreenchidos, long idImportacao) {
+    void concluiImportacao(Map camposPreenchidos, long idImportacao, UsuarioSistema usuarioLogado) {
 
 //Inicializações de variáveis locais:
         ResumoImportacaoDTO resultadoImportacao = new ResumoImportacaoDTO()
 
         Map camposPreenchidosInvertido = [:]
-        camposPreenchidos.each { camposPreenchidosInvertido.put(it.value, it.key) }
+        //Inverte mapa para "campo na planilha -> campo no BD"
+        camposPreenchidos.each {
+            if (it.value)
+                camposPreenchidosInvertido.put(it.value, it.key)
+        }
         List camposBDDisponiveis = obtemCamposBDDisponiveis();
         log.debug(["Concluindo importacao id ", idImportacao])
 
@@ -132,12 +138,11 @@ class ImportarFamiliasService {
         TentativaImportacao tentativaImportacao
 
         try {
-
             tentativaImportacao = obtemTentativaImportacaoComLinhas(idImportacao)
             atualizaProgressoImportacao(tentativaImportacao, StatusImportacao.INCLUINDO_FAMILIAS, null, 0, 0)
 
-            UsuarioSistema usuarioLogado = segurancaService.getUsuarioLogado();
-
+            if (! usuarioLogado)
+                throw new RuntimeException("Nenhum operador do sistema definido como autor da importação")
 
             tentativaImportacao.linhas.each { it ->
                 linha = it //a variavel linha teve que ser definida fora do closure para que possa ser acessada pelo bloco try catch
@@ -146,9 +151,13 @@ class ImportarFamiliasService {
                 //cria um mapa adequado às nossas necessidades, ou seja, nomeCampoBD -> valorASerAtualizado
                 SafeMap mapaDeCampos = converteListaParaMapa(grails.converters.JSON.parse(linha.JSON), camposPreenchidosInvertido, camposBDDisponiveis);
 
-//                AmbienteExecucao.sabota("Erro global")
+                //Verifica se todos os campos esperados (em DefinicoesImportacaoFamilia) estão presentes na planilha
+                camposPreenchidosInvertido.each {
+                    if (! mapaDeCampos.containsKey("coluna"+it.value))
+                        throw new RuntimeException("Campo ${it.key} esperado mas ausente da planilha importada.")
+                }
 
-                //Despreza linhas em branco, usando como critério de campo obrigatório o codigoPropriedade familiar
+                //Despreza linhas em branco, usando como critério de campo obrigatório o codigo familiar
                 if (trim(mapaDeCampos.get("CodigoFamilia"))) {
 
 //                  ===> Não faz mais sentido, porque cada linha sera importada em uma transacao diferente
@@ -498,7 +507,7 @@ class ImportarFamiliasService {
     }
 
     //nao transacional(do ponto de vista de Banco de dados)
-    public TentativaImportacao preImportacao(InputStream inputStream, TentativaImportacao importacao, int linhaDoCabecalho, int abaDaPlanilha) throws Exception {
+    public TentativaImportacao preImportacao(InputStream inputStream, TentativaImportacao importacao, int linhaDoCabecalho, int abaDaPlanilha, boolean assincrono) throws Exception {
 
         final ArrayList<LinhaTentativaImportacao> bufferImportacao = new ArrayList<LinhaTentativaImportacao>();
         final int LINHAS_POR_TRANSACAO = 20
@@ -562,13 +571,6 @@ class ImportarFamiliasService {
 
                     });
 
-            Promise p = Promises.task {
-                try {
-//                    if (linhaDoCabecalho == 2) {
-                        //Instancia o processador e inicia o processamento
-                        ExcelReader excelReader = new ExcelReader(pkg, sheetRowCallbackHandler, null);
-                        log.debug("iniciando pre processamento de importacao em thread separado (id ${importacao?.id}")
-                        excelReader.process(abaDaPlanilha - 1);
 /*
                     } else {      TESTE DE IMPORTACAO DA VERSAO ANTIGA DO EXCEL (.XLS)
 
@@ -591,12 +593,13 @@ class ImportarFamiliasService {
                         log.debug("total ${totalLinhas} linhas e ${totalCelulas} celulas")
                     }
 */
-                    if (bufferImportacao.size() > 0)
-                        descarregaBufferPreImportacao(bufferImportacao, importacao);
-                    atualizaProgressoImportacao(importacao, StatusImportacao.ARQUIVO_PROCESSADO)
-                } catch (Throwable t) {
-                    essecaoPreImportacao(t, importacao)
+
+            if (assincrono) {
+                Promise p = Promises.task {
+                    processExcelReader(pkg, sheetRowCallbackHandler, importacao, abaDaPlanilha, bufferImportacao)
                 }
+            } else {
+                processExcelReader(pkg, sheetRowCallbackHandler, importacao, abaDaPlanilha, bufferImportacao)
             }
         } finally {
             IOUtils.closeQuietly(inputStream);
@@ -611,6 +614,19 @@ class ImportarFamiliasService {
         return importacao;
     }
 
+    private void processExcelReader(OPCPackage pkg, ExcelWorkSheetRowCallbackHandler sheetRowCallbackHandler, TentativaImportacao importacao, int abaDaPlanilha, ArrayList<LinhaTentativaImportacao> bufferImportacao) {
+        try {
+            ExcelReader excelReader = new ExcelReader(pkg, sheetRowCallbackHandler, null);
+            log.debug("iniciando pre processamento de importacao em thread separado (id ${importacao?.id}")
+            excelReader.process(abaDaPlanilha - 1);
+            if (bufferImportacao.size() > 0)
+                descarregaBufferPreImportacao(bufferImportacao, importacao);
+            atualizaProgressoImportacao(importacao, StatusImportacao.ARQUIVO_PROCESSADO)
+        } catch (Throwable t) {
+            essecaoPreImportacao(t, importacao)
+        }
+    }
+
     private void essecaoPreImportacao(Throwable t, TentativaImportacao importacao) {
         try {
             log.warn("Erro na preImportacao ${importacao?.id}. Cancelando...", t)
@@ -623,7 +639,7 @@ class ImportarFamiliasService {
         }
     }
 
-    @Transactional
+    @Transactional //(propagation = Propagation.REQUIRES_NEW)
     private void atualizaProgressoImportacao(TentativaImportacao importacao, StatusImportacao status, String mensagem = null, Integer cidadaosProcessados = null, Integer errosDetectados = null) {
         importacao.setStatus(status);
         if (mensagem) {
@@ -663,14 +679,14 @@ class ImportarFamiliasService {
     /**
      * Registra uma nova tentativa de importacao no BD (um registro pai para os filhos do tipo LinhaTentativaImportacao inseridos na sequencia).
      */
-    public TentativaImportacao registraNovaImportacao(int linhaDoCabecalho, int abaDaPlanilha) {
+    public TentativaImportacao registraNovaImportacao(int linhaDoCabecalho, int abaDaPlanilha, UsuarioSistema usuarioLogado) {
         DefinicoesImportacaoFamilias definicoes = DefinicoesImportacaoFamilias.findAll().first();
         definicoes.linhaDoCabecalho = linhaDoCabecalho
         definicoes.abaDaPlanilha = abaDaPlanilha
         definicoes.save()
 
         TentativaImportacao result = new TentativaImportacao()
-        result.criador = segurancaService.usuarioLogado
+        result.criador = usuarioLogado
         result.dateCreated = new Date()
         atualizaProgressoImportacao(result, StatusImportacao.ENVIANDO_ARQUIVO)
         result.save(failOnError: true)
@@ -681,7 +697,7 @@ class ImportarFamiliasService {
     public Map getUltimaImportacao() {
         TentativaImportacao ultimaImportacao = TentativaImportacao.find("from TentativaImportacao a where a.status = :status order by a.id desc", [status: StatusImportacao.CONCLUIDA])
         Date dataUltimaImportacao = ultimaImportacao?.lastUpdated ?: ultimaImportacao?.dateCreated
-        return [data: dataUltimaImportacao, atrasada: new Date() - dataUltimaImportacao > 7]
+        return [data: dataUltimaImportacao, atrasada: dataUltimaImportacao ? new Date() - dataUltimaImportacao > 7 : null]
     }
 }
 

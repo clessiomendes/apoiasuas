@@ -14,7 +14,7 @@ class SegurancaService {
     static transactional = false
 
     @Transactional(readOnly = true)
-    UsuarioSistema getUsuarioLogado() {
+    public UsuarioSistema getUsuarioLogado() {
         def usuarioLogado = springSecurityService.currentUser
         return usuarioLogado
     }
@@ -206,5 +206,11 @@ class SegurancaService {
         if (usuarioSistema.id)
             UsuarioSistemaPapel.findAllByUsuarioSistema(usuarioSistema).each { result << it.papel}
         return result
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioSistema getAdmin() {
+        //FIXME procurar usuario com papel admin
+        return UsuarioSistema.findByUsername("admin")
     }
 }

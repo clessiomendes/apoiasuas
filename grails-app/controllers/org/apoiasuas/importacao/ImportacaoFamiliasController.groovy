@@ -4,6 +4,7 @@ import grails.async.Promise
 import grails.async.Promises
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.apoiasuas.seguranca.UsuarioSistema
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -15,8 +16,60 @@ import javax.servlet.http.HttpServletRequest
 class ImportacaoFamiliasController {
 
     def importarFamiliasService
+    def segurancaService
 
     static defaultAction = "list"
+    static responseFormats = ['json']
+
+    /**
+     * Chamar com: curl http://localhost:8080/apoiasuas/importacaoFamilias/restUpload -F username=john -F file=@c:\temp\out.txt
+     */
+    @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
+    def restUpload() {
+        log.debug("restUpload acionado")
+
+        try {
+
+            final UsuarioSistema admin = segurancaService.getAdmin()
+            InputStream inputStream = selectInputStream(request)
+
+            DefinicoesImportacaoFamilias definicoes = importarFamiliasService.getDefinicoes();
+            if (!definicoes.linhaDoCabecalho || !definicoes.abaDaPlanilha) {
+                result << "erro. Configuracoes nao definidas (linha do cabecalho ou aba da planilha)"
+                return render(result as JSON)
+            }
+            TentativaImportacao tentativaImportacao = importarFamiliasService.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, admin)
+            tentativaImportacao = importarFamiliasService.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)
+            if (!tentativaImportacao?.id) {
+                return render(text: [success: false] as JSON, contentType: 'text/json')
+            }
+
+//            List<ColunaImportadaCommand> colunasImportadas = importarFamiliasService.obtemColunasImportadas(tentativaImportacao.id)
+//            if (!colunasImportadas) {
+//                //Algum erro na preImportacao pode fazer com que nao haja nenhuma coluna importada. Redirecionar para listagem com mensagem de erro
+//                result << 'Erro na importação. Consulte os "detalhes" da importação para ver o motivo. id: ' + tentativaImportacao.id
+//                return render(result as JSON)
+//            }
+
+//            Faltando alimentar o mapa camposPreenchidos a ser passado para concluiImportacao. Chave:"campo no BD", Valor:"coluna na planilha"
+
+            Map camposPreenchidos = importarFamiliasService.getDefinicoesImportacaoFamilia()
+
+            importarFamiliasService.concluiImportacao(camposPreenchidos, tentativaImportacao.id, admin)
+
+            def result = []
+            result << "Importação concluída com sucesso (id ${tentativaImportacao.id}). Veja detalhes na tela de importações."
+            render result as JSON
+
+        } catch (FileUploadException e) {
+            log.error("Failed to upload file.", e)
+            render(["Erro no recebimento do arquivo: ${e.message}", org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(e)] as JSON)
+        } catch (Throwable t) {
+            log.error("Erro na importação.", t)
+            render (["Erro na importação: ${t.message}", org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(t)] as JSON)
+        }
+
+    }
 
     def list(Integer max) {
         //Atualiza o parametro do request "max"
@@ -40,14 +93,6 @@ class ImportacaoFamiliasController {
     }
 
 
-    def create() {
-        //Limpa a sessão
-        session.removeAttribute("idImportacao")
-        DefinicoesImportacaoFamilias definicoes = importarFamiliasService.getDefinicoes();
-        request.linhaDoCabecalho = definicoes.linhaDoCabecalho
-        request.abaDaPlanilha = definicoes.abaDaPlanilha
-    }
-
     def progressoUpload() {
         log.debug("arquivo subindo... " + params.loaded + " de " + params.total )
         return render(text: [success: true] as JSON, contentType: 'text/json')
@@ -58,7 +103,6 @@ class ImportacaoFamiliasController {
      * linhas no banco de dados sem nenhum parsing (utilizando formatacao conteudoLinhaPlanilha)
      */
     def upload() {
-        int tempoSessao
         try {
 
             InputStream inputStream = selectInputStream(request)
@@ -67,11 +111,9 @@ class ImportacaoFamiliasController {
             int linhaDoCabecalho = params.int("linhaDoCabecalho")
             int abaDaPlanilha = params.int("abaDaPlanilha")
 
-            TentativaImportacao tentativaImportacao = importarFamiliasService.registraNovaImportacao(linhaDoCabecalho, abaDaPlanilha)
+            TentativaImportacao tentativaImportacao = importarFamiliasService.registraNovaImportacao(linhaDoCabecalho, abaDaPlanilha, segurancaService.usuarioLogado)
 
-//            Promise p = Promises.task() {
-                importarFamiliasService.preImportacao(inputStream, tentativaImportacao, linhaDoCabecalho, abaDaPlanilha)
-//            }
+            importarFamiliasService.preImportacao(inputStream, tentativaImportacao, linhaDoCabecalho, abaDaPlanilha, true/*assincrono*/)
 
             if (!tentativaImportacao?.id) {
                 return render(text: [success: false] as JSON, contentType: 'text/json')
@@ -93,6 +135,18 @@ class ImportacaoFamiliasController {
             return uploadedFile.inputStream
         }
         return request.inputStream
+    }
+
+    /**
+     * Primeiro passo da importacao via browser. Seguido por create2()
+     * @return
+     */
+    def create() {
+        //Limpa a sessão
+        session.removeAttribute("idImportacao")
+        DefinicoesImportacaoFamilias definicoes = importarFamiliasService.getDefinicoes();
+        request.linhaDoCabecalho = definicoes.linhaDoCabecalho
+        request.abaDaPlanilha = definicoes.abaDaPlanilha
     }
 
     /**
@@ -201,11 +255,12 @@ class ImportacaoFamiliasController {
             //Rodar assincronamente
             Promise p = Promises.task {
                 //Efetivar a importação dos dados da planilha, que foram gravados previamente em uma tabela temporaria no BD
-                importarFamiliasService.concluiImportacao(camposPreenchidos, idImportacao)
+                importarFamiliasService.concluiImportacao(camposPreenchidos, idImportacao, segurancaService.getUsuarioLogado())
             }
             redirect action: 'show', id: idImportacao
         }
     }
+
 }
 
 class ColunaImportadaCommand implements Serializable {
