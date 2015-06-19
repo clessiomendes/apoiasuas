@@ -54,7 +54,7 @@ if /i not "%TAG%"=="current" goto pula2
 	)
 	cd ..
 	rmdir .\target\work\stage /s /q > nul
-	goto war
+	goto pula3
 :pula2
 
 if /i "%TAG%"=="current" goto pula3
