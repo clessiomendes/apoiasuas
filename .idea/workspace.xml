@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d22a58e9-ba3b-4dd5-b8e7-fd549b3f5c71" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.ids" afterPath="$PROJECT_DIR$/.idea/dataSources.ids" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/AtualizacoesDDL.sql" afterPath="$PROJECT_DIR$/scripts/AtualizacoesDDL.sql" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/deploy-af.bat" afterPath="$PROJECT_DIR$/scripts/deploy-af.bat" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/views/familia/show.gsp" afterPath="$PROJECT_DIR$/grails-app/views/familia/show.gsp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="apoiaSUAS.iws" />
@@ -81,11 +76,33 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="preencherFormulario.gsp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="preencherFormulario.gsp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grails-app/views/emissaoFormulario/preencherFormulario.gsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.44715446" vertical-offset="596" max-vertical-offset="1088">
+            <state vertical-scroll-proportion="-4.4897957" vertical-offset="596" max-vertical-offset="1088">
               <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AtualizacoesDDL.sql" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/scripts/AtualizacoesDDL.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.48907104" vertical-offset="178" max-vertical-offset="544">
+              <caret line="21" column="23" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
+              <folding>
+                <marker date="1434764848978" expanded="true" signature="738:866" placeholder="SELECT TRANS..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PRODUCAO - Atencao ambiente de producao" pinned="false" current-in-tab="false">
+        <entry file="dbDummy://db-console:/fab28bd3/2d2c7e88-dc7e-4149-955e-cdaeb2573130/">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.4" vertical-offset="0" max-vertical-offset="204">
+              <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -177,7 +194,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/grails-app/views/emissaoFormulario/_escolherFamilia-Selecionar.gsp" />
         <option value="$PROJECT_DIR$/grails-app/taglib/org/apoiasuas/ApoiaSuasTagLib.groovy" />
         <option value="$PROJECT_DIR$/grails-app/views/emissaoFormulario/escolherFamilia.gsp" />
         <option value="$PROJECT_DIR$/grails-app/views/emissaoFormulario/_escolherFamilia.gsp" />
@@ -199,7 +215,6 @@
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/grails-app/controllers/org/apoiasuas/InicioController.groovy" />
         <option value="$PROJECT_DIR$/grails-app/views/layouts/main.gsp" />
-        <option value="$PROJECT_DIR$/scripts/AtualizacoesDDL.sql" />
         <option value="db-console:/fab28bd3/7eacd4e1-666a-4fba-8ee4-fb36ee964f96/" />
         <option value="$PROJECT_DIR$/grails-app/controllers/org/apoiasuas/servico/ServicoController.groovy" />
         <option value="$PROJECT_DIR$/grails-app/views/link/index.gsp" />
@@ -228,6 +243,8 @@
         <option value="$PROJECT_DIR$/src/groovy/org/apoiasuas/bootstrap/FormularioCertidoes.groovy" />
         <option value="$PROJECT_DIR$/grails-app/services/org/apoiasuas/formulario/FormularioCertidoesService.groovy" />
         <option value="$PROJECT_DIR$/grails-app/views/emissaoFormulario/preencherFormulario.gsp" />
+        <option value="db-console:/fab28bd3/2d2c7e88-dc7e-4149-955e-cdaeb2573130/" />
+        <option value="$PROJECT_DIR$/scripts/AtualizacoesDDL.sql" />
       </list>
     </option>
   </component>
@@ -913,7 +930,7 @@
       <workItem from="1433576104398" duration="991000" />
       <workItem from="1433577392674" duration="73587000" />
       <workItem from="1433879094053" duration="4886000" />
-      <workItem from="1433969006577" duration="31150000" />
+      <workItem from="1433969006577" duration="32069000" />
     </task>
     <task id="LOCAL-00001" summary="arquivos de configuracao git e travis">
       <created>1432181822894</created>
@@ -1131,11 +1148,35 @@
       <option name="project" value="LOCAL" />
       <updated>1434689958783</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="Criacao de sequences">
+      <created>1434690019961</created>
+      <option name="number" value="00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1434690019961</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Correcao do script de deploy">
+      <created>1434690042514</created>
+      <option name="number" value="00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1434690042514</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Tirando link de telefone na tela da familia">
+      <created>1434690060474</created>
+      <option name="number" value="00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1434690060474</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Tirando link de telefone na tela da familia">
+      <created>1434764875286</created>
+      <option name="number" value="00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1434764875286</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="529779000" />
+    <option name="totallyTimeSpent" value="530698000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1164,7 +1205,7 @@
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32088682" sideWeight="0.29744136" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.52508754" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32995737" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1174,7 +1215,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Grails View" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2238806" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32088682" sideWeight="0.70255864" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32088682" sideWeight="0.70255864" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32905483" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32905483" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32905483" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
@@ -1185,7 +1226,7 @@
       <window_info id="Spring" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32905483" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Persistence" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.52508754" sideWeight="0.5" order="18" side_tool="false" content_ui="tabs" />
+      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.52508754" sideWeight="0.5" order="18" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21801706" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -1222,9 +1263,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="script de deploy no servidor AppFog de producao e validacao" />
-    <MESSAGE value="Correcao: exigir sequences apenas para tabelas com id" />
-    <MESSAGE value="Removendo checagem desnecessaria de tipo de submissao HTML (POST,PUT,etc)" />
     <MESSAGE value="Permitir que o proprio usuario altera sua senha e nome.&#10;Criadas algumas validacoes de consistencia na gravacao de operadores.&#10;Corrigidos alguns bugs relacionados." />
     <MESSAGE value="Tirando a classe Endereco das classes de dominio para que nao seja exigida uma tabela para ela." />
     <MESSAGE value="Corrigidas sequences que estavam faltando." />
@@ -1247,7 +1285,10 @@
     <MESSAGE value="Fixes #7" />
     <MESSAGE value="Removendo botao &quot;imprimir e gravar&quot; da emissao dos formularios.&#10;Por padrao, sempre se atualiza os dados do cidadao, exceto em alguns formularios (por enquanto nos formularios de certidao)" />
     <MESSAGE value="Implementacao da importacao automatica via restful webservice" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implementacao da importacao automatica via restful webservice" />
+    <MESSAGE value="Criacao de sequences" />
+    <MESSAGE value="Correcao do script de deploy" />
+    <MESSAGE value="Tirando link de telefone na tela da familia" />
+    <option name="LAST_COMMIT_MESSAGE" value="Tirando link de telefone na tela da familia" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1274,24 +1315,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="dbDummy://db-console:/fab28bd3/7eacd4e1-666a-4fba-8ee4-fb36ee964f96/">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.066667" vertical-offset="0" max-vertical-offset="374">
-          <caret line="16" column="43" selection-start-line="16" selection-start-column="43" selection-end-line="16" selection-end-column="43" />
-          <folding>
-            <marker date="0" expanded="true" signature="-1:-1" placeholder="SELECT TRANS..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/controllers/org/apoiasuas/servico/ServicoController.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.086957" vertical-offset="148" max-vertical-offset="1360">
-          <caret line="25" column="74" selection-start-line="25" selection-start-column="74" selection-end-line="25" selection-end-column="74" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/java/grails-2.4.3/dist/grails-plugin-gsp-2.4.3-sources.jar!/org/codehaus/groovy/grails/plugins/web/taglib/ApplicationTagLib.groovy">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33333334" vertical-offset="2818" max-vertical-offset="7310">
@@ -1717,9 +1740,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/views/emissaoFormulario/preencherFormulario.gsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.44715446" vertical-offset="596" max-vertical-offset="1088">
+        <state vertical-scroll-proportion="-4.4897957" vertical-offset="596" max-vertical-offset="1088">
           <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbDummy://db-console:/fab28bd3/2d2c7e88-dc7e-4149-955e-cdaeb2573130/">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.4" vertical-offset="0" max-vertical-offset="204">
+          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/AtualizacoesDDL.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.48907104" vertical-offset="178" max-vertical-offset="544">
+          <caret line="21" column="23" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
+          <folding>
+            <marker date="1434764848978" expanded="true" signature="738:866" placeholder="SELECT TRANS..." />
+          </folding>
         </state>
       </provider>
     </entry>
