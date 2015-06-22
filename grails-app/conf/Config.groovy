@@ -191,6 +191,7 @@ grails.plugin.springsecurity.onAbstractAuthenticationFailureEvent = { e, appCtx 
     println "DEBUG auth failed for user $e.authentication.name: $e.exception.message"
 }
 
+/*
 switch (AmbienteExecucao.CURRENT) {
     case AmbienteExecucao.APPFOG:
         println 'Exigindo canal SEGURO (https)'
@@ -200,7 +201,6 @@ switch (AmbienteExecucao.CURRENT) {
         println 'Permitindo canal NÃO seguro (http)'
 }
 
-/*
 environments {
     production {
         security {
