@@ -85,6 +85,11 @@
         <li>Ambiente de execução: ${org.apoiasuas.util.AmbienteExecucao.ambienteExecucao}</li>
         <li>Versão: <g:render template="versao"/></li>
         <li>Rodando desde: <g:formatDate format="dd/MM/yyyy HH:mm:ss" date="${org.apoiasuas.util.AmbienteExecucao.inicioAplicacao}"/></li>
+%{--
+        <g:if test="${System.getenv().VCAP_SERVICES}">
+            <li>Serviços AppFog: ${System.getenv().VCAP_SERVICES}</li>
+        </g:if>
+--}%
     </ul>
 
     <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.SUPER_USER}">
