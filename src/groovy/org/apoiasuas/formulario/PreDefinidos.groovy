@@ -1,5 +1,6 @@
 package org.apoiasuas.formulario
 
+import org.apoiasuas.bootstrap.FormularioAcompanhamento
 import org.apoiasuas.bootstrap.FormularioBase
 import org.apoiasuas.bootstrap.FormularioCertidoes
 import org.apoiasuas.bootstrap.FormularioCertidoesPedido
@@ -15,7 +16,8 @@ enum PreDefinidos {
 
     IDENTIDADE(FormularioIdentidade.class), FOTOS(FormularioFotos.class), CERTIDOES(FormularioCertidoes.class),
     GENERICO(FormularioBase.class), IDENTIDADE_FOTO(FormularioIdentidadeFoto.class),
-    CERTIDOES_E_PEDIDO(FormularioCertidoesPedido.class), ENCAMINHAMENTO(FormularioEncaminhamento.class)
+    CERTIDOES_E_PEDIDO(FormularioCertidoesPedido.class), ENCAMINHAMENTO(FormularioEncaminhamento.class),
+    PLANO_ACOMPANHAMENTO(FormularioAcompanhamento.class)
 
     Class<FormularioBase> definicaoFormulario
 

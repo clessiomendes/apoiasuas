@@ -65,7 +65,6 @@ class FormularioFotos extends FormularioBase {
             campoAvulso {
                 codigo CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO
                 tipo CampoFormulario.Tipo.TEXTO
-                obrigatorio true
                 descricao 'Responsável (preenchimento)'
                 obrigatorio true
             }

@@ -134,7 +134,7 @@ class ApoiaSuasTagLib {
                     autofocus: focoInicial,
                     value: campoFormulario.valorArmazenado,
                     optionValue: 'username',
-                    optionKey: 'username',
+                    optionKey: 'nomeCompleto',
                     noSelection: ['': ''],
                     from: request.usuarios
             )

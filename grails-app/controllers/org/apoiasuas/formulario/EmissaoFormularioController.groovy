@@ -78,7 +78,6 @@ class EmissaoFormularioController extends AncestralController {
             formulario.cidadao.familia.telefones = cidadaoService.obtemTelefonesViaCidadao(formulario.cidadao.id) //carrega opções de seleção para telefone
             formulario.cidadao.familia.endereco = new Endereco(params.endereco)
             formulario.formularioEmitido = FormularioEmitido.get(params.formularioEmitido.id)
-//            formulario.formularioEmitido.responsavelPreenchimento = UsuarioSistema.get(params.long('avulso.'+CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO))
             formulario.setCamposAvulsos(params.avulso)
         } catch (ParseException e) {
             //TODO: Identificar exatamente o(s) campo(s) com erro de conversão e informar ao operador com precisão (vai dar trabalho. teremos que abrir mão do bind automático do Grails)
