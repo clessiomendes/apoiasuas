@@ -36,6 +36,7 @@ class CampoFormulario {
     String grupo
     Integer ordem
     boolean obrigatorio = false
+    boolean listaLogradourosCidadaos = false
     int multiplasLinhas
 
     //Campos usados somente para origem do tipo AVULSO (pois nao ha como obte-los da anotacao do campo de BD)

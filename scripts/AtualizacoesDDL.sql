@@ -24,3 +24,5 @@ create sequence sq_papel; --valid prod
 create sequence sq_usuario_sistema; --valid prod
 
 -- versao ate aqui: 0.3.2 (local:feito, valid:feito, producao:feito
+
+alter table campo_formulario add column lista_logradouros_cidadaos boolean not null DEFAULT FALSE

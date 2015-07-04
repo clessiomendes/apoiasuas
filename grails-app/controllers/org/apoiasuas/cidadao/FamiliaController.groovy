@@ -1,5 +1,6 @@
 package org.apoiasuas.cidadao
 
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -10,6 +11,8 @@ import grails.transaction.Transactional
 @Transactional(readOnly = true)
 @Secured([DefinicaoPapeis.USUARIO_LEITURA])
 class FamiliaController extends AncestralController {
+
+    def cidadaoService
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -105,6 +108,11 @@ class FamiliaController extends AncestralController {
             }
             '*' { render status: NOT_FOUND }
         }
+    }
+
+    def obtemLogradouros(String term) {
+        if (term)
+            render cidadaoService.procurarLogradouros(term) as JSON
     }
 
 }

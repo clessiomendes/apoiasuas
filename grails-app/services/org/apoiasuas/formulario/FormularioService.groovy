@@ -52,6 +52,8 @@ class FormularioService {
         if (!idFormulario)
             return null
         Formulario formulario = Formulario.get(idFormulario)
+        if (! formulario)
+            return null
         Hibernate.initialize(formulario.campos)
         formulario.cidadao = idCidadao ? Cidadao.get(idCidadao) : null
         if (formulario.cidadao) {

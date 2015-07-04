@@ -12,6 +12,7 @@ import java.util.regex.Pattern
 //TODO: separar servico CidadaoService e FamiliaService
 class CidadaoService {
 
+    public static final int MAX_AUTOCOMPLETE_LOGRADOUROS = 10
     def segurancaService
     static transactional = false
 
@@ -168,5 +169,31 @@ class CidadaoService {
     @Transactional(readOnly = true)
     Set<Telefone> obtemTelefonesViaCidadao(Long idCidadao) {
         return Cidadao.get(idCidadao)?.familia?.telefones
+    }
+
+    List procurarLogradouros(String logradouro) {
+        if (! logradouro)
+            return []
+        //HQL Busca todos os logradouros, primeiro os mais usados
+        String hql = 'select a.endereco.nomeLogradouro from Familia a ' +
+                'where lower(remove_acento(a.endereco.nomeLogradouro)) like remove_acento(:logradouro) ' +
+                'group by a.endereco.nomeLogradouro ' +
+                'order by count(*) desc ';
+        String logradouroInicia = logradouro.toLowerCase()+'%'
+        String logradouroContem = '%'+logradouro.toLowerCase()+'%'
+
+        //Procura logradouros INICIANDO com o texto digitado
+        //Usar um LinkedHashSet garante que os resultados nao se repitam
+        Set logradouros = new LinkedHashSet(Familia.executeQuery(hql, [logradouro: logradouroInicia]))
+
+        //se existem menos de 10, procura logradouros CONTENDO o texto digitado
+        if (logradouros.size() < MAX_AUTOCOMPLETE_LOGRADOUROS) {
+            Iterator<String> logradourosContem = Familia.executeQuery(hql, [logradouro: logradouroContem]).iterator()
+            while (logradouros.size() < MAX_AUTOCOMPLETE_LOGRADOUROS && logradourosContem.hasNext())
+                logradouros << logradourosContem.next()
+        }
+
+        return new ArrayList(logradouros)
+
     }
 }

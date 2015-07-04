@@ -16,6 +16,8 @@ class CampoFormularioBuilder {
 
     void obrigatorio(Boolean valor) { campoFormulario.obrigatorio = valor }
 
+    void listaLogradourosCidadaos(Boolean valor) { campoFormulario.listaLogradourosCidadaos = valor }
+
     CampoFormulario build() {
         campoFormulario
     }

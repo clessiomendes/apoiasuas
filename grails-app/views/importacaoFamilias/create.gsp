@@ -5,7 +5,7 @@
     <meta name="layout" content="main">
     <title><g:message code="importar.cadastro.de.familias"/></title>
     <r:require module="fileuploader"/>
-    <asset:javascript src="jqery.js"/>
+    <r:require module="jquery" />
 </head>
 
 <body>

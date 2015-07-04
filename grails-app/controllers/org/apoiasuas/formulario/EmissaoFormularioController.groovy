@@ -42,6 +42,8 @@ class EmissaoFormularioController extends AncestralController {
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def preencherFormulario(Long idFormulario, Long idServico, Long membroSelecionado, Long familiaSelecionada) {
         Formulario formulario = service(Formulario.get(idFormulario)).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
+        if (! formulario)
+            return render(controller: 'inicio')
         guardaUltimoSelecionado(formulario.cidadao, formulario.cidadao.familia)
         render(view: 'preencherFormulario',
                 model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),

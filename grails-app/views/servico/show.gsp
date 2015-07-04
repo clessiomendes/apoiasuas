@@ -6,7 +6,6 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'servico.label', default: 'Serviço')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
-        <asset:javascript src="jqery.js"/>
 
         <g:javascript>
         function submitFormEncaminhamento() {

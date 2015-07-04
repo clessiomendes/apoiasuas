@@ -62,6 +62,7 @@ class FormularioIdentidade extends FormularioBase {
                     origem CampoFormulario.Origem.ENDERECO
                     codigo 'nome_logradouro'
                     obrigatorio true
+                    listaLogradourosCidadaos true
                 }
                 campoBancoDeDados {
                     origem CampoFormulario.Origem.ENDERECO

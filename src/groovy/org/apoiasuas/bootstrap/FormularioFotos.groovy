@@ -26,31 +26,34 @@ class FormularioFotos extends FormularioBase {
                 origem CampoFormulario.Origem.CIDADAO
                 codigo 'identidade'
             }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.ENDERECO
-                codigo 'tipo_logradouro'
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.ENDERECO
-                codigo 'nome_logradouro'
-                obrigatorio true
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.ENDERECO
-                codigo 'numero'
-                obrigatorio true
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.ENDERECO
-                codigo 'complemento'
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.ENDERECO
-                codigo 'bairro'
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.ENDERECO
-                codigo 'CEP'
+            grupo 'Endereço', {
+                campoBancoDeDados {
+                    origem CampoFormulario.Origem.ENDERECO
+                    codigo 'tipo_logradouro'
+                }
+                campoBancoDeDados {
+                    origem CampoFormulario.Origem.ENDERECO
+                    codigo 'nome_logradouro'
+                    listaLogradourosCidadaos true
+                    obrigatorio true
+                }
+                campoBancoDeDados {
+                    origem CampoFormulario.Origem.ENDERECO
+                    codigo 'numero'
+                    obrigatorio true
+                }
+                campoBancoDeDados {
+                    origem CampoFormulario.Origem.ENDERECO
+                    codigo 'complemento'
+                }
+                campoBancoDeDados {
+                    origem CampoFormulario.Origem.ENDERECO
+                    codigo 'bairro'
+                }
+                campoBancoDeDados {
+                    origem CampoFormulario.Origem.ENDERECO
+                    codigo 'CEP'
+                }
             }
             campoBancoDeDados {
                 origem CampoFormulario.Origem.FAMILIA

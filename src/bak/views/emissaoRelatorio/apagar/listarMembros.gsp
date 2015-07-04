@@ -5,7 +5,7 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'familia.label', default: 'Familia')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
-    <asset:javascript src="jqery.js"/>
+    <r:require module="jquery" />
 </head>
 
 %{-- TODO: Mudar código jQuery para que não só os fieldsets de primeiro nível, mas também os internos, possam colapsar http://jsfiddle.net/DbyQX/1/ --}%

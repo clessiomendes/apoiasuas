@@ -151,6 +151,7 @@ class ApoiaSuasTagLib {
                     return textField(name: campoFormulario.caminhoCampo,
                             size: campoFormulario.tamanho,
                             autofocus: focoInicial,
+                            class: campoFormulario.listaLogradourosCidadaos ? 'listaLogradouros' : '',
                             value: campoFormulario.valorArmazenado)
             case CampoFormulario.Tipo.TELEFONE:
                 return render(template: "/emissaoFormulario/campoTelefone", model: [campoFormulario: campoFormulario])

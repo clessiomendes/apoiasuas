@@ -5,6 +5,20 @@
 <head>
     <meta name="layout" content="main">
     <title>${dtoFormulario.nome}</title>
+    <r:require module="jquery" />
+    <r:require module="jquery-ui" />
+    <g:javascript>
+            /**
+            * Preenche automaticamente logradouros à partir do que já está na base de dados
+            */
+            $(document).ready(function() {
+               $('.listaLogradouros').autocomplete({
+                    delay: 700, minLength: 2, source: '<g:createLink controller='familia' action='obtemLogradouros'/>'
+               });
+
+            });
+    </g:javascript>
+
 </head>
 
 <body>
@@ -37,6 +51,8 @@
     <input type="hidden" id="formularioEmitido.id" name="formularioEmitido.id" value="${dtoFormulario?.formularioEmitido?.id}">
 
     <ol class="property-list">
+
+        <g:textField name="buscaLogradouro" size = "60" />
 
         <g:if test="${templateCamposCustomizados}">%{-- renderiza um template customizado para o formulario sendo editado --}%
             <g:render template="${templateCamposCustomizados}" model="${['dtoFormulario', dtoFormulario]}"/>

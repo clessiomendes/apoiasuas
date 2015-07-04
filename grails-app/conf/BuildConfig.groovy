@@ -145,7 +145,8 @@ grails.project.dependency.resolution = {
         }
 */
         compile ":jquery:1.11.1"
-        runtime ":resources:1.2.13"
+        compile ":jquery-ui:1.10.4"
+        runtime ":resources:1.2.14"
 
 //        compile ":nerderg-form-tags:2.1.3" //taglib com componente de data (dentre outros)
 

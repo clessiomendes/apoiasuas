@@ -74,6 +74,7 @@ class FormularioCertidoes extends FormularioBase {
                 campoBancoDeDados {
                     origem Origem.ENDERECO
                     codigo 'nome_logradouro'
+                    listaLogradourosCidadaos true
                     obrigatorio true
                 }
                 campoBancoDeDados {

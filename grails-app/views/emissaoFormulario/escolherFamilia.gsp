@@ -3,7 +3,6 @@
 <head>
     <meta name="layout" content="main">
     <title><g:message code="importar.cadastro.de.familias"/></title>
-    <asset:javascript src="jqery.js"/>
 </head>
 
 <body>
