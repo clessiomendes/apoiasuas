@@ -54,10 +54,12 @@
 			
 				<g:if test="${familiaInstance?.endereco}">
 				<li class="fieldcontain">
-					<span id="endereco-label" class="property-label"><g:message code="familia.endereco.label" default="Endereco" /></span>
-					
-						<span class="property-value" aria-labelledby="endereco-label"><g:fieldValue bean="${familiaInstance}" field="endereco"/></span>
-					
+					<span id="endereco-label" class="property-label"><g:message code="familia.endereco.label" default="Endereço" /></span>
+					<span class="property-value" aria-labelledby="endereco-label"> ${familiaInstance.endereco} </span>
+					<span class="property-value" aria-labelledby="endereco-label"> ${familiaInstance.endereco.CEP ? "CEP "+familiaInstance.endereco.CEP +", " : ""}
+                    ${familiaInstance.endereco.municipio ? familiaInstance.endereco.municipio +", " : ""}
+                    ${familiaInstance.endereco.UF ? familiaInstance.endereco.UF : ""}
+                    familiaInstance.endereco.municipio}, ${familiaInstance.endereco.UF} </span>
 				</li>
 				</g:if>
 
