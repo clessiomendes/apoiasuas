@@ -31,14 +31,14 @@ if /i "%DESTINO%"=="valid" (
 	set permSize=200m
 	set heapSize=750m
 	set timeZone=America/Sao_Paulo
-	set appname=teste6
+	set appname=validacao
 	set dataSource=appfog_postgres_valid
 )
 if /i "%DESTINO%"=="prod" (
 	set permSize=200m
 	set heapSize=750m
 	set timeZone=America/Sao_Paulo
-	set appname=apoiasuas
+	set appname=prod-espelho
 	set dataSource=appfog_postgres_prod
 )
 set JAVA_OPTS=-XX:MaxPermSize=%permSize% -XX:PermSize=%permSize% -Xms%heapSize% -Xmx%heapSize% -Duser.timezone=%timeZone% -Dorg.apoiasuas.datasource=%dataSource% -Dorg.apoiasuas.sabotagem=false
