@@ -1,7 +1,9 @@
-package org.apoiasuas.atalhos
+package org.apoiasuas.atalho
 
 
 import grails.test.mixin.*
+import org.apoiasuas.Link
+import org.apoiasuas.LinkController
 import spock.lang.*
 
 @TestFor(LinkController)

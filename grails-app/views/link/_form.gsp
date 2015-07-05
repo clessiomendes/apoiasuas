@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.atalhos.Link" %>
+<%@ page import="org.apoiasuas.Link" %>
 
 <div class="fieldcontain ${hasErrors(bean: linkInstance, field: 'url', 'error')} ">
     <label for="url">

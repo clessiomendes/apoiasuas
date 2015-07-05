@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.servico.Servico" %>
+<%@ page import="org.apoiasuas.Servico" %>
 <!DOCTYPE html>
 <html>
 	<head>

@@ -1,8 +1,9 @@
-package org.apoiasuas.servico
+package org.apoiasuas
 
 import grails.converters.JSON
 import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
+import org.apoiasuas.Servico
 import org.apoiasuas.formulario.PreDefinidos
 import org.apoiasuas.seguranca.DefinicaoPapeis
 

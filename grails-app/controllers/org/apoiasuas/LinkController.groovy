@@ -1,6 +1,7 @@
-package org.apoiasuas.atalhos
+package org.apoiasuas
 
 import grails.plugin.springsecurity.annotation.Secured
+import org.apoiasuas.Link
 import org.apoiasuas.seguranca.DefinicaoPapeis
 
 import static org.springframework.http.HttpStatus.*

@@ -133,7 +133,7 @@ class CampoFormulario {
         }
     }
 
-//  atalhos para informacoes do campo (obtidas à partir da Annotation ou do Field)
+//  atalho para informacoes do campo (obtidas à partir da Annotation ou do Field)
     String getDescricao() { return descricaoPersonalizada ?: propriedadeDominioInfo?.descricao() }
     String getNomeCampoPersistente() { return propriedadeDominioField?.name }
     Boolean isAtualizavel() { return origem?.avulso ? false : propriedadeDominioInfo?.atualizavel() }

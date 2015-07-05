@@ -1,5 +1,5 @@
 
-<%@ page import="org.apoiasuas.util.StringUtils; org.apoiasuas.servico.Servico" %>
+<%@ page import="org.apoiasuas.util.StringUtils; org.apoiasuas.Servico" %>
 <!DOCTYPE html>
 <html>
 	<head>

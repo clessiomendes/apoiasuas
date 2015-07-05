@@ -1,7 +1,8 @@
-package org.apoiasuas.servico
+package org.apoiasuas
 
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringEscapeUtils
+import org.apoiasuas.Servico
 import org.apoiasuas.util.HqlPagedResultList
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 

@@ -1,6 +1,7 @@
-package org.apoiasuas.atalhos
+package org.apoiasuas.atalho
 
 import grails.test.mixin.TestFor
+import org.apoiasuas.Link
 import spock.lang.Specification
 
 /**

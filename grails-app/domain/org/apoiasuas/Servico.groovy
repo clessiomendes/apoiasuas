@@ -1,4 +1,4 @@
-package org.apoiasuas.servico
+package org.apoiasuas
 
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Endereco

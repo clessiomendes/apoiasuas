@@ -1,5 +1,5 @@
 
-<%@ page import="org.apoiasuas.atalhos.Link" %>
+<%@ page import="org.apoiasuas.Link" %>
 <!DOCTYPE html>
 <html>
 	<head>

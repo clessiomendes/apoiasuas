@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.servico.Servico; org.apoiasuas.formulario.Formulario" %>
+<%@ page import="org.apoiasuas.Servico; org.apoiasuas.servico.Servico; org.apoiasuas.formulario.Formulario" %>
 <%
     org.apoiasuas.formulario.Formulario localDtoFormulario = dtoFormulario
 %>
@@ -44,7 +44,7 @@
     <label>
         Serviço
     </label>
-    <g:select optionKey='id' optionValue="apelido" name="servico" id="servico" from="${Servico.list().sort({it.apelido})}" noSelection="['null': '']"
+    <g:select optionKey='id' optionValue="apelido" name="servico" id="servico" from="${org.apoiasuas.Servico.list().sort({it.apelido})}" noSelection="['null': '']"
               value="${idServico ?: ''}" style="max-width:400px;"
               onchange="ajaxServico(this.value)"/>
 </div>

@@ -1,4 +1,4 @@
-package org.apoiasuas.atalhos
+package org.apoiasuas
 
 class Link {
 

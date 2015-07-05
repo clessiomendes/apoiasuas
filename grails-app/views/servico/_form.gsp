@@ -1,6 +1,6 @@
-<%@ page import="org.apoiasuas.servico.Servico" %>
+<%@ page import="org.apoiasuas.Servico" %>
 <%
-    org.apoiasuas.servico.Servico localDtoServico = servicoInstance
+    Servico localDtoServico = servicoInstance
 %>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'apelido', 'error')} required">
