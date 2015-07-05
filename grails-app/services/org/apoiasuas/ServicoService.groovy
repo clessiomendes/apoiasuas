@@ -13,13 +13,14 @@ class ServicoService {
     static final int TAMANHO_DESCRICAO_CORTADA = 150
 
     @Transactional
-    public boolean grava(Servico servico) {
-        servico.save()
+    public Servico grava(Servico servico) {
+        return servico.save()
     }
 
     @Transactional
     public boolean apaga(Servico servico) {
         servico.delete()
+        return true
     }
 
     @Transactional(readOnly = true)
