@@ -21,7 +21,7 @@ class FamiliaController extends AncestralController {
     }
 
     def show(Familia familiaInstance) {
-        guardaUltimoSelecionado(null, familiaInstance)
+        guardaUltimaFamiliaSelecionada(familiaInstance)
         render view: 'show', model: [familiaInstance: familiaInstance]
     }
 

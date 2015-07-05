@@ -29,7 +29,7 @@ class CidadaoController extends AncestralController {
     }
 
     def show(Cidadao cidadaoInstance) {
-        guardaUltimoSelecionado(cidadaoInstance, cidadaoInstance.familia)
+        guardaUltimoCidadaoSelecionado(cidadaoInstance)
         respond cidadaoInstance
     }
 

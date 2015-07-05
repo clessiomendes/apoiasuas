@@ -1,18 +1,14 @@
 package org.apoiasuas.formulario
 
-import grails.converters.JSON
 import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
 import org.apoiasuas.bootstrap.FormularioBase
-import org.apoiasuas.bootstrap.FormularioCertidoes
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Endereco
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.FiltroCidadaoCommand
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.servico.Servico
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
@@ -44,7 +40,8 @@ class EmissaoFormularioController extends AncestralController {
         Formulario formulario = service(Formulario.get(idFormulario)).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
         if (! formulario)
             return render(controller: 'inicio')
-        guardaUltimoSelecionado(formulario.cidadao, formulario.cidadao.familia)
+        guardaUltimaFamiliaSelecionada(formulario.cidadao.familia)
+        guardaUltimoCidadaoSelecionado(formulario.cidadao)
         render(view: 'preencherFormulario',
                 model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
                         dtoFormulario: formulario,

@@ -52,8 +52,6 @@
 
     <ol class="property-list">
 
-        <g:textField name="buscaLogradouro" size = "60" />
-
         <g:if test="${templateCamposCustomizados}">%{-- renderiza um template customizado para o formulario sendo editado --}%
             <g:render template="${templateCamposCustomizados}" model="${['dtoFormulario', dtoFormulario]}"/>
         </g:if>

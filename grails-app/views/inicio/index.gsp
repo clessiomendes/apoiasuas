@@ -6,26 +6,21 @@
     <meta name="layout" content="main"/>
     <title>Apoia SUAS</title>
     <asset:stylesheet src="metro.css"/>
-
-
-        <style type="text/css" media="screen">
-
-#controller-list {
-    float: left;
-    margin-left: 20px;
-    list-style-type: none;
-}
-
-#controller-list ul {
-    list-style-position: inside;
-}
-
-#controller-list li {
-    line-height: 1.3;
-    list-style-position: inside;
-    margin: 0.25em 0;
-}
-        </style>
+    <style type="text/css" media="screen">
+    #controller-list {
+        /*float: left;*/
+        margin-left: 20px;
+        list-style-type: none;
+    }
+    #controller-list ul {
+        list-style-position: inside;
+    }
+    #controller-list li {
+        line-height: 1.3;
+        list-style-position: inside;
+        margin: 0.25em 0;
+    }
+    </style>
 </head>
 
 <body>
@@ -52,6 +47,11 @@
             <g:link class="verde_oliva" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
         </div>
     </div>
+
+    <div style="font-weight: bold; text-align: center; ${session.ultimaImportacao?.atrasada ? 'color:red;' : ''}">
+        Última importação do cadastro de cidadãos: <g:formatDate format="dd/MM/yyyy HH:mm" date="${session.ultimaImportacao?.data}"/>
+    </div>
+
     <div id="controller-list" role="navigation">
     <sec:ifAnyGranted roles="${DefinicaoPapeis.SUPER_USER}">
         <h1>Outros controllers:</h1>
