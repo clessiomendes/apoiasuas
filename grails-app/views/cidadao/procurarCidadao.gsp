@@ -26,11 +26,10 @@
 --}%
         <table>
             <tr>
-                <td>Nome:<g:textField name="nome" size="20" autofocus="" value="${filtro?.nome}"/></td>
-                <td>Logradouro:<g:textField name="logradouro" size="20"
-                                            value="${filtro?.logradouro}"/></td>
-                <td>Numero:<g:textField name="numero" size="1" value="${filtro?.numero}"/></td>
-                <td>Cad:<g:textField name="codigoLegado" size="1" value="${filtro?.codigoLegado}"/></td>
+                <td>Nome:<g:textField name="nome" size="20" autofocus=""/></td>
+                <td>Logradouro:<g:textField name="logradouro" size="20"/></td>
+                <td>Numero:<g:textField name="numero" size="1"/></td>
+                <td>Cad:<g:textField name="codigoLegado" size="1"/></td>
                 <td><g:submitButton name="procurar" value="Procurar"/></td>
             </tr>
         </table>

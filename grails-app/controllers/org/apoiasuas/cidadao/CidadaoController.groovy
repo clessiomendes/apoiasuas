@@ -21,7 +21,12 @@ class CidadaoController extends AncestralController {
         params.max = params.max ?: 20
         PagedResultList cidadaos = cidadaoService.procurarCidadao(params, filtro)
         Map filtrosUsados = params.findAll { it.value }
-        return [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
+
+        if (filtro?.codigoLegado && cidadaos?.resultList?.size() > 0) {
+            Cidadao cidadao = cidadaos?.resultList[0]
+            redirect(controller: "familia", action: "show", id: cidadao.familia.id)
+        } else
+            return [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
     }
 
     def selecionarFamilia(Familia familiaInstance) {
