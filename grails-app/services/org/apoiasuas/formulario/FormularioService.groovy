@@ -181,6 +181,7 @@ class FormularioService {
                     log.debug("Formulário " + enumForm + " mantido sem alteracoes")
                 }
                 formulario.campos.each { it.save() }
+                enumForm.instanciaPersistida = formulario
                 //grava os campos gerando novos ids, mesmo que o formulario já exista
             } catch (Throwable t) {
                 throw new RuntimeException("Erro inicializando formulário ${enumForm}. Abortando", t)

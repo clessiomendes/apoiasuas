@@ -21,6 +21,8 @@ enum PreDefinidos {
 
     Class<FormularioBase> definicaoFormulario
 
+    Formulario instanciaPersistida
+
     PreDefinidos(Class definicaoFormulario) {
         this.definicaoFormulario = definicaoFormulario
     }
