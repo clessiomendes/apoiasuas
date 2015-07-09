@@ -25,30 +25,30 @@
 				<g:if test="${familiaInstance?.codigoLegado}">
 				<li class="fieldcontain">
 					<span id="codigoLegado-label" class="property-label"><g:message code="familia.codigoLegado.label" default="Codigo Legado" /></span>
-					
-						<span class="property-value" aria-labelledby="codigoLegado-label"><g:fieldValue bean="${familiaInstance}" field="codigoLegado"/></span>
-					
+					<span class="property-value" aria-labelledby="codigoLegado-label"><g:fieldValue bean="${familiaInstance}" field="codigoLegado"/></span>
 				</li>
 				</g:if>
 
-                <g:if test="${familiaInstance?.familiaAcompanhada}">
+                <g:if test="${familiaInstance?.tecnicoReferencia}">
                     <li class="fieldcontain">
-                        <span></span>
-                        <span style="color: red" class="property-value" aria-labelledby="familiaAcompanhada-label">Família acompanhada
-                        <g:if test="${familiaInstance?.tecnicoAcompanhamento}">
-                            por ${familiaInstance?.tecnicoAcompanhamento.nomeCompleto}
-                        </g:if>
-                        </span>
+                        <span id="tecnicoReferencia-label" class="property-label"><g:message code="familia.tecnicoReferencia.label" default="Técnico de referência" /></span>
+                        <span style="color: red" class="property-value" aria-labelledby="tecnicoReferencia-label"><g:fieldValue bean="${familiaInstance}" field="tecnicoReferencia"/></span>
+                    </li>
+                </g:if>
 
+                <g:if test="${familiaInstance?.programas}">
+                    <li class="fieldcontain">
+                        <span id="membros-label" class="property-label"><g:message code="familia.programas.label" default="Programas" /></span>
+                        <g:each in="${familiaInstance.programas}" var="programaFamilia">
+                            <span class="property-value" aria-labelledby="programas-label">${programaFamilia?.programa.siglaENome()}</span>
+                        </g:each>
                     </li>
                 </g:if>
 
                 <g:if test="${familiaInstance?.dateCreated}">
 				<li class="fieldcontain">
 					<span id="dateCreated-label" class="property-label"><g:message code="familia.dateCreated.label" default="Data Cadastro" /></span>
-					
-						<span class="property-value" aria-labelledby="dateCreated-label"><g:formatDate date="${familiaInstance?.dateCreated}" /></span>
-					
+					<span class="property-value" aria-labelledby="dateCreated-label"><g:formatDate date="${familiaInstance?.dateCreated}" /></span>
 				</li>
 				</g:if>
 			
@@ -57,9 +57,9 @@
 					<span id="endereco-label" class="property-label"><g:message code="familia.endereco.label" default="Endereço" /></span>
 					<span class="property-value" aria-labelledby="endereco-label"> ${familiaInstance.endereco} </span>
 					<span class="property-value" aria-labelledby="endereco-label"> ${familiaInstance.endereco.CEP ? "CEP "+familiaInstance.endereco.CEP +", " : ""}
-                    ${familiaInstance.endereco.municipio ? familiaInstance.endereco.municipio +", " : ""}
-                    ${familiaInstance.endereco.UF ? familiaInstance.endereco.UF : ""}
-                    familiaInstance.endereco.municipio}, ${familiaInstance.endereco.UF} </span>
+                        ${familiaInstance.endereco.municipio ? familiaInstance.endereco.municipio +", " : ""}
+                        ${familiaInstance.endereco.UF ? familiaInstance.endereco.UF : ""}
+                    </span>
 				</li>
 				</g:if>
 

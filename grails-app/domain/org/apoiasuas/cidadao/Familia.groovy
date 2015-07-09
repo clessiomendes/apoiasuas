@@ -7,6 +7,8 @@ import org.apoiasuas.anotacoesDominio.InfoClasseDominio
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
 import org.apoiasuas.formulario.CampoFormulario
+import org.apoiasuas.programa.Programa
+import org.apoiasuas.programa.ProgramaFamilia
 import org.apoiasuas.util.DateUtils
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.CollectionUtils;
@@ -28,12 +30,12 @@ class Familia implements Serializable {
 //	PropriedadeDomicilio propriedadeDomicilio
 //	RiscoDomicilio riscoDomicilio
     SituacaoFamilia situacaoFamilia
-    Boolean familiaAcompanhada
-    UsuarioSistema tecnicoAcompanhamento
+//    Boolean familiaAcompanhada
+    UsuarioSistema tecnicoReferencia
     UsuarioSistema criador, ultimoAlterador;
     Date dateCreated, lastUpdated, dataUltimaImportacao;
     Endereco endereco //importado
-    String lala
+    Set<ProgramaFamilia> programas
 
     @InfoPropriedadeDominio(codigo='telefone', descricao = 'Telefone', tipo = CampoFormulario.Tipo.TELEFONE, tamanho = 10)
     String telefone //campo transiente (usado para conter telefones escolhidos/digitados pelo operador em casos de uso como o de preenchimento de formulario
@@ -42,7 +44,7 @@ class Familia implements Serializable {
 //	Despesas despesas
 
 //    List membros = new ArrayList()
-    static hasMany = [membros: Cidadao, telefones: Telefone]
+    static hasMany = [membros: Cidadao, telefones: Telefone, programas: ProgramaFamilia]
 
     static embedded = ['endereco'/*, 'despesas'*/]
 
@@ -107,11 +109,13 @@ class Familia implements Serializable {
         return dataUltimaImportacao == null || ! DateUtils.momentosProximos(dataUltimaImportacao, lastUpdated)
     }
 
-    String mostraTecnicoAcompanhamento() {
+/*
+    String mostraTecnicoReferencia() {
         if (!familiaAcompanhada)
             return null
-        return 'Técnico acompanhando: ' + (tecnicoAcompanhamento?.username ?: 'indefinido')
+        return 'Técnico de referência: ' + (tecnicoReferencia?.username ?: 'indefinido')
     }
+*/
 }
 
 class Despesas  implements Serializable {

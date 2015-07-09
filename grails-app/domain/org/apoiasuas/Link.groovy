@@ -11,6 +11,9 @@ class Link {
     }
 
     static constraints = {
+        url(nullable: false, maxSize: 255)
+        descricao(nullable: false, maxSize: 255)
+        instrucoes(nullable: true, maxSize: 255)
     }
 
     public String getUrlCompleta() {

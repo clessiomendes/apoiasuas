@@ -3,24 +3,26 @@ package org.apoiasuas.cidadao
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
+import org.apoiasuas.programa.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Transactional(readOnly = true)
 @Secured([DefinicaoPapeis.USUARIO_LEITURA])
 class FamiliaController extends AncestralController {
 
-    def cidadaoService
+    def familiaService
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        render view: 'list', model: [familiaInstanceList: Familia.list(params), familiaInstanceCount: Familia.count()]
-//        respond Familia.list(params), model: [familiaInstanceCount: Familia.count()]
+        redirect(controller: 'cidadao', action: 'procurarCidadao')
+//        render view: 'list', model: [familiaInstanceList: Familia.list(params), familiaInstanceCount: Familia.count()]
     }
 
     def show(Familia familiaInstance) {
+        if (! familiaInstance)
+            return notFound()
+
         guardaUltimaFamiliaSelecionada(familiaInstance)
         render view: 'show', model: [familiaInstance: familiaInstance]
     }
@@ -31,88 +33,64 @@ class FamiliaController extends AncestralController {
     }
 */
 
-    @Transactional
-    def save(Familia familiaInstance) {
-        if (familiaInstance == null) {
-            notFound()
-            return
+    def save(Familia familiaInstance, ProgramasCommand programasCommand) {
+        if (! familiaInstance)
+            return notFound()
+
+        boolean modoCriacao = familiaInstance.id == null
+
+        //Grava
+        if (! familiaService.grava(familiaInstance, programasCommand)) {
+            //exibe o formulario novamente em caso de problemas na validacao
+            return render(view: modoCriacao ? "create" : "edit" , model: [familiaInstance:familiaInstance])
         }
 
-        if (familiaInstance.hasErrors()) {
-            respond familiaInstance.errors, view: 'create'
-            return
-        }
-
-        familiaInstance.save flush: true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'familia.label', default: 'Familia'), familiaInstance.id])
-                redirect familiaInstance
-            }
-            '*' { respond familiaInstance, [status: CREATED] }
-        }
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'familia.label', default: 'Família'), familiaInstance.id])
+        return show(familiaInstance)
     }
 
     def edit(Familia familiaInstance) {
-        render view: 'edit', model: [familiaInstance: familiaInstance]
+        def programasDisponiveis = Programa.all
+        //Marca dentre os programas disponiveis, aqueles que estão atualmente associados à família
+        programasDisponiveis.each { programaDisponivel ->
+            programaDisponivel.selected = familiaInstance.programas.find { it.programa == programaDisponivel }
+        }
+        render view: 'edit', model: [familiaInstance: familiaInstance, programasDisponiveis: programasDisponiveis]
     }
 
-    @Transactional
-    def update(Familia familiaInstance) {
-        if (familiaInstance == null) {
-            notFound()
-            return
-        }
-
-        if (familiaInstance.hasErrors()) {
-            respond familiaInstance.errors, view: 'edit'
-            return
-        }
-
-        familiaInstance.save flush: true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Familia.label', default: 'Familia'), familiaInstance.id])
-                redirect familiaInstance
-            }
-            '*' { respond familiaInstance, [status: OK] }
-        }
-    }
-
-    @Transactional
+/*
     def delete(Familia familiaInstance) {
+        if (! familiaInstance)
+            return notFound()
+
+        familiaService.apaga(familiaInstance)
+        flash.message = message(code: 'default.deleted.message', args: [message(code: 'Familia.label', default: 'Família'), familiaInstance.id])
+        redirect action:"index"
 
         if (familiaInstance == null) {
             notFound()
             return
         }
-
-        familiaInstance.delete flush: true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Familia.label', default: 'Familia'), familiaInstance.id])
-                redirect action: "index", method: "GET"
-            }
-            '*' { render status: NO_CONTENT }
-        }
     }
+*/
 
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'familia.label', default: 'Familia'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*' { render status: NOT_FOUND }
-        }
+    protected def notFound() {
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'Familia.label', default: 'Família'), params.id])
+        return redirect(controller: 'cidadao', action: 'procurarCidadao')
     }
 
     def obtemLogradouros(String term) {
         if (term)
-            render cidadaoService.procurarLogradouros(term) as JSON
+            render familiaService.procurarLogradouros(term) as JSON
     }
 
+}
+
+class ProgramasCommand {
+    List<ProgramaCommand> programasdisponiveis = [].withLazyDefault { new ProgramaCommand() }
+}
+
+class ProgramaCommand {
+    String id
+    String selected
 }

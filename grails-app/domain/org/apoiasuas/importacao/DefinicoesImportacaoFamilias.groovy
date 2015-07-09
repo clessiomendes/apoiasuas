@@ -29,6 +29,9 @@ class DefinicoesImportacaoFamilias  implements Serializable {
     String colunaParentesco
     String colunaDataNascimento
 
+    String colunaBPC
+    String colunaPBF
+
     UsuarioSistema ultimoAlterador;
     Date lastUpdated;
 

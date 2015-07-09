@@ -27,13 +27,13 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
-			<g:form url="[resource:familiaInstance, action:'update']" method="PUT" >
+			<g:form url="[resource:familiaInstance, action:'save']">
 				<g:hiddenField name="version" value="${familiaInstance?.version}" />
 				<fieldset class="form">
 					<g:render template="form"/>
 				</fieldset>
 				<fieldset class="buttons">
-					<g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+                    <g:submitButton name="update" class="save" value="${message(code: 'default.button.update.label', default: 'Gravar')}" />
 				</fieldset>
 			</g:form>
 		</div>

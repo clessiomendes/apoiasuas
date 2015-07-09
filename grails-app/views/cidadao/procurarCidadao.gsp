@@ -52,13 +52,13 @@
         <tbody>
         <g:each in="${cidadaoInstanceList}" status="i" var="cidadao">
             %{Cidadao cidadaoInstance = cidadao}%
-            <tr class="${cidadaoInstance.familia.familiaAcompanhada ? 'familiaAcompanhada' : (i % 2) == 0 ? 'even' : 'odd'}">
+            <tr class="${cidadaoInstance.familia.tecnicoReferencia ? 'tecnicoReferencia' : (i % 2) == 0 ? 'even' : 'odd'}">
 
-                <td><g:link title="${cidadaoInstance?.familia?.mostraTecnicoAcompanhamento()}" action="selecionarFamilia" id="${cidadaoInstance.familia.id}">
+                <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}" action="selecionarFamilia" id="${cidadaoInstance.familia.id}">
                     ${fieldValue(bean: cidadaoInstance, field: "familia.codigoLegado")}
                 </g:link></td>
 
-                <td><g:link title="${cidadaoInstance?.familia?.mostraTecnicoAcompanhamento()}" controller="cidadao" action="show" id="${cidadaoInstance.id}">
+                <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}" controller="cidadao" action="show" id="${cidadaoInstance.id}">
                     ${raw(cidadaoInstance.nomeCompleto)}
                 </g:link></td>
 

@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.Servico; org.apoiasuas.servico.Servico; org.apoiasuas.formulario.Formulario" %>
+<%@ page import="org.apoiasuas.Servico; org.apoiasuas.formulario.Formulario" %>
 <%
     org.apoiasuas.formulario.Formulario localDtoFormulario = dtoFormulario
 %>

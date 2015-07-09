@@ -1,3 +1,4 @@
+import org.apoiasuas.ProgramaService
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.Formulario
 import org.apoiasuas.formulario.PreDefinidos
@@ -11,9 +12,9 @@ class BootStrap {
     def segurancaService
     def importarFamiliasService
     def formularioService
-    def grailsApplication
     def roleHierarchy
     def apoiaSuasService
+    def programaService
 
     def init = { servletContext ->
 
@@ -28,7 +29,7 @@ class BootStrap {
         String[] atualizacoesPendentes = apoiaSuasService.atualizacoesPendentes
         if (atualizacoesPendentes) {
             String erro = "Detectadas atualizacoes pendentes no banco de dados:"
-            atualizacoesPendentes.each { erro += "\n"+it }
+            atualizacoesPendentes.each { erro += "\n"+it+";" }
             log.error(erro);
             throw new RuntimeException("Banco de dados fora de sincronia com a aplicação (ver mensagens anteriores). Startup interrompido.")
         }
@@ -39,7 +40,9 @@ class BootStrap {
         UsuarioSistema.withTransaction { status ->
             try {
                 UsuarioSistema admin = segurancaService.inicializaSeguranca()
+
                 importarFamiliasService.inicializaDefinicoes(admin)
+                programaService.inicializaProgramas(admin)
 
                 try {
                     //Se ambiente de desenvolvimento, descarta eventuais alteracoes em formularios e reinicializa tudo

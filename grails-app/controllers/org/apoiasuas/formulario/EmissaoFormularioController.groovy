@@ -73,9 +73,12 @@ class EmissaoFormularioController extends AncestralController {
         instanciamento_dos_objetos: try { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
             formulario = service(Formulario.get(idFormulario)).getFormularioComCampos(idFormulario)
             formulario.cidadao = new Cidadao(params.cidadao)
-            formulario.cidadao.familia = new Familia(params.familia)
-            formulario.cidadao.familia.telefones = cidadaoService.obtemTelefonesViaCidadao(formulario.cidadao.id) //carrega opções de seleção para telefone
-            formulario.cidadao.familia.endereco = new Endereco(params.endereco)
+            if (params.familia) {
+                formulario.cidadao.familia = new Familia(params.familia)
+                formulario.cidadao.familia.telefones = cidadaoService.obtemTelefonesViaCidadao(formulario.cidadao.id)
+            }
+            if (params.endereco)
+                formulario.cidadao.familia.endereco = new Endereco(params.endereco)
             formulario.formularioEmitido = FormularioEmitido.get(params.formularioEmitido.id)
             formulario.setCamposAvulsos(params.avulso)
         } catch (ParseException e) {

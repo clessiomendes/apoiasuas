@@ -83,7 +83,7 @@ class SegurancaService {
     /**
      * Grava usuário ou retorna uma mensagem de erro em caso de violacao de regras de integridade
      */
-    boolean gravaUsuario(UsuarioSistema usuarioSistema, String senha, String confirmacaoSenha) {
+    public boolean gravaUsuario(UsuarioSistema usuarioSistema, String senha, String confirmacaoSenha) {
         String erroSenha = null
 
         //Criacao de novo usuario
@@ -154,7 +154,7 @@ class SegurancaService {
 */
 
     @Transactional
-    boolean apagaUsuario(UsuarioSistema usuarioSistema) {
+    public boolean apagaUsuario(UsuarioSistema usuarioSistema) {
         UsuarioSistemaPapel.findAllByUsuarioSistema(usuarioSistema)?.each {
             it.delete() //apaga papeis existentes
         }

@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.seguranca.UsuarioSistema; org.apoiasuas.cidadao.Familia" %>
+<%@ page import="org.apoiasuas.programa.Programa; org.apoiasuas.seguranca.UsuarioSistema; org.apoiasuas.cidadao.Familia" %>
 
 <%
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance
@@ -21,19 +21,37 @@
     <g:textField name="codigoLegado" value="${localDtoFamilia?.codigoLegado}"/>
 </div>
 
+%{--
 <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'familiaAcompanhada', 'error')} ">
     <label for="familiaAcompanhada">
         <g:message code="familia.familiaAcompanhada.label" default="Acampanhada" />
     </label>
     <g:checkBox name="familiaAcompanhada" value="${localDtoFamilia?.familiaAcompanhada}"/>
 </div>
+--}%
 
-<div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'tecnicoAcompanhamento', 'error')} ">
-    <label for="tecnicoAcompanhamento">
-        <g:message code="familia.tecnicoAcompanhamento.label" default="Técnico Acompanhamento" />
+<fieldset id="fieldsetProgramas" class="embedded"}>
+    <legend>
+        <g:message code="familia.programas" default="Programas, benefícios e projetos" />
+    </legend>
 
+    <g:each in="${programasDisponiveis}" var="progdisp" status="i">
+        <% Programa programaDisponivel = progdisp %>
+        <div class="fieldcontain">
+            <label>
+                <g:checkBox name="programasdisponiveis[${i}].selected" value="${programaDisponivel.selected}"/>
+            </label>
+            <g:hiddenField name="programasdisponiveis[${i}].id" value="${programaDisponivel.id}"/>
+            ${programaDisponivel.nome ?: programaDisponivel.sigla}
+        </div>
+    </g:each>
+</fieldset>
+
+<div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'tecnicoReferencia', 'error')} ">
+    <label for="tecnicoReferencia">
+        <g:message code="familia.tecnicoReferencia.label" default="Técnico de referência" />
     </label>
-    <g:select id="tecnicoAcompanhamento" name="tecnicoAcompanhamento.id" from="${UsuarioSistema.list()}" optionKey="id" value="${localDtoFamilia?.tecnicoAcompanhamento?.id}" class="many-to-one" noSelection="['null': '']"/>
+    <g:select id="tecnicoReferencia" name="tecnicoReferencia.id" from="${UsuarioSistema.list()}" optionKey="id" value="${localDtoFamilia?.tecnicoReferencia?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 %{--

@@ -9,16 +9,19 @@ import grails.converters.JSON
 import grails.transaction.Transactional
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.util.IOUtils
+import org.apoiasuas.ProgramasPreDefinidos
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.SituacaoFamilia
 import org.apoiasuas.cidadao.Telefone
+import org.apoiasuas.programa.Programa
+import org.apoiasuas.programa.ProgramaFamilia
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.SafeMap
+import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.support.SoftThreadLocalMap
 import org.springframework.transaction.annotation.Isolation
-import org.springframework.transaction.annotation.Propagation
 
 import java.util.regex.Pattern
 
@@ -283,6 +286,9 @@ class ImportarFamiliasService {
             //Sobrescrever a data de criacao automatica com a data do cadastro presente na planilha importada
             result.save()
 
+            importarPrograma(ProgramasPreDefinidos.BOLSA_FAMILIA, result, trim(mapaDeCampos.get("PBF")))
+            importarPrograma(ProgramasPreDefinidos.BPC, result, trim(mapaDeCampos.get("BPC")))
+
             familiaGravada = true
         }
 
@@ -315,19 +321,19 @@ class ImportarFamiliasService {
         }
     }
 
-    private void importarTelefones(SafeMap mapaDeCampos, Familia result, UsuarioSistema usuarioLogado) {
+    private void importarTelefones(SafeMap mapaDeCampos, Familia familiaPersistida, UsuarioSistema usuarioLogado) {
         String numeroTelefone = trim(mapaDeCampos.get("Telefones"))
 
         //Desconsiderar telefones sem numeros (ex: "-")
         if (PATTERN_TEM_NUMEROS.matcher(numeroTelefone ?: "").matches()) {
             def telefones = Telefone.findAll {  //TODO: TESTARRRRRR
-                familia == result && dataUltimaImportacao != null
+                familia == familiaPersistida && dataUltimaImportacao != null
             }
             Telefone telefone = telefones.size() > 0 ? telefones[0] : null
 
             if (!telefone) {
                 telefone = new Telefone()
-                telefone.familia = result
+                telefone.familia = familiaPersistida
                 telefone.criador = usuarioLogado
 //                            telefone.dateCreated = convertExcelDate(mapaDeCampos.get("DataCadastroFamilia"));
             }
@@ -337,6 +343,23 @@ class ImportarFamiliasService {
 
             telefone.save()
             //FIXME Descartar alteracao no telefone caso haja algum mensagem neste passo da importacao
+        }
+    }
+
+    /**
+     * Importa informação relativa a um programa específico (PBF ou BPC)
+     */
+    private void importarPrograma(ProgramasPreDefinidos tipoPrograma, Familia familiaPersistida, String conteudoPrograma) {
+        ProgramaFamilia associacao = ProgramaFamilia.findByFamiliaAndPrograma(familiaPersistida, tipoPrograma.instanciaPersistida)
+        if (StringUtils.removeAcentos(conteudoPrograma?.toUpperCase()) != "SIM" && associacao) {
+            associacao.delete();
+            familiaPersistida.programas.remove(associacao)
+        }
+        if (StringUtils.removeAcentos(conteudoPrograma?.toUpperCase()) == "SIM" && ! associacao) {
+            ProgramaFamilia pf = new ProgramaFamilia()
+            pf.familia = familiaPersistida
+            pf.programa = tipoPrograma.instanciaPersistida
+            familiaPersistida.programas.add(pf.save())
         }
     }
 
@@ -501,6 +524,8 @@ class ImportarFamiliasService {
                 definicao.colunaCEP = 'CEP'
                 definicao.colunaCodigoFamilia = 'Nº do Cadastro'
                 definicao.colunaComplemento = 'Complemento'
+                definicao.colunaPBF = 'B.F.'
+                definicao.colunaBPC = 'B.P.C.'
             }
             definicao.save()
         }
