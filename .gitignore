@@ -21,6 +21,20 @@
 # project release file
 /*.war
 
+# IDE files
+/.idea
+**/.idea/workspace.xml 
+**/.idea/tasks.xml
+**/.idea
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+
 # plugin release files
 /*.zip
 /plugin.xml
@@ -34,4 +48,3 @@
 /target-eclipse
 /out
 
-/.idea

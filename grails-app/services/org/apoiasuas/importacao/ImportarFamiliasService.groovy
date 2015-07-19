@@ -14,7 +14,6 @@ import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.SituacaoFamilia
 import org.apoiasuas.cidadao.Telefone
-import org.apoiasuas.programa.Programa
 import org.apoiasuas.programa.ProgramaFamilia
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
@@ -23,13 +22,9 @@ import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.support.SoftThreadLocalMap
 import org.springframework.transaction.annotation.Isolation
 
-import java.util.regex.Pattern
-
 //TODO Transformar processamento em uma JOB com processamento síncrono.
 class ImportarFamiliasService {
 
-    static final Pattern PATTERN_TEM_NUMEROS = Pattern.compile("(.)*(\\d)(.)*");
-    static final Pattern PATTERN_TEM_LETRAS = Pattern.compile("(.)*[a-zA-Z]+(.)*");
     static transactional = false
 
     def sessionFactory //fabrica de sessoes hibernate
@@ -325,7 +320,7 @@ class ImportarFamiliasService {
         String numeroTelefone = trim(mapaDeCampos.get("Telefones"))
 
         //Desconsiderar telefones sem numeros (ex: "-")
-        if (PATTERN_TEM_NUMEROS.matcher(numeroTelefone ?: "").matches()) {
+        if (StringUtils.PATTERN_TEM_NUMEROS.matcher(numeroTelefone ?: "").matches()) {
             def telefones = Telefone.findAll {  //TODO: TESTARRRRRR
                 familia == familiaPersistida && dataUltimaImportacao != null
             }
@@ -373,7 +368,7 @@ class ImportarFamiliasService {
         boolean cidadaoGravado = false
 
         try {
-            if (!getPATTERN_TEM_LETRAS().matcher(nomeCidadao ?: "").matches())
+            if (!StringUtils.getPATTERN_TEM_LETRAS().matcher(nomeCidadao ?: "").matches())
                 throw new RuntimeException("Ignorando cidadao durante importacao. Nome e um campo obrigatorio")
 
 //        Parentesco parentesco = idetificaParentesco(mapaDeCampos.get("Parentesco"))

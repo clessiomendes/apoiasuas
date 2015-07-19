@@ -26,17 +26,17 @@ create sequence sq_usuario_sistema; --valid prod
 -- versao ate aqui: 0.3.2 (local:feito, valid:feito, producao:feito
 
 alter table campo_formulario add column lista_logradouros_cidadaos boolean not null DEFAULT FALSE; --prod
-create table programa (id int8 not null, version int8 not null, nome varchar(255) not null, primary key (id));
-create sequence sq_programa;
-alter table programa add column programa_pre_definido varchar(255);
-alter table programa add column sigla varchar(10);
-create table programa_familia (id int8 not null, version int8 not null, familia_id int8 not null, programa_id int8 not null, primary key (id));
-alter table programa_familia drop constraint unique_programa_id;
-alter table programa_familia add constraint unique_programa_id  unique (familia_id, programa_id);
-alter table programa_familia add constraint FK_hdtekopg2cdltjaqd4ricvi40 foreign key (familia_id) references familia;
-alter table programa_familia add constraint FK_fqhnti5xh80b4bilwf9r6379m foreign key (programa_id) references programa;
-create sequence sq_programa_familia;
-ALTER TABLE familia RENAME COLUMN tecnico_acompanhamento_id TO tecnico_referencia_id;
-ALTER TABLE familia DROP COLUMN familia_acompanhada;
-alter table definicoes_importacao_familias add column colunabpc varchar(255);
-alter table definicoes_importacao_familias add column colunapbf varchar(255);
+create table programa (id int8 not null, version int8 not null, nome varchar(255) not null, primary key (id)); --prod
+create sequence sq_programa; --prod
+alter table programa add column programa_pre_definido varchar(255); --prod
+alter table programa add column sigla varchar(10); --prod
+create table programa_familia (id int8 not null, version int8 not null, familia_id int8 not null, programa_id int8 not null, primary key (id)); --prod
+alter table programa_familia drop constraint unique_programa_id; --prod
+alter table programa_familia add constraint unique_programa_id  unique (familia_id, programa_id); --prod
+alter table programa_familia add constraint FK_hdtekopg2cdltjaqd4ricvi40 foreign key (familia_id) references familia; --prod
+alter table programa_familia add constraint FK_fqhnti5xh80b4bilwf9r6379m foreign key (programa_id) references programa; --prod
+create sequence sq_programa_familia; --prod
+ALTER TABLE familia RENAME COLUMN tecnico_acompanhamento_id TO tecnico_referencia_id; --prod
+ALTER TABLE familia DROP COLUMN familia_acompanhada; --prod
+alter table definicoes_importacao_familias add column colunabpc varchar(255); --prod
+alter table definicoes_importacao_familias add column colunapbf varchar(255); --prod

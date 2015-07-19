@@ -86,4 +86,13 @@ class UsuarioSistema {
 	void setPapel(String papel) {
 		this.papel = papel
 	}
+
+    boolean temPerfil(String definicaoPapel) {
+        boolean result = false
+        authorities?.each { papel ->
+            if (papel.authority == definicaoPapel)
+                result = true
+        }
+        return result
+    }
 }

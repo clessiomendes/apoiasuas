@@ -6,6 +6,7 @@ import grails.transaction.Transactional
 import grails.util.GrailsNameUtils
 import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.util.StringUtils
 
 import static org.springframework.http.HttpStatus.*
 
@@ -18,11 +19,13 @@ class CidadaoController extends AncestralController {
     def cidadaoService
 
     def procurarCidadao(FiltroCidadaoCommand filtro) {
+        //Preenchimento de numeros no primeiro campo de busca indica pesquisa por codigo legado
+        boolean buscaPorCodigoLegado = filtro.nomeOuCodigoLegado && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCodigoLegado)
         params.max = params.max ?: 20
         PagedResultList cidadaos = cidadaoService.procurarCidadao(params, filtro)
         Map filtrosUsados = params.findAll { it.value }
 
-        if (filtro?.codigoLegado && cidadaos?.resultList?.size() > 0) {
+        if (buscaPorCodigoLegado && cidadaos?.resultList?.size() > 0) {
             Cidadao cidadao = cidadaos?.resultList[0]
             redirect(controller: "familia", action: "show", id: cidadao.familia.id)
         } else
@@ -129,8 +132,8 @@ class CidadaoController extends AncestralController {
 
 @grails.validation.Validateable
 class FiltroCidadaoCommand implements Serializable {
-    String nome
+    String nomeOuCodigoLegado
     String logradouro
     String numero
-    String codigoLegado
+//    String codigoLegado
 }

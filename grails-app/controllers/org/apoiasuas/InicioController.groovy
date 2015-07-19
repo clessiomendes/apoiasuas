@@ -19,15 +19,24 @@ class InicioController {
     public static final A = "A"
 
     def springSecurityService
-    SessionFactory sessionFactory
     def grailsApplication
     def apoiaSuasService
     def importarFamiliasService
+    def segurancaService
+
+    static defaultAction = "definePreimeiraTela"
+
+    def definePreimeiraTela() {
+        if (segurancaService.usuarioLogado.temPerfil(DefinicaoPapeis.RECEPCAO))
+            return redirect(controller: "cidadao", action: "procurarCidadao")
+        else
+            return redirect(action: "menu")
+    }
 
     /**
      * Exibicao da tela de menu inicial
      */
-    def index() {
+    def menu() {
         List<GrailsControllerClass> opcoes = []
         List<GrailsControllerClass> outrasOpcoes = []
 /*
@@ -49,7 +58,7 @@ class InicioController {
         if (! session.ultimaImportacao)
             session.ultimaImportacao = importarFamiliasService.ultimaImportacao
 
-        render view:'index', model: [/*opcoes: opcoes,*/ outrasOpcoes: outrasOpcoes]
+        render view:'menu', model: [/*opcoes: opcoes,*/ outrasOpcoes: outrasOpcoes]
     }
 
     def status() {
@@ -69,6 +78,6 @@ class InicioController {
 
     def recarregarConfiguracoes() {
         SpringSecurityUtils.reloadSecurityConfig()
-        render(view: 'index')
+        render(view: 'menu')
     }
 }

@@ -3,11 +3,15 @@ package org.apoiasuas.util
 import com.google.common.base.CaseFormat
 
 import java.text.Normalizer
+import java.util.regex.Pattern
 
 /**
  * Created by home64 on 12/04/2015.
  */
 class StringUtils {
+    public static final Pattern PATTERN_TEM_NUMEROS = Pattern.compile("(.)*(\\d)(.)*")
+    public static final Pattern PATTERN_TEM_LETRAS = Pattern.compile("(.)*[a-zA-Z]+(.)*")
+
     public static String firstLowerCase(String value) {
         return value[0].toLowerCase() + value.substring(1)
     }

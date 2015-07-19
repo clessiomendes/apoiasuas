@@ -3,6 +3,7 @@ package org.apoiasuas.cidadao
 import grails.gorm.DetachedCriteria
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringEscapeUtils
+import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.apoiasuas.util.HqlPagedResultList
 import org.hibernate.Hibernate
@@ -17,17 +18,25 @@ class CidadaoService {
 
     @Transactional(readOnly = true)
     grails.gorm.PagedResultList procurarCidadao(GrailsParameterMap params, FiltroCidadaoCommand filtro) {
+        String filtroNome
+        String filtroCodigoLegado
+        if (filtro?.nomeOuCodigoLegado) {
+            if (StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCodigoLegado))
+                filtroNome = filtro.nomeOuCodigoLegado
+            else
+                filtroCodigoLegado = filtro.nomeOuCodigoLegado
+        }
 
         String hql = 'from Cidadao a where 1=1 '
 
         def filtros = [:]
 
-        if (filtro?.codigoLegado) {
+        if (filtroCodigoLegado) {
             hql += ' and a.familia.codigoLegado = :codigoLegado'
-            filtros << [codigoLegado: filtro.codigoLegado]
+            filtros << [codigoLegado: filtroCodigoLegado]
         }
 
-        String[] nomes = filtro?.nome?.split(" ");
+        String[] nomes = filtroNome?.split(" ");
         nomes?.eachWithIndex { nome, i ->
             String label = 'nome'+i
             hql += " and lower(remove_acento(a.nomeCompleto)) like remove_acento(:"+label+")"
@@ -88,7 +97,7 @@ class CidadaoService {
         if (filtro?.codigoLegado)
             addAll(inicial, Cidadao.where { familia.codigoLegado == filtro.codigoLegado })
 
-        String[] nomes = filtro?.nome?.split(" ");
+        String[] nomes = filtro?.nomeOuCodigoLegado?.split(" ");
         nomes?.each { nome ->
             addAll(inicial, Cidadao.where { nomeCompleto =~ "%" + nome + "%" })
         }

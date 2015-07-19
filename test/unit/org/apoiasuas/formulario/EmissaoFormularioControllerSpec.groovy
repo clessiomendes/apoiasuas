@@ -17,7 +17,7 @@ class EmissaoFormularioControllerSpec extends Specification {
     void "Test the index action returns the correct model"() {
 
         when: "The index action is executed"
-        controller.index()
+        controller.menu()
 
         then: "The model is correct"
         !model.formularioInstanceList
