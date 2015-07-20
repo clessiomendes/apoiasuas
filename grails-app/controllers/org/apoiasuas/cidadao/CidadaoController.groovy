@@ -18,6 +18,19 @@ class CidadaoController extends AncestralController {
 
     def cidadaoService
 
+    static List<String> getDocumentos(Cidadao cidadao) {
+        List<String> result = []
+        if (cidadao.nis)
+            result << "NIS: "+cidadao.nis
+        if (cidadao.cpf)
+            result << "CPF: "+cidadao.cpf
+        if (cidadao.identidade)
+            result << "Identidade: "+cidadao.identidade
+        if (cidadao.numeroCTPS)
+            result << "CTPS: nº "+cidadao.numeroCTPS + (cidadao.serieCTPS ? " série " + cidadao.serieCTPS : "")
+        return result
+    }
+
     def procurarCidadao(FiltroCidadaoCommand filtro) {
         //Preenchimento de numeros no primeiro campo de busca indica pesquisa por codigo legado
         boolean buscaPorCodigoLegado = filtro.nomeOuCodigoLegado && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCodigoLegado)

@@ -7,7 +7,10 @@ import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.DateUtils
+import org.docx4j.docProps.core.dc.terms.Period
 import org.grails.databinding.BindingFormat
+import org.joda.time.Period
+import org.joda.time.DateTime
 
 @InfoClasseDominio(codigo=CampoFormulario.Origem.CIDADAO)
 class Cidadao implements Serializable {
@@ -86,5 +89,9 @@ class Cidadao implements Serializable {
 
     public boolean alteradoAposImportacao() {
         return dataUltimaImportacao == null || ! DateUtils.momentosProximos(dataUltimaImportacao, lastUpdated)
+    }
+
+    public Integer getIdade() {
+        return dataNascimento ? new Period(new DateTime(dataNascimento), new DateTime()).years : null
     }
 }

@@ -45,7 +45,7 @@
             <th><g:message code="cidadao.parentescoReferencia.label" default="Parentesco"/></th>
             <th><g:message code="cidadao.familia.endereco.label" default="Endereco"/></th>
             <th><g:message code="cidadao.familia.telefones.label" default="Telefones"/></th>
-            <th><g:message code="cidadao.dataNascimento.label" default="Nascimento"/></th>
+            <th><g:message code="cidadao.idade.label" default="Idade"/></th>
         </tr></thead>
 
         <tbody>
@@ -71,7 +71,7 @@
 
                 <td>${cidadaoInstance.familia.getTelefonesToString()}</td>
 
-                <td><g:formatDate date="${cidadaoInstance.dataNascimento}"/></td>
+                <td>${cidadaoInstance.idade}</td>
 
             </tr>
         </g:each>

@@ -213,4 +213,16 @@ class SegurancaService {
         //FIXME procurar usuario com papel admin
         return UsuarioSistema.findByUsername("admin")
     }
+
+    @Transactional(readOnly = true)
+    public ArrayList<UsuarioSistema> getOperadoresOrdenados() {
+        ArrayList<UsuarioSistema> result = [usuarioLogado]
+        ArrayList<UsuarioSistema> usuarios = UsuarioSistema.listOrderByUsername()
+        usuarios.each {
+            if (it.id != usuarioLogado.id)
+                result << it
+        }
+        return result
+    }
+
 }

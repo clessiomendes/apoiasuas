@@ -216,17 +216,6 @@ class FormularioService {
     }
 
     @Transactional(readOnly = true)
-    public ArrayList<UsuarioSistema> getOpcoesResponsavelPreenchimento() {
-        ArrayList<UsuarioSistema> result = [segurancaService.usuarioLogado]
-        ArrayList<UsuarioSistema> usuarios = UsuarioSistema.listOrderByUsername()
-        usuarios.each {
-            if (it.username != segurancaService.usuarioLogado.username)
-                result << it
-        }
-        return result
-    }
-
-    @Transactional(readOnly = true)
     WordprocessingMLPackage simularTemplate(Formulario formulario) {
         WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.createPackage()
         MainDocumentPart mainPart = wordMLPackage.getMainDocumentPart()

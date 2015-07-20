@@ -1,5 +1,5 @@
 
-<%@ page import="org.apoiasuas.cidadao.Cidadao" %>
+<%@ page import="org.apoiasuas.cidadao.CidadaoController; org.apoiasuas.cidadao.Cidadao" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -43,7 +43,7 @@
                     <li class="fieldcontain">
                         <span id="dataNascimento-label" class="property-label"><g:message code="cidadao.dataNascimento.label" default="Data Nascimento" /></span>
 
-                        <span class="property-value" aria-labelledby="dataNascimento-label"><g:formatDate date="${cidadaoInstance?.dataNascimento}" /></span>
+                        <span class="property-value" aria-labelledby="dataNascimento-label"><g:formatDate date="${cidadaoInstance?.dataNascimento}" /> ${cidadaoInstance?.idade ? "("+cidadaoInstance?.idade+" anos)" : ""} </span>
 
                     </li>
                 </g:if>
@@ -56,17 +56,18 @@
 					
 				</li>
 				</g:if>
-			
-				<g:if test="${cidadaoInstance?.nis}">
-				<li class="fieldcontain">
-					<span id="nis-label" class="property-label"><g:message code="cidadao.nis.label" default="Nis" /></span>
-					
-						<span class="property-value" aria-labelledby="nis-label"><g:fieldValue bean="${cidadaoInstance}" field="nis"/></span>
-					
-				</li>
-				</g:if>
-			
-			</ol>
+
+                <g:if test="${CidadaoController.getDocumentos(cidadaoInstance)}">
+                    <li class="fieldcontain">
+                        <span id="nis-label" class="property-label"><g:message code="cidadao.documentos.label" default="Documentos" /></span>
+                        <g:each in="${CidadaoController.getDocumentos(cidadaoInstance)}" var="documento">
+                            <span class="property-value" aria-labelledby="documento-label">${documento}</span>
+                        </g:each>
+                    </li>
+                </g:if>
+
+
+            </ol>
             <fieldset class="buttons">
                 <g:link class="edit" controller="emissaoFormulario" action="escolherFamilia">Formulários</g:link>
             </fieldset>

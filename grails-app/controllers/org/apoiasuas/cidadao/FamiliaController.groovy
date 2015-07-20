@@ -13,6 +13,7 @@ import grails.transaction.Transactional
 class FamiliaController extends AncestralController {
 
     def familiaService
+    def segurancaService
 
     def index(Integer max) {
         redirect(controller: 'cidadao', action: 'procurarCidadao')
@@ -55,7 +56,7 @@ class FamiliaController extends AncestralController {
         programasDisponiveis.each { programaDisponivel ->
             programaDisponivel.selected = familiaInstance.programas.find { it.programa == programaDisponivel }
         }
-        render view: 'edit', model: [familiaInstance: familiaInstance, programasDisponiveis: programasDisponiveis]
+        render view: 'edit', model: [familiaInstance: familiaInstance, programasDisponiveis: programasDisponiveis, operadores: segurancaService.getOperadoresOrdenados()]
     }
 
 /*

@@ -68,7 +68,7 @@
 					<span id="membros-label" class="property-label"><g:message code="familia.membros.label" default="Membros" /></span>
 					
 						<g:each in="${familiaInstance.membros}" var="m">
-						<span class="property-value" aria-labelledby="membros-label"><g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link> ${" ("+m.parentescoReferencia+")"} </span>
+						<span class="property-value" aria-labelledby="membros-label"><g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link> ${m.parentescoReferencia ? " ("+m.parentescoReferencia+")" : ""} </span>
 						</g:each>
 					
 				</li>

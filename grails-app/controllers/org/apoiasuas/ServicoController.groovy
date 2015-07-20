@@ -18,7 +18,13 @@ class ServicoController {
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def getServico(Long idServico) {
         Servico servico = Servico.get(idServico)
-        def endereco = servico.endereco?.toString()
+        String endereco = ""
+        if (servico.endereco)
+            endereco += servico.endereco.toString()
+        if (servico.telefones) {
+            String telefones = endereco ? ", telefone: " : "telefone: "
+            endereco += servico.telefones ? telefones + servico.telefones : ""
+        }
         render servico.properties + [enderecoCompleto: endereco] as JSON
     }
 
