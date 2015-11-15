@@ -15,7 +15,7 @@ class Formulario implements Serializable {
     String descricao
     String tipo //para agrupar as opções de formulário apresentadas ao operador
     PreDefinidos formularioPreDefinido
-    //utilizado eventualmente para designar relatorios com tratamento específico no sistema
+    //utilizado eventualmente para designar relatorio com tratamento específico no sistema
     byte[] template
 
     //Campos transientees

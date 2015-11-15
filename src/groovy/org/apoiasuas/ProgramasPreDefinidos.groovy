@@ -8,7 +8,7 @@ import org.apoiasuas.programa.Programa
 enum ProgramasPreDefinidos {
 
     BOLSA_FAMILIA("PBF", "Bolsa Família"), BPC("BPC", "Benefício de Prestação Continuada"),
-    ACOMPANHAMENTO_PAIF(null, "Acompanhamento PAIF"), MAIOR_CUIDADO("PMC", "Programa Maior Cuidado"),
+    ACOMPANHAMENTO_PAIF("AcPAIF", "Acompanhamento PAIF"), MAIOR_CUIDADO("PMC", "Programa Maior Cuidado"),
     FAMILIA_CIDADA("FC", "Projeto Família Cidadã")
 
     String sigla

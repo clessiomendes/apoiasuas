@@ -45,13 +45,13 @@ if (aplicacaoAppfog.indexOf("prod") === 0) {
     permSize="200m"
     heapSize="750m"
     timeZone="America/Sao_Paulo"
-    dataSource="appfog_postgres_valid"
+    dataSource="appfog_postgres_prod"
     ambienteGrails="prod"
 } else if (aplicacaoAppfog.indexOf("valid") === 0) {
     permSize="200m"
     heapSize="750m"
     timeZone="America/Sao_Paulo"
-    dataSource="appfog_postgres_prod"
+    dataSource="appfog_postgres_valid"
     ambienteGrails="dev"
 } else
     exit("Opcoes validas para o destino do deploy: prod* ou valid*");
@@ -68,6 +68,7 @@ if (! pulaCompilacao) {
         cd(shell.CurrentDirectory + "\\..")
     } else { //tag especifica
         if (fso.FolderExists(TEMP_DIR)) {
+            WScript.Echo("caminhoDeployTemporario: " + TEMP_DIR);
             var deletefolder = fso.GetFolder(TEMP_DIR)
             deletefolder.Attributes = 0
             fso.DeleteFile(TEMP_DIR + "\\*", true);

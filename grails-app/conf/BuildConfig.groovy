@@ -90,7 +90,7 @@ grails.project.dependency.resolution = {
 
 
         compile "org.docx4j:docx4j:3.2.1" //manipulacao de documentos docx
-        //XDocReport (geracao de relatorios a partir de templates docx ou odt)
+        //XDocReport (geracao de relatorio a partir de templates docx ou odt)
         compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.core:1.0.4"
         compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.document:1.0.4"
         compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.template:1.0.4"
@@ -148,6 +148,7 @@ grails.project.dependency.resolution = {
         compile ":jquery-ui:1.10.4"
         runtime ":resources:1.2.14"
         compile ":joda-time:1.5"
+        compile ":excel-export:0.2.1"
 
 //        compile ":nerderg-form-tags:2.1.3" //taglib com componente de data (dentre outros)
 

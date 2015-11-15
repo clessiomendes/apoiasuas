@@ -368,7 +368,7 @@ class ImportarFamiliasService {
         boolean cidadaoGravado = false
 
         try {
-            if (!StringUtils.getPATTERN_TEM_LETRAS().matcher(nomeCidadao ?: "").matches())
+            if (!StringUtils.PATTERN_TEM_LETRAS().matcher(nomeCidadao ?: "").matches())
                 throw new RuntimeException("Ignorando cidadao durante importacao. Nome e um campo obrigatorio")
 
 //        Parentesco parentesco = idetificaParentesco(mapaDeCampos.get("Parentesco"))

@@ -64,4 +64,11 @@ class StringUtils {
         }
         return string;
     }
+
+    static String htmlSpaces(int count) {
+        String result = "";
+        for (int i = 0; i < count; i++)
+            result += "&nbsp;";
+        return result;
+    }
 }

@@ -24,4 +24,8 @@ class Programa {
     public String siglaENome() {
         return sigla ? (sigla + (nome ? " ($nome)" : "")) : nome
     }
+
+    public String toString() {
+        return nome
+    }
 }
