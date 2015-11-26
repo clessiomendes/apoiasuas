@@ -33,7 +33,7 @@ class ImportarFamiliasService {
     @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED /*para conseguir ler o primeiro cabecalho*/)
     List<ColunaImportadaCommand> obtemColunasImportadas(long idImportacao) {
 
-        log.debug(["Obtendo colunas da preImportacao", idImportacao])
+        log.info(["Obtendo colunas da preImportacao", idImportacao])
 
         TentativaImportacao importacao = TentativaImportacao.get(idImportacao)
 
@@ -43,7 +43,7 @@ class ImportarFamiliasService {
         final int INTERVALO_ESPERA = 2 /*segundos*/ * 1000
         long tempoEsperaTotal = 0
         while (!importacao?.cancelada() && linha == null && tempoEsperaTotal < MAX_TEMPO_ESPERA) {
-            log.debug("Colunas ainda nao disponiveis apos ${tempoEsperaTotal} milisegundos")
+            log.info("Colunas ainda nao disponiveis apos ${tempoEsperaTotal} milisegundos")
             linha = LinhaTentativaImportacao.findByTentativaImportacao(TentativaImportacao.get(idImportacao));
             if (linha)
                 break //obtido o resultado desejado. nao precisa tentar de novo
@@ -73,7 +73,7 @@ class ImportarFamiliasService {
                     colunaImportada.campoBDSelecionado = fieldName
             }
         }
-        log.debug(["Colunas identificadas", idImportacao])
+        log.info(["Colunas identificadas", idImportacao])
         return result
     }
 
@@ -88,11 +88,11 @@ class ImportarFamiliasService {
 
     @Transactional
     def atualizaDefinicoesImportacaoFamilia(Map camposPreenchidos) {
-        log.debug(["Atualizando definicoes de importacao", camposPreenchidos]);
+        log.info(["Atualizando definicoes de importacao", camposPreenchidos]);
         DefinicoesImportacaoFamilias definicoes = getDefinicoes();
 
         paraCadaDefinicaoCampoBD { fieldName, fieldValue ->
-            log.debug("camposPreenchidos.get(fieldName)": camposPreenchidos.get(fieldName))
+            log.info("camposPreenchidos.get(fieldName)": camposPreenchidos.get(fieldName))
             definicoes.setProperty("coluna" + fieldName, camposPreenchidos.get(fieldName))
         }
         definicoes.save()
@@ -111,7 +111,7 @@ class ImportarFamiliasService {
     //NÃO TRANSACIONAL
     void concluiImportacao(Map camposPreenchidos, long idImportacao, UsuarioSistema usuarioLogado) {
 
-        log.debug(["Concluindo importacao id ", idImportacao])
+        log.info(["Concluindo importacao id ", idImportacao])
 
 //Inicializações de variáveis locais:
         ResumoImportacaoDTO resultadoImportacao = new ResumoImportacaoDTO()
@@ -139,10 +139,10 @@ class ImportarFamiliasService {
         aguardaPreImportacao(idImportacao)
 
         try {
-            log.debug("antes obtemTentativaImportacaoComLinhas")
+            log.info("antes obtemTentativaImportacaoComLinhas")
             tentativaImportacao = obtemTentativaImportacaoComLinhas(idImportacao)
             atualizaProgressoImportacao(tentativaImportacao, StatusImportacao.INCLUINDO_FAMILIAS, null, 0, 0)
-            log.debug("depois obtemTentativaImportacaoComLinhas")
+            log.info("depois obtemTentativaImportacaoComLinhas")
 
             if (! usuarioLogado)
                 throw new RuntimeException("Nenhum operador do sistema definido como autor da importação")
@@ -165,13 +165,13 @@ class ImportarFamiliasService {
 
 //                  ===> Não faz mais sentido, porque cada linha sera importada em uma transacao diferente
 //                    if (linhaProcessada % 50 == 0) {
-//                        log.debug("Importação em andamento, linha " + linhaProcessada);
+//                        log.info("Importação em andamento, linha " + linhaProcessada);
 //                        cleanUpGorm() //Otimiza o cache hibernate e agiliza as parada
 //                    }
 
                     //TODO: ao envés de obter os campos de DefinicoesImportacaoFamilias como strings, buscar nomes dos campos da própria classe ( em todos mapaDeCampos.get() )
                     //Detectando a mudança do codigoFamilia o que sinaliza o processamento de uma nova familia
-//                  log.debug(mapaDeCampos.get("CodigoFamilia") + " (mapa) != "+ ultimaFamilia +" (ultima)")
+//                  log.info(mapaDeCampos.get("CodigoFamilia") + " (mapa) != "+ ultimaFamilia +" (ultima)")
                     if (!ultimaFamilia.equals(trim(mapaDeCampos.get("CodigoFamilia")))) {
                         ultimaFamilia = trim(mapaDeCampos.get("CodigoFamilia"))
 
@@ -209,7 +209,7 @@ class ImportarFamiliasService {
                     }
                 }
             }
-            log.debug(["Concluida importacao id ", idImportacao])
+            log.info(["Concluida importacao id ", idImportacao])
 
             //Restringe tamanho do resultado da importacao a ser armazenado para nao estourar o campo do BD
             String JSONResultadoImportacao = new JSON(resultadoImportacao).toString()
@@ -234,14 +234,14 @@ class ImportarFamiliasService {
 
     @Transactional(readOnly = true)
     private aguardaPreImportacao(long idImportacao) {
-        log.debug("verificando andamento da pre importacao")
+        log.info("verificando andamento da pre importacao")
         TentativaImportacao tentativaImportacao = TentativaImportacao.get(idImportacao)
         while (StatusImportacao.ARQUIVO_PROCESSADO != tentativaImportacao.status) {
-            log.debug("esperando conclusao da pre importacao ${idImportacao} ... ");
+            log.info("esperando conclusao da pre importacao ${idImportacao} ... ");
             sleep(1000);
             tentativaImportacao.discard();
             tentativaImportacao = TentativaImportacao.get(idImportacao);
-            log.debug("tentativaImportacao atualizado na sessao");
+            log.info("tentativaImportacao atualizado na sessao");
         }
     }
 
@@ -253,7 +253,7 @@ class ImportarFamiliasService {
         result.linhas = LinhaTentativaImportacao.findAll(sort: "ordem") {
             tentativaImportacao == result
         }
-        log.debug(["Otendo linhas preImportadas [id, quantidade de linhas] ", [idImportacao, result?.linhas?.size()]])
+        log.info(["Otendo linhas preImportadas [id, quantidade de linhas] ", [idImportacao, result?.linhas?.size()]])
         return result
     }
 
@@ -549,7 +549,7 @@ class ImportarFamiliasService {
         final ArrayList<LinhaTentativaImportacao> bufferImportacao = new ArrayList<LinhaTentativaImportacao>();
         final int LINHAS_POR_TRANSACAO = 20
 
-        log.debug(["Iniciando preImportacao ", importacao.id])
+        log.info(["Iniciando preImportacao ", importacao.id])
 
         OPCPackage pkg = null;
 
@@ -627,7 +627,7 @@ class ImportarFamiliasService {
                                 totalCelulas++
                             }
                         }
-                        log.debug("total ${totalLinhas} linhas e ${totalCelulas} celulas")
+                        log.info("total ${totalLinhas} linhas e ${totalCelulas} celulas")
                     }
 */
 
@@ -638,7 +638,7 @@ class ImportarFamiliasService {
             } else {
                 processExcelReader(pkg, sheetRowCallbackHandler, importacao, abaDaPlanilha, bufferImportacao)
             }
-            log.debug("encerrando pre importacao")
+            log.info("encerrando pre importacao")
         } finally {
             IOUtils.closeQuietly(inputStream);
             try {
@@ -655,7 +655,7 @@ class ImportarFamiliasService {
     private void processExcelReader(OPCPackage pkg, ExcelWorkSheetRowCallbackHandler sheetRowCallbackHandler, TentativaImportacao importacao, int abaDaPlanilha, ArrayList<LinhaTentativaImportacao> bufferImportacao) {
         try {
             ExcelReader excelReader = new ExcelReader(pkg, sheetRowCallbackHandler, null);
-            log.debug("iniciando pre processamento de importacao em thread separado (id ${importacao?.id}")
+            log.info("iniciando pre processamento de importacao em thread separado (id ${importacao?.id}")
             excelReader.process(abaDaPlanilha - 1);
             if (bufferImportacao.size() > 0)
                 descarregaBufferPreImportacao(bufferImportacao, importacao);
@@ -681,8 +681,8 @@ class ImportarFamiliasService {
     private void atualizaProgressoImportacao(TentativaImportacao importacao, StatusImportacao status, String mensagem = null, Integer cidadaosProcessados = null, Integer errosDetectados = null) {
         importacao.setStatus(status);
         if (mensagem) {
-            log.debug("Tamanho informacoes importacao " + mensagem.size())
-            log.debug("Informacoes: " + mensagem)
+            log.info("Tamanho informacoes importacao " + mensagem.size())
+            log.info("Informacoes: " + mensagem)
             System.out.println(mensagem)
             if (mensagem.size() >= TentativaImportacao.MAX_TAMANHO_CAMPO_INFORMACOES - 1)
                 mensagem = "Os detalhes da importação são muito grandes para serem gravados"
@@ -697,7 +697,7 @@ class ImportarFamiliasService {
 
     @Transactional
     private void descarregaBufferPreImportacao(ArrayList<LinhaTentativaImportacao> bufferImportacao, TentativaImportacao importacao) {
-        log.debug(['"descarregando" buffer de linhas da preImportacao ', importacao?.id])
+        log.info(['"descarregando" buffer de linhas da preImportacao ', importacao?.id])
 
         atualizaProgressoImportacao(importacao, StatusImportacao.PROCESSANDO_ARQUIVO)
 
@@ -728,7 +728,7 @@ class ImportarFamiliasService {
         result.dateCreated = new Date()
         atualizaProgressoImportacao(result, StatusImportacao.ENVIANDO_ARQUIVO)
         result.save(failOnError: true)
-        log.debug("Iniciada nova importacao com id ${result?.id}")
+        log.info("Iniciada nova importacao com id ${result?.id}")
         return result
     }
 
