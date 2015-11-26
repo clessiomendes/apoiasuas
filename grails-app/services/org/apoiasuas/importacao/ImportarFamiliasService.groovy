@@ -111,6 +111,8 @@ class ImportarFamiliasService {
     //NÃO TRANSACIONAL
     void concluiImportacao(Map camposPreenchidos, long idImportacao, UsuarioSistema usuarioLogado) {
 
+        log.debug(["Concluindo importacao id ", idImportacao])
+
 //Inicializações de variáveis locais:
         ResumoImportacaoDTO resultadoImportacao = new ResumoImportacaoDTO()
 
@@ -121,7 +123,6 @@ class ImportarFamiliasService {
                 camposPreenchidosInvertido.put(it.value, it.key)
         }
         List camposBDDisponiveis = obtemCamposBDDisponiveis();
-        log.debug(["Concluindo importacao id ", idImportacao])
 
         String ultimaFamilia = "-1"
         String nomeReferencia = null
@@ -135,9 +136,13 @@ class ImportarFamiliasService {
         Map criticaCidadaos = [:]
         TentativaImportacao tentativaImportacao
 
+        aguardaPreImportacao(idImportacao)
+
         try {
+            log.debug("antes obtemTentativaImportacaoComLinhas")
             tentativaImportacao = obtemTentativaImportacaoComLinhas(idImportacao)
             atualizaProgressoImportacao(tentativaImportacao, StatusImportacao.INCLUINDO_FAMILIAS, null, 0, 0)
+            log.debug("depois obtemTentativaImportacaoComLinhas")
 
             if (! usuarioLogado)
                 throw new RuntimeException("Nenhum operador do sistema definido como autor da importação")
@@ -204,7 +209,7 @@ class ImportarFamiliasService {
                     }
                 }
             }
-            log.debug(["Concluindo importacao id ", idImportacao])
+            log.debug(["Concluida importacao id ", idImportacao])
 
             //Restringe tamanho do resultado da importacao a ser armazenado para nao estourar o campo do BD
             String JSONResultadoImportacao = new JSON(resultadoImportacao).toString()
@@ -225,7 +230,19 @@ class ImportarFamiliasService {
             }
             throw t
         }
+    }
 
+    @Transactional(readOnly = true)
+    private aguardaPreImportacao(long idImportacao) {
+        log.debug("verificando andamento da pre importacao")
+        TentativaImportacao tentativaImportacao = TentativaImportacao.get(idImportacao)
+        while (StatusImportacao.ARQUIVO_PROCESSADO != tentativaImportacao.status) {
+            log.debug("esperando conclusao da pre importacao ${idImportacao} ... ");
+            sleep(1000);
+            tentativaImportacao.discard();
+            tentativaImportacao = TentativaImportacao.get(idImportacao);
+            log.debug("tentativaImportacao atualizado na sessao");
+        }
     }
 
     @Transactional(readOnly = true)
@@ -368,7 +385,7 @@ class ImportarFamiliasService {
         boolean cidadaoGravado = false
 
         try {
-            if (!StringUtils.PATTERN_TEM_LETRAS().matcher(nomeCidadao ?: "").matches())
+            if (!StringUtils.PATTERN_TEM_LETRAS.matcher(nomeCidadao ?: "").matches())
                 throw new RuntimeException("Ignorando cidadao durante importacao. Nome e um campo obrigatorio")
 
 //        Parentesco parentesco = idetificaParentesco(mapaDeCampos.get("Parentesco"))
@@ -621,6 +638,7 @@ class ImportarFamiliasService {
             } else {
                 processExcelReader(pkg, sheetRowCallbackHandler, importacao, abaDaPlanilha, bufferImportacao)
             }
+            log.debug("encerrando pre importacao")
         } finally {
             IOUtils.closeQuietly(inputStream);
             try {

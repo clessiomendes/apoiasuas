@@ -40,6 +40,7 @@ class ImportacaoFamiliasController {
             }
             TentativaImportacao tentativaImportacao = importarFamiliasService.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, admin)
             tentativaImportacao = importarFamiliasService.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)
+            log.debug("pre importacao encerrada")
             if (!tentativaImportacao?.id) {
                 return render(text: [success: false] as JSON, contentType: 'text/json')
             }
@@ -55,6 +56,7 @@ class ImportacaoFamiliasController {
 
             Map camposPreenchidos = importarFamiliasService.getDefinicoesImportacaoFamilia()
 
+            log.debug("concluindo importacao")
             importarFamiliasService.concluiImportacao(camposPreenchidos, tentativaImportacao.id, admin)
 
             def result = []
