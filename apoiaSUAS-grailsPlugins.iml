@@ -38,6 +38,9 @@
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/excel-export-0.2.1/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/excel-export-0.2.1/grails-app/i18n" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/target/work/plugins/grails-melody-1.54.0">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/grails-melody-1.54.0/src/groovy" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/hibernate4-4.3.5.5">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/hibernate4-4.3.5.5/src/java" isTestSource="false" />
     </content>
@@ -204,6 +207,8 @@
           <root url="jar://$MAVEN_REPOSITORY$/net/engio/mbassador/1.1.10/mbassador-1.1.10.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/docx4j/docx4j/3.2.1/docx4j-3.2.1.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/joda-time/joda-time/2.3/joda-time-2.3.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/net/bull/javamelody/javamelody-core/1.54.0/javamelody-core-1.54.0.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/jrobin/jrobin/1.5.9/jrobin-1.5.9.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

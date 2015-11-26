@@ -124,6 +124,10 @@ log4j.main = {
     appenders {
 //        console name:'stdout', layout:pattern(conversionPattern: '%c{1}.%M() -> %m -> %l %n')
         switch (AmbienteExecucao.CURRENT) {
+            case AmbienteExecucao.CLEVERCLOUD:
+                console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
+                root {error 'stdout'}
+                break
             case AmbienteExecucao.APPFOG:
                 console name: 'stdout', layout: pattern(conversionPattern: '(af) %d{dd-MMM HH:mm} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
                 root {error 'stdout'}
@@ -176,6 +180,14 @@ log4j.main = {
            'org.codehaus.groovy.grails.plugins',            // plugins
 		   'org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler' //Limpar mensagem "Warning - shared formulas not yet supported"
 	   
+}
+
+environments {
+    production {
+        log4j {
+            rootLogger="info,stdout"
+        }
+    }
 }
 
 // Added by the Spring Security Core plugin:

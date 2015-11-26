@@ -17,17 +17,19 @@ class AmbienteExecucao {
     public static final Integer CLEARDB_MYSQL = 4
     public static final Integer LOCAL_POSTGRES = 5
     public static final Integer APPFOG_POSTGRES_PROD = 6
+    public static final Integer CLEVERCLOUD_POSTGRES_PROD = 7
 
     public static final Integer[] LOCAL = [LOCAL_H2, LOCAL_MYSQL, LOCAL_POSTGRES]
     public static final Integer[] APPFOG = [APPFOG_POSTGRES_VALID, APPFOG_MYSQL, CLEARDB_MYSQL, APPFOG_POSTGRES_PROD]
+    public static final Integer[] CLEVERCLOUD = [CLEVERCLOUD_POSTGRES_PROD]
 
     public static final Integer[] H2 = [LOCAL_H2]
     public static final Integer[] MYSQL = [LOCAL_MYSQL, APPFOG_MYSQL, CLEARDB_MYSQL]
-    public static final Integer[] POSTGRES = [APPFOG_POSTGRES_VALID, APPFOG_POSTGRES_PROD, LOCAL_POSTGRES]
+    public static final Integer[] POSTGRES = [APPFOG_POSTGRES_VALID, APPFOG_POSTGRES_PROD, LOCAL_POSTGRES, CLEVERCLOUD_POSTGRES_PROD]
 
     public static final Integer[] DESENVOLVIMENTO = [LOCAL_H2, LOCAL_MYSQL, LOCAL_POSTGRES]
     public static final Integer[] VALIDACAO = [APPFOG_POSTGRES_VALID]
-    public static final Integer[] PRODUCAO = [APPFOG_POSTGRES_PROD]
+    public static final Integer[] PRODUCAO = [APPFOG_POSTGRES_PROD, CLEVERCLOUD_POSTGRES_PROD]
 
     public static final Date inicioAplicacao = new Date()
 
@@ -47,6 +49,7 @@ class AmbienteExecucao {
         switch (CURRENT) {
             case LOCAL: return "Local"
             case APPFOG: return 'AppFog'
+            case CLEVERCLOUD: return 'Clever-cloud'
             default: throw new RuntimeException("ambiente de hospedagem não definido: ${CURRENT}")
         }
     }
@@ -81,9 +84,14 @@ class AmbienteExecucao {
      * @return
      */
     private static int escolheTipoBD() {
-        String ds = sysProperties('org.apoiasuas.datasource')?.toUpperCase()
+        String ds
+//        if (isProducao())
+//             ds = 'CLEVERCLOUD_POSTGRES_PROD';
+//        else
+            ds = sysProperties('org.apoiasuas.datasource')?.toUpperCase()
         System.out.println("Definicao de banco de dados: ${ds}")
         switch (ds) {
+            case 'CLEVERCLOUD_POSTGRES_PROD': return CLEVERCLOUD_POSTGRES_PROD
             case 'APPFOG_POSTGRES_PROD': return APPFOG_POSTGRES_PROD
             case 'APPFOG_POSTGRES_VALID': return APPFOG_POSTGRES_VALID
             case 'LOCAL_POSTGRES': return LOCAL_POSTGRES
@@ -91,7 +99,7 @@ class AmbienteExecucao {
             case 'LOCAL_MYSQL': return LOCAL_MYSQL
             case 'APPFOG_MYSQL': return APPFOG_MYSQL
             case 'CLEARDB_MYSQL': return CLEARDB_MYSQL
-            default: throw new RuntimeException("Definicao de banco de dados nao prevista: ${ds}")
+            default: throw new RuntimeException("Definicao de Banco de Dados nao prevista: ${ds}")
         }
     }
 

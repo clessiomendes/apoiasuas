@@ -11,7 +11,7 @@ grails.project.source.level = 1.6
 
 //grails.project.war.exploded.dir = "C:/workspaces/openshift/webapps/ROOT"    //openshift
 
-grails.war.exploded = true
+//grails.war.exploded = true
 /* Estes parametros nao serao mais definidos em arquivo de configuracao, e sim no script de deploy (deploy-af.bat)
 if (Environment.current == Environment.DEVELOPMENT) {
     grails.project.war.exploded.dir = "C:/workspaces/appfog/apoiasuas/validacao"    //appfog
@@ -88,7 +88,6 @@ grails.project.dependency.resolution = {
         compile "org.apache.poi:poi-ooxml:3.9"
         compile "commons-beanutils:commons-beanutils:1.9.2"
 
-
         compile "org.docx4j:docx4j:3.2.1" //manipulacao de documentos docx
         //XDocReport (geracao de relatorio a partir de templates docx ou odt)
         compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.core:1.0.4"
@@ -118,39 +117,35 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        // plugins for the build system only
+        runtime ":hibernate4:4.3.5.5" // or ":hibernate:3.6.10.17"
+
         build ":tomcat:7.0.55"
         build ":release:3.0.1", {
             export = false
         }
 
-        // plugins for the compile step
         compile ":scaffolding:2.1.2"
         compile ':cache:1.1.7'
         compile ":asset-pipeline:2.1.0"
         compile ":spring-security-core:2.0-RC4" //autenticacao e authority, definicao de usuarios e papeis.
 //        compile ":filterpane:2.4.5" //filtros para as telas de busca
-//        compile ":jasper:1.10.0" //Relatórios
-//        compile ":webflow:2.1.0"
 //        compile ":perf4j:0.1.1" //plugin para profiling minucioso
 //        compile ":ajax-uploader:1.1"
-//        compile ":fixtures:1.3" //para inicializacao de registros no banco de dados
-
-        // plugins needed at runtime but not for compilation
-        runtime ":hibernate4:4.3.5.5" // or ":hibernate:3.6.10.17"
-//        runtime ":database-migration:1.4.0"
-/*
-        runtime (":database-migration:1.4.0") {
-            excludes('org.liquibase:liquibase-core')
-        }
-*/
         compile ":jquery:1.11.1"
         compile ":jquery-ui:1.10.4"
         runtime ":resources:1.2.14"
         compile ":joda-time:1.5"
         compile ":excel-export:0.2.1"
-
 //        compile ":nerderg-form-tags:2.1.3" //taglib com componente de data (dentre outros)
+
+/*
+        switch (AmbienteExecucao.CURRENT) {
+            case AmbienteExecucao.LOCAL_POSTGRES:
+                compile ":grails-melody:1.54.0" //plugin para profiling
+                break
+        }
+*/
+        compile ":grails-melody:1.54.0" //plugin para profiling
 
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.9.0"
