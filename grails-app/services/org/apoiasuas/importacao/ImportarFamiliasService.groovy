@@ -371,6 +371,8 @@ class ImportarFamiliasService {
             ProgramaFamilia pf = new ProgramaFamilia()
             pf.familia = familiaPersistida
             pf.programa = tipoPrograma.instanciaPersistida
+            if (! familiaPersistida.programas)
+                familiaPersistida.programas = []
             familiaPersistida.programas.add(pf.save())
         }
     }
