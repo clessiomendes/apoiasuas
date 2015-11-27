@@ -125,67 +125,99 @@ log4j.main = {
 //        console name:'stdout', layout:pattern(conversionPattern: '%c{1}.%M() -> %m -> %l %n')
         switch (AmbienteExecucao.CURRENT) {
             case AmbienteExecucao.CLEVERCLOUD:
-                console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
+                console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
                 root {error 'stdout'}
                 break
             case AmbienteExecucao.APPFOG:
-                console name: 'stdout', layout: pattern(conversionPattern: '(af) %d{dd-MMM HH:mm} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
+                console name: 'stdout', layout: pattern(conversionPattern: '(af) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
                 root {error 'stdout'}
                 break
             case AmbienteExecucao.LOCAL:
                 file name: 'xml', layout: xml, file: 'c:/workspaces/logs/apoiaSUAS'+new Date().format("yyyy-MM-dd-hh-mm")+'.xml', threshold:org.apache.log4j.Level.DEBUG
-                console name: 'stdout', layout: pattern(conversionPattern: '(loc) %d{dd-MMM HH:mm} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
+                console name: 'stdout', layout: pattern(conversionPattern: '(loc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
                 root {error 'stdout', 'xml'}
                 break
             default:
                 println 'warning! ambiente indefinido para configuracao de logs. Usando padrao: console name: \'stdout\', layout: pattern(conversionPattern: \'(def) %d{dd-MMM HH:mm} %p %c{8} -> %m%n\')'
-                console name: 'stdout', layout: pattern(conversionPattern: '(def) %d{dd-MMM HH:mm} %p %c{8} -> %m%n')
+                console name: 'stdout', layout: pattern(conversionPattern: '(def) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n')
                 break
         }
-
-
     }
-
-
-    all     'org.apoiasuas',
-            'com.mysql.jdbc.log.StandardLogger', //mysql (inclui tempos das SQL se parametro profileSQL=true for passado na url de conexao
-            'org.apache.tomcat.jdbc.pool.interceptor',
-            'org.apache.tomcat.jdbc.pool',
-            'grails.app.controllers',
-            'grails.app.services',
-            'grails.app.domain',
-//            'grails.app.taglib',
-//            'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
-//            'org.hibernate',
-            'net.sf.ehcache.hibernate',
-            'grails.app.conf',
-            'grails.app.filters',
-            'org.hibernate.stat',                            // tempo e numero de registros em cada SQL
-            'org.hibernate.type.descriptor.sql',             //mostra os valores passados como parametros para as SQLs
-            'org.hibernate.SQL',
-            'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
-            'org.hibernate.engine.transaction.spi.AbstractTransactionImpl', //inicio e fim das transacoes
-            'org.springframework.transaction.interceptor.TransactionInterceptor', //Mostra inicio e fim das transacoes e a que metodos elas estao associadas
-            'org.springframework.webflow.engine',
-            'org.springframework.webflow',
-            'org.springframework.security',                  //login, seguranca, etc
-            'com.myjeeva.poi' //debug para o extrator excel
-
-    error  'org.codehaus.groovy.grails.web.servlet',        // controllers
-           'org.codehaus.groovy.grails.web.pages',          // GSP
-           'org.codehaus.groovy.grails.web.sitemesh',       // layouts
-           'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-           'org.codehaus.groovy.grails.web.mapping',        // URL mapping
-           'org.codehaus.groovy.grails.commons',            // core / classloading
-           'org.codehaus.groovy.grails.plugins',            // plugins
-		   'org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler' //Limpar mensagem "Warning - shared formulas not yet supported"
-	   
 }
 
 environments {
     production {
-        log4j {
-            rootLogger="info,stdout"
+        log4j.main = {
+            info    'org.apoiasuas',
+                    'com.mysql.jdbc.log.StandardLogger', //mysql (inclui tempos das SQL se parametro profileSQL=true for passado na url de conexao
+                    'org.apache.tomcat.jdbc.pool.interceptor',
+                    'org.apache.tomcat.jdbc.pool',
+                    'grails.app.controllers',
+                    'grails.app.services',
+                    'grails.app.domain',
+//            'grails.app.taglib',
+//            'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
+//            'org.hibernate',
+                    'net.sf.ehcache.hibernate',
+                    'grails.app.conf',
+                    'grails.app.filters',
+                    'org.hibernate.stat',                            // tempo e numero de registros em cada SQL
+                    'org.hibernate.type.descriptor.sql',             //mostra os valores passados como parametros para as SQLs
+                    'org.hibernate.SQL',
+                    'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
+                    'org.hibernate.engine.transaction.spi.AbstractTransactionImpl', //inicio e fim das transacoes
+                    'org.springframework.transaction.interceptor.TransactionInterceptor', //Mostra inicio e fim das transacoes e a que metodos elas estao associadas
+                    'org.springframework.webflow.engine',
+                    'org.springframework.webflow',
+                    'org.springframework.security',                  //login, seguranca, etc
+                    'com.myjeeva.poi' //debug para o extrator excel
+
+            error  'org.codehaus.groovy.grails.web.servlet',        // controllers
+                    'org.codehaus.groovy.grails.web.pages',          // GSP
+                    'org.codehaus.groovy.grails.web.sitemesh',       // layouts
+                    'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+                    'org.codehaus.groovy.grails.web.mapping',        // URL mapping
+                    'org.codehaus.groovy.grails.commons',            // core / classloading
+                    'org.codehaus.groovy.grails.plugins',            // plugins
+                    'org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler' //Limpar mensagem "Warning - shared formulas not yet supported"
+        }
+    }
+    development {
+        log4j.main = {
+//            rootLogger="info,stdout"
+
+            all     'org.apoiasuas',
+                    'com.mysql.jdbc.log.StandardLogger', //mysql (inclui tempos das SQL se parametro profileSQL=true for passado na url de conexao
+                    'org.apache.tomcat.jdbc.pool.interceptor',
+                    'org.apache.tomcat.jdbc.pool',
+                    'grails.app.controllers',
+                    'grails.app.services',
+                    'grails.app.domain',
+//            'grails.app.taglib',
+//            'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
+//            'org.hibernate',
+                    'net.sf.ehcache.hibernate',
+                    'grails.app.conf',
+                    'grails.app.filters',
+                    'org.hibernate.stat',                            // tempo e numero de registros em cada SQL
+                    'org.hibernate.type.descriptor.sql',             //mostra os valores passados como parametros para as SQLs
+                    'org.hibernate.SQL',
+                    'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
+                    'org.hibernate.engine.transaction.spi.AbstractTransactionImpl', //inicio e fim das transacoes
+                    'org.springframework.transaction.interceptor.TransactionInterceptor', //Mostra inicio e fim das transacoes e a que metodos elas estao associadas
+                    'org.springframework.webflow.engine',
+                    'org.springframework.webflow',
+                    'org.springframework.security',                  //login, seguranca, etc
+                    'com.myjeeva.poi' //debug para o extrator excel
+
+            error  'org.codehaus.groovy.grails.web.servlet',        // controllers
+                    'org.codehaus.groovy.grails.web.pages',          // GSP
+                    'org.codehaus.groovy.grails.web.sitemesh',       // layouts
+                    'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+                    'org.codehaus.groovy.grails.web.mapping',        // URL mapping
+                    'org.codehaus.groovy.grails.commons',            // core / classloading
+                    'org.codehaus.groovy.grails.plugins',            // plugins
+                    'org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler' //Limpar mensagem "Warning - shared formulas not yet supported"
         }
     }
 }
