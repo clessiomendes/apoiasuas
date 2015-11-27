@@ -145,7 +145,9 @@ grails.project.dependency.resolution = {
                 break
         }
 */
-        compile ":grails-melody:1.54.0" //plugin para profiling
+        if (Environment.current == Environment.DEVELOPMENT)  {
+            compile ":grails-melody:1.54.0" //plugin para profiling
+        }
 
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.9.0"

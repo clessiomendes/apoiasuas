@@ -76,7 +76,7 @@ dataSource {
             url = "jdbc:mysql://" + dbUri?.getHost() + dbUri?.getPath() //+ PARAMETROS_MYSQL_VIA_URL
             break
 
-        case AmbienteExecucao.APPFOG_POSTGRES_VALID:
+        case [AmbienteExecucao.APPFOG_POSTGRES_PROD, AmbienteExecucao.APPFOG_POSTGRES_VALID]:
             println("Ambiente: Postgres Appfog " + environment)
             def envVar = System.env.VCAP_SERVICES
             def credentials = envVar ? grails.converters.JSON.parse(envVar)["postgresql-9.1"][0]["credentials"] : null
@@ -87,18 +87,7 @@ dataSource {
             password = credentials ? credentials.password : ""
             break
 
-        case AmbienteExecucao.APPFOG_POSTGRES_PROD:
-            println("Ambiente: Postgres Appfog " + environment)
-            def envVar = System.env.VCAP_SERVICES
-            def credentials = envVar ? grails.converters.JSON.parse(envVar)["postgresql-9.1"][0]["credentials"] : null
-            driverClassName = "org.postgresql.Driver"
-            dialect = "org.hibernate.dialect.PostgreSQLDialect"
-            url = credentials ? "jdbc:postgresql://${credentials.hostname}:${credentials.port}/${credentials.name}" : ""
-            username = credentials ? credentials.username : ""
-            password = credentials ? credentials.password : ""
-            break
-
-        case AmbienteExecucao.CLEVERCLOUD_POSTGRES_PROD:
+        case [AmbienteExecucao.CLEVERCLOUD_POSTGRES_PROD, AmbienteExecucao.CLEVERCLOUD_POSTGRES_VALID]:
             println("Ambiente: Postgres clever-cloud " + environment)
             driverClassName = "org.postgresql.Driver"
             host = System.getProperties().getProperty("POSTGRESQL_ADDON_HOST")

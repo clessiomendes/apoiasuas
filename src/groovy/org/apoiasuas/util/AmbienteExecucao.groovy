@@ -18,17 +18,18 @@ class AmbienteExecucao {
     public static final Integer LOCAL_POSTGRES = 5
     public static final Integer APPFOG_POSTGRES_PROD = 6
     public static final Integer CLEVERCLOUD_POSTGRES_PROD = 7
+    public static final Integer CLEVERCLOUD_POSTGRES_VALID = 8
 
     public static final Integer[] LOCAL = [LOCAL_H2, LOCAL_MYSQL, LOCAL_POSTGRES]
     public static final Integer[] APPFOG = [APPFOG_POSTGRES_VALID, APPFOG_MYSQL, CLEARDB_MYSQL, APPFOG_POSTGRES_PROD]
-    public static final Integer[] CLEVERCLOUD = [CLEVERCLOUD_POSTGRES_PROD]
+    public static final Integer[] CLEVERCLOUD = [CLEVERCLOUD_POSTGRES_PROD, CLEVERCLOUD_POSTGRES_VALID]
 
     public static final Integer[] H2 = [LOCAL_H2]
     public static final Integer[] MYSQL = [LOCAL_MYSQL, APPFOG_MYSQL, CLEARDB_MYSQL]
-    public static final Integer[] POSTGRES = [APPFOG_POSTGRES_VALID, APPFOG_POSTGRES_PROD, LOCAL_POSTGRES, CLEVERCLOUD_POSTGRES_PROD]
+    public static final Integer[] POSTGRES = [APPFOG_POSTGRES_VALID, APPFOG_POSTGRES_PROD, LOCAL_POSTGRES, CLEVERCLOUD_POSTGRES_PROD, CLEVERCLOUD_POSTGRES_VALID]
 
     public static final Integer[] DESENVOLVIMENTO = [LOCAL_H2, LOCAL_MYSQL, LOCAL_POSTGRES]
-    public static final Integer[] VALIDACAO = [APPFOG_POSTGRES_VALID]
+    public static final Integer[] VALIDACAO = [APPFOG_POSTGRES_VALID, CLEVERCLOUD_POSTGRES_VALID]
     public static final Integer[] PRODUCAO = [APPFOG_POSTGRES_PROD, CLEVERCLOUD_POSTGRES_PROD]
 
     public static final Date inicioAplicacao = new Date()
@@ -91,6 +92,7 @@ class AmbienteExecucao {
             ds = sysProperties('org.apoiasuas.datasource')?.toUpperCase()
         System.out.println("Definicao de banco de dados: ${ds}")
         switch (ds) {
+            case 'CLEVERCLOUD_POSTGRES_VALID': return CLEVERCLOUD_POSTGRES_VALID
             case 'CLEVERCLOUD_POSTGRES_PROD': return CLEVERCLOUD_POSTGRES_PROD
             case 'APPFOG_POSTGRES_PROD': return APPFOG_POSTGRES_PROD
             case 'APPFOG_POSTGRES_VALID': return APPFOG_POSTGRES_VALID
