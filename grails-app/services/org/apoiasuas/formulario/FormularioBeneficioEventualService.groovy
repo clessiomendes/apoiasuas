@@ -21,6 +21,10 @@ class FormularioBeneficioEventualService extends FormularioService {
         if (!cidadao.identidade)
             cidadao.identidade = "NAO POSSUI"
 
+        /*
+        FIXME O plugin Melody (para monitoramento e profilling) tem um bug: quando invocamos o metodo super o plguin
+        acaba direcionando para o proprio método, em uma recursão infinita, ocasionando um stackoverflowError
+        */
         super.transfereConteudo(formulario, reportDTO)
     }
 
