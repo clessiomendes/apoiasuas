@@ -258,19 +258,23 @@ environments {
 
 grails.plugin.springsecurity.interceptUrlMap = [ '/importacaoFamilias/restUpload': ['IS_AUTHENTICATED_ANONYMOUSLY']]
 
+environments {
+    production {
 //Redirecionamento automático para HTTPS
-grails.plugin.springsecurity.auth.forceHttps = true
-grails.plugin.springsecurity.secureChannel.useHeaderCheckChannelSecurity = true
-grails.plugin.springsecurity.portMapper.httpPort = 80
-grails.plugin.springsecurity.portMapper.httpsPort = 443
-grails.plugin.springsecurity.secureChannel.secureHeaderName = 'X-Forwarded-Proto'
-grails.plugin.springsecurity.secureChannel.secureHeaderValue = 'http'
-grails.plugin.springsecurity.secureChannel.insecureHeaderName = 'X-Forwarded-Proto'
-grails.plugin.springsecurity.secureChannel.insecureHeaderValue = 'https'
-grails.plugin.springsecurity.secureChannel.definition = [
-        '/assets/**':     'ANY_CHANNEL',// make js, css, images available to logged out pages
-        '/**':            'REQUIRES_SECURE_CHANNEL',
-]
+        grails.plugin.springsecurity.auth.forceHttps = true
+        grails.plugin.springsecurity.secureChannel.useHeaderCheckChannelSecurity = true
+        grails.plugin.springsecurity.portMapper.httpPort = 80
+        grails.plugin.springsecurity.portMapper.httpsPort = 443
+        grails.plugin.springsecurity.secureChannel.secureHeaderName = 'X-Forwarded-Proto'
+        grails.plugin.springsecurity.secureChannel.secureHeaderValue = 'http'
+        grails.plugin.springsecurity.secureChannel.insecureHeaderName = 'X-Forwarded-Proto'
+        grails.plugin.springsecurity.secureChannel.insecureHeaderValue = 'https'
+        grails.plugin.springsecurity.secureChannel.definition = [
+                '/assets/**': 'ANY_CHANNEL',// make js, css, images available to logged out pages
+                '/**'       : 'REQUIRES_SECURE_CHANNEL',
+        ]
+    }
+}
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':                              ['permitAll'],
