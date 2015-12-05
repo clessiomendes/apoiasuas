@@ -34,6 +34,25 @@ class AmbienteExecucao {
 
     public static final Date inicioAplicacao = new Date()
 
+    public static final class SqlProprietaria {
+        public static String getBoolean(boolean valor) {
+            switch (CURRENT) {
+                case H2 + MYSQL: return valor ? "1" : "0"
+                case POSTGRES: return valor ? "TRUE" : "FALSE"
+                default: throw new RuntimeException("tipo de banco de dados não definido: ${CURRENT}")
+            }
+        }
+
+        public static String StringToNumer(String s) {
+            switch (CURRENT) {
+//                case H2 + MYSQL: return ""
+//                case POSTGRES: return "cast(REGEXP_REPLACE('0' || COALESCE( $s ,'0'), '[^0-9]+', '', 'g') as integer)" //ver http://stackoverflow.com/a/18021967/1916198
+                case POSTGRES: return "to_number( $s ,'999999999999999.99999999')" //ver http://stackoverflow.com/a/18021967/1916198
+                default: s
+            }
+        }
+    }
+
     /**
      * Usado para testes que simulam erros. Garantimos que nunca esses testes serão levados para producao por engano
      */
@@ -61,14 +80,6 @@ class AmbienteExecucao {
             case VALIDACAO: return "Validação"
             case PRODUCAO: return "Produção"
             default: throw new RuntimeException("ambiente de execução não definido: ${CURRENT}")
-        }
-    }
-
-    public static String getBoolean(boolean valor) {
-        switch (CURRENT) {
-            case H2 + MYSQL: return valor ? "1" : "0"
-            case POSTGRES: return valor ? "TRUE" : "FALSE"
-            default: throw new RuntimeException("tipo de banco de dados não definido: ${CURRENT}")
         }
     }
 

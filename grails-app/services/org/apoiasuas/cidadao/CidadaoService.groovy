@@ -3,6 +3,7 @@ package org.apoiasuas.cidadao
 import grails.gorm.DetachedCriteria
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringEscapeUtils
+import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.apoiasuas.util.HqlPagedResultList
@@ -57,7 +58,7 @@ class CidadaoService {
             filtros << [numero: filtro.numero]
         }
 
-        String hqlOrder = filtro.logradouro ? 'order by a.familia.endereco.numero' : ' order by a.nomeCompleto'
+        String hqlOrder = filtro.logradouro ? 'order by ' + AmbienteExecucao.SqlProprietaria.StringToNumer('a.familia.endereco.numero') : ' order by a.nomeCompleto'
 
         int count = Cidadao.executeQuery("select count(*) " + hql, filtros)[0]
         List cidadaos = Cidadao.executeQuery(hql + ' ' + hqlOrder, filtros, params)

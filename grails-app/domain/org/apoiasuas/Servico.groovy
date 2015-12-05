@@ -33,7 +33,7 @@ class Servico {
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_servico']
-        podeEncaminhar(defaultValue: AmbienteExecucao.getBoolean(true))
+        podeEncaminhar(defaultValue: AmbienteExecucao.SqlProprietaria.getBoolean(true))
         encaminhamentoPadrao length: 100000
         descricao length: 1000000
     }
