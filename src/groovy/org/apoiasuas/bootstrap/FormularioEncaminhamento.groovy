@@ -5,12 +5,7 @@ import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.FormularioBuilder
 import org.apoiasuas.formulario.FormularioService
 
-class FormularioEncaminhamento {
-//just for type checking
-    Closure formulario(
-            @DelegatesTo(value = FormularioBuilder, strategy = groovy.lang.Closure.DELEGATE_FIRST) groovy.lang.Closure closure) {
-        closure
-    }
+class FormularioEncaminhamento extends FormularioBase {
 
     public Class<? extends FormularioService> classeServico() { return FormularioService.class }
 
