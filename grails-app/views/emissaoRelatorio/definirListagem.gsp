@@ -45,7 +45,7 @@
             <fieldset class="embedded" style="padding: 10px"><legend class="collapsable"
                                                                      style="cursor:pointer;">Filtrar:</legend>
                 Técnico de referência:
-                <g:select name="tecnicoReferencia" from="${operadores.entrySet()}" optionKey="key" optionValue="value" noSelection="['-99': '']"/>
+                <g:select name="tecnicoReferencia" from="${operadores.entrySet()}" optionKey="key" optionValue="value" noSelection="['-1': '']"/>
                 <br><br>
                 Idade de
                 <div style="display: inline" class="fieldcontain ${hasErrors(bean: definicaoListagem, field: 'idadeInicial', 'error')} ">

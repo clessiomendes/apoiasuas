@@ -34,21 +34,57 @@ class AmbienteExecucao {
 
     public static final Date inicioAplicacao = new Date()
 
+    //TODO: implementar (e testar) outras engines de banco de dados em SqlProprietaria
     public static final class SqlProprietaria {
-        public static String getBoolean(boolean valor) {
-            switch (CURRENT) {
-                case H2 + MYSQL: return valor ? "1" : "0"
-                case POSTGRES: return valor ? "TRUE" : "FALSE"
-                default: throw new RuntimeException("tipo de banco de dados não definido: ${CURRENT}")
+
+        public static String concat(String... args) {
+            if (! args)
+                return "null"
+            switch (AmbienteExecucao.CURRENT) {
+                case AmbienteExecucao.POSTGRES:
+                    String result = ""
+                    args.eachWithIndex { arg, i -> result += (i>0 ? " || " : "") + "coalesce($arg,'')" }
+                    return result
+                default: throw new RuntimeException("recurso dataNascimento() não implementado para engine de banco " +
+                        "de dados: ${AmbienteExecucao.CURRENT}")
             }
         }
-
-        public static String StringToNumer(String s) {
-            switch (CURRENT) {
+        public static String idade(String dataNascimento) {
+            switch (AmbienteExecucao.CURRENT) {
+                case AmbienteExecucao.POSTGRES: return "cast (extract(year from age($dataNascimento)) as integer)"
+                default: throw new RuntimeException("recurso dataNascimento() não implementado para engine de banco " +
+                        "de dados: ${AmbienteExecucao.CURRENT}")
+            }
+        }
+        public static String dateToString(String data) {
+            switch (AmbienteExecucao.CURRENT) {
+                case AmbienteExecucao.POSTGRES: return "to_char($data, 'DD/MM/YYYY')"
+                default: throw new RuntimeException("recurso dataNascimento() não implementado para engine " +
+                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
+            }
+        }
+        public static String currentDate() {
+            switch (AmbienteExecucao.CURRENT) {
+                case AmbienteExecucao.POSTGRES: return "CURRENT_DATE"
+                default: throw new RuntimeException("recurso currentDate() não implementado para engine " +
+                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
+            }
+        }
+        public static String getBoolean(boolean valor) {
+            switch (AmbienteExecucao.CURRENT) {
+                case AmbienteExecucao.H2 + AmbienteExecucao.MYSQL: return valor ? "1" : "0"
+                case AmbienteExecucao.POSTGRES: return valor ? "TRUE" : "FALSE"
+                default: throw new RuntimeException("recurso getBoolean() não implementado para engine " +
+                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
+            }
+        }
+        public static String StringToNumber(String s) {
+            switch (AmbienteExecucao.CURRENT) {
 //                case H2 + MYSQL: return ""
 //                case POSTGRES: return "cast(REGEXP_REPLACE('0' || COALESCE( $s ,'0'), '[^0-9]+', '', 'g') as integer)" //ver http://stackoverflow.com/a/18021967/1916198
-                case POSTGRES: return "to_number( $s ,'999999999999999.99999999')" //ver http://stackoverflow.com/a/18021967/1916198
-                default: s
+                case AmbienteExecucao.POSTGRES: return "to_number( $s ,'999999999999999.99999999')" //ver http://stackoverflow.com/a/18021967/1916198
+                default: throw new RuntimeException("recurso StringToNumer() não implementado para engine " +
+                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
             }
         }
     }

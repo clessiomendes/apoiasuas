@@ -7,6 +7,10 @@ class UsuarioSistema {
 
 	transient springSecurityService
 
+    public static final int SEM_SELECAO = -1
+    public static final int SELECAO_ALGUM_TECNICO = -2
+    public static final int SELECAO_NENHUM_TECNICO = -3
+
 	Date dateCreated, lastUpdated;
 	UsuarioSistema criador, ultimoAlterador;
 	String nomeCompleto;

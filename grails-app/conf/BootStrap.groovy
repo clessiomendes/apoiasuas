@@ -7,6 +7,8 @@ import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.codehaus.groovy.grails.commons.ApplicationAttributes
 
+import java.sql.SQLException
+
 class BootStrap {
 
     def segurancaService
@@ -15,6 +17,11 @@ class BootStrap {
     def roleHierarchy
     def apoiaSuasService
     def programaService
+    def groovySql
+
+    public final String VW_REFERENCIAS = "create view vw_referencias as select min(id) as referencia_id, familia_id " +
+            " from cidadao where referencia = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+
+            " group by familia_id"
 
     def init = { servletContext ->
 
@@ -26,17 +33,18 @@ class BootStrap {
         }
 
         //Validando esquema de banco de dados
-        String[] atualizacoesPendentes = apoiaSuasService.atualizacoesPendentes
-        if (atualizacoesPendentes) {
-            String erro = "Detectadas atualizacoes pendentes no banco de dados:"
-            atualizacoesPendentes.each { erro += "\n"+it+";" }
-            log.error(erro);
-            throw new RuntimeException("Banco de dados fora de sincronia com a aplicação (ver mensagens anteriores). Startup interrompido.")
-        }
+        validaEsquemaBD()
+
+        //Recriando views
+        recriaViewsBD()
 
         //sobrescrevendo a configuracao de seguranca (hierarquia de papeis)
         roleHierarchy.setHierarchy(DefinicaoPapeis.hierarquiaFormatada)
 
+        inicializacoesServicos()
+    }
+
+    private void inicializacoesServicos() {
         UsuarioSistema.withTransaction { status ->
             try {
                 UsuarioSistema admin = segurancaService.inicializaSeguranca()
@@ -62,6 +70,29 @@ class BootStrap {
         }
     }
 
+    private void recriaViewsBD() {
+        try {
+            log.debug("drop view vw_referencias")
+            groovySql.execute("drop view vw_referencias")
+            log.info("Atualizando vw_referencias no banco de dados")
+        } catch (SQLException e) {
+            e.printStackTrace();
+            log.info("Criando vw_referencias pela primeira vez no banco de dados")
+        }
+        log.debug(VW_REFERENCIAS);
+        groovySql.execute(VW_REFERENCIAS);
+    }
+
+    private void validaEsquemaBD() {
+        String[] atualizacoesPendentes = apoiaSuasService.getAtualizacoesPendentes()
+        if (atualizacoesPendentes) {
+            String erro = "Detectadas atualizacoes pendentes no banco de dados:"
+            atualizacoesPendentes.each { erro += "\n" + it + ";" }
+            log.error(erro);
+            throw new RuntimeException("Banco de dados fora de sincronia com a aplicação (ver mensagens anteriores). Startup interrompido.")
+        }
+    }
+
     def destroy = {
     }
 
@@ -70,7 +101,7 @@ class BootStrap {
      * Exemplo de uso:
      * meuObjeto.update([campo1: 'valor1', campo2: 'valor2']
      */
-    static Object updateAttributesFromMap(Object instanciaAAtualizar, Map<String, Object> propriedadesASubstituir) {
+    private static Object updateAttributesFromMap(Object instanciaAAtualizar, Map<String, Object> propriedadesASubstituir) {
         propriedadesASubstituir.each { key, value ->
             if (instanciaAAtualizar.hasProperty(key))
                 instanciaAAtualizar."${key}" = value

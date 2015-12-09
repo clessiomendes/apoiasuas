@@ -16,6 +16,7 @@ class ApoiaSuasService {
     def dataSource
     SessionFactory sessionFactory
 
+    //FIXME sintaxe dependente do Postgree* (levar para AmbienteExecucao)
     static final String MISSING_SEQUENCES_SQL =
             "SELECT table_name\n" +
                     "  FROM information_schema.columns\n" +
@@ -26,6 +27,7 @@ class ApoiaSuasService {
     @Transactional(readOnly = true)
     String[] getAtualizacoesPendentes() {
         Configuration conf = grailsApplication.mainContext.getBean("&sessionFactory").configuration
+        //FIXME as classes Postgree* não podem estar acopladas (levar para AmbienteExecucao)
         DatabaseMetadata metadata = new DatabaseMetadata(new Sql(dataSource).dataSource.connection, new PostgreSQL81Dialect());
         String[] result = conf.generateSchemaUpdateScript(new PostgreSQL81Dialect(), metadata)
 

@@ -2,76 +2,109 @@ package org.apoiasuas.relatorio
 
 import grails.transaction.Transactional
 import groovy.sql.GroovyRowResult
-import org.apache.commons.lang.StringEscapeUtils
 import org.apoiasuas.cidadao.Cidadao
-import org.apoiasuas.cidadao.Endereco
-import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.programa.Programa
-import org.apoiasuas.util.HqlPagedResultList
-import org.apoiasuas.util.StringUtils
+import org.apoiasuas.seguranca.UsuarioSistema
+import org.apoiasuas.util.AmbienteExecucao
 import org.joda.time.LocalDate
-
-import java.util.regex.Pattern
 
 @Transactional(readOnly = true)
 class RelatorioService {
 
-    static final List CABECALHOS_CIDADAO = ["nome completo", "parentesco referência", "data de nascimento", "NIS"]
-    static final List CABECALHOS_FAMILIA = ["cad CRAS", "telefones", "tecnico de referência", "endereço", "CEP"] //TODO: adicionar siglas dos programas (maior cuidado, pbf, etc)
+//    static final List CABECALHOS_CIDADAO = ["nome completo", "parentesco referência", "data de nascimento", "NIS"]
+//    static final List CABECALHOS_FAMILIA = ["cad CRAS", "telefones", "tecnico de referência", "endereço", "CEP"] //TODO: adicionar siglas dos programas (maior cuidado, pbf, etc)
 
     def groovySql
 
-    def geraListagem(OutputStream outputStream, LocalDate dataNascimentoInicial, LocalDate dataNascimentoFinal, String membros, ArrayList<Programa> programasSelecionados) {
+    /**
+     * Executa uma consulta SQL (Ansi92) com os parametros escolhidos e disponibiliza uma planilha csv em outputStream
+     */
+    public void geraListagem(OutputStream outputStream, LocalDate dataNascimentoInicial, LocalDate dataNascimentoFinal, String membros, Long idTecnicoReferencia, ArrayList<Programa> programasSelecionados) {
 
-        String sqlFrom
-        String sqlOrder = ""
+        String sqlSelect = "select distinct "
+        String sqlFrom = "from "
+        String sqlWhere = "where 1=1 "
+        String sqlOrder = "order by "
+
+        sqlSelect += AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado')+' as "cad CRAS"';
+
+        sqlFrom += 'familia f ' +
+                ' left join usuario_sistema u on f.tecnico_referencia_id = u.id '
+
+        sqlOrder +=  AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado');
+
         if (membros) {
-            sqlFrom = 'select c.nome_completo as "nome completo", c.parentesco_referencia a "parentesco referencia" from cidadao c where 1=1 '
-//            hqlOrder = 'order by c.familia.codigoLegado, c.nomeCompleto'
+            sqlSelect += ', c.nome_completo as "nome", c.parentesco_referencia as "parentesco"';
+            sqlFrom += ' left join cidadao c on f.id = c.familia_id ';
+            sqlOrder += ', c.nome_completo';
         } else {
-            sqlFrom = 'select c.nome_completo as "nome completo", c.parentesco_referencia a "parentesco referencia" from cidadao c where 1=1 '
-            sqlFrom = 'select f.codigo_legado as "cad CRAS", u.username as "técnico de referência" from familia f left join usuario_sistema u on f.tecnico_referencia_id = u.id where 1=1 '
-//            hqlOrder = 'order by f.codigoLegado'
+            sqlSelect += ', c.nome_completo as "referencia"';
+
+            sqlFrom += ' left join vw_referencias r on f.id = r.familia_id ' +
+                    ' left join cidadao c on r.referencia_id = c.id ';
         }
+
+        sqlSelect += ', c.nis, c.identidade, c.cpf, ' +
+                AmbienteExecucao.SqlProprietaria.dateToString('c.data_nascimento')+' as "nascimento", '+
+                AmbienteExecucao.SqlProprietaria.idade('c.data_nascimento')+' as "idade", '+
+                AmbienteExecucao.SqlProprietaria.concat("f.endereco_tipo_logradouro", "' '", "f.endereco_nome_logradouro", "', '",
+                        "f.endereco_numero", "' '", "f.endereco_complemento")+' as "endereço", '+
+                ' f.endereco_bairro as "bairro", f.endereco_cep as "cep", ' +
+                ' u.username as "técnico de referência"';
 
         def filtros = []
 
-        if (dataNascimentoInicial && membros) {
-            sqlFrom += ' and c.data_nascimento >= :dataNascimentoInicial'
-            filtros << dataNascimentoInicial
+        if (dataNascimentoInicial) {
+            sqlWhere += ' and c.data_nascimento >= ? '
+            filtros << new java.sql.Date(dataNascimentoInicial.toDate().getTime())
+        }
+
+        if (dataNascimentoFinal) {
+            sqlWhere += ' and c.data_nascimento <= ? '
+            filtros << new java.sql.Date(dataNascimentoFinal.toDate().getTime())
+        }
+
+        if (idTecnicoReferencia && idTecnicoReferencia != UsuarioSistema.SEM_SELECAO) {
+            switch (idTecnicoReferencia) {
+                case UsuarioSistema.SELECAO_ALGUM_TECNICO:
+                    sqlWhere += " and f.tecnico_referencia_id is not null "
+                    break;
+                case UsuarioSistema.SELECAO_NENHUM_TECNICO:
+                    sqlWhere += " and f.tecnico_referencia_id is null "
+                    break;
+                default:
+                    sqlWhere += " and f.tecnico_referencia_id = ? "
+                    filtros << idTecnicoReferencia
+            }
+        }
+
+        if (programasSelecionados) {
+            sqlFrom += '  left join programa_familia pf on pf.familia_id = f.id '
+
+            String strProgramas = ""
+            programasSelecionados.eachWithIndex { p, i -> strProgramas += (i==0 ? "":",") + p.id }
+            sqlWhere += " and pf.programa_id in ($strProgramas)";
         }
 
         try {
             List<GroovyRowResult> resultado
-            List cabecalhos
-            if (membros) {
-                resultado = Cidadao.executeQuery(sqlFrom + ' ' + sqlOrder, filtros)
-                cabecalhos = CABECALHOS_FAMILIA + CABECALHOS_CIDADAO
-            } else {
-                resultado = groovySql.rows(sqlFrom + ' ' + sqlOrder, filtros)
-//            resultado = Familia.executeQuery(sqlFrom + ' ' + sqlOrder, filtros)
-//            cabecalhos = CABECALHOS_FAMILIA
-            }
+                log.debug("SQL listagem (filtros - $filtros):" +"\n" + sqlSelect + '\n' + sqlFrom + '\n ' + sqlWhere + '\n' + sqlOrder)
+                resultado = groovySql.rows(sqlSelect + ' ' + sqlFrom + ' ' + sqlWhere + ' ' + sqlOrder, filtros)
 
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "Windows-1252"));
             if (resultado) {
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "Windows-1252"));
-
                 //Imprime cabecalhos
                 writer.append(montaAppend(resultado[0].collect { it.key }))
                 writer.newLine()
 
                 resultado.each { row ->
-                    if (membros) {
-
-                    } else {
-//                    Familia familia = row
-//                    writer.append(montaAppend([familia.codigoLegado, null, familia.tecnicoReferencia?.username, familia.endereco.toString(), familia.endereco.CEP]))
-                        writer.append(montaAppend(row.collect { it.value } ))
-                    }
+                    writer.append(montaAppend(row.collect { it.value } ))
                     writer.newLine()
                 }
-                writer.flush()
+            } else {
+                writer.append("Nenhuma informação encontrada para as opções escolhidas")
             }
+            writer.flush()
         } finally {
             groovySql.close()
         }

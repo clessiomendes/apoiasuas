@@ -58,7 +58,7 @@ class CidadaoService {
             filtros << [numero: filtro.numero]
         }
 
-        String hqlOrder = filtro.logradouro ? 'order by ' + AmbienteExecucao.SqlProprietaria.StringToNumer('a.familia.endereco.numero') : ' order by a.nomeCompleto'
+        String hqlOrder = filtro.logradouro ? 'order by ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero') : ' order by a.nomeCompleto'
 
         int count = Cidadao.executeQuery("select count(*) " + hql, filtros)[0]
         List cidadaos = Cidadao.executeQuery(hql + ' ' + hqlOrder, filtros, params)

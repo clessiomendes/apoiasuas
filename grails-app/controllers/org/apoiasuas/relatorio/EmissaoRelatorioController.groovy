@@ -21,8 +21,8 @@ class EmissaoRelatorioController extends AncestralController {
 
     private LinkedHashMap<Long, String> getOperadores() {
         Map<Long, String> operadoresOrdenados = [:]
-        operadoresOrdenados.put(-1, "-algum técnico-");
-        operadoresOrdenados.put(-2, "-nenhum técnico-");
+        operadoresOrdenados.put(UsuarioSistema.SELECAO_ALGUM_TECNICO, "-algum técnico-");
+        operadoresOrdenados.put(UsuarioSistema.SELECAO_NENHUM_TECNICO, "-nenhum técnico-");
         segurancaService.getOperadoresOrdenados().each {
             operadoresOrdenados.put(it.id, it.username)
         }
@@ -37,7 +37,7 @@ class EmissaoRelatorioController extends AncestralController {
         log.debug("Tecnico de referencia: ${definicao.tecnicoReferencia}");
         org.joda.time.LocalDate dataNascimentoInicial, dataNascimentoFinal;
         if (definicao.idadeFinal)
-            dataNascimentoInicial = new org.joda.time.LocalDate().minusYears(definicao.idadeFinal)
+            dataNascimentoInicial = new org.joda.time.LocalDate().minusYears(definicao.idadeFinal+1)
         if (definicao.idadeInicial)
             dataNascimentoFinal = new org.joda.time.LocalDate().minusYears(definicao.idadeInicial)
         log.debug("Data de nascimento entre ${dataNascimentoInicial} e ${dataNascimentoFinal}")
@@ -51,7 +51,7 @@ class EmissaoRelatorioController extends AncestralController {
         response.contentType = 'application/octet-stream'
         response.setHeader 'Content-disposition', "attachment; filename=\"listagem-apoiasuas.xls\""
 
-        def relatorio = relatorioService.geraListagem(response.outputStream, dataNascimentoInicial, dataNascimentoFinal, definicao.membros, programasSelecionados)
+        relatorioService.geraListagem(response.outputStream, dataNascimentoInicial, dataNascimentoFinal, definicao.membros, definicao.tecnicoReferencia, programasSelecionados)
     }
 }
 
