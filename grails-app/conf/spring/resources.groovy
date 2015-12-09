@@ -17,4 +17,5 @@ groovySql is the name of the bean and can be used
 for injection.
 */
     groovySql(groovy.sql.Sql, ref('dataSource'))
+//    sintaxeSql(org.apoiasuas.util.SintaxeSQL)
 }
