@@ -19,8 +19,10 @@ class ServicoController {
     def getServico(Long idServico) {
         Servico servico = Servico.get(idServico)
         String endereco = ""
-        if (! servico)
-            render "" as JSON
+        if (! servico) {
+            response.status = 500
+            return render ([errorMessage: "Servico $idServico nao encontrado"] as JSON)
+        }
 
         if (servico.endereco)
             endereco += servico.endereco.toString()

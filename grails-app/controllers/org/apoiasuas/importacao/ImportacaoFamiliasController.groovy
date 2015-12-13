@@ -35,8 +35,8 @@ class ImportacaoFamiliasController {
 
             DefinicoesImportacaoFamilias definicoes = importarFamiliasService.getDefinicoes();
             if (!definicoes.linhaDoCabecalho || !definicoes.abaDaPlanilha) {
-                result << "erro. Configuracoes nao definidas (linha do cabecalho ou aba da planilha)"
-                return render(result as JSON)
+                response.status = 500
+                return render ([errorMessage: "Configuracoes nao definidas (linha do cabecalho ou aba da planilha)"] as JSON)
             }
             TentativaImportacao tentativaImportacao = importarFamiliasService.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, admin)
             tentativaImportacao = importarFamiliasService.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)

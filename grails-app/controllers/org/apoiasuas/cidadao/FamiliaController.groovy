@@ -83,6 +83,10 @@ class FamiliaController extends AncestralController {
     def obtemLogradouros(String term) {
         if (term)
             render familiaService.procurarLogradouros(term) as JSON
+        else {
+            response.status = 500
+            return render ([errorMessage: "parametro vazio"] as JSON)
+        }
     }
 
 }
