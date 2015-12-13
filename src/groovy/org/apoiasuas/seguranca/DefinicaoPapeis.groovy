@@ -7,6 +7,7 @@ public class DefinicaoPapeis {
 	public static final String ADMINISTRATIVO = "ROLE_ADMINISTRATIVO"  //Atencao! Nao confundir com o papel SUPER_USUARIO
 	public static final String COORDENACAO = "ROLE_COORDENACAO"
 	public static final String TECNICO = "ROLE_TECNICO"
+	public static final String WEB_SERVICE = "ROLE_WEB_SERVICE"
 	public static final String RECEPCAO = "ROLE_RECEPCAO"
 	public static final String USUARIO = "ROLE_USUARIO"
 	public static final String USUARIO_LEITURA = "ROLE_USUARIO_LEITURA"
@@ -35,6 +36,7 @@ public class DefinicaoPapeis {
 				new DefinicaoPapeis(TECNICO, [USUARIO]),
 				new DefinicaoPapeis(RECEPCAO, [USUARIO]),
 				new DefinicaoPapeis(USUARIO, [USUARIO_LEITURA]),
+                new DefinicaoPapeis(WEB_SERVICE, []),
 				new DefinicaoPapeis(USUARIO_LEITURA, [])
 		]
 		List filhosSuper = []

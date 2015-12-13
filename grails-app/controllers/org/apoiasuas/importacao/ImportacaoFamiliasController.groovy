@@ -5,6 +5,8 @@ import grails.async.Promises
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.seguranca.UsuarioSistema
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -22,7 +24,7 @@ class ImportacaoFamiliasController {
     static responseFormats = ['json']
 
     /**
-     * Chamar com: curl http://localhost:8080/apoiasuas/importacaoFamilias/restUpload -F username=john -F file=@c:\temp\out.txt
+     * Chamar com: curl http://localhost:8080/apoiasuas/importacaoFamilias/restUpload -F user=exportabd -F pass=senha -F qqFile=@c:\temp\out.txt
      */
     @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
     def restUpload() {
@@ -30,7 +32,13 @@ class ImportacaoFamiliasController {
 
         try {
 
-            final UsuarioSistema admin = segurancaService.getAdmin()
+            final UsuarioSistema operador = autentica(request)
+            if (! operador) {
+                response.status = 403 //Forbidden
+                return render ([errorMessage: "Usuario e senha invalidos ou parametros (user e pass) ausentes"] as JSON)
+            } else {
+                log.debug("Usuario ${operador.username} autorizado a importar familias")
+            }
             InputStream inputStream = selectInputStream(request)
 
             DefinicoesImportacaoFamilias definicoes = importarFamiliasService.getDefinicoes();
@@ -38,11 +46,12 @@ class ImportacaoFamiliasController {
                 response.status = 500
                 return render ([errorMessage: "Configuracoes nao definidas (linha do cabecalho ou aba da planilha)"] as JSON)
             }
-            TentativaImportacao tentativaImportacao = importarFamiliasService.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, admin)
+            TentativaImportacao tentativaImportacao = importarFamiliasService.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, operador)
             tentativaImportacao = importarFamiliasService.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)
             log.info("pre importacao encerrada")
             if (!tentativaImportacao?.id) {
-                return render(text: [success: false] as JSON, contentType: 'text/json')
+                response.status = 500
+                return render ([errorMessage: "Erro na pre-importacao"] as JSON)
             }
 
 //            List<ColunaImportadaCommand> colunasImportadas = importarFamiliasService.obtemColunasImportadas(tentativaImportacao.id)
@@ -57,7 +66,7 @@ class ImportacaoFamiliasController {
             Map camposPreenchidos = importarFamiliasService.getDefinicoesImportacaoFamilia()
 
             log.info("concluindo importacao")
-            importarFamiliasService.concluiImportacao(camposPreenchidos, tentativaImportacao.id, admin)
+            importarFamiliasService.concluiImportacao(camposPreenchidos, tentativaImportacao.id, operador)
 
             def result = []
             result << "Importação concluída com sucesso (id ${tentativaImportacao.id}). Veja detalhes na tela de importações."
@@ -137,6 +146,15 @@ class ImportacaoFamiliasController {
             return uploadedFile.inputStream
         }
         return request.inputStream
+    }
+
+    private UsuarioSistema autentica(HttpServletRequest request) {
+        if (request instanceof MultipartHttpServletRequest) {
+            String login = ((MultipartHttpServletRequest) request).getParameter('user')
+            String pass = ((MultipartHttpServletRequest) request).getParameter('pass')
+            return segurancaService.autentica(login, pass, DefinicaoPapeis.WEB_SERVICE )
+        }
+        return null
     }
 
     /**

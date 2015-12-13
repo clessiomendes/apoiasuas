@@ -4,12 +4,17 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.Transactional
 import grails.util.Environment
 import org.apoiasuas.util.AmbienteExecucao
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 class SegurancaService {
 
     public static final int MIN_TAMANHO_SENHA = 4
     def springSecurityService
+    def authenticationManager
 
     static transactional = false
 
@@ -17,6 +22,23 @@ class SegurancaService {
     public UsuarioSistema getUsuarioLogado() {
         def usuarioLogado = springSecurityService.currentUser
         return usuarioLogado
+    }
+
+    /**
+     * Verifica usuario e senha e retorna o registro do banco de dados ou nulo.
+     */
+    @Transactional(readOnly = true)
+    public UsuarioSistema autentica(String login, String senha, String papel) {
+        try {
+            Authentication token = new UsernamePasswordAuthenticationToken(login, senha);
+            token = authenticationManager.authenticate(token)
+            if (token.authenticated && token.authorities.contains(new SimpleGrantedAuthority(papel)))
+                return UsuarioSistema.get(token.principal.id)
+            else
+                return null
+        } catch (BadCredentialsException e) {
+            return null
+        }
     }
 
     @Transactional
