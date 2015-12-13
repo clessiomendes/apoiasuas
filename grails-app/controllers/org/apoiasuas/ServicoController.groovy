@@ -19,6 +19,9 @@ class ServicoController {
     def getServico(Long idServico) {
         Servico servico = Servico.get(idServico)
         String endereco = ""
+        if (! servico)
+            render "" as JSON
+
         if (servico.endereco)
             endereco += servico.endereco.toString()
         if (servico.telefones) {

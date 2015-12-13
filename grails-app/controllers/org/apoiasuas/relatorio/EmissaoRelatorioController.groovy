@@ -49,7 +49,7 @@ class EmissaoRelatorioController extends AncestralController {
         log.debug("Programas: ${programasSelecionados}");
 
         response.contentType = 'application/octet-stream'
-        response.setHeader 'Content-disposition', "attachment; filename=\"listagem-apoiasuas.xls\""
+        response.setHeader 'Content-disposition', "attachment; filename=\"listagem-apoiasuas.csv\""
 
         relatorioService.geraListagem(response.outputStream, dataNascimentoInicial, dataNascimentoFinal, definicao.membros, definicao.tecnicoReferencia, programasSelecionados)
     }
