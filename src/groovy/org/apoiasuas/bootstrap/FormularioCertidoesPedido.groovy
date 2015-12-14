@@ -2,7 +2,6 @@ package org.apoiasuas.bootstrap
 
 import groovy.transform.TypeChecked
 import org.apoiasuas.formulario.CampoFormulario
-import org.apoiasuas.formulario.CampoFormulario.Origem
 import org.apoiasuas.formulario.FormularioCertidoesService
 import org.apoiasuas.formulario.FormularioService
 
@@ -10,6 +9,7 @@ class FormularioCertidoesPedido extends FormularioBase {
 
     public static String CODIGO_TIPO_CERTIDAO = "tipo_certidao"
     public static String CODIGO_DADOS_CERTIDAO = "dados_certidao"
+    public static String CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO = "matricula"
 
 
     @Override
@@ -30,6 +30,12 @@ class FormularioCertidoesPedido extends FormularioBase {
                 tipo CampoFormulario.Tipo.TEXTO
                 obrigatorio true
                 descricao 'Repsonsável (preenchimento)'
+            }
+            campoAvulso {
+                codigo CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                exibirParaPreenchimento false
+                descricao 'Matrícula (BM)'
             }
             campoAvulso {
                 codigo 'observacoes'

@@ -31,6 +31,13 @@
     </div>
 </sec:ifAnyGranted>
 
+<div class="fieldcontain ${hasErrors(bean: usuarioSistemaInstance, field: 'matricula', 'error')}">
+    <label for="password1">
+        <g:message code="usuarioSistema.matricula.label" default="Matricula" />
+    </label>
+    <g:textField name="matricula" value="${localDtoUsuarioSistema?.matricula}"/>
+</div>
+
 <div class="fieldcontain ${hasErrors(bean: usuarioSistemaInstance, field: 'password', 'error')}">
     <label for="password1">
         <g:message code="usuarioSistema.digiteSenha.label" default="Escolha uma senha" />

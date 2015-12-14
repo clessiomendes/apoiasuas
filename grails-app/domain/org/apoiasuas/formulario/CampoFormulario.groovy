@@ -42,6 +42,7 @@ class CampoFormulario {
     //Campos usados somente para origem do tipo AVULSO (pois nao ha como obte-los da anotacao do campo de BD)
     Tipo tipoPersonalizado
     int tamanhoPersonalizado
+    boolean exibirParaPreenchimento = true
 
 //Propriedades transientes
     Field propriedadeDominioField = null
@@ -99,6 +100,7 @@ class CampoFormulario {
             if (instancia.origem?.avulso && instancia.tipo?.texto && ! valor)
                 return ['campo.nao.pode.ser.nulo', "{0}: Valor não pode ser nulo para tipo TEXTO"]
         })
+        exibirParaPreenchimento(nullable: true, )
     }
 
     static mapping = {

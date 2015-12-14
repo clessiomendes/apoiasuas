@@ -4,6 +4,7 @@ import grails.transaction.Transactional
 import org.apoiasuas.bootstrap.FormularioCertidoes
 import org.apoiasuas.bootstrap.FormularioCertidoesPedido
 import org.apoiasuas.cidadao.Cidadao
+import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.StringUtils
 
 /**
@@ -58,12 +59,21 @@ class FormularioCertidoesService extends FormularioService {
         CampoFormulario maeObito = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_MAE_OBITO)
         CampoFormulario paiObito = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_PAI_OBITO)
 
+        if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO) {
+            CampoFormulario tecnico = formulario.getCampoAvulso(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
+            CampoFormulario matricula = formulario.getCampoAvulso(FormularioCertidoesPedido.CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO)
+            //procurar o operador com base no nome completo
+            List usuarioSistema = UsuarioSistema.findAllByNomeCompleto(tecnico.valorArmazenado)
+            //averiguar que somente um operador foi encontrado com esse nome e buscar a matricula correspondente
+            if (usuarioSistema?.size() == 1 )
+                matricula.valorArmazenado = usuarioSistema.get(0).matricula
+        }
+
         if (paiNascimento.valorArmazenado)
             paiNascimento.valorArmazenado = " e " + paiNascimento.valorArmazenado
 
         if (conjuge2.valorArmazenado)
             conjuge2.valorArmazenado = " e " + conjuge2.valorArmazenado
-
 
         if (paiObito.valorArmazenado)
             paiObito.valorArmazenado = " e " + paiObito.valorArmazenado

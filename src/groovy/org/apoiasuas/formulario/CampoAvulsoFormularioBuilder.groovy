@@ -22,6 +22,8 @@ class CampoAvulsoFormularioBuilder {
 
     void tamanho(Integer valor) { campoFormulario.tamanhoPersonalizado = valor }
 
+    void exibirParaPreenchimento(Boolean valor) { campoFormulario.exibirParaPreenchimento = valor }
+
     CampoFormulario build() {
         campoFormulario
     }

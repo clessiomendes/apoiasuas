@@ -89,8 +89,9 @@ class Formulario implements Serializable {
     /**
      * Ordena primeiro pelo campo "ordem" e depois pela sequencia de insercao
      */
-    ArrayList<CampoFormulario> getCamposOrdenados() {
-        campos?.sort { [it.ordem ?: 9999 /*nulos no final*/, it.id] }
+    ArrayList<CampoFormulario> getCamposOrdenados(boolean somenteCamposParaPreenchimento = false) {
+        ArrayList<CampoFormulario> temp = campos?.sort { [it.ordem ?: 9999 /*nulos no final*/, it.id] }
+        return somenteCamposParaPreenchimento ? temp.findAll { it.exibirParaPreenchimento } : temp
     }
 
     ArrayList<ArrayList<CampoFormulario>> getCamposAgrupados() {

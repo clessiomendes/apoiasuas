@@ -27,17 +27,13 @@
 			
 				<li class="fieldcontain">
 					<span id="nomeCompleto-label" class="property-label"><g:message code="usuarioSistema.nomeCompleto.label" default="Nome Completo" /></span>
-					
-						<span class="property-value" aria-labelledby="nomeCompleto-label"><g:fieldValue bean="${usuarioSistemaInstance}" field="nomeCompleto"/></span>
-					
+					<span class="property-value" aria-labelledby="nomeCompleto-label"><g:fieldValue bean="${usuarioSistemaInstance}" field="nomeCompleto"/></span>
 				</li>
 
 				<g:if test="${usuarioSistemaInstance?.username}">
 					<li class="fieldcontain">
 						<span id="username-label" class="property-label"><g:message code="usuarioSistema.username.label" default="Nome Simplificado" /></span>
-
 						<span class="property-value" aria-labelledby="username-label"><g:fieldValue bean="${usuarioSistemaInstance}" field="username"/></span>
-
 					</li>
 				</g:if>
 
@@ -54,6 +50,13 @@
                     <span id="enabled-label" class="property-label"></span>
                     <span class="property-value" aria-labelledby="criador-label">${usuarioSistemaInstance?.enabled ? "Operador habilitado" : "Operador desabilitado"}</span>
                 </li>
+
+                <g:if test="${usuarioSistemaInstance?.matricula}">
+                    <li class="fieldcontain">
+                        <span id="matricula-label" class="property-label"><g:message code="usuarioSistema.matricula.label" default="Matricula" /></span>
+                        <span class="property-value" aria-labelledby="matricula-label"><g:fieldValue bean="${usuarioSistemaInstance}" field="matricula"/></span>
+                    </li>
+                </g:if>
 
                 <li class="fieldcontain">
                     <span id="criador-label" class="property-label"><g:message code="usuarioSistema.criador.label" default="Criação" /></span>

@@ -15,17 +15,17 @@ class UsuarioSistema {
 	UsuarioSistema criador, ultimoAlterador;
 	String nomeCompleto;
 	String username;
-
-	String papel; //transiente
-
-	String password
+    String matricula
+    String password
 
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired
 	boolean enabled
 
-	static mapping = {
+    String papel //transiente
+
+    static mapping = {
         id generator: 'native', params: [sequence: 'sq_usuario_sistema']
 //		accountExpired(defaultValue:DataSourceType.getFalse())
 //		accountLocked(defaultValue:DataSourceType.getFalse())

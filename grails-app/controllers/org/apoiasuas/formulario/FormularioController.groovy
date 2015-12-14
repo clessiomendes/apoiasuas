@@ -17,7 +17,7 @@ class FormularioController {
     @Transactional(readOnly = true)
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        render view: 'list', model: [formularioInstanceList: Formulario.list(params), formularioInstanceCount: Formulario.count()]
+        render view: 'list', model: [formularioInstanceList: Formulario.listOrderByNome(params), formularioInstanceCount: Formulario.count()]
     }
 
     @Transactional(readOnly = true)

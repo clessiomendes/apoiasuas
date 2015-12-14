@@ -40,3 +40,12 @@ ALTER TABLE familia RENAME COLUMN tecnico_acompanhamento_id TO tecnico_referenci
 ALTER TABLE familia DROP COLUMN familia_acompanhada; --prod
 alter table definicoes_importacao_familias add column colunabpc varchar(255); --prod
 alter table definicoes_importacao_familias add column colunapbf varchar(255); --prod
+
+-- versao ate aqui: current (local:feito, valid:feito, producao:feito
+
+alter table usuario_sistema add column matricula varchar(255);
+alter table campo_formulario add column exibir_para_preenchimento boolean;
+
+-- versao ate aqui: current (local:feito
+
+update campo_formulario set exibir_para_preenchimento = TRUE

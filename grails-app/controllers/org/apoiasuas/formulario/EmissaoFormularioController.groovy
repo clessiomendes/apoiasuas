@@ -103,7 +103,6 @@ class EmissaoFormularioController extends AncestralController {
             reportDTO.report.process(reportDTO.context, response.outputStream);
             response.outputStream.flush()
         }
-
     }
 
     private boolean validaFormatoDatas(Formulario formulario, GrailsParameterMap params) {

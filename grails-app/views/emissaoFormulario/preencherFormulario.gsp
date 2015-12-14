@@ -56,7 +56,7 @@
             <g:render template="${templateCamposCustomizados}" model="${['dtoFormulario', dtoFormulario]}"/>
         </g:if>
         <g:else>
-            <g:agrupaCampos lista="${dtoFormulario.camposOrdenados}" campoGrupo="grupo" status="i" var="campo">
+            <g:agrupaCampos lista="${dtoFormulario.getCamposOrdenados(true)}" campoGrupo="grupo" status="i" var="campo">
                     <g:divCampoFormularioCompleto campoFormulario="${campo}" focoInicial="${i == 1}"/>
             </g:agrupaCampos>
         </g:else>
