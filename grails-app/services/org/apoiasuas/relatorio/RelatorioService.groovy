@@ -32,7 +32,8 @@ class RelatorioService {
     /**
      * Executa uma consulta SQL (Ansi92) com os parametros escolhidos e disponibiliza uma planilha csv em outputStream
      */
-    public void geraListagem(OutputStream outputStream, LocalDate dataNascimentoInicial, LocalDate dataNascimentoFinal, String membros, Long idTecnicoReferencia, ArrayList<Programa> programasSelecionados) {
+    public void geraListagem(OutputStream outputStream, LocalDate dataNascimentoInicial, LocalDate dataNascimentoFinal,
+                             String membros, Long idTecnicoReferencia, ArrayList<Programa> programasSelecionados, boolean planilhaParaDownload) {
 
         String sqlPrincipalSelect = "select distinct "
         String sqlPrincipalFrom = "from "
@@ -116,22 +117,45 @@ class RelatorioService {
             log.debug("Encontrados ${resultadoTelefones.size()} telefones e ${resultadoProgramas.size()} programas no cadastro completo")
 //            programas = programasFamilias();
 
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "Windows-1252"));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, planilhaParaDownload ? "windows-1250" : "utf-8"));
             if (resultadoPrincipal) {
-                //Indica o separador de campos no arquivo (tab)
-                writer.append("sep=\t")
-                writer.newLine()
+                if (planilhaParaDownload) {
+                    //Indica o separador de campos no arquivo (tab)
+                    writer.append("sep=\t")
+                    writer.newLine()
+                    //Imprime cabecalhos
+                    writer.append(montaAppendCSV(resultadoPrincipal[0].collect { it.key } + ["telefones","programas"] ))
+                    writer.newLine()
+                } else {
+                    writer.append('<table style="width:100%;border: 1px solid black;">')
+                    writer.append(montaAppendHTML(resultadoPrincipal[0].collect { it.key } + ["telefones","programas"] ))
+                }
+
+                resultadoPrincipal.each { row ->
+                    String telefones = telefonesFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoTelefones)
+                    String programas = programasFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoProgramas)
+                    if (planilhaParaDownload) {
+                        writer.append(montaAppendCSV(row.collect { it.value } + [telefones, programas]))
+                        writer.newLine()
+                    } else {
+                        writer.append(montaAppendHTML(row.collect { it.value } + [telefones, programas]))
+                    }
+                }
+/*
                 //Imprime cabecalhos
-                writer.append(montaAppend(resultadoPrincipal[0].collect { it.key } + ["telefones","programas"] ))
-                writer.newLine()
+                writer.append('<table style="width:100%;border: 1px solid black;">')
+                writer.append(montaAppendHtml(resultadoPrincipal[0].collect { it.key } + ["telefones","programas"] ))
+//                writer.append("<br/>")
 
                 int posTelefones = 0;
                 resultadoPrincipal.each { row ->
                     String telefones = telefonesFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoTelefones)
                     String programas = programasFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoProgramas)
-                    writer.append(montaAppend(row.collect { it.value } + [telefones, programas]) )
-                    writer.newLine()
+                    writer.append(montaAppendHtml(row.collect { it.value } + [telefones, programas]) )
+//                    writer.append("<br/>")
                 }
+                writer.append('</table>')
+*/
             } else {
                 writer.append("Nenhuma informação encontrada para as opções escolhidas")
             }
@@ -207,11 +231,19 @@ class RelatorioService {
         return result
     }
 
+    private CharSequence montaAppendHTML(Collection lista) {
+        String result = "<tr>"
+        lista.eachWithIndex { elemento, i ->
+                //FIXME: tirar eventuais caracteres \t (tab) da planilha para nao estragar a formatacao
+                result +=  '<td style="border: 1px solid black;">' + (elemento != null ? elemento : "" ) + '</td>'
+        }
+        return result + "</tr>";
+    }
 
-    private CharSequence montaAppend(Collection lista) {
+    private CharSequence montaAppendCSV(Collection lista) {
         String result = ""
         lista.eachWithIndex { elemento, i ->
-            if (elemento) {
+            if (elemento != null) {
                 //FIXME: tirar eventuais caracteres \t (tab) da planilha para nao estragar a formatacao
                 result += elemento instanceof String ? '="' + elemento + '"' : elemento
             }

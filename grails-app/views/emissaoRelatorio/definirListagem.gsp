@@ -22,7 +22,8 @@
         </ul>
     </g:hasErrors>
 
-    <g:form action="downloadListagem">
+    %{--<g:form action="downloadListagem">--}%
+    <g:form>
         <fieldset class="form">
 
             %{--Listar--}%
@@ -59,7 +60,9 @@
         </fieldset>%{--class="form"--}%
 
         <fieldset class="buttons">
-            <g:submitButton name="list" class="edit" value="Gerar listagem" />
+            %{--<g:submitButton name="list" class="edit" value="Gerar listagem" />--}%
+            <g:actionSubmit value="Download de planilha" action="downloadListagem"/>
+            <g:actionSubmit value="Exibir na tela" action="exibeListagem"/>
         </fieldset>
 
     </g:form>

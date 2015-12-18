@@ -5,9 +5,6 @@ import org.apoiasuas.AncestralController
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.joda.time.DateTime
-import org.joda.time.Interval
-import org.joda.time.Period
 
 @Secured([DefinicaoPapeis.USUARIO_LEITURA])
 class EmissaoRelatorioController extends AncestralController {
@@ -29,9 +26,23 @@ class EmissaoRelatorioController extends AncestralController {
         return operadoresOrdenados
     }
 
+    def exibeListagem(DefinicaoListagemCommand definicao) {
+        response.contentType = 'text/html; charset=UTF-8'
+        definicao.planilhaParaDownload = false
+        return listagem(definicao)
+    }
+
     def downloadListagem(DefinicaoListagemCommand definicao) {
+        response.contentType = 'application/octet-stream'
+        response.setHeader 'Content-disposition', "attachment; filename=\"listagem-apoiasuas.csv\""
+        definicao.planilhaParaDownload = true
+        return listagem(definicao)
+    }
+
+    private listagem(DefinicaoListagemCommand definicao) {
         if(! definicao.validate())
-            return render(view: 'definirListagem', model: [definicaoListagem: definicao, programasDisponiveis: Programa.all.sort { it.nome }, operadores: getOperadores()])
+            return render(view: 'definirListagem', model: [definicaoListagem: definicao, programasDisponiveis:
+                    Programa.all.sort { it.nome }, operadores: getOperadores()])
 
         log.debug("Listar membros? ${definicao.membros}")
         log.debug("Tecnico de referencia: ${definicao.tecnicoReferencia}");
@@ -48,14 +59,13 @@ class EmissaoRelatorioController extends AncestralController {
         }.grep() //limpa nulos
         log.debug("Programas: ${programasSelecionados}");
 
-        response.contentType = 'application/octet-stream'
-        response.setHeader 'Content-disposition', "attachment; filename=\"listagem-apoiasuas.csv\""
-
-        relatorioService.geraListagem(response.outputStream, dataNascimentoInicial, dataNascimentoFinal, definicao.membros, definicao.tecnicoReferencia, programasSelecionados)
+        relatorioService.geraListagem(response.outputStream, dataNascimentoInicial, dataNascimentoFinal, definicao.membros,
+                definicao.tecnicoReferencia, programasSelecionados, definicao.planilhaParaDownload)
     }
 }
 
 class DefinicaoListagemCommand implements Serializable {
+    boolean planilhaParaDownload
     String membros
     Long tecnicoReferencia
     Integer idadeInicial
