@@ -81,10 +81,11 @@ class AmbienteExecucao {
         public static String StringToNumber(String s) {
             switch (AmbienteExecucao.CURRENT) {
 //                case H2 + MYSQL: return ""
-                case POSTGRES: return "cast(REGEXP_REPLACE('0' || COALESCE( $s ,'0'), '[^0-9]+', '', 'g') as integer)" //ver http://stackoverflow.com/a/30582589/1916198
+//                case POSTGRES: return "cast( ( REGEXP_REPLACE('0' || COALESCE( $s ,'0'), '[^0-9]+', '', 'g') ) as integer)" //ver http://stackoverflow.com/a/30582589/1916198
 //                case AmbienteExecucao.POSTGRES: return "to_number( $s ,'999999999999999.99999999')" //ver http://stackoverflow.com/a/18021967/1916198
-                default: throw new RuntimeException("recurso StringToNumer() não implementado para engine " +
-                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
+                default: return "str_2_int($s)"
+//                default: throw new RuntimeException("recurso StringToNumer() não implementado para engine " +
+//                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
             }
         }
     }

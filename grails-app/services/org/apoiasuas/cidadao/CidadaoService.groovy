@@ -49,7 +49,6 @@ class CidadaoService {
             String label = 'logradouro'+i
             hql += " and (lower(remove_acento(a.familia.endereco.nomeLogradouro)) like remove_acento(:"+label+")" +
                     " or lower(remove_acento(a.familia.endereco.complemento)) like remove_acento(:"+label+"))"
-            //TODO: nomeLogradouro or complemento
             filtros.put(label, '%'+logradouro?.toLowerCase()+'%')
         }
 

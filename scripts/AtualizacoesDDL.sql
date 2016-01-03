@@ -48,4 +48,13 @@ alter table campo_formulario add column exibir_para_preenchimento boolean;
 
 -- versao ate aqui: current (local:feito
 
-update campo_formulario set exibir_para_preenchimento = TRUE
+update campo_formulario set exibir_para_preenchimento = TRUE;
+
+CREATE OR REPLACE FUNCTION str_2_int(text)
+  RETURNS integer AS
+  $BODY$
+  SELECT cast( REGEXP_REPLACE('0' || COALESCE( $1 ,'0'), '[^0-9]+', '', 'g') as integer)
+$BODY$
+LANGUAGE sql IMMUTABLE STRICT
+COST 100;
+COMMENT ON FUNCTION str_2_int(text) IS 'Convert texto para numero ignorando caracteres nao numericos sem levantar excessoes';

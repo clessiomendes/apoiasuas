@@ -100,7 +100,7 @@ class CampoFormulario {
             if (instancia.origem?.avulso && instancia.tipo?.texto && ! valor)
                 return ['campo.nao.pode.ser.nulo', "{0}: Valor não pode ser nulo para tipo TEXTO"]
         })
-        exibirParaPreenchimento(nullable: true, )
+        exibirParaPreenchimento(nullable: true)
     }
 
     static mapping = {
