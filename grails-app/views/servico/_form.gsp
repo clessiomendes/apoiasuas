@@ -29,7 +29,7 @@
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'site', 'error')}">
-    <label for="apelido">
+    <label for="site">
         <g:message code="servico.site.label" default="Site na internet" />
     </label>
     <g:textField name="site" size="60" maxlength="255" value="${localDtoServico?.site}"/>
