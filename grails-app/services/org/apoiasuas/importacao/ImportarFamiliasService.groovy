@@ -466,7 +466,7 @@ class ImportarFamiliasService {
             return null;
     }
 
-    private SafeMap converteListaParaMapa(List lista, Map camposPreenchidosInvertido, List camposBDDisponiveis) {
+    protected SafeMap converteListaParaMapa(List<Map> lista, Map camposPreenchidosInvertido, List camposBDDisponiveis) {
         SafeMap result = new SafeMap(true, camposBDDisponiveis);
         //Converte uma lista de mapas em um mapa
         lista.each {

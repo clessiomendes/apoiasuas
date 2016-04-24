@@ -95,6 +95,12 @@ class FormularioIdentidade extends FormularioBase {
                 descricao 'Responsável (preenchimento)'
                 obrigatorio true
             }
+            campoAvulso {
+                codigo CampoFormulario.CODIGO_NOME_EQUIPAMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                exibirParaPreenchimento false
+                descricao 'Nome do equipamento'
+            }
         }
     }
 }

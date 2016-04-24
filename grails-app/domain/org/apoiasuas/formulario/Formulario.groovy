@@ -25,7 +25,7 @@ class Formulario implements Serializable {
 //    String nomeResponsavelPreenchimento
     boolean atualizarPersistencia
     FormularioEmitido formularioEmitido
-    static transients = ['formularioEmitido', 'cidadao', 'dataPreenchimento', /*'nomeResponsavelPreenchimento', 'camposAvulsos',*/ 'atualizarPersistencia']
+    static transients = ['formularioEmitido', 'cidadao', 'dataPreenchimento', 'nomeEquipamento', 'enderecoEquipamento', 'telefoneEquipamento', /*'nomeResponsavelPreenchimento', 'camposAvulsos',*/ 'atualizarPersistencia']
 
     static hasMany = [campos: CampoFormulario]
 
@@ -50,6 +50,30 @@ class Formulario implements Serializable {
 
     Date getDataPreenchimento() {
         return campos.find{ it.codigo == CampoFormulario.CODIGO_DATA_PREENCHIMENTO }?.valorArmazenado
+    }
+
+    void setNomeEquipamento(String nomeEquipamento) {
+        campos.find{ it.codigo == CampoFormulario.CODIGO_NOME_EQUIPAMENTO }?.valorArmazenado = nomeEquipamento
+    }
+
+    Date getNomeEquipamento() {
+        return campos.find{ it.codigo == CampoFormulario.CODIGO_NOME_EQUIPAMENTO }?.valorArmazenado
+    }
+
+    void setEnderecoEquipamento(String enderecoEquipamento) {
+        campos.find{ it.codigo == CampoFormulario.CODIGO_ENDERECO_EQUIPAMENTO }?.valorArmazenado = enderecoEquipamento
+    }
+
+    Date getEnderecoEquipamento() {
+        return campos.find{ it.codigo == CampoFormulario.CODIGO_ENDERECO_EQUIPAMENTO }?.valorArmazenado
+    }
+
+    void setTelefoneEquipamento(String telefoneEquipamento) {
+        campos.find{ it.codigo == CampoFormulario.CODIGO_TELEFONE_EQUIPAMENTO }?.valorArmazenado = telefoneEquipamento
+    }
+
+    Date getTelefoneEquipamento() {
+        return campos.find{ it.codigo == CampoFormulario.CODIGO_TELEFONE_EQUIPAMENTO }?.valorArmazenado
     }
 
 //    String getNomeResponsavelPreenchimento() {
@@ -89,17 +113,17 @@ class Formulario implements Serializable {
     /**
      * Ordena primeiro pelo campo "ordem" e depois pela sequencia de insercao
      */
-    ArrayList<CampoFormulario> getCamposOrdenados(boolean somenteCamposParaPreenchimento = false) {
+    ArrayList<CampoFormulario> getCamposOrdenados(boolean somenteCamposParaPreenchimento) {
         ArrayList<CampoFormulario> temp = campos?.sort { [it.ordem ?: 9999 /*nulos no final*/, it.id] }
         return somenteCamposParaPreenchimento ? temp.findAll { it.exibirParaPreenchimento } : temp
     }
 
-    ArrayList<ArrayList<CampoFormulario>> getCamposAgrupados() {
+    ArrayList<ArrayList<CampoFormulario>> getCamposAgrupados(boolean somenteCamposParaPreenchimento) {
 
         String ultimoGrupo = ""
         ArrayList result = []
         ArrayList<CampoFormulario> listaTemp = []
-        camposOrdenados.each { CampoFormulario campo ->
+        getCamposOrdenados(somenteCamposParaPreenchimento).each { CampoFormulario campo ->
             if (campo.grupo != ultimoGrupo) {
                 if (listaTemp)
                     result.add(listaTemp)
@@ -111,12 +135,6 @@ class Formulario implements Serializable {
         result.add(listaTemp)
         log.debug(result)
         return result
-//        Map gruposOrdenados = [:]
-//        Map gruposDesordenados = campos?.groupBy { it.grupo }
-//        gruposDesordenados.each { chave, List<CampoFormulario> valor ->
-//            gruposOrdenados.put(chave, valor.sort{ [it.ordem ?: 9999 /*nulos no final*/, it.id] })
-//        }
-//        return gruposOrdenados
     }
 
 }

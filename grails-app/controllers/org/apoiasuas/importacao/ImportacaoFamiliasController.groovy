@@ -4,9 +4,8 @@ import grails.async.Promise
 import grails.async.Promises
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -17,8 +16,8 @@ import javax.servlet.http.HttpServletRequest
 @Secured([DefinicaoPapeis.USUARIO])
 class ImportacaoFamiliasController {
 
-    def importarFamiliasService
-    def segurancaService
+    ImportarFamiliasService servicoImportarFamilias
+    SegurancaService segurancaService
 
     static defaultAction = "list"
     static responseFormats = ['json']
@@ -41,13 +40,13 @@ class ImportacaoFamiliasController {
             }
             InputStream inputStream = selectInputStream(request)
 
-            DefinicoesImportacaoFamilias definicoes = importarFamiliasService.getDefinicoes();
+            DefinicoesImportacaoFamilias definicoes = servicoImportarFamilias.getDefinicoes();
             if (!definicoes.linhaDoCabecalho || !definicoes.abaDaPlanilha) {
                 response.status = 500
                 return render ([errorMessage: "Configuracoes nao definidas (linha do cabecalho ou aba da planilha)"] as JSON)
             }
-            TentativaImportacao tentativaImportacao = importarFamiliasService.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, operador)
-            tentativaImportacao = importarFamiliasService.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)
+            TentativaImportacao tentativaImportacao = servicoImportarFamilias.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, operador)
+            tentativaImportacao = servicoImportarFamilias.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)
             log.info("pre importacao encerrada")
             if (!tentativaImportacao?.id) {
                 response.status = 500
@@ -63,10 +62,10 @@ class ImportacaoFamiliasController {
 
 //            Faltando alimentar o mapa camposPreenchidos a ser passado para concluiImportacao. Chave:"campo no BD", Valor:"coluna na planilha"
 
-            Map camposPreenchidos = importarFamiliasService.getDefinicoesImportacaoFamilia()
+            Map camposPreenchidos = servicoImportarFamilias.getDefinicoesImportacaoFamilia()
 
             log.info("concluindo importacao")
-            importarFamiliasService.concluiImportacao(camposPreenchidos, tentativaImportacao.id, operador)
+            servicoImportarFamilias.concluiImportacao(camposPreenchidos, tentativaImportacao.id, operador)
 
             def result = []
             result << "Importação concluída com sucesso (id ${tentativaImportacao.id}). Veja detalhes na tela de importações."
@@ -122,9 +121,9 @@ class ImportacaoFamiliasController {
             int linhaDoCabecalho = params.int("linhaDoCabecalho")
             int abaDaPlanilha = params.int("abaDaPlanilha")
 
-            TentativaImportacao tentativaImportacao = importarFamiliasService.registraNovaImportacao(linhaDoCabecalho, abaDaPlanilha, segurancaService.usuarioLogado)
+            TentativaImportacao tentativaImportacao = servicoImportarFamilias.registraNovaImportacao(linhaDoCabecalho, abaDaPlanilha, segurancaService.usuarioLogado)
 
-            importarFamiliasService.preImportacao(inputStream, tentativaImportacao, linhaDoCabecalho, abaDaPlanilha, true/*assincrono*/)
+            servicoImportarFamilias.preImportacao(inputStream, tentativaImportacao, linhaDoCabecalho, abaDaPlanilha, true/*assincrono*/)
 
             if (!tentativaImportacao?.id) {
                 return render(text: [success: false] as JSON, contentType: 'text/json')
@@ -164,7 +163,7 @@ class ImportacaoFamiliasController {
     def create() {
         //Limpa a sessão
         session.removeAttribute("idImportacao")
-        DefinicoesImportacaoFamilias definicoes = importarFamiliasService.getDefinicoes();
+        DefinicoesImportacaoFamilias definicoes = servicoImportarFamilias.getDefinicoes();
         request.linhaDoCabecalho = definicoes.linhaDoCabecalho
         request.abaDaPlanilha = definicoes.abaDaPlanilha
     }
@@ -185,7 +184,7 @@ class ImportacaoFamiliasController {
         long idImportacao = session.idImportacao
 
 
-        List<ColunaImportadaCommand> colunasImportadas = importarFamiliasService.obtemColunasImportadas(idImportacao)
+        List<ColunaImportadaCommand> colunasImportadas = servicoImportarFamilias.obtemColunasImportadas(idImportacao)
         if (! colunasImportadas) {
             //Algum erro na preImportacao pode fazer com que nao haja nenhuma coluna importada. Redirecionar para listagem com mensagem de erro
             flash.error = 'Erro na importação. Clique em "detalhes" para ver o motivo.'
@@ -194,7 +193,7 @@ class ImportacaoFamiliasController {
         }
 
         wrapperCabecalhos.colunasImportadas =  colunasImportadas
-        wrapperCabecalhos.camposBDDisponiveis = importarFamiliasService.obtemCamposBDDisponiveis()
+        wrapperCabecalhos.camposBDDisponiveis = servicoImportarFamilias.obtemCamposBDDisponiveis()
         return [wrapperCabecalhos: wrapperCabecalhos]
         //Adiciona um objeto de nome "wrapperCabecalhos" no escopo da página correspondente a esta action
     }
@@ -266,16 +265,16 @@ class ImportacaoFamiliasController {
         //Gravar as novas definicoes (obs1: transacao separada da importacao em si porque, caso haja algum erro, as
         //definicoes que acabaram de ser feitas pelo usuario não serão perdidas)
         //obs2: as escolhas do usuario serao gravadas independentes de eventuais erros de validaca (duplicidade)
-        importarFamiliasService.atualizaDefinicoesImportacaoFamilia(camposPreenchidos);
+        servicoImportarFamilias.atualizaDefinicoesImportacaoFamilia(camposPreenchidos);
 
         if (wrapperCabecalhos.hasErrors()) {
-            wrapperCabecalhos.camposBDDisponiveis = importarFamiliasService.obtemCamposBDDisponiveis()
+            wrapperCabecalhos.camposBDDisponiveis = servicoImportarFamilias.obtemCamposBDDisponiveis()
             render view: "create2", model: [wrapperCabecalhos: wrapperCabecalhos]
         } else {
             //Rodar assincronamente
             Promise p = Promises.task {
                 //Efetivar a importação dos dados da planilha, que foram gravados previamente em uma tabela temporaria no BD
-                importarFamiliasService.concluiImportacao(camposPreenchidos, idImportacao, segurancaService.getUsuarioLogado())
+                servicoImportarFamilias.concluiImportacao(camposPreenchidos, idImportacao, segurancaService.getUsuarioLogado())
             }
             redirect action: 'show', id: idImportacao
         }

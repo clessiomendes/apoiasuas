@@ -57,7 +57,7 @@
 				<g:if test="${formularioInstance?.campos}">
 				<li class="fieldcontain">
 					<span id="campos-label" class="property-label"><g:message code="formulario.campos.label" default="Campos" /></span>
-						<g:each in="${formularioInstance.camposOrdenados}" var="c">
+						<g:each in="${formularioInstance.getCamposOrdenados(false)}" var="c">
 							<span class="property-value" aria-labelledby="campos-label">
 								%{--<g:link controller="campoFormulario" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link>--}%
 								${c?.encodeAsHTML()}

@@ -1,3 +1,7 @@
+import org.apoiasuas.ConfiguracaoService
+import org.apoiasuas.importacao.ImportacaoFamiliasController
+import org.apoiasuas.importacao.ImportarFamiliasBHService
+import org.apoiasuas.importacao.ImportarFamiliasService
 import org.apoiasuas.services.ImportarFamiliasJavaService
 
 // Place your Spring DSL code here
@@ -10,6 +14,13 @@ beans = {
 	}
 */
 //	roleHierarchy(RoleHierarchyImpl)
+
+    /**
+     * Escolher a implementacao a usar para o servico de importacao de familias
+     */
+    servicoImportarFamilias(ImportarFamiliasBHService) { bean ->
+        bean.autowire = 'byName'
+    }
 
 /*
 Create Spring bean for Groovy SQL.

@@ -13,6 +13,7 @@ import org.hibernate.transform.AliasToEntityMapResultTransformer
 class ApoiaSuasService {
 
     def grailsApplication
+    def groovySql
     def dataSource
     SessionFactory sessionFactory
 
@@ -22,6 +23,7 @@ class ApoiaSuasService {
                     "  FROM information_schema.columns\n" +
                     " WHERE table_schema='public'\n" +
                     "   and column_name='id'   \n" +
+                    "   and not table_name = 'configuracao'   \n" +
                     "   and 'sq_' || table_name not IN ( SELECT a.sequence_name FROM information_schema.sequences a )"
 
     @Transactional(readOnly = true)
@@ -39,5 +41,14 @@ class ApoiaSuasService {
         }
 
         return result
+    }
+
+    @Transactional
+    long ocupacaoBD() {
+//        def result = groovySql.firstRow("select 0").get(0)
+//        def result = groovySql.firstRow("select pg_database_size('bcck9gsbpzsnf7y')").getAt(0)
+//        return (result instanceof Number) ? result.longValue() : null;
+        return 0
+//        select pg_size_pretty(pg_database_size('bcck9gsbpzsnf7y'));
     }
 }

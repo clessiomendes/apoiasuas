@@ -234,7 +234,6 @@ class RelatorioService {
     private CharSequence montaAppendHTML(Collection lista) {
         String result = "<tr>"
         lista.eachWithIndex { elemento, i ->
-                //FIXME: tirar eventuais caracteres \t (tab) da planilha para nao estragar a formatacao
                 result +=  '<td style="border: 1px solid black;">' + (elemento != null ? elemento : "" ) + '</td>'
         }
         return result + "</tr>";

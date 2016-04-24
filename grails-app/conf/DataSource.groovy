@@ -40,11 +40,15 @@ dataSource {
 
         case AmbienteExecucao.LOCAL_POSTGRES:
             println("Ambiente: Postgres local " + environment)
-            driverClassName = "org.postgresql.Driver"
             dialect = "org.hibernate.dialect.PostgreSQLDialect"
+            jndiName = "java:comp/env/jdbc/dsApoiaSUAS"
+
+/* -estas configuracoes foram migradas para web-app/META-INF/context.xml
+            driverClassName = "org.postgresql.Driver"
             url = "jdbc:postgresql://localhost:5432/apoiasuas"
             username = "postgres"
             password = "senha"
+*/
             break
 
         case AmbienteExecucao.LOCAL_H2:
@@ -89,6 +93,12 @@ dataSource {
 
         case [AmbienteExecucao.CLEVERCLOUD_POSTGRES_PROD, AmbienteExecucao.CLEVERCLOUD_POSTGRES_VALID]:
             println("Ambiente: Postgres clever-cloud " + environment)
+            dialect = "org.hibernate.dialect.PostgreSQLDialect"
+
+//            jndiName = "java:comp/env/jdbc/dsApoiaSUAS"
+/* -estas configuracoes foram migradas para web-app/META-ING/context.xml
+*/
+
             driverClassName = "org.postgresql.Driver"
             host = System.getProperties().getProperty("POSTGRESQL_ADDON_HOST")
             port = System.getProperties().getProperty("POSTGRESQL_ADDON_PORT")
@@ -122,16 +132,18 @@ dataSource {
                 maxIdle = 3
                 break
             case AmbienteExecucao.CLEVERCLOUD_POSTGRES_PROD:
-                maxActive = 3
-                initialSize = 3
+                initialSize = 1
                 minIdle = 1
-                maxIdle = 3
+/*  -estas configuracoes foram migradas para web-app/META-ING/context.xml
+*/
+                maxActive = 1
+                maxIdle = 1
                 break
             default:
-                maxActive = 3
-                initialSize = 3
+                maxActive = 1
+                initialSize = 1
                 minIdle = 1
-                maxIdle = 3
+                maxIdle = 1
         }
     }
 

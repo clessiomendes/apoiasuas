@@ -49,7 +49,7 @@
               onchange="ajaxServico(this.value)"/>
 </div>
 
-<g:each in="${localDtoFormulario.camposAgrupados}" var="grupo" status="i"> %{-- separa os campos em grupos --}%
+<g:each in="${localDtoFormulario.getCamposAgrupados(true)}" var="grupo" status="i"> %{-- separa os campos em grupos --}%
     <g:if test="${grupo[0].grupo}"> %{-- se o grupo tiver nome, cria uma caixa para ele --}%
         <fieldset class="embedded"><legend class="collapsable" style="cursor:pointer;">${grupo[0].grupo}</legend>
     </g:if>

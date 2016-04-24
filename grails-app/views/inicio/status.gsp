@@ -59,6 +59,7 @@
                 <li>Domains: ${grailsApplication.domainClasses.size()}</li>
                 <li>Services: ${grailsApplication.serviceClasses.size()}</li>
                 <li>Tag Libraries: ${grailsApplication.tagLibClasses.size()}</li>
+                <li>Uso de banco de dados: ${ocupacaoBD}</li>
             </ul>
             <h1>Installed Plugins</h1>
             <ul>

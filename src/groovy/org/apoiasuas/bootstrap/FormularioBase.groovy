@@ -104,6 +104,21 @@ class FormularioBase {
                 descricao 'Data (preenchimento)'
             }
             campoAvulso {
+                codigo CampoFormulario.CODIGO_NOME_EQUIPAMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                descricao 'Nome do equipamento'
+            }
+            campoAvulso {
+                codigo CampoFormulario.CODIGO_ENDERECO_EQUIPAMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                descricao 'Endereço do equipamento'
+            }
+            campoAvulso {
+                codigo CampoFormulario.CODIGO_TELEFONE_EQUIPAMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                descricao 'Telefone(s) do equipamento'
+            }
+            campoAvulso {
                 codigo CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO
                 tipo CampoFormulario.Tipo.TEXTO
                 tamanho 60

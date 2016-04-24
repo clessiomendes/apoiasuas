@@ -39,7 +39,7 @@
 	</label>
 	
 <ul class="one-to-many">
-<g:each in="${localDtoFormulario?.camposOrdenados?}" var="c">
+<g:each in="${localDtoFormulario?.getCamposOrdenados(false)}" var="c">
     %{--<li><g:link controller="campoFormulario" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>--}%
     <li>${c?.encodeAsHTML()}</li>
 </g:each>

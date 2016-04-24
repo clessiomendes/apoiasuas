@@ -78,6 +78,26 @@ class FormularioCertidoesPedido extends FormularioBase {
                     obrigatorio true
                 }
             }
+            grupo 'Equipamento', {
+                campoAvulso {
+                    codigo CampoFormulario.CODIGO_NOME_EQUIPAMENTO
+                    tipo CampoFormulario.Tipo.TEXTO
+                    exibirParaPreenchimento false
+                    descricao 'Nome'
+                }
+                campoAvulso {
+                    codigo CampoFormulario.CODIGO_ENDERECO_EQUIPAMENTO
+                    tipo CampoFormulario.Tipo.TEXTO
+                    exibirParaPreenchimento false
+                    descricao 'Endereço'
+                }
+                campoAvulso {
+                    codigo CampoFormulario.CODIGO_TELEFONE_EQUIPAMENTO
+                    tipo CampoFormulario.Tipo.TEXTO
+                    exibirParaPreenchimento false
+                    descricao 'Telefone(s)'
+                }
+            }
         }
     }
 }

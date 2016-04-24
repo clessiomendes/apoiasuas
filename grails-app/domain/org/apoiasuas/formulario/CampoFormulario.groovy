@@ -13,6 +13,9 @@ import java.text.SimpleDateFormat
 class CampoFormulario {
 
     public static String CODIGO_DATA_PREENCHIMENTO = "data_preenchimento"
+    public static String CODIGO_NOME_EQUIPAMENTO = "nome_equipamento"
+    public static String CODIGO_ENDERECO_EQUIPAMENTO = "endereco_equipamento"
+    public static String CODIGO_TELEFONE_EQUIPAMENTO = "telefone_equipamento"
     public static String CODIGO_RESPONSAVEL_PREENCHIMENTO = "responsavel_preenchimento"
 
     static enum Tipo { TEXTO, INTEIRO, DATA, TELEFONE, SELECAO

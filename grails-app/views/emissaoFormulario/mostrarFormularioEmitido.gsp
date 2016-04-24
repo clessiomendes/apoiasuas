@@ -41,7 +41,7 @@
 --}%
 
                 <g:if test="${formularioEmitidoInstance?.campos}">
-                    <g:agrupaCampos lista="${formularioEmitidoInstance.camposOrdenados}" campoGrupo="grupo" status="i" var="campoPreenchidoTemp">
+                    <g:agrupaCampos lista="${formularioEmitidoInstance.getCamposOrdenados()}" campoGrupo="grupo" status="i" var="campoPreenchidoTemp">
                         <% CampoFormularioEmitido campoPreenchido = campoPreenchidoTemp %>
                             <li class="fieldcontain">
                                 <span id="campos-label" class="property-label">${campoPreenchido?.descricao}</span>

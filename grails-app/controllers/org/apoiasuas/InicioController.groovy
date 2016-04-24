@@ -63,6 +63,7 @@ class InicioController {
 
     def status() {
         request.setAttribute("atualizacoesPendentesBD", apoiaSuasService.atualizacoesPendentes);
+        request.setAttribute("ocupacaoBD", apoiaSuasService.ocupacaoBD());
     }
 
     private ItemMenuDTO[] itemMenu(String descricao, Class classeController, String[] papeisAcesso) {

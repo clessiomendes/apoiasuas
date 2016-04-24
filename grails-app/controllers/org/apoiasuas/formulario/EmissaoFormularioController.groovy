@@ -125,8 +125,7 @@ class EmissaoFormularioController extends AncestralController {
      * Infere, à partir do formulário sendo gerado, o serviço correspondente
      */
     FormularioService service(Formulario formulario) {
-        Class<? extends FormularioBase> f = formulario ? formulario.formularioPreDefinido.definicaoFormulario.newInstance().classeServico() :
-                FormularioBase.newInstance().classeServico();
+        Class<? extends FormularioBase> f = formulario ? formulario.formularioPreDefinido.definicaoFormulario.newInstance().classeServico() :  FormularioBase.newInstance().classeServico();
         return grailsApplication.mainContext.getBean(StringUtils.firstLowerCase(f.simpleName))
 /*
         switch (formulario?.formularioPreDefinido) {

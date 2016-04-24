@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource name="jdbc/dsApoiaSUAS"
+              auth="Container"
+              type="javax.sql.DataSource"
+              driverClassName="org.postgresql.Driver"
+              factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+
+              url="jdbc:postgresql://localhost:5432/apoiasuas"
+              username="postgres"
+              password="senha"
+
+              maxActive="3"
+              maxWait ="3000"
+              validationQuery="SELECT 1*1"
+              testOnBorrow="true"
+              testOnReturn="true"
+              testWhileIdle="true"
+              maxIdle="3"
+              initialSize ="3"/>
+</Context>

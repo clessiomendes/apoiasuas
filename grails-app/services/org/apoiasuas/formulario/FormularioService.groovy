@@ -3,9 +3,13 @@ package org.apoiasuas.formulario
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry
 import fr.opensagres.xdocreport.template.TemplateEngineKind
 import grails.transaction.Transactional
+import org.apoiasuas.Configuracao
+import org.apoiasuas.ConfiguracaoService
 import org.apoiasuas.cidadao.Cidadao
+import org.apoiasuas.cidadao.CidadaoService
 import org.apoiasuas.cidadao.Endereco
 import org.apoiasuas.cidadao.Familia
+import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.Docx4jUtils
 import org.apoiasuas.util.StringUtils
@@ -17,12 +21,19 @@ import org.hibernate.Hibernate
 class FormularioService {
 
     public static final Date ANO_CEM = Date.parse("dd/MM/yyyy", "01/01/100")
-    def cidadaoService
-    def segurancaService
+    CidadaoService cidadaoService
+    SegurancaService segurancaService
+    ConfiguracaoService configuracaoService
 
     @Transactional(readOnly = true)
     public List<Formulario> getFormulariosDisponiveis() {
         return Formulario.list().sort({ it.nome })
+    }
+
+    private void valoresFixos(Formulario formulario) {
+        formulario.nomeEquipamento = configuracaoService.configuracaoReadOnly?.equipamento?.nome
+        formulario.enderecoEquipamento = configuracaoService.configuracaoReadOnly?.equipamento?.endereco?.enderecoCompleto
+        formulario.telefoneEquipamento = configuracaoService.configuracaoReadOnly?.equipamento?.telefone
     }
 
     @Transactional
@@ -41,6 +52,7 @@ class FormularioService {
         result.context = result.report.createContext();
         result.fieldsMetadata = result.report.createFieldsMetadata();
 
+        valoresFixos(formulario)
         registraEmissao(formulario) //chamar antes de transferir conteudo
         transfereConteudo(formulario, result)
 
@@ -95,7 +107,7 @@ class FormularioService {
             formularioEmitido.campos.each { it.delete() }
         formularioEmitido.campos = []
 
-        formulario.camposOrdenados.each { campoPrevisto ->
+        formulario.getCamposOrdenados(false).each { campoPrevisto ->
             CampoFormularioEmitido campoPreenchido = new CampoFormularioEmitido()
             formularioEmitido.campos << campoPreenchido
             campoPreenchido.formulario = formularioEmitido

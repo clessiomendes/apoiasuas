@@ -15,10 +15,11 @@ import org.apoiasuas.bootstrap.FormularioIdentidadeFoto
  */
 enum PreDefinidos {
 
-    IDENTIDADE(FormularioIdentidade.class), FOTOS(FormularioFotos.class), CERTIDOES(FormularioCertidoes.class),
-    GENERICO(FormularioBase.class), IDENTIDADE_FOTO(FormularioIdentidadeFoto.class),
-    CERTIDOES_E_PEDIDO(FormularioCertidoesPedido.class), ENCAMINHAMENTO(FormularioEncaminhamento.class),
-    PLANO_ACOMPANHAMENTO(FormularioAcompanhamento.class), CURRICULO_EMPREGO(FormularioCurriculoEmprego.class)
+    IDENTIDADE_FOTO(FormularioIdentidadeFoto.class), IDENTIDADE(FormularioIdentidade.class), FOTOS(FormularioFotos.class),
+    CERTIDOES(FormularioCertidoes.class), CERTIDOES_E_PEDIDO(FormularioCertidoesPedido.class),
+    ENCAMINHAMENTO(FormularioEncaminhamento.class),
+//    PLANO_ACOMPANHAMENTO(FormularioAcompanhamento.class), GENERICO(FormularioBase.class),
+    CURRICULO_EMPREGO(FormularioCurriculoEmprego.class)
 
     Class<FormularioBase> definicaoFormulario
 

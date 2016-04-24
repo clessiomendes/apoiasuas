@@ -45,6 +45,7 @@
                 <g:link class="verde_oliva" controller="importacaoFamilias"
                         action="list">Importação de famílias</g:link>
                 <g:link class="laranja" controller="usuarioSistema" action="list">Operadores do sistema</g:link>
+                <g:link class="verde_agua" controller="configuracao">Configurações</g:link>
             </sec:ifAnyGranted>
             <br style="clear: both"/>
             <br style="clear: both"/>
