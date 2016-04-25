@@ -27,6 +27,49 @@
 
 <div id="page-body" role="main">
 
+    <div id="filtros">
+        <table style="border-top: 0; margin-bottom: 0;">
+            <tr>
+                <td style="width: 14em;">Nome ou cadastro de usuário:</td>
+                <td><g:form action="procurarCidadao" controller="cidadao"> <g:textField name="nomeOuCodigoLegado" size="50" autofocus=""/>
+                    <g:submitButton name="procurar" value="Procurar"/></g:form></td>
+            </tr>
+            <tr>
+                <td>Rede sócio-assistencial:</td>
+                <td><g:form action="list" controller="servico"> <g:textField name="palavraChave" size="50" autofocus="" value="${filtro?.nome}"/>
+                    <g:submitButton name="list" class="list" value="Procurar"/></g:form></td>
+            </tr>
+        </table>
+    </div>
+
+%{--
+    <div filtro-cidadao>
+        <g:form action="procurarCidadao">
+            <table>
+                <tr>
+                    <td>Nome ou cadastro de usuário: <g:textField name="nomeOuCodigoLegado" size="25" autofocus=""/></td>
+                    <td><g:submitButton name="procurar" value="Procurar"/></td>
+                </tr>
+                <tr>
+                    <td>Rede sócio-assistencial:<g:textField name="palavraChave" size="20" autofocus="" value="${filtro?.nome}"/></td>
+                    <td><g:submitButton name="list" class="list" value="Procurar"/></td>
+                </tr>
+            </table>
+        </g:form>
+    </div>
+
+    <div id="filtro-servico">
+        <g:form action="list">
+            <table>
+                <tr>
+                    <td>Rede sócio-assistencial:<g:textField name="palavraChave" size="20" autofocus="" value="${filtro?.nome}"/></td>
+                    <td><g:submitButton name="list" class="list" value="Procurar"/></td>
+                </tr>
+            </table>
+        </g:form>
+    </div>
+--}%
+
     <div class="wrap">
         <div id="menu">
             <g:link class="verde_oliva" controller="emissaoFormulario" action="escolherFamilia">

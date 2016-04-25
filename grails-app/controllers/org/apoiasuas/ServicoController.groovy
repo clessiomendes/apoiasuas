@@ -36,7 +36,12 @@ class ServicoController {
     def list(String palavraChave) {
         params.max = 20
         PagedResultList servicos = servicoService.procurarServico(palavraChave, params)
-        render view: 'list', model: [servicoInstanceList: servicos, servicoInstanceCount: servicos.totalCount]
+        if (servicos && servicos.size() > 1) {
+            //Exibir tela listando todos os serviços que respondem ao criterio buscado
+            render view: 'list', model: [servicoInstanceList: servicos, servicoInstanceCount: servicos.totalCount]
+        } else {
+            return show(servicos[0]);
+        }
     }
 
     def show(Servico servicoInstance) {

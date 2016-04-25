@@ -40,7 +40,7 @@
 %{--
             <td> Test ${servletContext.getInitParameter("nomeEquipamento")} e <a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a>  </td>
 --}%
-            <td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:40px">${application.configuracao ? application.configuracao.equipamento?.nome : "indefinido" }</span> </td>
+            <td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px">${application.configuracao ? application.configuracao.equipamento?.nome : "indefinido" }</span> </td>
             <td> %{--  Exibe a última família / cidadão selecionado, se houver:   --}%
                 <%
                     Familia ultimaFamilia = session[org.apoiasuas.AncestralController.ULTIMA_FAMILIA]
