@@ -180,13 +180,23 @@ class EmissaoFormularioController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
-    def listarFormulariosEmitidos(Integer max, Long idFamilia) {
+    def listarFormulariosEmitidosFamilia(Long idFamilia) {
         /* TODO Paginar
         params.max = Math.min(max ?: 10, 100)
         render view: "/cidadao/procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
         */
-        List<FormularioEmitido> formularios = FormularioEmitido.findAllByFamilia(Familia.get(idFamilia))
-        render view: "listarFormulariosEmitidos", model: [formularioEmitidoInstanceList: formularios /*, formularioEmitidoInstanceCount: formularios.size(), filtro: filtrosUsados*/ ]
+        List<FormularioEmitido> formularios = FormularioEmitido.findAllByFamilia(Familia.get(idFamilia), [max: 20, sort: "id", order:"desc"])
+        render view: "listarFormulariosEmitidos", model: [formularioEmitidoInstanceList: formularios]
+    }
+
+    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    def listarFormulariosEmitidosCidadao(Long idCidadao) {
+        /* TODO Paginar
+        params.max = Math.min(max ?: 10, 100)
+        render view: "/cidadao/procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
+        */
+        List<FormularioEmitido> formularios = FormularioEmitido.findAllByCidadao(Cidadao.get(idCidadao), [max: 20, sort: "id", order:"desc"])
+        render view: "listarFormulariosEmitidos", model: [formularioEmitidoInstanceList: formularios]
     }
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])

@@ -69,7 +69,8 @@
 
             </ol>
             <fieldset class="buttons">
-                <g:link class="edit" controller="emissaoFormulario" action="escolherFamilia">Formulários</g:link>
+                <g:link class="add" controller="emissaoFormulario" action="escolherFamilia">Emitir formulário</g:link>
+                <g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosCidadao" params="[idCidadao: cidadaoInstance.id]" >Formulários emitidos</g:link>
             </fieldset>
 		</div>
 	</body>

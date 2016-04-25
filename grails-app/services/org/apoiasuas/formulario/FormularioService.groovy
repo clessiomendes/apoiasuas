@@ -81,7 +81,6 @@ class FormularioService {
                 formulario.cidadao.familia.endereco = new Endereco()
             }
         }
-        formulario.dataPreenchimento = new Date()
 //        formulario.nomeResponsavelPreenchimento = segurancaService.getUsuarioLogado().nomeCompleto
 
         FormularioEmitido formularioEmitido = new FormularioEmitido()
@@ -99,7 +98,9 @@ class FormularioService {
         FormularioEmitido formularioEmitido = formulario.formularioEmitido
         formularioEmitido.familia = formulario.cidadao?.familia ? Familia.get(formulario.cidadao?.familia?.id) : null
         formularioEmitido.cidadao = formulario.cidadao ? Cidadao.get(formulario.cidadao.id) : null
-        formularioEmitido.dataPreenchimento = formulario.dataPreenchimento
+
+        //Caso não seja preenchida uma data explicitamente pelo operador, assumir a data atual:
+        formularioEmitido.dataPreenchimento = formulario.dataPreenchimento ?: new Date()
 //        formularioEmitido.responsavelPreenchimento = TODO: obter usuario selecionado
 
         //Limpa campos antigos (em caso de ser uma reemissao)

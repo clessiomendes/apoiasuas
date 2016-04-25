@@ -1,6 +1,6 @@
 .wrap{
     width:95%;
-    margin: -13px auto ; /*TODO: Porque a necessidade da margem do topo do css metro precisa ser negativa? */
+    margin: 10px auto ;
 }
 
 #menu {
