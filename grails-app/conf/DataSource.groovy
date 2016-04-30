@@ -1,5 +1,8 @@
 import org.apoiasuas.formulario.PreDefinidos
 import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.servlets.PreGrailsServletContextListener
+
+import javax.naming.InitialContext
 
 final String PARAMETROS_MYSQL_VIA_URL = "?profileSQL=true"
 //final String PARAMETROS_MYSQL_VIA_URL = "?connectTimeout=0&socketTimeout=0&autoReconnectForPools=true&profileSQL=true"
@@ -41,14 +44,21 @@ dataSource {
         case AmbienteExecucao.LOCAL_POSTGRES:
             println("Ambiente: Postgres local " + environment)
             dialect = "org.hibernate.dialect.PostgreSQLDialect"
-            jndiName = "java:comp/env/jdbc/dsApoiaSUAS"
+            driverClassName = "org.postgresql.Driver"
+
+            String contextPath = PreGrailsServletContextListener.getContextPath();
+            if (contextPath)
+                jndiName = "java:comp/env/jdbc/dslocal"
+//                jndiName = "java:comp/env/jdbc/ds" + contexPath.substring(1)
 
 /* -estas configuracoes foram migradas para web-app/META-INF/context.xml
-            driverClassName = "org.postgresql.Driver"
-            url = "jdbc:postgresql://localhost:5432/apoiasuas"
-            username = "postgres"
-            password = "senha"
 */
+//            url = "jdbc:postgresql://localhost:5432/apoiasuas"
+//            username = "postgres"
+//            password = "senha"
+//            url = "jdbc:postgresql://bcck9gsbpzsnf7y-postgresql.services.clever-cloud.com:5432/bcck9gsbpzsnf7y"
+//            username = "ugra2entngapyqcy5qai"
+//            password = "MfjC94nKKJQT2EPmDeD9"
             break
 
         case AmbienteExecucao.LOCAL_H2:
@@ -91,14 +101,28 @@ dataSource {
             password = credentials ? credentials.password : ""
             break
 
-        case [AmbienteExecucao.CLEVERCLOUD_POSTGRES_PROD, AmbienteExecucao.CLEVERCLOUD_POSTGRES_VALID]:
+        case AmbienteExecucao.CLEVERCLOUD_POSTGRES_PROD:
             println("Ambiente: Postgres clever-cloud " + environment)
             dialect = "org.hibernate.dialect.PostgreSQLDialect"
 
-//            jndiName = "java:comp/env/jdbc/dsApoiaSUAS"
+            String contextPath = PreGrailsServletContextListener.getContextPath();
+            if (contextPath)
+                jndiName = "java:comp/env/jdbc/ds" + contextPath.substring(1/*retira a "/" do caminho*/)
 /* -estas configuracoes foram migradas para web-app/META-ING/context.xml
+            driverClassName = "org.postgresql.Driver"
+            host = System.getProperties().getProperty("POSTGRESQL_ADDON_HOST")
+            port = System.getProperties().getProperty("POSTGRESQL_ADDON_PORT")
+            dbname = System.getProperties().getProperty("POSTGRESQL_ADDON_DB")
+            username = System.getProperties().getProperty("POSTGRESQL_ADDON_USER")
+            password = System.getProperties().getProperty("POSTGRESQL_ADDON_PASSWORD")
+            dialect = "org.hibernate.dialect.PostgreSQLDialect"
+            url = "jdbc:postgresql://${host}:${port}/${dbname}"
 */
+            break
 
+        case AmbienteExecucao.CLEVERCLOUD_POSTGRES_VALID:
+            println("Ambiente: Postgres clever-cloud " + environment)
+            dialect = "org.hibernate.dialect.PostgreSQLDialect"
             driverClassName = "org.postgresql.Driver"
             host = System.getProperties().getProperty("POSTGRESQL_ADDON_HOST")
             port = System.getProperties().getProperty("POSTGRESQL_ADDON_PORT")
@@ -125,22 +149,22 @@ dataSource {
         validationQuery = "SELECT 1*1"
 
         switch (AmbienteExecucao.CURRENT) {
+/*  -estas configuracoes foram migradas para web-app/META-ING/context.xml
             case AmbienteExecucao.LOCAL_POSTGRES:
                 maxActive = 3
-                initialSize = 3
+                initialSize = 1
                 minIdle = 1
-                maxIdle = 3
+                maxIdle = 1
                 break
             case AmbienteExecucao.CLEVERCLOUD_POSTGRES_PROD:
                 initialSize = 1
                 minIdle = 1
-/*  -estas configuracoes foram migradas para web-app/META-ING/context.xml
-*/
                 maxActive = 1
                 maxIdle = 1
                 break
+*/
             default:
-                maxActive = 1
+                maxActive = 3
                 initialSize = 1
                 minIdle = 1
                 maxIdle = 1

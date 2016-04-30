@@ -35,6 +35,10 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!--Important! Keep the following lister order-->
+    <listener>
+        <listener-class>org.apoiasuas.servlets.PreGrailsServletContextListener</listener-class>
+    </listener>
     <listener>
         <listener-class>org.codehaus.groovy.grails.web.context.GrailsContextLoaderListener</listener-class>
     </listener>

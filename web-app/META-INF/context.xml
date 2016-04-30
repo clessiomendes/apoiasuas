@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-    <Parameter name="nomeEquipamento" value="Havai-Ventosa" override="true"/>
-
-    <Resource name="jdbc/dsApoiaSUAS"
+    <Resource name="jdbc/dslocal"
               auth="Container"
               type="javax.sql.DataSource"
               driverClassName="org.postgresql.Driver"
@@ -19,5 +17,42 @@
               testOnReturn="true"
               testWhileIdle="true"
               maxIdle="3"
-              initialSize ="3"/>
+              initialSize ="1"/>
+
+    <Resource name="jdbc/dshavaiventosa"
+              username="ugra2entngapyqcy5qai"
+              password="MfjC94nKKJQT2EPmDeD9"
+              url="jdbc:postgresql://bcck9gsbpzsnf7y-postgresql.services.clever-cloud.com:5432/bcck9gsbpzsnf7y"
+
+              auth="Container"
+              type="javax.sql.DataSource"
+              driverClassName="org.postgresql.Driver"
+              maxWait ="3000"
+              validationQuery="SELECT 1*1"
+              testOnBorrow="true"
+              testOnReturn="true"
+              testWhileIdle="true"
+              maxActive="3"
+              minIdle="1"
+              maxIdle="1"
+              initialSize ="1"/>
+
+    <Resource name="jdbc/dsvistaalegre"
+              username="us3eqfy2ng7fvfwqguei"
+              password="aOJSRzBGrI0iPvwKGEKg"
+              url="jdbc:postgresql://ber0akz9p26cqvu-postgresql.services.clever-cloud.com:5432/ber0akz9p26cqvu"
+
+              auth="Container"
+              type="javax.sql.DataSource"
+              driverClassName="org.postgresql.Driver"
+              maxWait ="3000"
+              validationQuery="SELECT 1*1"
+              testOnBorrow="true"
+              testOnReturn="true"
+              testWhileIdle="true"
+              maxActive="3"
+              minIdle="1"
+              maxIdle="1"
+              initialSize ="1"/>
+
 </Context>
