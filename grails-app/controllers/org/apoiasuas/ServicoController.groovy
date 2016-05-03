@@ -33,6 +33,7 @@ class ServicoController {
         render servico.properties + [enderecoCompleto: endereco] as JSON
     }
 
+    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def list(String palavraChave) {
         params.max = 20
         PagedResultList servicos = servicoService.procurarServico(palavraChave, params)
@@ -44,6 +45,7 @@ class ServicoController {
         }
     }
 
+    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def show(Servico servicoInstance) {
         if (! servicoInstance)
             return notFound()
@@ -56,7 +58,6 @@ class ServicoController {
         render view: 'create', model: [servicoInstance: servico]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO])
     def save(Servico servicoInstance) {
         if (! servicoInstance)
             return notFound()
@@ -88,6 +89,7 @@ class ServicoController {
         redirect action:"list"
     }
 
+    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     protected def notFound() {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'servico.label', default: 'Servico'), params.id])
         return redirect(action: "list")

@@ -24,11 +24,13 @@ class LinkController {
         respond linkInstance
     }
 
+    @Secured([DefinicaoPapeis.USUARIO])
     def create() {
         Link link = new Link(params)
         respond link
     }
 
+    @Secured([DefinicaoPapeis.USUARIO])
     @Transactional
     def save(Link linkInstance) {
         if (linkInstance == null) {
@@ -52,10 +54,12 @@ class LinkController {
         }
     }
 
+    @Secured([DefinicaoPapeis.USUARIO])
     def edit(Link linkInstance) {
         respond linkInstance
     }
 
+    @Secured([DefinicaoPapeis.USUARIO])
     @Transactional
     def update(Link linkInstance) {
         if (linkInstance == null) {
@@ -79,6 +83,7 @@ class LinkController {
         }
     }
 
+    @Secured([DefinicaoPapeis.USUARIO])
     @Transactional
     def delete(Link linkInstance) {
 

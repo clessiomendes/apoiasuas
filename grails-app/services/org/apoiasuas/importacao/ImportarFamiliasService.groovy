@@ -22,6 +22,8 @@ import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.support.SoftThreadLocalMap
 import org.springframework.transaction.annotation.Isolation
 
+import java.sql.SQLException
+
 //TODO Transformar processamento em uma JOB com processamento síncrono.
 class ImportarFamiliasService {
 
@@ -29,6 +31,7 @@ class ImportarFamiliasService {
 
     def sessionFactory //fabrica de sessoes hibernate
     def segurancaService
+    def groovySql
 
     @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED /*para conseguir ler o primeiro cabecalho*/)
     List<ColunaImportadaCommand> obtemColunasImportadas(long idImportacao) {
@@ -545,6 +548,18 @@ class ImportarFamiliasService {
         }
     }
 
+    @Transactional
+    private void limpaTabelasTemporarias() {
+        try {
+            log.debug("truncate table linha_tentativa_importacao")
+            groovySql.execute("truncate table linha_tentativa_importacao")
+        } catch (SQLException e) {
+            log.error("Erro limpando tabela temporaria de importação")
+            e.printStackTrace();
+        }
+    }
+
+
     //nao transacional(do ponto de vista de Banco de dados)
     public TentativaImportacao preImportacao(InputStream inputStream, TentativaImportacao importacao, int linhaDoCabecalho, int abaDaPlanilha, boolean assincrono) throws Exception {
 
@@ -552,6 +567,8 @@ class ImportarFamiliasService {
         final int LINHAS_POR_TRANSACAO = 20
 
         log.info(["Iniciando preImportacao ", importacao.id])
+        //Limpando tabelas temporarias
+//        limpaTabelasTemporarias()
 
         OPCPackage pkg = null;
 

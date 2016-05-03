@@ -6,7 +6,7 @@ class UrlMappings {
                 // apply constraints here
             }
         }
-
+        "403"(view: '/403')
         "/"(controller: "inicio")
         "500"(view:'/error')
 	}

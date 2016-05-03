@@ -133,7 +133,7 @@ log4j.main = {
                 root {error 'stdout'}
                 break
             case AmbienteExecucao.LOCAL:
-                file name: 'xml', layout: xml, file: 'c:/workspaces/logs/apoiaSUAS'+new Date().format("yyyy-MM-dd-hh-mm")+'.xml', threshold:org.apache.log4j.Level.DEBUG
+//                file name: 'xml', layout: xml, file: 'c:/workspaces/logs/apoiaSUAS'+new Date().format("yyyy-MM-dd-hh-mm")+'.xml', threshold:org.apache.log4j.Level.DEBUG
                 console name: 'stdout', layout: pattern(conversionPattern: '(loc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
                 root {error 'stdout', 'xml'}
                 break

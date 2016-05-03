@@ -84,7 +84,7 @@
             <g:link class="lilas" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
             <sec:ifAnyGranted roles="${DefinicaoPapeis.SUPER_USER}">
                 <g:link class="rosa" controller="formulario" action="list">Configuração de formulários</g:link>
-                <g:link class="beje" controller="formulario" action="reinicializarFormulariosPreDefinidos">Reinstalar formulários pré-definidos</g:link>
+                <g:link class="beje" controller="abrangenciaTerritorial">Territórios</g:link>
                 <g:link class="verde_oliva" controller="importacaoFamilias"
                         action="list">Importação de famílias</g:link>
                 <g:link class="laranja" controller="usuarioSistema" action="list">Operadores do sistema</g:link>

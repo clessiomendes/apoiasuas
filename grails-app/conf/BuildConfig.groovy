@@ -159,5 +159,7 @@ grails.project.dependency.resolution = {
         //compile ":app-info:1.1.1" --INCONPATIVEL COM GRAILS 2.4
         //compile ":app-info-hibernate:0.4.1"
 
+        compile "org.grails.plugins:js-tree:0.3.1" //componente visual de treeview
+
     }
 }

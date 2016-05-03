@@ -6,6 +6,9 @@ import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.Formulario
 import org.apoiasuas.seguranca.UsuarioSistema
+import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsControllerClass
 
 class ApoiaSuasTagLib {
     static defaultEncodeAs = [taglib: 'raw']
@@ -172,14 +175,27 @@ class ApoiaSuasTagLib {
  * @attr controller The name of the controller to use in the link, if not specified the current controller will be linked
  * @attr action The name of the action to use in the link, if not specified the default action will be linked
  * @attr permissao ignora geracao do link caso o usuario nao detenha a permissao exigida
- */
-    Closure linkMenu = { attrs, body ->
-//        sec.ifAnyGranted roles: attrs.permissao, body: {
-//            out << '<li class="controller">'
+
+    Closure linkSeguro = { attrs, body ->
+        if (attrs.controller == null && attrs.action == null && attrs.url == null && attrs.uri == null) {}
+
+        String controller = attrs.controller
+        String action = attrs.action
+
+        if (controller) {
+            GrailsApplication grailsApplication = getWebRequest().getAttributes().getGrailsApplication();
+            final GrailsControllerClass controllerClass = (GrailsControllerClass) grailsApplication.getArtefactByLogicalPropertyName(ControllerArtefactHandler.TYPE, controller);
+            if (controllerClass != null) {
+                if (! action) {
+                    action = controllerClass.getDefaultAction();
+                }
+                controllerClass.class
+            }
+        } else {
             out << sec.link(attrs, body)
-//            out << '</li>'
-//        }
+        }
     }
+*/
 
     /**
     * @attr formulario

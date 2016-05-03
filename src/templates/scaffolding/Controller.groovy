@@ -47,7 +47,7 @@ class ${className}Controller {
             //exibe o formulario novamente em caso de problemas na validacao
             return render(view: modoCriacao ? "create" : "edit" , model: [${propertyName}:${propertyName}])
         }
-        flash.message = message(code: 'default.created.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.id])
+        flash.message = message(code: modoCriacao ? 'default.created.message' : "default.updated.message", args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.id])
         render view: "show", model: [${propertyName}: ${propertyName}]
     }
 

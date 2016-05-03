@@ -46,7 +46,7 @@ alter table definicoes_importacao_familias add column colunapbf varchar(255); --
 alter table usuario_sistema add column matricula varchar(255);
 alter table campo_formulario add column exibir_para_preenchimento boolean;
 
--- versao ate aqui: current (local:feito,
+-- versao ate aqui: current (local:feito, producao:feito, valid:feito
 
 update campo_formulario set exibir_para_preenchimento = TRUE;
 
@@ -59,14 +59,27 @@ LANGUAGE sql IMMUTABLE STRICT
 COST 100;
 COMMENT ON FUNCTION str_2_int(text) IS 'Convert texto para numero ignorando caracteres nao numericos sem levantar excessoes';
 
--- versao ate aqui: current (local:feito, valid:???, producao:???
+-- versao ate aqui: current (local:feito, producao:feito, valid:feito
 
 create table configuracao (id int not null, version int not null, equipamento_nome varchar(80), equipamento_site varchar(80), equipamento_telefone varchar(30), endereco_cep varchar(255), endereco_uf varchar(255), endereco_bairro varchar(255), endereco_complemento varchar(255), endereco_municipio varchar(255), endereco_nome_logradouro varchar(255), endereco_numero varchar(255), endereco_tipo_logradouro varchar(255), primary key (id));
-delete from formulario_emitido where formulario_id in
-                                     ( select id from formulario where formulario_pre_definido in ('GENERICO', 'PLANO_ACOMPANHAMENTO') );
+--delete from formulario_emitido where formulario_id in
+--                                     ( select id from formulario where formulario_pre_definido in ('GENERICO', 'PLANO_ACOMPANHAMENTO') );
 delete from campo_formulario where formulario_id in
                                    ( select id from formulario where formulario_pre_definido in ('GENERICO', 'PLANO_ACOMPANHAMENTO') );
 delete from formulario where formulario_pre_definido in ('GENERICO', 'PLANO_ACOMPANHAMENTO');
 
--- versao ate aqui: current (local:feito,
+-- versao ate aqui: current (local:feito, producao:feito, valid:feito
 
+CREATE TABLE abrangencia_territorial
+(
+  id BIGINT PRIMARY KEY NOT NULL,
+  version BIGINT NOT NULL,
+  habilitado BOOL NOT NULL,
+  nome VARCHAR(255),
+  mae_id BIGINT,
+  FOREIGN KEY (mae_id) REFERENCES abrangencia_territorial (id)
+);
+
+create sequence sq_abrangencia_territorial;
+
+-- versao ate aqui: current (local:feito,

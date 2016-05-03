@@ -1,9 +1,15 @@
+import org.apoiasuas.ApoiaSuasService
 import org.apoiasuas.Configuracao
+import org.apoiasuas.ConfiguracaoService
 import org.apoiasuas.ProgramaService
+import org.apoiasuas.ServicoNovoService
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.Formulario
+import org.apoiasuas.formulario.FormularioService
 import org.apoiasuas.formulario.PreDefinidos
+import org.apoiasuas.importacao.ImportarFamiliasService
 import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.codehaus.groovy.grails.commons.ApplicationAttributes
@@ -13,14 +19,16 @@ import java.sql.SQLException
 
 class BootStrap {
 
-    def segurancaService
-    def importarFamiliasService
-    def formularioService
     def roleHierarchy
-    def apoiaSuasService
-    def programaService
     def groovySql
-    def configuracaoService
+
+    SegurancaService segurancaService
+    ImportarFamiliasService importarFamiliasService
+    FormularioService formularioService
+    ApoiaSuasService apoiaSuasService
+    ProgramaService programaService
+    ConfiguracaoService configuracaoService
+    ServicoNovoService servicoNovoService
 
     public final String VW_REFERENCIAS = "create view vw_referencias as select min(id) as referencia_id, familia_id " +
             " from cidadao where referencia = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+
@@ -41,13 +49,15 @@ class BootStrap {
         //Recriando views
         recriaViewsBD()
 
-        //Limpando tabelas temporarias
-        limpaTabelasTemporarias()
+//        //Limpando tabelas temporarias
+//        limpaTabelasTemporarias()
 
         //sobrescrevendo a configuracao de seguranca (hierarquia de papeis)
         roleHierarchy.setHierarchy(DefinicaoPapeis.hierarquiaFormatada)
 
         inicializacoesServicos()
+
+        servicoNovoService.registraJSON()
 
         inicializaConfiguracoes(servletContext)
     }
@@ -74,7 +84,7 @@ class BootStrap {
 
                 try {
                     //Se ambiente de desenvolvimento, descarta eventuais alteracoes em formularios e reinicializa tudo
-                    formularioService.inicializaFormularios(admin, AmbienteExecucao.desenvolvimento)
+                    formularioService.inicializaFormularios(admin, AmbienteExecucao.desenvolvimento) //Para producao, acionar o menu "Reinstalar formularios pre-definidos"
 
                 } catch (Throwable t) {
                     if (AmbienteExecucao.desenvolvimento)
@@ -103,15 +113,16 @@ class BootStrap {
         groovySql.execute(VW_REFERENCIAS);
     }
 
-    private void limpaTabelasTemporarias() {
-        try {
-            log.debug("truncate table linha_tentativa_importacao")
-            groovySql.execute("truncate table linha_tentativa_importacao")
-        } catch (SQLException e) {
-            log.error("Erro limpando tabela temporaria de importação")
-            e.printStackTrace();
-        }
-    }
+//Movido para FormularioService (antes de cada nova importação)
+//    private void limpaTabelasTemporarias() {
+//        try {
+//            log.debug("truncate table linha_tentativa_importacao")
+//            groovySql.execute("truncate table linha_tentativa_importacao")
+//        } catch (SQLException e) {
+//            log.error("Erro limpando tabela temporaria de importação")
+//            e.printStackTrace();
+//        }
+//    }
 
     private void validaEsquemaBD() {
         String[] atualizacoesPendentes = apoiaSuasService.getAtualizacoesPendentes()

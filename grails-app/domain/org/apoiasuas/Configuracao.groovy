@@ -17,6 +17,7 @@ class Equipamento {
     String telefone
     String site
     Endereco endereco
+//    AbrangenciaTerritorial abrangenciaTerritorial
 
     static embedded = ['endereco']
     static transients = ['urlSite']

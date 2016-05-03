@@ -45,7 +45,7 @@
                         <span id="encaminhamentoPadrao-label" class="property-label"><g:message
                                 code="servico.descricao.label" default="Descrição"/></span>
                         <span class="property-value" aria-labelledby="descricao-label">
-                            %{--Substitui o scape padrao do Grails por um customizado que interpreta \n como <br> --}%
+                            %{--Substitui o escape padrao do Grails por um customizado que interpreta \n como <br> --}%
                             ${raw(org.apoiasuas.util.StringUtils.toHtml(servicoInstance?.descricao))}
                         </span>
                     </li>
