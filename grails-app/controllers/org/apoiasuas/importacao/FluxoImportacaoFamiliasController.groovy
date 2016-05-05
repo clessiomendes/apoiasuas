@@ -1,6 +1,7 @@
 package org.apoiasuas.importacao
 
 import grails.converters.JSON
+import org.apoiasuas.AncestralController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import uk.co.desirableobjects.ajaxuploader.exception.FileUploadException
@@ -14,11 +15,11 @@ import javax.servlet.http.HttpServletRequest
  * 2) Ajax. Não conseguimos manipular o componente ajax para que consiga interagir dentro da filosofia dos fluxos.
  * 3) A chamada aos serviços está levantando uma excecao sem grandes explicacoes (o bean não está nulo). Possivelmente tem a mesma origem da excessao das transacoes.
  */
-class FluxoImportacaoFamiliasController {
+class FluxoImportacaoFamiliasController extends AncestralController {
 
 //    static allowedMethods = [update: "PUT"]
 
-    def importarFamiliasService
+    ImportarFamiliasService importarFamiliasService
 
     def fluxoImportacaoFlow = {
 

@@ -4,13 +4,13 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.seguranca.SegurancaService
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 /**
  * Created by admin on 20/04/2015.
  */
 class AncestralController {
-
-    def grailsApplication
 
     public static final String ULTIMO_CIDADAO = "ID_ULTIMO_CIDADAO"
     public static final String ULTIMA_FAMILIA = "ID_ULTIMA_FAMILIA"

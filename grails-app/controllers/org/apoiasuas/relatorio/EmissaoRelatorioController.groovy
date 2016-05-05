@@ -4,13 +4,14 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 
 @Secured([DefinicaoPapeis.USUARIO_LEITURA])
 class EmissaoRelatorioController extends AncestralController {
 
-    def segurancaService
-    def relatorioService
+    SegurancaService segurancaService
+    RelatorioService relatorioService
 
     def definirListagem() {
         render view: 'definirListagem', model: [programasDisponiveis: Programa.all.sort { it.nome }, operadores: getOperadores()]

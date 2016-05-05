@@ -4,8 +4,10 @@ import grails.async.Promise
 import grails.async.Promises
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -14,7 +16,7 @@ import uk.co.desirableobjects.ajaxuploader.exception.FileUploadException
 import javax.servlet.http.HttpServletRequest
 
 @Secured([DefinicaoPapeis.USUARIO])
-class ImportacaoFamiliasController {
+class ImportacaoFamiliasController extends AncestralController {
 
     ImportarFamiliasService servicoImportarFamilias
     SegurancaService segurancaService

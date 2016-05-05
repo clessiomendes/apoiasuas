@@ -6,7 +6,9 @@ import grails.transaction.Transactional
 import grails.util.GrailsNameUtils
 import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.util.StringUtils
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import static org.springframework.http.HttpStatus.*
 

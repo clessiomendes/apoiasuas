@@ -13,7 +13,6 @@ import grails.transaction.Transactional
 class FamiliaController extends AncestralController {
 
     def familiaService
-    def segurancaService
 
     def index(Integer max) {
         redirect(controller: 'cidadao', action: 'procurarCidadao')

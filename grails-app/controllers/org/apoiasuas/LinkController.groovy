@@ -9,7 +9,7 @@ import grails.transaction.Transactional
 
 @Secured([DefinicaoPapeis.USUARIO_LEITURA])
 @Transactional(readOnly = true)
-class LinkController {
+class LinkController extends AncestralController {
 
     def exibeLinks() {
         respond Link.list(params).sort { it.id }

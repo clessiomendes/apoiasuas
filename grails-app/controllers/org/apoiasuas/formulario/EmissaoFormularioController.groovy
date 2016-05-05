@@ -5,11 +5,14 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
 import org.apoiasuas.bootstrap.FormularioBase
 import org.apoiasuas.cidadao.Cidadao
+import org.apoiasuas.cidadao.CidadaoService
 import org.apoiasuas.cidadao.Endereco
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.FiltroCidadaoCommand
 import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.util.StringUtils
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.ParseException
@@ -21,10 +24,8 @@ class EmissaoFormularioController extends AncestralController {
     static defaultAction = "escolherFamilia"
 //    static scope = "prototype" //garante uma nova instancia deste controller para cada request
 
-    def cidadaoService
-    def grailsApplication
-    def servicoService
-    def segurancaService
+    SegurancaService segurancaService
+    CidadaoService cidadaoService
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def escolherFamilia() {
@@ -171,7 +172,7 @@ class EmissaoFormularioController extends AncestralController {
         params.max = params.max ?: 10
         PagedResultList cidadaos = cidadaoService.procurarCidadao(params, filtro)
         Map filtrosUsados = params.findAll { it.value }
-        render view: "/cidadao/procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
+        render view: "/cidadaos/cidadao/procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
     }
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])

@@ -5,10 +5,10 @@ import org.apoiasuas.programa.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
 
 @Secured([DefinicaoPapeis.USUARIO])
-class ProgramaController {
+class ProgramaController extends AncestralController {
 
     static defaultAction = "list"
-    def programaService
+    ProgramaService programaService
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def list(Integer max) {

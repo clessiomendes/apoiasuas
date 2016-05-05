@@ -1,6 +1,7 @@
 package org.apoiasuas.formulario
 
 import grails.plugin.springsecurity.annotation.Secured
+import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.docx4j.openpackaging.io.SaveToZipFile
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage
@@ -9,10 +10,10 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
 @Secured([DefinicaoPapeis.USUARIO])
-class FormularioController {
+class FormularioController extends AncestralController {
 
     static defaultAction = "list"
-    def formularioService
+    FormularioService formularioService
 
     @Transactional(readOnly = true)
     def list(Integer max) {

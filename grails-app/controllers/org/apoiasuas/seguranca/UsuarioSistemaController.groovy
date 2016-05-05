@@ -1,15 +1,16 @@
 package org.apoiasuas.seguranca
 
 import grails.plugin.springsecurity.annotation.Secured
+import org.apoiasuas.AncestralController
 
 import static org.springframework.http.HttpStatus.*
 
 @Secured([DefinicaoPapeis.SUPER_USER])
-class UsuarioSistemaController {
+class UsuarioSistemaController extends AncestralController {
 
     static defaultAction = "list"
 
-    def segurancaService
+    SegurancaService segurancaService
 
     @Secured([DefinicaoPapeis.USUARIO_LEITURA])
     def show(UsuarioSistema usuarioSistemaInstance) {
