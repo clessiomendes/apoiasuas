@@ -2,13 +2,14 @@
 
 
 import grails.plugin.springsecurity.annotation.Secured
+import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.DefinicaoPapeis
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
 @Secured([DefinicaoPapeis.USUARIO])
-class ${className}Controller {
+class ${className}Controller extends AncestralController {
 
     static defaultAction = "list"
 
@@ -43,7 +44,9 @@ class ${className}Controller {
             return
         }
 
-        if (! #implementarServico.grava(${propertyName})) {
+        if (${propertyName}.validate()) {
+            #implementarServico.grava(${propertyName})
+        } else {
             //exibe o formulario novamente em caso de problemas na validacao
             return render(view: modoCriacao ? "create" : "edit" , model: [${propertyName}:${propertyName}])
         }
