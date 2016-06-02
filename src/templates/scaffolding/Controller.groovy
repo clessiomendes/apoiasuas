@@ -8,18 +8,18 @@ import org.apoiasuas.seguranca.DefinicaoPapeis
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Secured([DefinicaoPapeis.USUARIO])
+@Secured([DefinicaoPapeis.STR_USUARIO])
 class ${className}Controller extends AncestralController {
 
     static defaultAction = "list"
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
         render view: "list", model:[${propertyName}List:${className}.list(params), ${propertyName}Count: ${className}.count()]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def show(${className} ${propertyName}) {
         if (! ${propertyName})
             return notFound()
@@ -64,7 +64,7 @@ class ${className}Controller extends AncestralController {
         redirect action:"list"
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     protected def notFound() {
         flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
         redirect action: "list"

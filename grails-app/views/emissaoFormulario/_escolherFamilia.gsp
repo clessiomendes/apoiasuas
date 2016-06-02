@@ -1,3 +1,4 @@
+<%@ page import="org.apoiasuas.cidadao.FamiliaController" %>
 <g:javascript>
     function limparFamilia() {
         document.getElementById("familiaParaSelecao").innerHTML='';
@@ -9,7 +10,7 @@
     */
     $(document).ready(function() {
         if (document.getElementById("codigoLegado").value != '') {
-            ${remoteFunction(controller: 'emissaoFormulario', action: 'familiaParaSelecao', method: "post", update: "familiaParaSelecao", params: [codigoLegado: session.getAttribute(org.apoiasuas.AncestralController.ULTIMA_FAMILIA)?.codigoLegado])}
+            ${remoteFunction(controller: 'emissaoFormulario', action: 'familiaParaSelecao', method: "post", update: "familiaParaSelecao", params: [codigoLegado: org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)?.codigoLegado])}
             document.getElementById("codigoLegado").select();
         }
     });
@@ -37,7 +38,7 @@ if (evt.persisted) {
             <label for="codigoLegado">
                 <g:radio name="familiaCadastrada" value="true" checked="true"/> Família cadastrada:
             </label>
-            <g:textField autofocus="true" name="codigoLegado" id="codigoLegado" size="2" value="${session.getAttribute(org.apoiasuas.AncestralController.ULTIMA_FAMILIA)?.codigoLegado}"/>
+            <g:textField autofocus="true" name="codigoLegado" id="codigoLegado" size="2" value="${FamiliaController.getUltimaFamilia(session)?.codigoLegado}"/>
             <g:actionSubmit class="save" action="familiaParaSelecao" id="btnSelecionarFamilia" value="ok"/>
         </div>
     </g:formRemote>

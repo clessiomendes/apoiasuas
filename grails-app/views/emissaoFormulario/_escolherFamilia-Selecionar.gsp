@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.AncestralController" %>
+<%@ page import="org.apoiasuas.cidadao.CidadaoController; org.apoiasuas.AncestralController" %>
 <g:if test="${dtoFamiliaSelecionada}">
     <g:hiddenField name="familiaSelecionada" id="familiaSelecionada" value="${dtoFamiliaSelecionada.id}"/>
         <div class="fieldcontain">
@@ -15,7 +15,7 @@
             <g:select name="membroSelecionado" id="membroSelecionado"
                       from="${dtoFamiliaSelecionada.membrosOrdemAlfabetica*.nomeCompleto}"
                       keys="${dtoFamiliaSelecionada.membrosOrdemAlfabetica*.id}"
-                      value="${session.getAttribute(org.apoiasuas.AncestralController.ULTIMO_CIDADAO)?.id}"
+                      value="${org.apoiasuas.cidadao.CidadaoController.getUltimoCidadao(session)?.id}"
                       noSelection="['-1': 'sem cadastro']"/>
         </div>
 </g:if>

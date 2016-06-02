@@ -18,12 +18,12 @@ class CampoFormulario {
     public static String CODIGO_TELEFONE_EQUIPAMENTO = "telefone_equipamento"
     public static String CODIGO_RESPONSAVEL_PREENCHIMENTO = "responsavel_preenchimento"
 
-    static enum Tipo { TEXTO, INTEIRO, DATA, TELEFONE, SELECAO
+    public static enum Tipo { TEXTO, INTEIRO, DATA, TELEFONE, SELECAO
         boolean isData() { return this == DATA }
         boolean isTexto() { return this == TEXTO }
     }
 
-    enum Origem { FAMILIA(Familia.class), ENDERECO(Endereco.class), CIDADAO(Cidadao.class), AVULSO(null)
+    public enum Origem { FAMILIA(Familia.class), ENDERECO(Endereco.class), CIDADAO(Cidadao.class), AVULSO(null)
         Class classeDominio
         Origem(Class classeDominio) { this.classeDominio = classeDominio }
         boolean isAvulso() { return this == AVULSO }

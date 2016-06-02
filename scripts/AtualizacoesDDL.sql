@@ -79,7 +79,46 @@ CREATE TABLE abrangencia_territorial
   mae_id BIGINT,
   FOREIGN KEY (mae_id) REFERENCES abrangencia_territorial (id)
 );
-
 create sequence sq_abrangencia_territorial;
 
--- versao ate aqui: current (local:feito,
+ALTER TABLE public.configuracao RENAME TO servico_sistema;
+ALTER TABLE public.servico_sistema RENAME COLUMN equipamento_nome TO nome;
+ALTER TABLE public.servico_sistema RENAME COLUMN equipamento_site TO site;
+ALTER TABLE public.servico_sistema RENAME COLUMN equipamento_telefone TO telefone;
+create sequence sq_servico_sistema;
+
+ALTER TABLE public.servico ALTER COLUMN nome_formal DROP NOT NULL;
+
+alter table servico add column abrangencia_territorial_id int8 null;
+alter table servico_sistema add column abrangencia_territorial_id int8 null;
+alter table servico add constraint FK_ey6yi8c2853acuaqkpbcl1l1h foreign key (abrangencia_territorial_id) references abrangencia_territorial;
+alter table servico_sistema add constraint FK_1o03ry4w1kdm213xnf3l0b1y8 foreign key (abrangencia_territorial_id) references abrangencia_territorial;
+
+alter table servico add column habilitado boolean;
+update servico set habilitado = true;
+alter table servico_sistema add column habilitado boolean;
+update servico_sistema set habilitado = true;
+
+alter table usuario_sistema add column servico_sistema_seguranca_id int8;
+alter table usuario_sistema add constraint FK_ityim037jun7r7ij0x73nlspe foreign key (servico_sistema_seguranca_id) references servico_sistema;
+update usuario_sistema set servico_sistema_seguranca_id = (select min(id) from servico_sistema);
+ALTER TABLE usuario_sistema ALTER COLUMN servico_sistema_seguranca_id SET NOT NULL;
+
+alter table cidadao add column servico_sistema_seguranca_id int8 not null default();
+alter table familia add column servico_sistema_seguranca_id int8 not null default();
+alter table formulario_emitido add column servico_sistema_seguranca_id int8 not null default();
+alter table link add column servico_sistema_seguranca_id int8 not null default();
+alter table definicoes_importacao_familias add column servico_sistema_seguranca_id int8 not null default();
+alter table tentativa_importacao add column servico_sistema_seguranca_id int8 default();
+alter table cidadao add constraint FK_dc3xrc7v75llgiylp3codww9d foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table familia add constraint FK_bmqi116teo3i8ouq4b5f65df1 foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table formulario_emitido add constraint FK_f8ndymwq3na6dxa8xeebpoo3p foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table link add constraint FK_9m09qv1t772wq91j4dayxg4ja foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table definicoes_importacao_familias add constraint FK_p772endoa2o6tg4b717jnisp1 foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table tentativa_importacao add constraint FK_1oqhcen9f8jisfnvbrrrakoaf foreign key (servico_sistema_seguranca_id) references servico_sistema;
+ALTER TABLE definicoes_importacao_familias ADD CONSTRAINT unique_servico_sistema_seguranca_id UNIQUE (servico_sistema_seguranca_id);
+
+ALTER TABLE public.familia DROP CONSTRAINT ;
+CREATE UNIQUE INDEX ix_familia_codigo_legado ON familia (codigo_legado, servico_sistema_seguranca_id);
+
+-- versao ate aqui: current (local:feito, producao:feito

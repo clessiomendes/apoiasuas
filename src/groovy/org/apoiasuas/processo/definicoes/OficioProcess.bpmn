@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://www.activiti.org/test" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" expressionLanguage="http://www.w3.org/1999/XPath" id="m1463783238393" name="" targetNamespace="http://www.activiti.org/test" typeLanguage="http://www.w3.org/2001/XMLSchema">
+  <process id="oficio" isClosed="false" isExecutable="true" name="oficio" processType="None">
+    <startEvent id="inicio" name="inicio"/>
+    <userTask activiti:exclusive="true" id="emitido" name="oficio emitido"/>
+    <userTask activiti:exclusive="true" id="aguardandoEnvio" name="aguardando envio"/>
+    <endEvent id="fim" name="fim"/>
+    <sequenceFlow id="_6" sourceRef="inicio" targetRef="emitido"/>
+    <sequenceFlow id="_7" sourceRef="emitido" targetRef="aguardandoEnvio"/>
+    <sequenceFlow id="_2" sourceRef="aguardandoEnvio" targetRef="fim"/>
+  </process>
+  <bpmndi:BPMNDiagram documentation="background=#FFFFFF;count=1;horizontalcount=1;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">
+    <bpmndi:BPMNPlane bpmnElement="oficio">
+      <bpmndi:BPMNShape bpmnElement="inicio" id="Shape-inicio">
+        <omgdc:Bounds height="32.0" width="32.0" x="65.0" y="70.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="emitido" id="Shape-emitido">
+        <omgdc:Bounds height="55.0" width="85.0" x="185.0" y="55.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="55.0" width="85.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="aguardandoEnvio" id="Shape-aguardandoEnvio">
+        <omgdc:Bounds height="55.0" width="85.0" x="380.0" y="70.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="55.0" width="85.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="fim" id="Shape-fim">
+        <omgdc:Bounds height="32.0" width="32.0" x="430.0" y="255.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_2" id="BPMNEdge__2" sourceElement="aguardandoEnvio" targetElement="fim">
+        <omgdi:waypoint x="446.0" y="125.0"/>
+        <omgdi:waypoint x="446.0" y="255.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_6" id="BPMNEdge__6" sourceElement="inicio" targetElement="emitido">
+        <omgdi:waypoint x="97.0" y="86.0"/>
+        <omgdi:waypoint x="185.0" y="82.5"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_7" id="BPMNEdge__7" sourceElement="emitido" targetElement="aguardandoEnvio">
+        <omgdi:waypoint x="270.0" y="82.5"/>
+        <omgdi:waypoint x="380.0" y="97.5"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

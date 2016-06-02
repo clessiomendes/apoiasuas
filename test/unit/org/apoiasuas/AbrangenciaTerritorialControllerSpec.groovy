@@ -3,6 +3,7 @@ package org.apoiasuas
 
 import grails.test.mixin.*
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
+import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorialController
 import spock.lang.*
 
 @TestFor(AbrangenciaTerritorialController)

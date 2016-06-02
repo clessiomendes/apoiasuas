@@ -55,6 +55,6 @@ function submeteTerritoriosAtuacao(calee) {
 <div class="fieldcontain">
     <span id="uf-label" class="property-label"><g:message code="abrangenciaTerritorial.pai.label" default="Subordinado a" /></span>
     <span class="property-value" style="margin-left:25%" aria-labelledby="uf-label">
-        <div id="div_territoriosAtuacao"/>
+        <div id="div_territoriosAtuacao"></div>
     </span>
 </div>

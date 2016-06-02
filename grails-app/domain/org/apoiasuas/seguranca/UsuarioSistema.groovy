@@ -1,6 +1,7 @@
 package org.apoiasuas.seguranca
 
 import grails.validation.Validateable
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 
 @Validateable
 class UsuarioSistema {
@@ -13,10 +14,11 @@ class UsuarioSistema {
 
 	Date dateCreated, lastUpdated;
 	UsuarioSistema criador, ultimoAlterador;
+    ServicoSistema servicoSistemaSeguranca;
 	String nomeCompleto;
 	String username;
-    String matricula
-    String password
+    String matricula;
+    String password;
 
 	boolean accountExpired
 	boolean accountLocked
@@ -24,6 +26,7 @@ class UsuarioSistema {
 	boolean enabled
 
     String papel //transiente
+    ApoiaSuasUser apoiaSuasUser //transiente
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_usuario_sistema']
@@ -33,10 +36,11 @@ class UsuarioSistema {
 //		password(defaultValue:"'password'")
 	}
 
-	static transients = ['springSecurityService', 'papel']
+	static transients = ['springSecurityService', 'papel', 'apoiaSuasUser']
 
 	static constraints = {
 		nomeCompleto(nullable: false)
+        servicoSistemaSeguranca(nullable: false)
 		username(nullable: false, unique: true)
 //		perfil(nullable: false)
 		password(nullable: false)
@@ -54,18 +58,6 @@ class UsuarioSistema {
 		//TODO: tirar manipulacao de banco de dados implementada na classe de dominio
 		UsuarioSistemaPapel.findAllByUsuarioSistema(this).collect { it.papel }
 	}
-
-/*
-    boolean pode(List<DefinicaoPapeis> testadas) {
-        getAuthorities().each { atribuida ->
-            testadas.each { testada ->
-                if (testada.toString() == atribuida.toString())
-                    return true
-            }
-        }
-        return false
-    }
-*/
 
 	def beforeInsert() {
 		encodePassword()
@@ -98,5 +90,14 @@ class UsuarioSistema {
                 result = true
         }
         return result
+    }
+
+    /**
+     * Retorna o servicoSistema sendo utilizado pelo usuario (logado). Em geral, sera o servicoSistema associado ao usuario,
+     * mas eventualmente pode ser um servico diferente, escolhido durante o login (somente util para o usuario admin)
+     * @return
+     */
+    public ServicoSistema getApoiaSuasUser() {
+        return apoiaSuasUser ?: servicoSistemaSeguranca
     }
 }

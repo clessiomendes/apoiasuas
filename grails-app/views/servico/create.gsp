@@ -4,6 +4,11 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'servico.label', default: 'Servico')}" />
 		<title><g:message code="default.create.label" args="[entityName]" /></title>
+
+        %{-- Para o componente treeview: --}%
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 	</head>
 	<body>
 		<a href="#create-servico" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -24,7 +29,7 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
-			<g:form url="[resource:servicoInstance, action:'save']" >
+			<g:form onsubmit="submeteAbrangenciaTerritorial(this)" url="[resource:servicoInstance, action:'save']" >
 				<fieldset class="form">
 					<g:render template="form"/>
 				</fieldset>

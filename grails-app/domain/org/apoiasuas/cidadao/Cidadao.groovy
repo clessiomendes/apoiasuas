@@ -4,6 +4,7 @@ import org.apoiasuas.anotacoesDominio.InfoClasseDominio
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
 import org.apoiasuas.formulario.CampoFormulario
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.DateUtils
@@ -58,6 +59,8 @@ class Cidadao implements Serializable {
 
     boolean referencia //importado
     UsuarioSistema criador, ultimoAlterador;
+    ServicoSistema servicoSistemaSeguranca
+
     Date dateCreated, lastUpdated, dataUltimaImportacao;
 //    boolean origemImportacaoAutomatica //importado
 //    Parentesco parentescoReferencia
@@ -71,6 +74,7 @@ class Cidadao implements Serializable {
         criador(nullable: false)
         ultimoAlterador(nullable: false)
         familia unique: 'nomeCompleto' //Cria um índice composto e único contendo os campos familia(id) e nomeCompleto
+        servicoSistemaSeguranca(nullable: false)
     }
 
     static mapping = {

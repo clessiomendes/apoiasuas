@@ -2,46 +2,84 @@ package org.apoiasuas
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apoiasuas.cidadao.Cidadao
+import org.apoiasuas.cidadao.CidadaoController
 import org.apoiasuas.cidadao.Familia
-import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.cidadao.FamiliaController
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+import org.apoiasuas.seguranca.AcessoNegadoPersistenceException
 import org.apoiasuas.seguranca.SegurancaService
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsControllerClass
 
 /**
  * Created by admin on 20/04/2015.
  */
 class AncestralController {
 
-    public static final String ULTIMO_CIDADAO = "ID_ULTIMO_CIDADAO"
-    public static final String ULTIMA_FAMILIA = "ID_ULTIMA_FAMILIA"
+    SegurancaService segurancaService
+    public static String ENTITY_CLASS_ENTRY = "entity"
 
     protected void guardaUltimoCidadaoSelecionado(Cidadao cidadao) {
         if (cidadao && cidadao.id) {
-            session[ULTIMO_CIDADAO] = cidadao
+            CidadaoController.setUltimoCidadao(session, cidadao)
             if (cidadao.familia && cidadao.familia.id)
-                session[ULTIMA_FAMILIA] = cidadao.familia
+                FamiliaController.setUltimaFamilia(session, cidadao.familia)
             else
                 throw new RuntimeException("Impossivel determinar familia do cidadao sendo armazenado na sessao. Id cidadao = ${cidadao.id}")
         } else {
-            session[ULTIMO_CIDADAO] = null
+            CidadaoController.setUltimoCidadao(session, null)
         }
     }
 
     protected void guardaUltimaFamiliaSelecionada(Familia familia) {
         if (familia && familia.id) {
-            session[ULTIMA_FAMILIA] = familia
+            FamiliaController.setUltimaFamilia(session, familia)
             //Elimina o ultimo cidadao selecionado da sessao se houver mudança da familia selecionada
-            Cidadao ultimoCidadao = session[ULTIMO_CIDADAO]
+            Cidadao ultimoCidadao = CidadaoController.getUltimoCidadao(session)
             if (! ultimoCidadao || ultimoCidadao.familia.id != familia.id)
-                session[ULTIMO_CIDADAO] = null
+                CidadaoController.setUltimoCidadao(session, null)
         } else {
-            session[ULTIMA_FAMILIA] = null
-            session[ULTIMO_CIDADAO] = null
+            FamiliaController.setUltimaFamilia(session, null)
+            CidadaoController.setUltimoCidadao(session, null)
         }
     }
 
     protected boolean verificaPermissao(String papel) {
         return SpringSecurityUtils.ifAnyGranted(papel)
     }
+
+    protected ServicoSistema getServicoCorrente() {
+        return segurancaService.getServicoLogado();
+    }
+
+    /**
+     * Tenta acessar o objeto a ser utilizado na action e, caso o acesso seja negado, captura a excessao e exibe uma
+     * mensagem de erro para o usuário. obs: A excessao é levantada nos eventos de persistência em ApoiaSuasPersistenceListener
+     *
+     * (defined with private scope, so it's not considered an action)
+     */
+    protected interceptaSeguranca(/*Class domainClass*/) {
+        try {
+            if (params?.getIdentifier()) {
+                Class domainClass = getProperty(GrailsControllerClass.BEFORE_INTERCEPTOR)[ENTITY_CLASS_ENTRY]
+                domainClass?.get(params.getIdentifier())
+            }
+        } catch  (AcessoNegadoPersistenceException e) {
+            flash.message = e.getMessage()
+            redirect(uri: request.getHeader('referer') )
+            return false
+        }
+    }
+
+    /**
+     * Muda a localizacao onde as views (gsps) serao buscadas
+     */
+/*
+    def afterInterceptor = { model, ModelAndView modelAndView ->
+        String[] pathNodes = modelAndView.viewName.split("/")
+        pathNodes[pathNodes.length-2] = "processo"
+        modelAndView.viewName = pathNodes.join("/")
+    }
+*/
+
 
 }

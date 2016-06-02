@@ -1,7 +1,7 @@
 package org.apoiasuas.servico
 
 import grails.test.mixin.TestFor
-import org.apoiasuas.ServicoService
+import org.apoiasuas.redeSocioAssistencial.ServicoService
 import spock.lang.Specification
 
 /**

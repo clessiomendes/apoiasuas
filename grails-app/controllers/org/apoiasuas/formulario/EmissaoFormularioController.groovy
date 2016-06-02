@@ -11,14 +11,14 @@ import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.FiltroCidadaoCommand
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.SegurancaService
+import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.StringUtils
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.ParseException
 import java.text.SimpleDateFormat
 
-@Secured([DefinicaoPapeis.USUARIO_LEITURA])
+@Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class EmissaoFormularioController extends AncestralController {
 
     static defaultAction = "escolherFamilia"
@@ -27,7 +27,7 @@ class EmissaoFormularioController extends AncestralController {
     SegurancaService segurancaService
     CidadaoService cidadaoService
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def escolherFamilia() {
         Map<String, List<Formulario>> tiposFormulario = service(null).getFormulariosDisponiveis().sort { [it.tipo, it.descricao] } .groupBy { it.tipo ?: "Outros" }
 //        tiposFormulario.each { chave, valor ->
@@ -37,7 +37,7 @@ class EmissaoFormularioController extends AncestralController {
         render view: 'escolherFamilia', model: [formulariosDisponiveis: tiposFormulario]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def preencherFormulario(Long idFormulario, Long idServico, Long membroSelecionado, Long familiaSelecionada) {
         Formulario formulario = service(Formulario.get(idFormulario)).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
         if (! formulario)
@@ -68,12 +68,15 @@ class EmissaoFormularioController extends AncestralController {
     }
 */
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def imprimirFormulario(Long idFormulario) {
         Formulario formulario
 
         instanciamento_dos_objetos: try { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
             formulario = service(Formulario.get(idFormulario)).getFormularioComCampos(idFormulario)
+            String idUsuarioSistema = params.avulso.get(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
+            if (idUsuarioSistema)
+                formulario.usuarioSistema = UsuarioSistema.get(idUsuarioSistema.toLong())
             formulario.cidadao = new Cidadao(params.cidadao)
             if (params.familia) {
                 formulario.cidadao.familia = new Familia(params.familia)
@@ -96,7 +99,7 @@ class EmissaoFormularioController extends AncestralController {
 
         geraFormularioPreenchidoEgrava: {
             ReportDTO reportDTO = service(formulario).prepararImpressao(formulario)
-            if (verificaPermissao(DefinicaoPapeis.USUARIO))
+            if (verificaPermissao(DefinicaoPapeis.STR_USUARIO))
                 service(formulario).gravarAlteracoes(formulario)
 
             response.contentType = 'application/octet-stream'
@@ -137,19 +140,19 @@ class EmissaoFormularioController extends AncestralController {
 */
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def familiaParaSelecao(String codigoLegado) {
         Familia familiaSelecionada = null
         boolean familiaEncontrada = false
         if (codigoLegado) {
-            familiaSelecionada = cidadaoService.obtemFamiliaEMembros(codigoLegado)
+            familiaSelecionada = cidadaoService.obtemFamilia(codigoLegado, true)
             if (familiaSelecionada)
                 familiaEncontrada = true
         }
         render(template:'escolherFamilia-Selecionar', model:[dtoFamiliaSelecionada: familiaSelecionada, familiaEncontrada: familiaEncontrada])
     }
 
-    @Secured([DefinicaoPapeis.USUARIO])
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     def atualizarAlteracoes() {
         //Busca dados completos da familia no BD
         Familia familia = Familia.get(params.id)
@@ -167,7 +170,7 @@ class EmissaoFormularioController extends AncestralController {
         forward action: "procurarCidadao"
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def procurarCidadao(FiltroCidadaoCommand filtro) {
         params.max = params.max ?: 10
         PagedResultList cidadaos = cidadaoService.procurarCidadao(params, filtro)
@@ -175,12 +178,12 @@ class EmissaoFormularioController extends AncestralController {
         render view: "/cidadaos/cidadao/procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def selecionarFamilia(Familia familiaInstance) {
         forward action: "listarMembros"
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def listarFormulariosEmitidosFamilia(Long idFamilia) {
         /* TODO Paginar
         params.max = Math.min(max ?: 10, 100)
@@ -190,7 +193,7 @@ class EmissaoFormularioController extends AncestralController {
         render view: "listarFormulariosEmitidos", model: [formularioEmitidoInstanceList: formularios]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def listarFormulariosEmitidosCidadao(Long idCidadao) {
         /* TODO Paginar
         params.max = Math.min(max ?: 10, 100)
@@ -200,7 +203,7 @@ class EmissaoFormularioController extends AncestralController {
         render view: "listarFormulariosEmitidos", model: [formularioEmitidoInstanceList: formularios]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def mostrarFormularioEmitido(FormularioEmitido formularioEmitidoInstance) {
         render view: "mostrarFormularioEmitido", model: [formularioEmitidoInstance: formularioEmitidoInstance ]
     }

@@ -1,6 +1,7 @@
 package org.apoiasuas.importacao
 
 import groovy.time.TimeCategory
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.DateUtils
@@ -17,6 +18,8 @@ class TentativaImportacao {
     Integer linhasProcessadasConclusao
     Integer totalErros
     String informacoesDoProcessamento
+
+    ServicoSistema servicoSistemaSeguranca
 
 /*   ----------   ATRIBUTOS  TRANSIENTES    -----------  */
     static transients = [ "linhas" ]

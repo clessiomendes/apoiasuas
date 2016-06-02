@@ -14,8 +14,8 @@
                                                               default="Skip to content&hellip;"/></a>
 
 <h1>Procurar cidadão</h1>
-<g:if test="${request.message}">
-    <div class="message" role="status">${request.message}</div>
+<g:if test="${flash.message}">
+    <div class="message" role="status">${flash.message}</div>
 </g:if>
 
 <div id="filtro-cidadao">

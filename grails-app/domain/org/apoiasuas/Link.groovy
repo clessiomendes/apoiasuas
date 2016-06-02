@@ -1,10 +1,13 @@
 package org.apoiasuas
 
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+
 class Link {
 
     String url
     String descricao
     String instrucoes
+    ServicoSistema servicoSistemaSeguranca
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_link']
@@ -14,6 +17,7 @@ class Link {
         url(nullable: false, maxSize: 255)
         descricao(nullable: false, maxSize: 255)
         instrucoes(nullable: true, maxSize: 255)
+        servicoSistemaSeguranca(nullable: false)
     }
 
     public String getUrlCompleta() {
@@ -22,4 +26,7 @@ class Link {
         return url.toLowerCase().startsWith("http") ? url : "http://"+url
     }
 
+    public String toString() {
+        return descricao
+    }
 }

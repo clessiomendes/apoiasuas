@@ -2,6 +2,7 @@ package org.apoiasuas.formulario
 
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Familia
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 
 class FormularioEmitido {
@@ -13,6 +14,7 @@ class FormularioEmitido {
     Familia familia
     Date dataPreenchimento
     UsuarioSistema operadorLogado
+    ServicoSistema servicoSistemaSeguranca
 
     static hasMany = [campos: CampoFormularioEmitido]
 
@@ -27,6 +29,7 @@ class FormularioEmitido {
         formularioPreDefinido(nullable: true)
         cidadao(nullable: true)
         familia(nullable: true)
+        servicoSistemaSeguranca(nullable: false)
     }
 
     public List getCamposOrdenados() {

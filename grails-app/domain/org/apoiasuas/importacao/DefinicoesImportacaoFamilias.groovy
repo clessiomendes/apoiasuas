@@ -1,5 +1,6 @@
 package org.apoiasuas.importacao
 
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 
@@ -35,9 +36,12 @@ class DefinicoesImportacaoFamilias  implements Serializable {
     UsuarioSistema ultimoAlterador;
     Date lastUpdated;
 
+    ServicoSistema servicoSistemaSeguranca;
+
     static constraints = {
         ultimoAlterador(nullable: false)
         lastUpdated(nullable: false)
+        servicoSistemaSeguranca(nullable: false)
     }
 
     static mapping = {

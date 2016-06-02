@@ -2,27 +2,35 @@ package org.apoiasuas.seguranca
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.Transactional
-import grails.util.Environment
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 class SegurancaService {
 
+    public static final String LOGIN_AMD = "admin"
     public static final int MIN_TAMANHO_SENHA = 4
     def springSecurityService
     def authenticationManager
 
     static transactional = false
 
-    @Transactional(readOnly = true)
     public UsuarioSistema getUsuarioLogado() {
-        def usuarioLogado = springSecurityService.currentUser
-        return usuarioLogado
+        return springSecurityService.currentUser
     }
+
+
+    public ServicoSistema getServicoLogado() {
+        return getPrincipal()?.servicoSistemaSessaoCorrente
+    }
+/*
+    public void setServicoLogado(ServicoSistema servicoSistemaSessao) {
+        getUsuarioLogado()?.apoiaSuasUser = servicoSistemaSessao
+    }
+*/
 
     /**
      * Verifica usuario e senha e retorna o registro do banco de dados ou nulo.
@@ -42,15 +50,16 @@ class SegurancaService {
     }
 
     @Transactional
-    UsuarioSistema inicializaSeguranca() {
-        DefinicaoPapeis.hierarquia.each { DefinicaoPapeis definicaoPapel ->
-            geraPapelBD(definicaoPapel.pai)
+    public UsuarioSistema inicializaSeguranca(ServicoSistema servicoAdm) {
+        DefinicaoPapeis.getHierarquia().each { DefinicaoPapeis definicaoPapel ->
+            geraPapelBD(definicaoPapel.definicaoPapel)
         }
 
-        def admin = UsuarioSistema.findByUsername('admin')
+        def admin = UsuarioSistema.findByUsername(LOGIN_AMD)
         if (!admin) {
             admin = new UsuarioSistema();
-            admin.username = "admin"
+            admin.servicoSistemaSeguranca = servicoAdm
+            admin.username = LOGIN_AMD
             admin.password = "senha"
             admin.enabled = true
             admin.nomeCompleto = "Administrador"
@@ -61,14 +70,14 @@ class SegurancaService {
             admin.dateCreated = new Date()
             admin.save()
 
-            UsuarioSistemaPapel assoc = new UsuarioSistemaPapel(usuarioSistema: admin, papel: Papel.findByAuthority(DefinicaoPapeis.SUPER_USER)).save()
+            UsuarioSistemaPapel assoc = new UsuarioSistemaPapel(usuarioSistema: admin, papel: Papel.findByAuthority(DefinicaoPapeis.STR_SUPER_USER)).save()
         }
 
         //Cria usuarios de teste para cada papel previsto no sistema
         if (AmbienteExecucao.desenvolvimento) {
-            DefinicaoPapeis.hierarquia.each { DefinicaoPapeis definicaoPapel ->
-                if (definicaoPapel.pai != DefinicaoPapeis.SUPER_USER) {
-                    String nomeUsuario = definicaoPapel.pai.substring('ROLE_'.size()).toLowerCase()
+            DefinicaoPapeis.getHierarquia().each { DefinicaoPapeis definicaoPapel ->
+                if (definicaoPapel.definicaoPapel != DefinicaoPapeis.STR_SUPER_USER) {
+                    String nomeUsuario = definicaoPapel.definicaoPapel.substring('ROLE_'.size()).toLowerCase()
                     def usuario = UsuarioSistema.findByUsername(nomeUsuario)
                     if (!usuario) {
                         usuario = new UsuarioSistema();
@@ -85,7 +94,7 @@ class SegurancaService {
                         usuario.dateCreated = new Date()
                         usuario.save()
 
-                        UsuarioSistemaPapel assoc = new UsuarioSistemaPapel(usuarioSistema: usuario, papel: Papel.findByAuthority(definicaoPapel.pai)).save()
+                        UsuarioSistemaPapel assoc = new UsuarioSistemaPapel(usuarioSistema: usuario, papel: Papel.findByAuthority(definicaoPapel.definicaoPapel)).save()
                     }
                 }
             }
@@ -133,7 +142,7 @@ class SegurancaService {
         validacoesEspecificas: { //Validacoes especificas
 
             //permissoes exclusivas de administradores
-            if (SpringSecurityUtils.ifNotGranted(DefinicaoPapeis.SUPER_USER)) {
+            if (SpringSecurityUtils.ifNotGranted(DefinicaoPapeis.STR_SUPER_USER)) {
 
                 //Valida se um operador esta tentando alterar outro operador que nao ele proprio
                 if (usuarioLogado.id != usuarioSistema.id)
@@ -237,9 +246,12 @@ class SegurancaService {
     }
 
     @Transactional(readOnly = true)
+    /**
+     * Lista todos os operadores filtrados para o Servico logado
+     */
     public ArrayList<UsuarioSistema> getOperadoresOrdenados() {
         ArrayList<UsuarioSistema> result = [usuarioLogado]
-        ArrayList<UsuarioSistema> usuarios = UsuarioSistema.listOrderByUsername()
+        ArrayList<UsuarioSistema> usuarios = UsuarioSistema.findAllByServicoSistemaSeguranca(getServicoLogado()).sort {it.username}
         usuarios.each {
             if (it.id != usuarioLogado.id)
                 result << it
@@ -247,4 +259,41 @@ class SegurancaService {
         return result
     }
 
+    @Transactional(readOnly = true)
+    public boolean temAcesso(String definicaoPapel) {
+        SpringSecurityUtils.ifAnyGranted(definicaoPapel)
+    }
+
+    public boolean isSuperUser() {
+        return temAcesso(DefinicaoPapeis.STR_SUPER_USER)
+    }
+
+    /**
+     * Retorna um resultado PAGINADO filtrado por login/nome ou servicoSistema e ordenado por nomeCompleto
+     * O mesmo parametro loginOuNome e usado para uma busca do tipo like em ambos os campos username e nomeCompleto
+     * Os parametros offset, max e sort sao responsaveis pela paginacao
+     */
+    def listUsuarios(FiltroUsuarioSistemaCommand filtro, def offset, def max) {
+        //converte parametro string para long
+        Long idServicoSistema = filtro?.servicoSistema?.toString()?.matches("\\d+") ? Long.parseLong(filtro.servicoSistema) : null;
+
+        return UsuarioSistema.createCriteria().list(offset: offset, max: max) {
+            if (filtro.nome) {
+                or { ilike("username", "%$filtro.nome%") ilike("nomeCompleto", "%$filtro.nome%") }
+            }
+            if (idServicoSistema) {
+                eq("servicoSistemaSeguranca.id", idServicoSistema)
+            }
+            order("nomeCompleto")
+        }
+    }
+
+    public ApoiaSuasUser getPrincipal() {
+        return springSecurityService.principal
+    }
+
+    public void setServicoLogado(ServicoSistema servicoSistema) {
+        ApoiaSuasUser principal = getPrincipal();
+        principal.servicoSistemaSessaoCorrente = servicoSistema;
+    }
 }

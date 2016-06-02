@@ -2,8 +2,8 @@ package org.apoiasuas.servico
 
 
 import grails.test.mixin.*
-import org.apoiasuas.Servico
-import org.apoiasuas.ServicoController
+import org.apoiasuas.redeSocioAssistencial.Servico
+import org.apoiasuas.redeSocioAssistencial.ServicoController
 import spock.lang.*
 
 @TestFor(ServicoController)

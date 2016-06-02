@@ -1,8 +1,12 @@
 import org.apache.commons.io.output.ThresholdingOutputStream
 import org.apache.log4j.xml.XMLLayout
 import org.apoiasuas.formulario.PreDefinidos
+import org.apoiasuas.redeSocioAssistencial.ServicoSistemaController
 import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
+import org.codehaus.groovy.grails.commons.spring.GrailsWebApplicationContext
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent
 
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
@@ -107,7 +111,7 @@ grails.hibernate.osiv.readonly = false
 
 environments {
     development {
-        grails.logging.jul.usebridge = true //usado pelo log4j
+        grails.logging.jul.usebridge = false //usado pelo log4j
     }
     test {
     }
@@ -125,8 +129,8 @@ log4j.main = {
 //        console name:'stdout', layout:pattern(conversionPattern: '%c{1}.%M() -> %m -> %l %n')
         switch (AmbienteExecucao.CURRENT) {
             case AmbienteExecucao.CLEVERCLOUD:
-                console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
-                root {error 'stdout'}
+//                console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
+//                root {error 'stdout'}
                 break
             case AmbienteExecucao.APPFOG:
                 console name: 'stdout', layout: pattern(conversionPattern: '(af) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
@@ -208,7 +212,9 @@ environments {
                     'org.springframework.webflow.engine',
                     'org.springframework.webflow',
                     'org.springframework.security',                  //login, seguranca, etc
-                    'com.myjeeva.poi' //debug para o extrator excel
+                    'com.myjeeva.poi', //debug para o extrator excel
+                    'org.camunda.bpm.engine.persistence', //BPM Engine
+                    'org.camunda.bpm'   //BPM Engine
 
             error  'org.codehaus.groovy.grails.web.servlet',        // controllers
                     'org.codehaus.groovy.grails.web.pages',          // GSP
@@ -217,7 +223,8 @@ environments {
                     'org.codehaus.groovy.grails.web.mapping',        // URL mapping
                     'org.codehaus.groovy.grails.commons',            // core / classloading
                     'org.codehaus.groovy.grails.plugins',            // plugins
-                    'org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler' //Limpar mensagem "Warning - shared formulas not yet supported"
+                    'org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler', //Limpar mensagem "Warning - shared formulas not yet supported"
+                    'org.camunda.bpm.engine.jobexecutor' //desligar logs de job da Engine BPM
         }
     }
 }
@@ -230,10 +237,8 @@ grails.plugin.springsecurity.logout.postOnly = false
 grails.plugin.springsecurity.rejectIfNoRule = true
 grails.plugin.springsecurity.fii.rejectPublicInvocations = true
 grails.plugin.springsecurity.authority.className = 'org.apoiasuas.seguranca.Papel'
-grails.plugin.springsecurity.useSecurityEventListener = true
-grails.plugin.springsecurity.onAbstractAuthenticationFailureEvent = { e, appCtx ->   //Exibe eventual mensagem de erro no login
-    println "DEBUG auth failed for user $e.authentication.name: $e.exception.message"
-}
+grails.plugin.springsecurity.useSecurityEventListener = true //Necessario para acionar a classe SegurancaListener
+grails.plugin.springsecurity.roleHierarchy = 'valor ignorado e sobrescrito em BootStrap.groovy'
 
 /*
 switch (AmbienteExecucao.CURRENT) {
@@ -284,11 +289,30 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/403.gsp':                       ['permitAll'],
 	'/assets/**':                     ['permitAll'],
 	'/**/js/**':                      ['permitAll'],
-	'/console/**':                    ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.SUPER_USER}"],
-	'/monitoring/**':                 ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.SUPER_USER}"],
+	'/console/**':                    ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.STR_SUPER_USER}"],
+	'/monitoring/**':                 ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.STR_SUPER_USER}"],
 	'/**/css/**':                     ['permitAll'],
 	'/**/images/**':                  ['permitAll'],
 	'/**/favicon.ico':                ['permitAll']
 ]
 //grails.plugin.springsecurity.roleHierarchy = { PerfilUsuarioSistema.hierarquiaFormatada }
-grails.plugin.springsecurity.roleHierarchy = 'valor ignorado e sobrescrito em BootStrap.groovy'
+
+//grails.plugin.springsecurity.onAuthenticationSuccessEvent = { AuthenticationSuccessEvent event, GrailsWebApplicationContext appCtx ->
+//    System.out.println("logado")
+//    UsuarioSistema usuario = UsuarioSistema.get(event.authentication.principal.id)
+//    ServicoSistemaController.setSessionServicoSistemaAtual(event.authentication.details , usuario.servicoSistemaSeguranca);
+//}
+
+camunda {
+    deployment.scenario = "embedded" // (or "shared", "none")
+    engine {
+        configuration {
+            databaseType = "postgres" // one of (as of writing): [h2, mysql, oracle, postgres, mssql, db2]
+            databaseTablePrefix = "bpm."
+            databaseSchema = "bpm"
+            databaseSchemaUpdate = false
+            jobExecutorActivate = false
+            deploymentResources = []
+        }
+    }
+}

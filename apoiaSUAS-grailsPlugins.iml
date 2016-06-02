@@ -12,6 +12,10 @@
           <root url="file://$MODULE_DIR$/target/work/plugins/excel-export-0.2.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/grails-app/views" relative="/" />
+          <root url="file://$MODULE_DIR$/target/work/plugins/js-tree-0.3.1/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/target/work/plugins/js-tree-0.3.1/grails-app/views" relative="/" />
+          <root url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0/web-app" relative="/" />
+          <root url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0/grails-app/views" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
@@ -36,6 +40,11 @@
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/cache-1.1.7/grails-app/services" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/cache-1.1.7/grails-app/taglib" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0/grails-app/controllers" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0/grails-app/services" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/grails-app/controllers" isTestSource="false" />
@@ -59,6 +68,9 @@
     </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/jquery-ui-1.10.4">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/jquery-ui-1.10.4/grails-app/taglib" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/target/work/plugins/js-tree-0.3.1">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/js-tree-0.3.1/grails-app/taglib" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/release-3.0.1">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/release-3.0.1/src/java" isTestSource="false" />
@@ -211,6 +223,17 @@
           <root url="jar://$MAVEN_REPOSITORY$/net/engio/mbassador/1.1.10/mbassador-1.1.10.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/docx4j/docx4j/3.2.1/docx4j-3.2.1.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/joda-time/joda-time/2.3/joda-time-2.3.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/mybatis/mybatis/3.2.8/mybatis-3.2.8.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/javax/mail/mail/1.4.1/mail-1.4.1.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-email/1.2/commons-email-1.2.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/camunda/bpm/model/camunda-cmmn-model/7.3.0/camunda-cmmn-model-7.3.0.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/camunda/bpm/model/camunda-xml-model/7.3.0/camunda-xml-model-7.3.0.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/camunda/bpm/model/camunda-bpmn-model/7.3.0/camunda-bpmn-model-7.3.0.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/camunda/bpm/camunda-engine/7.3.0/camunda-engine-7.3.0.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/commons-pool/commons-pool/1.5.4/commons-pool-1.5.4.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/commons-dbcp/commons-dbcp/1.4/commons-dbcp-1.4.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/camunda/bpm/camunda-engine-spring/7.3.0/camunda-engine-spring-7.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

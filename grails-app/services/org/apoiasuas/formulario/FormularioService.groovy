@@ -3,8 +3,6 @@ package org.apoiasuas.formulario
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry
 import fr.opensagres.xdocreport.template.TemplateEngineKind
 import grails.transaction.Transactional
-import org.apoiasuas.Configuracao
-import org.apoiasuas.ConfiguracaoService
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.CidadaoService
 import org.apoiasuas.cidadao.Endereco
@@ -17,23 +15,21 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart
 import org.hibernate.Hibernate
 
-@Transactional
+@Transactional(readOnly = true)
 class FormularioService {
 
     public static final Date ANO_CEM = Date.parse("dd/MM/yyyy", "01/01/100")
     CidadaoService cidadaoService
     SegurancaService segurancaService
-    ConfiguracaoService configuracaoService
 
-    @Transactional(readOnly = true)
     public List<Formulario> getFormulariosDisponiveis() {
         return Formulario.list().sort({ it.nome })
     }
 
     private void valoresFixos(Formulario formulario) {
-        formulario.nomeEquipamento = configuracaoService.configuracaoReadOnly?.equipamento?.nome
-        formulario.enderecoEquipamento = configuracaoService.configuracaoReadOnly?.equipamento?.endereco?.enderecoCompleto
-        formulario.telefoneEquipamento = configuracaoService.configuracaoReadOnly?.equipamento?.telefone
+        formulario.nomeEquipamento = segurancaService.servicoLogado?.nome
+        formulario.enderecoEquipamento = segurancaService.servicoLogado?.endereco?.enderecoCompleto
+        formulario.telefoneEquipamento = segurancaService.servicoLogado?.telefone
     }
 
     @Transactional
@@ -55,8 +51,18 @@ class FormularioService {
         valoresFixos(formulario)
         registraEmissao(formulario) //chamar antes de transferir conteudo
         transfereConteudo(formulario, result)
+        eventoPosEmissao(formulario)
 
         return result
+    }
+
+    /**
+     * Evento a ser implementado nas especializações para disparar outras açoes no sistema. Como gerar um processo de
+     * pedido de certidao de nascimento, por exemplo.
+     */
+    @Transactional
+    protected void eventoPosEmissao(Formulario formulario) {
+
     }
 
     @Transactional
@@ -87,6 +93,7 @@ class FormularioService {
         FormularioEmitido formularioEmitido = new FormularioEmitido()
         formularioEmitido.descricao = formulario.nome
         formularioEmitido.operadorLogado = segurancaService.usuarioLogado
+        formularioEmitido.servicoSistemaSeguranca = segurancaService.servicoLogado
         formularioEmitido.formularioPreDefinido = formulario.formularioPreDefinido
         formularioEmitido.save()
 
@@ -95,6 +102,7 @@ class FormularioService {
         return formulario
     }
 
+    @Transactional
     protected FormularioEmitido registraEmissao(Formulario formulario) {
         FormularioEmitido formularioEmitido = formulario.formularioEmitido
         formularioEmitido.familia = formulario.cidadao?.familia ? Familia.get(formulario.cidadao?.familia?.id) : null
@@ -142,7 +150,6 @@ class FormularioService {
     /**
      * Verifica se todos os campos obrigatorios foram preenchidos
      */
-    @Transactional(readOnly = true)
     public boolean validarPreenchimento(Formulario formulario) {
         formulario.validate()
         Set<String> mensagensErro = new HashSet()
@@ -214,7 +221,6 @@ class FormularioService {
     }
 */
 
-    @Transactional(readOnly = true)
     public Formulario getFormularioComCampos(long idFormulario) {
         Formulario result = null
         if (idFormulario) {
@@ -224,12 +230,10 @@ class FormularioService {
         return result
     }
 
-    @Transactional(readOnly = true)
     public Formulario getFormularioPreDefinido(PreDefinidos codigo) {
         return Formulario.findByFormularioPreDefinido(codigo)
     }
 
-    @Transactional(readOnly = true)
     WordprocessingMLPackage simularTemplate(Formulario formulario) {
         WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.createPackage()
         MainDocumentPart mainPart = wordMLPackage.getMainDocumentPart()
@@ -255,6 +259,9 @@ class FormularioService {
         return wordMLPackage
     }
 
+    /**
+     * Grava permanentemente eventuais alteracoes no cidadao ou familia afetados pelo formulario
+     */
     @Transactional
     public void gravarAlteracoes(Formulario formulario) {
         if (!formulario.cidadao.id)

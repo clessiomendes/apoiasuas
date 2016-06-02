@@ -9,6 +9,7 @@ import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.programa.ProgramaFamilia
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.util.DateUtils
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.CollectionUtils;
@@ -41,16 +42,11 @@ class Familia implements Serializable {
     String telefone //campo transiente (usado para conter telefones escolhidos/digitados pelo operador em casos de uso como o de preenchimento de formulario
     static transients = ['telefone']
 
-//	Despesas despesas
+    ServicoSistema servicoSistemaSeguranca
 
-//    List membros = new ArrayList()
     static hasMany = [membros: Cidadao, telefones: Telefone, programas: ProgramaFamilia]
 
-    static embedded = ['endereco'/*, 'despesas'*/]
-
-//    public List getMembros() {
-//        return membros
-//    }
+    static embedded = ['endereco']
 
     static constraints = {
         id(bindable: true)
@@ -58,7 +54,8 @@ class Familia implements Serializable {
         situacaoFamilia(nullable: false)
         criador(nullable: false)
         ultimoAlterador(nullable: false)
-        codigoLegado(unique: true)
+//        codigoLegado(unique: true)
+        servicoSistemaSeguranca(nullable: false)
     }
 
     String getTelefonesToString() {

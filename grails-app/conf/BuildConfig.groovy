@@ -7,7 +7,7 @@ grails.project.test.reports.dir = "target/test-reports"
 grails.project.work.dir = "target/work"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
-//grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.war.file = "target/${appName}-${appVersion}.war"
 
 //grails.project.war.exploded.dir = "C:/workspaces/openshift/webapps/ROOT"    //openshift
 
@@ -160,6 +160,10 @@ grails.project.dependency.resolution = {
         //compile ":app-info-hibernate:0.4.1"
 
         compile "org.grails.plugins:js-tree:0.3.1" //componente visual de treeview
+
+        compile ":camunda:0.5.0" //componente de BPM
+
+//        compile "org.grails.plugins:hibernate-filter:0.3.2" //Hibernate filters
 
     }
 }

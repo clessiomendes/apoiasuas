@@ -4,19 +4,19 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
 
-@Secured([DefinicaoPapeis.USUARIO])
+@Secured([DefinicaoPapeis.STR_USUARIO])
 class ProgramaController extends AncestralController {
 
     static defaultAction = "list"
     ProgramaService programaService
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
         render view: "list", model:[programaInstanceList:Programa.list(params), programaInstanceCount: Programa.count()]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def show(Programa programaInstance) {
         if (! programaInstance)
             return notFound()
@@ -59,7 +59,7 @@ class ProgramaController extends AncestralController {
         redirect action:"list"
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     protected def notFound() {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'programa.label', default: 'Programa'), params.id])
         redirect action: "list"

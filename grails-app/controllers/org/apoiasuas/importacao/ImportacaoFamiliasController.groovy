@@ -4,22 +4,30 @@ import grails.async.Promise
 import grails.async.Promises
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.json.JsonSlurper
 import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.apoiasuas.util.AmbienteExecucao
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import uk.co.desirableobjects.ajaxuploader.exception.FileUploadException
 
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpSession
 
-@Secured([DefinicaoPapeis.USUARIO])
+/**
+ * Created by admin on 08/05/2016.
+ */
+@Secured([DefinicaoPapeis.STR_USUARIO])
 class ImportacaoFamiliasController extends AncestralController {
 
     ImportarFamiliasService servicoImportarFamilias
     SegurancaService segurancaService
+
+    private static final String SESSION_ID_IMPORTACAO_EM_CURSO = "SESSION_ID_IMPORTACAO_EM_CURSO"
+    private static final String SESSION_DATA_ULTIMA_IMPORTACAO = "SESSION_ULTIMA_IMPORTACAO"
 
     static defaultAction = "list"
     static responseFormats = ['json']
@@ -93,14 +101,15 @@ class ImportacaoFamiliasController extends AncestralController {
         //Gerando resposta à partir de uma listagem de usuarioSistema filtrada por params
         //Parametro model define quaisquer outros objetos que se deseja passar MAS EXCLUSIVAMENTE PARA RESPOSTAS HTML
         //http://grails.org/doc/2.3.x/ref/Controllers/respond.html
-        render view: 'list', model:[tentativasImportacao: TentativaImportacao.list(params), tentativaImportacaoInstanceCount: TentativaImportacao.count()]
+        def tentativasImportacao = TentativaImportacao.findAllByServicoSistemaSeguranca(segurancaService.getServicoLogado(), params);
+        render(view: 'list', model:[tentativasImportacao: tentativasImportacao, tentativaImportacaoInstanceCount: tentativasImportacao.size()])
     }
 
     def show(TentativaImportacao importacao) {
         ResumoImportacaoDTO resumoImportacaoDTO = null
         //FIXME: Nao guardar informacoes sobre o processamento em uma estrutura JSON (possivel fonte de problemas caso a versao da classe ResumoImportacaoDTO venha a mudar)
         if (importacao?.informacoesDoProcessamento?.startsWith('{"'))
-            resumoImportacaoDTO = JSON.parse(importacao.informacoesDoProcessamento)
+            resumoImportacaoDTO = new ResumoImportacaoDTO( new JsonSlurper().parseText(importacao.informacoesDoProcessamento))
         render view: 'show', model: [resumoImportacaoDTO: resumoImportacaoDTO, dtoTentatviaImportacao: importacao]
     }
 
@@ -131,7 +140,7 @@ class ImportacaoFamiliasController extends AncestralController {
                 return render(text: [success: false] as JSON, contentType: 'text/json')
             }
 
-            session.idImportacao = tentativaImportacao.id
+            setIdImportacaoEmCurso(tentativaImportacao.id)
             return render(text: [success: true] as JSON, contentType: 'text/json')
 
         } catch (FileUploadException e) {
@@ -153,7 +162,7 @@ class ImportacaoFamiliasController extends AncestralController {
         if (request instanceof MultipartHttpServletRequest) {
             String login = ((MultipartHttpServletRequest) request).getParameter('user')
             String pass = ((MultipartHttpServletRequest) request).getParameter('pass')
-            return segurancaService.autentica(login, pass, DefinicaoPapeis.WEB_SERVICE )
+            return segurancaService.autentica(login, pass, DefinicaoPapeis.STR_WEB_SERVICE )
         }
         return null
     }
@@ -164,7 +173,7 @@ class ImportacaoFamiliasController extends AncestralController {
      */
     def create() {
         //Limpa a sessão
-        session.removeAttribute("idImportacao")
+        session.removeAttribute(SESSION_ID_IMPORTACAO_EM_CURSO)
         DefinicoesImportacaoFamilias definicoes = servicoImportarFamilias.getDefinicoes();
         request.linhaDoCabecalho = definicoes.linhaDoCabecalho
         request.abaDaPlanilha = definicoes.abaDaPlanilha
@@ -179,14 +188,12 @@ class ImportacaoFamiliasController extends AncestralController {
      */
     def create2(/*WrapperCabecalhosCommand wrapperCabecalhos - este command object virá sempre vazio mas poderá ser preenchido e passado para a gsp*/) {
         WrapperCabecalhosCommand wrapperCabecalhos = new WrapperCabecalhosCommand()
-        if (! session.idImportacao) {
+        if (! getIdImportacaoEmCurso()) {
             redirect(action: 'list')
             return false
         }
-        long idImportacao = session.idImportacao
 
-
-        List<ColunaImportadaCommand> colunasImportadas = servicoImportarFamilias.obtemColunasImportadas(idImportacao)
+        List<ColunaImportadaCommand> colunasImportadas = servicoImportarFamilias.obtemColunasImportadas(getIdImportacaoEmCurso())
         if (! colunasImportadas) {
             //Algum erro na preImportacao pode fazer com que nao haja nenhuma coluna importada. Redirecionar para listagem com mensagem de erro
             flash.error = 'Erro na importação. Clique em "detalhes" para ver o motivo.'
@@ -199,26 +206,16 @@ class ImportacaoFamiliasController extends AncestralController {
         return [wrapperCabecalhos: wrapperCabecalhos]
         //Adiciona um objeto de nome "wrapperCabecalhos" no escopo da página correspondente a esta action
     }
-/*
-    def reProcessar() {
-        long ultimaImportacao = importarFamiliasService.ultimaImportacao()
-        log.debug(ultimaImportacao)
-        if (ultimaImportacao)
-            session.idImportacao = ultimaImportacao
-        redirect action: "preProcessar"
-    }
-*/
 
     /**
      * Chamado pelo botao "Processar" para 1-atualizar as configuracoes no banco e 2-concluir o processamento da planilha
      */
     def concluirImportacao(WrapperCabecalhosCommand wrapperCabecalhos) {
-        if (! session.idImportacao) {
+        if (! getIdImportacaoEmCurso()) {
             redirect(action: 'list')
             return false
         }
-        long idImportacao = session.idImportacao
-        log.debug(["gravando definicoes de idImportacao ": idImportacao])
+        log.debug(["gravando definicoes de idImportacao ": getIdImportacaoEmCurso()])
 
 
         /* Antes de chamar os servicos, temos que interpretar as opcoes feitas pelo usuario em caixas de selecao e
@@ -273,13 +270,32 @@ class ImportacaoFamiliasController extends AncestralController {
             wrapperCabecalhos.camposBDDisponiveis = servicoImportarFamilias.obtemCamposBDDisponiveis()
             render view: "create2", model: [wrapperCabecalhos: wrapperCabecalhos]
         } else {
-            //Rodar assincronamente
-            Promise p = Promises.task {
-                //Efetivar a importação dos dados da planilha, que foram gravados previamente em uma tabela temporaria no BD
-                servicoImportarFamilias.concluiImportacao(camposPreenchidos, idImportacao, segurancaService.getUsuarioLogado())
+            if (AmbienteExecucao.desenvolvimento) {
+                servicoImportarFamilias.concluiImportacao(camposPreenchidos, getIdImportacaoEmCurso(), segurancaService.getUsuarioLogado())
             }
-            redirect action: 'show', id: idImportacao
+            else //Rodar assincronamente
+                Promise p = Promises.task {
+                //Efetivar a importação dos dados da planilha, que foram gravados previamente em uma tabela temporaria no BD
+                    servicoImportarFamilias.concluiImportacao(camposPreenchidos, getIdImportacaoEmCurso(), segurancaService.getUsuarioLogado())
+                }
+            redirect action: 'show', id: getIdImportacaoEmCurso()
         }
+    }
+
+    public static DataUltimaImportacaoDTO getDataUltimaImportacao(HttpSession session) {
+        return session[SESSION_DATA_ULTIMA_IMPORTACAO]
+    }
+
+    public static void setDataUltimaImportacao(HttpSession session, DataUltimaImportacaoDTO dataUltimaImportacao) {
+        session[SESSION_DATA_ULTIMA_IMPORTACAO] = dataUltimaImportacao
+    }
+
+    private Long getIdImportacaoEmCurso() {
+        return session[SESSION_ID_IMPORTACAO_EM_CURSO]
+    }
+
+    private void setIdImportacaoEmCurso(Long idImportacao) {
+        session[SESSION_ID_IMPORTACAO_EM_CURSO] = idImportacao
     }
 
 }

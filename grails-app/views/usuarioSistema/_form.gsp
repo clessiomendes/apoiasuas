@@ -1,5 +1,8 @@
-<%@ page import="org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.seguranca.UsuarioSistema" %>
-<% UsuarioSistema localDtoUsuarioSistema = usuarioSistemaInstance %>
+<%@ page import="org.apoiasuas.redeSocioAssistencial.ServicoSistema; org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.seguranca.UsuarioSistema" %>
+<%
+    UsuarioSistema localDtoUsuarioSistema = usuarioSistemaInstance
+    List<ServicoSistema> servicos = servicosDisponiveis
+%>
     
 <div class="fieldcontain ${hasErrors(bean: localDtoUsuarioSistema, field: 'nomeCompleto', 'error')} required">
 	<label for="nomeCompleto">
@@ -9,7 +12,7 @@
 	<g:textField name="nomeCompleto" required="" value="${localDtoUsuarioSistema?.nomeCompleto}"/>
 </div>
 
-<sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.SUPER_USER}">
+<sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.STR_SUPER_USER}">
     <div class="fieldcontain ${hasErrors(bean: localDtoUsuarioSistema, field: 'username', 'error')} required">
         <label for="username">
             <g:message code="usuarioSistema.username.label" default="Nome Simplificado"/>
@@ -17,8 +20,15 @@
         </label>
         <g:textField name="username" required="" value="${localDtoUsuarioSistema?.username}"/>
     </div>
+    <div class="fieldcontain ${hasErrors(bean: localDtoUsuarioSistema, field: 'servicoSistemaSeguranca', 'error')} required">
+        <label for="servico">
+            <g:message code="usuarioSistema.servico.label"/>
+            <span class="required-indicator">*</span>
+        </label>
+        <g:select name="servicoSistema" noSelection="${['':'']}" from="${servicos.collect{it.nome}}" keys="${servicos.collect{it.id}}" required="" value="${localDtoUsuarioSistema?.servicoSistemaSeguranca?.id}"/>
+    </div>
     <div class="fieldcontain ${hasErrors(bean: localDtoUsuarioSistema, field: 'papel', 'error')} required">
-        <label for="perfil">
+        <label for="papel">
             <g:message code="usuarioSistema.papel.label" default="Perfil de acesso" />
             <span class="required-indicator">*</span>
         </label>

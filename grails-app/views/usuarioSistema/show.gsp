@@ -11,7 +11,7 @@
 		<a href="#show-usuarioSistema" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-                <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.SUPER_USER}">
+                <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.STR_SUPER_USER}">
 				    <li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
 				    <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
                 </sec:ifAnyGranted>
@@ -22,7 +22,6 @@
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
-<uploader:uploader id="yourUploaderId" />
 			<ol class="property-list usuarioSistema">
 			
 				<li class="fieldcontain">
@@ -30,14 +29,21 @@
 					<span class="property-value" aria-labelledby="nomeCompleto-label"><g:fieldValue bean="${usuarioSistemaInstance}" field="nomeCompleto"/></span>
 				</li>
 
-				<g:if test="${usuarioSistemaInstance?.username}">
-					<li class="fieldcontain">
-						<span id="username-label" class="property-label"><g:message code="usuarioSistema.username.label" default="Nome Simplificado" /></span>
-						<span class="property-value" aria-labelledby="username-label"><g:fieldValue bean="${usuarioSistemaInstance}" field="username"/></span>
-					</li>
-				</g:if>
+                <g:if test="${usuarioSistemaInstance?.username}">
+                    <li class="fieldcontain">
+                        <span id="username-label" class="property-label"><g:message code="usuarioSistema.username.label" default="Nome Simplificado" /></span>
+                        <span class="property-value" aria-labelledby="username-label"><g:fieldValue bean="${usuarioSistemaInstance}" field="username"/></span>
+                    </li>
+                </g:if>
 
-				<g:if test="${usuarioSistemaInstance?.papel}">
+                <g:if test="${usuarioSistemaInstance?.servicoSistemaSeguranca}">
+                    <li class="fieldcontain">
+                        <span id="servico-label" class="property-label"><g:message code="usuarioSistema.servico.label" /></span>
+                        <span class="property-value" aria-labelledby="servico-label"><g:fieldValue bean="${usuarioSistemaInstance}" field="servicoSistemaSeguranca.nome"/></span>
+                    </li>
+                </g:if>
+
+                <g:if test="${usuarioSistemaInstance?.papel}">
 					<li class="fieldcontain">
 						<span id="papel-label" class="property-label"><g:message code="usuarioSistema.papel.label" default="Perfil de acesso" /></span>
 						<span class="property-value" aria-labelledby="papel-label">
@@ -71,7 +77,7 @@
 			</ol>
 			<g:form url="[resource:usuarioSistemaInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">
-                <sec:ifAnyGranted roles="${DefinicaoPapeis.SUPER_USER}">
+                <sec:ifAnyGranted roles="${DefinicaoPapeis.STR_SUPER_USER}">
 					<g:link class="edit" action="edit" resource="${usuarioSistemaInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                 </sec:ifAnyGranted>

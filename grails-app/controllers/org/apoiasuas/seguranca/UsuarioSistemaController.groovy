@@ -1,18 +1,20 @@
 package org.apoiasuas.seguranca
 
+import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+import org.codehaus.groovy.grails.commons.GrailsControllerClass
 
-import static org.springframework.http.HttpStatus.*
-
-@Secured([DefinicaoPapeis.SUPER_USER])
+@Secured([DefinicaoPapeis.STR_SUPER_USER])
 class UsuarioSistemaController extends AncestralController {
 
+    def beforeInterceptor = [action: this.&interceptaSeguranca, entity:UsuarioSistema.class, only: ['show','edit', 'delete', 'update', 'save']]
     static defaultAction = "list"
 
     SegurancaService segurancaService
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def show(UsuarioSistema usuarioSistemaInstance) {
         if (! usuarioSistemaInstance)
             return notFound()
@@ -25,29 +27,29 @@ class UsuarioSistemaController extends AncestralController {
         usuarioSistemaInstance.papel = papeis ? papeis.first().authority : null
     }
 
-    def list(Integer max) {
-        //Atualiza o parametro do request "max"
-        //http://groovy.codehaus.org/Operators#Operators-ElvisOperator(?:)
-        params.max = max ?: 20
+    def list(FiltroUsuarioSistemaCommand filtro) {
+        params.offset = params.offset ?: 0
+        params.max = params.max ?: 20
 
-        //Gerando resposta � partir de uma listagem de usuarioSistema filtrada por params
-        render view: "list", model:[usuarioSistemaInstanceList:UsuarioSistema.list(params), usuarioSistemaInstanceCount: UsuarioSistema.count()]
+        def listUsuarios = segurancaService.listUsuarios(filtro, params.offset, params.max)
+        render view: "list", model:[usuarioSistemaInstanceList: listUsuarios, usuarioSistemaInstanceCount: listUsuarios.getTotalCount(), servicosDisponiveis: ServicoSistema.listOrderByNome(), filtro: params.findAll { it.value }]
     }
 
-    def create() {
-        UsuarioSistema novoUsuario = new UsuarioSistema(params)
-        novoUsuario.enabled = true
-        render view:"create", model: [usuarioSistemaInstance:novoUsuario]
+    def create(UsuarioSistema usuarioSistemaInstance) {
+        if (! usuarioSistemaInstance)
+            usuarioSistemaInstance = new UsuarioSistema(params)
+        usuarioSistemaInstance.enabled = true
+        render view:"create", model: [usuarioSistemaInstance:usuarioSistemaInstance, servicosDisponiveis: ServicoSistema.listOrderByNome()]
     }
 
     def edit(UsuarioSistema usuarioSistemaInstance) {
         if (! usuarioSistemaInstance)
             return notFound()
         preenchePapel(usuarioSistemaInstance)
-        render view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance]
+        render view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance, servicosDisponiveis: ServicoSistema.listOrderByNome()]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def alteraPerfil(UsuarioSistema usuarioSistemaInstance) {
         if (! usuarioSistemaInstance)
             return notFound()
@@ -55,20 +57,23 @@ class UsuarioSistemaController extends AncestralController {
         render view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def save(UsuarioSistema usuarioSistemaInstance) {
         if (! usuarioSistemaInstance)
             return notFound()
 
         boolean modoCriacao = usuarioSistemaInstance.id == null
 
-        //Grava
-        if (! segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2"))) {
+        if (! usuarioSistemaInstance.validate())
+//            return render(view: modoCriacao ? "create" : "edit" , model: [usuarioSistemaInstance:usuarioSistemaInstance, servicosDisponiveis: ServicoSistema.listOrderByNome()])
+            return modoCriacao ? create(usuarioSistemaInstance) : edit(usuarioSistemaInstance)
+        else //Grava
+            segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2"))
+//        if (! segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2"))) {
             //exibe o formulario novamente em caso de problemas na validacao
-            return render(view: modoCriacao ? "create" : "edit" , model: [usuarioSistemaInstance:usuarioSistemaInstance])
-        }
+//            return render(view: modoCriacao ? "create" : "edit" , model: [usuarioSistemaInstance:usuarioSistemaInstance])
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'UsuarioSistema.label', default: 'Operador do sistema'), usuarioSistemaInstance.id])
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'usuarioSistema.label', default: 'Operador do sistema'), usuarioSistemaInstance.id])
         render view: "show", model: [usuarioSistemaInstance: usuarioSistemaInstance]
     }
 
@@ -83,12 +88,30 @@ class UsuarioSistemaController extends AncestralController {
             return render(view:"show", model: [usuarioSistemaInstance:usuarioSistemaInstance])
         }
 
-        flash.message = message(code: 'default.deleted.message', args: [message(code: 'UsuarioSistema.label', default: 'Usuário do sistema'), usuarioSistemaInstance.id])
+        flash.message = message(code: 'default.deleted.message', args: [message(code: 'usuarioSistema.label', default: 'Usuário do sistema'), usuarioSistemaInstance.id])
         redirect action:"list"
     }
 
     protected def notFound() {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'UsuarioSistema.label', default: 'Usuário do sistema'), params.id])
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'usuarioSistema.label', default: 'Usuário do sistema'), params.id])
         return redirect(action: "list")
     }
+
+    @Override
+    protected interceptaSeguranca() {
+        if (params?.getIdentifier() && ! segurancaService.isSuperUser()) {
+            if (UsuarioSistema.get(params.getIdentifier())?.servicoSistemaSeguranca != segurancaService.servicoLogado) {
+                flash.message = new AcessoNegadoPersistenceException(segurancaService.usuarioLogado.username, "Operador do sistema", UsuarioSistema.get(params.getIdentifier())?.username)
+                redirect(controller: "menu")
+                return false
+            }
+        }
+    }
+
+}
+
+@grails.validation.Validateable
+class FiltroUsuarioSistemaCommand implements Serializable {
+    String nome
+    String servicoSistema
 }

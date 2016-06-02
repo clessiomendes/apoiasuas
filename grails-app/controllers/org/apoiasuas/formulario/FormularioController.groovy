@@ -9,7 +9,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Secured([DefinicaoPapeis.USUARIO])
+@Secured([DefinicaoPapeis.STR_USUARIO])
 class FormularioController extends AncestralController {
 
     static defaultAction = "list"
@@ -71,7 +71,7 @@ class FormularioController extends AncestralController {
         response.outputStream.flush()
     }
 
-    @Secured([DefinicaoPapeis.USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def simularTemplate(Formulario formularioInstance) {
         WordprocessingMLPackage word = formularioService.simularTemplate(formularioInstance)
 

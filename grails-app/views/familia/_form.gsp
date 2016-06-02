@@ -51,7 +51,7 @@
     <label for="tecnicoReferencia">
         <g:message code="familia.tecnicoReferencia.label" default="Técnico de referência" />
     </label>
-    <g:select id="tecnicoReferencia" name="tecnicoReferencia.id" from="${operadores}" optionKey="id" value="${localDtoFamilia?.tecnicoReferencia?.id}" class="many-to-one" noSelection="['null': '']"/>
+    <g:select id="tecnicoReferencia" name="tecnicoReferencia.id" from="${operadores}" optionKey="id" value="${localDtoFamilia?.tecnicoReferencia?.id}" class="many-to-one" noSelection="['': '']"/>
 </div>
 
 %{--

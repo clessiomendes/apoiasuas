@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://www.activiti.org/test" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" expressionLanguage="http://www.w3.org/1999/XPath" id="m1463783238393" name="" targetNamespace="http://www.activiti.org/test" typeLanguage="http://www.w3.org/2001/XMLSchema">
+  <process id="pedidoCertidao" isClosed="false" isExecutable="true" name="pedido de certidao" processType="None">
+    <startEvent id="inicio" name="inicio"/>
+    <userTask activiti:exclusive="true" id="pedidoEmitido" name="pedido emitido"/>
+    <userTask activiti:exclusive="true" id="aguardandoEnvioParaRegional" name="aguardando envio para regional"/>
+    <endEvent id="fim" name="fim"/>
+    <sequenceFlow id="_6" sourceRef="inicio" targetRef="pedidoEmitido"/>
+    <sequenceFlow id="_7" name="entregar para o administrativo" sourceRef="pedidoEmitido" targetRef="aguardandoEnvioParaRegional"/>
+    <userTask activiti:exclusive="true" id="aguardandoAR" name="aguardando AR"/>
+    <sequenceFlow id="_3" name="entregar na regional" sourceRef="aguardandoEnvioParaRegional" targetRef="aguardandoAR"/>
+    <userTask activiti:exclusive="true" id="_2" name="aguardando certidao do cartorio"/>
+    <sequenceFlow id="_4" name="registrar numero AR" sourceRef="aguardandoAR" targetRef="_2"/>
+    <userTask activiti:exclusive="true" id="_5" name="aguardando retirada pelo usuario"/>
+    <sequenceFlow id="_8" name="certidao recebida" sourceRef="_2" targetRef="_5"/>
+    <sequenceFlow id="_9" name="entregar certidao" sourceRef="_5" targetRef="fim"/>
+  </process>
+  <bpmndi:BPMNDiagram documentation="background=#FFFFFF;count=1;horizontalcount=1;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">
+    <bpmndi:BPMNPlane bpmnElement="pedidoCertidao">
+      <bpmndi:BPMNShape bpmnElement="inicio" id="Shape-inicio">
+        <omgdc:Bounds height="32.0" width="32.0" x="20.0" y="100.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="pedidoEmitido" id="Shape-pedidoEmitido">
+        <omgdc:Bounds height="95.0" width="125.0" x="130.0" y="65.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="95.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="aguardandoEnvioParaRegional" id="Shape-aguardandoEnvioParaRegional">
+        <omgdc:Bounds height="100.0" width="115.0" x="140.0" y="215.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="100.0" width="115.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="fim" id="Shape-fim">
+        <omgdc:Bounds height="32.0" width="32.0" x="180.0" y="885.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="aguardandoAR" id="Shape-aguardandoAR">
+        <omgdc:Bounds height="90.0" width="125.0" x="130.0" y="380.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="90.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_2" id="Shape-_2">
+        <omgdc:Bounds height="95.0" width="125.0" x="130.0" y="545.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="95.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5" id="Shape-_5">
+        <omgdc:Bounds height="80.0" width="130.0" x="135.0" y="725.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="80.0" width="130.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_3" id="BPMNEdge__3" sourceElement="aguardandoEnvioParaRegional" targetElement="aguardandoAR">
+        <omgdi:waypoint x="197.5" y="315.0"/>
+        <omgdi:waypoint x="197.5" y="380.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_4" id="BPMNEdge__4" sourceElement="aguardandoAR" targetElement="_2">
+        <omgdi:waypoint x="192.5" y="470.0"/>
+        <omgdi:waypoint x="192.5" y="545.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_6" id="BPMNEdge__6" sourceElement="inicio" targetElement="pedidoEmitido">
+        <omgdi:waypoint x="51.491933384829665" y="120.0"/>
+        <omgdi:waypoint x="90.0" y="120.0"/>
+        <omgdi:waypoint x="130.0" y="120.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_7" id="BPMNEdge__7" sourceElement="pedidoEmitido" targetElement="aguardandoEnvioParaRegional">
+        <omgdi:waypoint x="197.5" y="160.0"/>
+        <omgdi:waypoint x="197.5" y="215.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_8" id="BPMNEdge__8" sourceElement="_2" targetElement="_5">
+        <omgdi:waypoint x="195.0" y="640.0"/>
+        <omgdi:waypoint x="195.0" y="725.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_9" id="BPMNEdge__9" sourceElement="_5" targetElement="fim">
+        <omgdi:waypoint x="195.0" y="805.0"/>
+        <omgdi:waypoint x="195.0" y="855.0"/>
+        <omgdi:waypoint x="195.0" y="885.0312805773287"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

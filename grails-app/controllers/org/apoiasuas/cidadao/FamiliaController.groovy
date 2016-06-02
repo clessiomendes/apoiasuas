@@ -2,16 +2,18 @@ package org.apoiasuas.cidadao
 
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.transaction.Transactional
 import org.apoiasuas.AncestralController
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
 
-import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
+import javax.servlet.http.HttpSession
 
-@Secured([DefinicaoPapeis.USUARIO_LEITURA])
+@Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class FamiliaController extends AncestralController {
 
+    def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Familia.class, only: ['show','edit', 'delete', 'update', 'save']]
+    private static final String SESSION_ULTIMA_FAMILIA = "SESSION_ULTIMA_FAMILIA"
     def familiaService
 
     def index(Integer max) {
@@ -88,6 +90,13 @@ class FamiliaController extends AncestralController {
         }
     }
 
+    public static Familia getUltimaFamilia(HttpSession session) {
+        return session[SESSION_ULTIMA_FAMILIA]
+    }
+
+    public static void setUltimaFamilia(HttpSession session, Familia familia) {
+        session[SESSION_ULTIMA_FAMILIA] = familia
+    }
 }
 
 class ProgramasCommand {

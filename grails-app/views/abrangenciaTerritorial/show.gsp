@@ -56,7 +56,7 @@
                 </li>
 
                 <li class="fieldcontain">
-                    <span id="pai-label" class="property-label"><g:message code="abrangenciaTerritorial.pai.label" default="Subordinado a" /></span>
+                    <span id="pai-label" class="property-label"><g:message code="abrangenciaTerritorial.mae.label" default="Subordinado a" /></span>
                     <span class="property-value" aria-labelledby="pai-label"><div id="div_territoriosAtuacao"/></span>
                 </li>
 

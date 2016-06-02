@@ -1,115 +1,119 @@
 package org.apoiasuas
 
 import grails.plugin.springsecurity.annotation.Secured
-import org.apoiasuas.Link
+import org.apoiasuas.seguranca.AcessoNegadoPersistenceException
 import org.apoiasuas.seguranca.DefinicaoPapeis
-
-import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Secured([DefinicaoPapeis.USUARIO_LEITURA])
-@Transactional(readOnly = true)
+@Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class LinkController extends AncestralController {
 
+    static defaultAction = "list"
+    LinkService linkService
+    def beforeInterceptor = [action: this.&interceptaSeguranca/*("ola")*/, (ENTITY_CLASS_ENTRY):Link.class, only: ['show','edit', 'delete', 'update', 'save']]
+
     def exibeLinks() {
-        respond Link.list(params).sort { it.id }
+        respond Link.findAllByServicoSistemaSeguranca(getServicoCorrente(), params).sort { it.id }
+//        respond Link.list(params).sort { it.id }
     }
 
-    def index(Integer max) {
+    def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond Link.list(params), model:[linkInstanceCount: Link.count()]
+        respond Link.findAllByServicoSistemaSeguranca(getServicoCorrente(), params), model:[linkInstanceCount: Link.count()]
     }
 
     def show(Link linkInstance) {
-        respond linkInstance
+        if (! linkInstance)
+            return notFound()
+        render view: 'show', model: [ linkInstance: linkInstance ]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO])
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     def create() {
         Link link = new Link(params)
         respond link
     }
 
-    @Secured([DefinicaoPapeis.USUARIO])
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     @Transactional
     def save(Link linkInstance) {
-        if (linkInstance == null) {
-            notFound()
-            return
-        }
-
         if (linkInstance.hasErrors()) {
             respond linkInstance.errors, view:'create'
             return
         }
 
-        linkInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'link.label', default: 'Link'), linkInstance.id])
-                redirect linkInstance
-            }
-            '*' { respond linkInstance, [status: CREATED] }
+        //Grava
+        if (linkInstance.validate()) {
+            linkService.grava(linkInstance)
+        } else {
+            //exibe o formulario novamente em caso de problemas na validacao
+            return render(view: "create", model: [linkInstance:linkInstance])
         }
+        flash.message = message(code: 'default.created.message', args: [message(code: 'link.label'), linkInstance.toString()])
+        return show(linkInstance)
     }
 
-    @Secured([DefinicaoPapeis.USUARIO])
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     def edit(Link linkInstance) {
-        respond linkInstance
+        if (! linkInstance)
+            return notFound()
+        render view: 'edit', model: [linkInstance: linkInstance]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO])
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     @Transactional
     def update(Link linkInstance) {
-        if (linkInstance == null) {
-            notFound()
-            return
-        }
+        if (! linkInstance)
+            return notFound()
 
         if (linkInstance.hasErrors()) {
             respond linkInstance.errors, view:'edit'
             return
         }
 
-        linkInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Link.label', default: 'Link'), linkInstance.id])
-                redirect linkInstance
-            }
-            '*'{ respond linkInstance, [status: OK] }
+        //Grava
+        if (linkInstance.validate()) {
+            linkService.grava(linkInstance)
+        } else {
+            //exibe o formulario novamente em caso de problemas na validacao
+            return render(view: "show", model: [linkInstance:linkInstance])
         }
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'link.label'), linkInstance.toString()])
+        return show(linkInstance)
     }
 
-    @Secured([DefinicaoPapeis.USUARIO])
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     @Transactional
     def delete(Link linkInstance) {
+        if (! linkInstance)
+            return notFound()
 
-        if (linkInstance == null) {
-            notFound()
-            return
-        }
-
-        linkInstance.delete flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Link.label', default: 'Link'), linkInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
+        linkService.apaga(linkInstance)
+        flash.message = message(code: 'default.deleted.message', args: [message(code: 'link.label'), linkInstance.descricao])
+        redirect action:"list"
     }
 
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'link.label', default: 'Link'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND }
+    protected def notFound() {
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'link.label', default: 'Link'), params.id])
+        return redirect(action: "list");
+    }
+
+    /**
+     * Tenta acessar o objeto a ser utilizado na action e, caso o acesso seja negado, captura a excessao e exibe uma
+     * mensagem de erro para o usuário. obs: A excessao é levantada nos eventos de persistência em ApoiaSuasPersistenceListener
+     *
+     * (defined with private scope, so it's not considered an action)
+     */
+    private interceptaSeguranca(String aa) {
+        try {
+            if (params.getIdentifier())
+                Link.get(params.getIdentifier())
+//            if (! Link.get(params.getIdentifier()))
+//                throw new AcessoNegadoPersistenciaException(segurancaService.usuarioLogado.username, "Link", "")
+        } catch  (AcessoNegadoPersistenceException e) {
+            flash.message = e.getMessage()
+            redirect(uri: request.getHeader('referer') )
+            return false
         }
     }
 }

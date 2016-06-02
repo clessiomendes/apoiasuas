@@ -23,7 +23,7 @@ class ApoiaSuasService {
                     "  FROM information_schema.columns\n" +
                     " WHERE table_schema='public'\n" +
                     "   and column_name='id'   \n" +
-                    "   and not table_name = 'configuracao'   \n" +
+                    "   and not table_name = 'servicoSistema'   \n" +
                     "   and 'sq_' || table_name not IN ( SELECT a.sequence_name FROM information_schema.sequences a )"
 
     @Transactional(readOnly = true)

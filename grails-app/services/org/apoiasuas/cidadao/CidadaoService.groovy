@@ -32,6 +32,9 @@ class CidadaoService {
 
         def filtros = [:]
 
+        hql += ' and a.servicoSistemaSeguranca = :servicoSistema'
+        filtros << [servicoSistema: segurancaService.getServicoLogado()]
+
         if (filtroCodigoLegado) {
             hql += ' and a.familia.codigoLegado = :codigoLegado'
             filtros << [codigoLegado: filtroCodigoLegado]
@@ -89,55 +92,6 @@ class CidadaoService {
         return new HqlPagedResultList(cidadaos, count)
     }
 
-    @Transactional(readOnly = true)
-    grails.gorm.PagedResultList procurarCidadaoCriteria(GrailsParameterMap params, FiltroCidadaoCommand filtro) {
-
-        DetachedCriteria inicial = Cidadao.where { }
-
-        if (filtro?.codigoLegado)
-            addAll(inicial, Cidadao.where { familia.codigoLegado == filtro.codigoLegado })
-
-        String[] nomes = filtro?.nomeOuCodigoLegado?.split(" ");
-        nomes?.each { nome ->
-            addAll(inicial, Cidadao.where { nomeCompleto =~ "%" + nome + "%" })
-        }
-
-        //a composicao "endereco" nao funciona em Where Queries (http://stackoverflow.com/questions/28144231/unable-to-use-composition-embedded-class-in-where-queries)
-        String[] logradouros = filtro?.logradouro?.split(" ");
-        logradouros?.each { logradouro ->
-            addAll(inicial, new DetachedCriteria(Cidadao).build {
-                familia {
-                    or {
-                        ilike 'endereco.nomeLogradouro', "%" + logradouro + "%"
-                        ilike 'endereco.complemento', "%" + logradouro + "%"
-                    }
-                }
-            })
-        }
-
-        //a composicao "endereco" nao funciona em Where Queries (http://stackoverflow.com/questions/28144231/unable-to-use-composition-embedded-class-in-where-queries)
-        if (filtro?.numero)
-            addAll(inicial, new DetachedCriteria(Cidadao).build { familia { eq 'endereco.numero', filtro.numero } } )
-//            addAll(inicial, Cidadao.where { familia.endereco.numero == filtro.numero })
-
-//        addAll(inicial, new DetachedCriteria(Cidadao).build { familia { order 'endereco.numero' } } )
-//        addAll(inicial, new DetachedCriteria(Cidadao).build { order("nomeCompleto") } )
-
-//        return inicial.sort (
-        return inicial.list(
-                [max: params.max, offset: params.offset, readonly: "true", ]
-//                , { order("nomeCompleto") }
-//                , { order("familia.codigoLegado") }
-//                , { familia { order("codigoLegado") } }
-        )
-    }
-
-    private void addAll(DetachedCriteria<Cidadao> inicial, DetachedCriteria<Cidadao> adicional) {
-        adicional.criteria.each {
-            inicial.add(it)
-        }
-    }
-
     @Transactional
     def atualizarFamiliaTelefoneCidadao(Familia familia, String novoTelefone, String novoTelefoneDDD) {
         familia.save()
@@ -153,10 +107,10 @@ class CidadaoService {
     }
 
     @Transactional(readOnly = true)
-    Familia obtemFamiliaEMembros(String codigoLegado) {
-        Familia result = Familia.findByCodigoLegado(codigoLegado)
+    Familia obtemFamilia(String codigoLegado, boolean carregaMembros) {
+        Familia result = Familia.findByCodigoLegadoAndServicoSistemaSeguranca(codigoLegado, segurancaService.getServicoLogado())
         log.debug("inicializando colecao de membros")
-        if (result)
+        if (result && carregaMembros)
             Hibernate.initialize(result.membros)
         return result
     }

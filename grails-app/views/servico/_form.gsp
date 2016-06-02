@@ -1,7 +1,39 @@
-<%@ page import="org.apoiasuas.Servico" %>
+<%@ page import="org.apoiasuas.redeSocioAssistencial.Servico" %>
 <%
     Servico localDtoServico = servicoInstance
 %>
+
+<g:javascript>
+    $(document).ready(function() {
+        $('#div_abrangenciaTerritorial').jstree({
+            //'plugins' : ['checkbox'],
+            'core' : {
+                'data' : ${raw(territoriosDisponiveis)}
+    },
+    "rules":{
+        'multiple' : false
+    },
+    "ui" : {
+        "select_limit" : 1  //only allow one node to be selected at a time
+    }//ui
+});//jstree
+});//function
+
+/**
+* Transfere os checkbox'es marcados na treeview de Areas de Atuacao para um parametro hidden a ser submetido no post do formulario
+*/
+function submeteAbrangenciaTerritorial(calee) {
+    var selectedElmsIds = [];
+    var selectedElms = $('#div_abrangenciaTerritorial').jstree("get_selected", true);
+    $.each(selectedElms, function() {
+        selectedElmsIds.push(this.id);
+    });
+    document.getElementById("territorioAtuacao").value = selectedElmsIds.join(",");
+    return true
+}
+</g:javascript>
+
+<g:hiddenField name="territorioAtuacao"/>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'apelido', 'error')} required">
     <label for="apelido">
@@ -9,6 +41,12 @@
         <span class="required-indicator">*</span>
     </label>
     <g:textField name="apelido" size="60" maxlength="60" required="" value="${localDtoServico?.apelido}"/>
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'enabled', 'error')}">
+    <label></label>
+    <g:checkBox name="habilitado" value="${localDtoServico?.habilitado}"/>
+    <g:message code="servico.habilitado.label"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'descricao', 'error')} ">
@@ -35,6 +73,13 @@
     <g:textField name="site" size="60" maxlength="255" value="${localDtoServico?.site}"/>
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'abrangenciaTerritorial', 'error')} required">
+    <span id="uf-label" class="property-label"><g:message code="servico.abrangenciaTerritorial.label" default="Atende *" /></span>
+    <span class="property-value" style="margin-left:25%" aria-labelledby="uf-label">
+        <div id="div_abrangenciaTerritorial"></div>
+    </span>
+</div>
+
 <fieldset id="fieldsetEncaminhamento" class="embedded" ${localDtoServico.podeEncaminhar ? "" : "disabled"}>
     <legend>
         <g:checkBox name="podeEncaminhar" value="${localDtoServico.podeEncaminhar}" onclick="document.getElementById('fieldsetEncaminhamento').disabled = ! this.checked; return true"/>
@@ -57,7 +102,7 @@
 
     <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'endereco.tipoLogradouro', 'error')} ">
         <label for="endereco.tipoLogradouro">
-            <g:message code="servico.endereco.tipoLogradouro.label" default="Tipo Logradouro" />
+            <g:message code="endereco.tipoLogradouro.label" default="Tipo Logradouro" />
         </label>
         <g:textField size="10" name="endereco.tipoLogradouro" value="${localDtoServico?.endereco?.tipoLogradouro}"/>
 
@@ -65,7 +110,7 @@
 
     <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'endereco.nomeLogradouro', 'error')} ">
         <label for="endereco.nomeLogradouro">
-            <g:message code="servico.endereco.nomeLogradouro.label" default="Nome Logradouro" />
+            <g:message code="endereco.nomeLogradouro.label" default="Nome Logradouro" />
 
         </label>
         <g:textField size="60" name="endereco.nomeLogradouro" value="${localDtoServico?.endereco?.nomeLogradouro}"/>
@@ -74,7 +119,7 @@
 
     <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'endereco.numero', 'error')} ">
         <label for="endereco.numero">
-            <g:message code="servico.endereco.numero.label" default="Numero" />
+            <g:message code="endereco.numero.label" default="Numero" />
 
         </label>
         <g:textField size="10" name="endereco.numero" value="${localDtoServico?.endereco?.numero}"/>
@@ -84,7 +129,7 @@
 
     <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'endereco.complemento', 'error')} ">
         <label for="endereco.complemento">
-            <g:message code="servico.endereco.complemento.label" default="Complemento" />
+            <g:message code="endereco.complemento.label" default="Complemento" />
 
         </label>
         <g:textField size="10" name="endereco.complemento" value="${localDtoServico?.endereco?.complemento}"/>
@@ -93,7 +138,7 @@
 
     <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'endereco.bairro', 'error')} ">
         <label for="endereco.bairro">
-            <g:message code="servico.endereco.bairro.label" default="Bairro" />
+            <g:message code="endereco.bairro.label" default="Bairro" />
 
         </label>
         <g:textField size="30" name="endereco.bairro" value="${localDtoServico?.endereco?.bairro}"/>
@@ -102,7 +147,7 @@
 
     <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'endereco.municipio', 'error')} ">
         <label for="endereco.municipio">
-            <g:message code="servico.endereco.municipio.label" default="Municipio" />
+            <g:message code="endereco.municipio.label" default="Municipio" />
 
         </label>
         <g:textField size="60" name="endereco.municipio" value="${localDtoServico?.endereco?.municipio}"/>
@@ -111,14 +156,14 @@
 
     <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'endereco.UF', 'error')} ">
         <label for="endereco.UF">
-            <g:message code="servico.endereco.UF.label" default="UF" />
+            <g:message code="endereco.UF.label" default="UF" />
         </label>
         <g:textField size="2" name="endereco.UF" value="${localDtoServico?.endereco?.UF}"/>
     </div>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'endereco.CEP', 'error')} ">
         <label for="endereco.CEP">
-            <g:message code="servico.endereco.CEP.label" default="CEP" />
+            <g:message code="endereco.CEP.label" default="CEP" />
         </label>
         <g:textField size="10" name="endereco.CEP" value="${localDtoServico?.endereco?.CEP}"/>
 

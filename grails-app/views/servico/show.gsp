@@ -1,21 +1,40 @@
-
-<%@ page import="org.apoiasuas.util.StringUtils; org.apoiasuas.Servico" %>
+<%@ page import="org.apoiasuas.util.StringUtils; org.apoiasuas.redeSocioAssistencial.Servico" %>
 <!DOCTYPE html>
 <html>
 	<head>
+        <g:set var="entityName" value="${message(code: 'servico.label', default: 'Serviço')}" />
+        <title><g:message code="default.show.label" args="[entityName]" /></title>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'servico.label', default: 'Serviço')}" />
-		<title><g:message code="default.show.label" args="[entityName]" /></title>
+        %{-- Para o componente treeview: --}%
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+    </head>
 
-        <g:javascript>
+<g:javascript>
         function submitFormEncaminhamento() {
             document.getElementById('preencherFormulario').idFormulario.value = '${formularioEncaminhamento?.id}';
             document.getElementById('preencherFormulario').idServico.value = '${servicoInstance?.id}';
             document.getElementById('preencherFormulario').submit();
         }
-        </g:javascript>
 
-    </head>
+    $(document).ready(function() {
+        $('#div_abrangenciaTerritorial').jstree({
+            //'plugins' : ['checkbox'],
+            'core' : {
+                'data' : ${raw(hierarquiaTerritorial)}
+    },
+    "rules":{
+        multiple : false
+    },
+    "ui" : {
+        "select_limit" : 0  //no selection
+    }//ui
+});//jstree
+});//function
+
+</g:javascript>
+
 	<body>
 		<a href="#show-servico" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 
@@ -36,7 +55,7 @@
 				<g:if test="${servicoInstance?.apelido}">
 				<li class="fieldcontain">
 					<span id="apelido-label" class="property-label"><g:message code="servico.apelido.label" default="Nome popular" /></span>
-					<span class="property-value" aria-labelledby="apelido-label"><g:fieldValue bean="${servicoInstance}" field="apelido"/></span>
+					<span class="property-value" aria-labelledby="apelido-label">${raw(servicoInstance.apelido)}</span>
 				</li>
 				</g:if>
 
@@ -66,6 +85,11 @@
                         </span>
                     </li>
                 </g:if>
+
+                <li class="fieldcontain">
+                    <span id="abrangenciaTerritorial-label" class="property-label"><g:message code="servico.abrangenciaTerritorial.label" default="Atende" /></span>
+                    <span class="property-value" aria-labelledby="abrangenciaTerritorial-label"><div id="div_abrangenciaTerritorial"/></span>
+                </li>
 
                 <g:if test="${servicoInstance?.podeEncaminhar}">
                     <fieldset id="fieldsetDadosEncaminhamento" class="embedded">

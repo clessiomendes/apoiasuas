@@ -15,8 +15,10 @@ import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.SituacaoFamilia
 import org.apoiasuas.cidadao.Telefone
 import org.apoiasuas.programa.ProgramaFamilia
+import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ApplicationContextHolder
 import org.apoiasuas.util.SafeMap
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.support.SoftThreadLocalMap
@@ -28,9 +30,9 @@ import java.sql.SQLException
 class ImportarFamiliasService {
 
     static transactional = false
+    private static final int ALARME_IMPORTACAO_ATRASADA = 7 //dias
 
-    def sessionFactory //fabrica de sessoes hibernate
-    def segurancaService
+    SegurancaService segurancaService
     def groovySql
 
     @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED /*para conseguir ler o primeiro cabecalho*/)
@@ -166,15 +168,8 @@ class ImportarFamiliasService {
                 //Despreza linhas em branco, usando como critério de campo obrigatório o codigo familiar
                 if (trim(mapaDeCampos.get("CodigoFamilia"))) {
 
-//                  ===> Não faz mais sentido, porque cada linha sera importada em uma transacao diferente
-//                    if (linhaProcessada % 50 == 0) {
-//                        log.info("Importação em andamento, linha " + linhaProcessada);
-//                        cleanUpGorm() //Otimiza o cache hibernate e agiliza as parada
-//                    }
-
                     //TODO: ao envés de obter os campos de DefinicoesImportacaoFamilias como strings, buscar nomes dos campos da própria classe ( em todos mapaDeCampos.get() )
                     //Detectando a mudança do codigoFamilia o que sinaliza o processamento de uma nova familia
-//                  log.info(mapaDeCampos.get("CodigoFamilia") + " (mapa) != "+ ultimaFamilia +" (ultima)")
                     if (!ultimaFamilia.equals(trim(mapaDeCampos.get("CodigoFamilia")))) {
                         ultimaFamilia = trim(mapaDeCampos.get("CodigoFamilia"))
 
@@ -268,7 +263,7 @@ class ImportarFamiliasService {
         boolean podeAtualizar = false
 
 //busca familia na tabela Familia
-        Familia result = Familia.findByCodigoLegado(trim(mapaDeCampos.get("CodigoFamilia")))
+        Familia result = Familia.findByCodigoLegadoAndServicoSistemaSeguranca(trim(mapaDeCampos.get("CodigoFamilia")), segurancaService.getServicoLogado())
         if (!result) {
             //se nao encontrar, insere nova
             novaFamilia = true
@@ -292,6 +287,7 @@ class ImportarFamiliasService {
             result.endereco.municipio = trim(mapaDeCampos.get("Municipio")) ?: segurancaService.getMunicipio()
             result.endereco.UF = trim(mapaDeCampos.get("UF")) ?: segurancaService.getUF()
             result.dataUltimaImportacao = new Date()
+            result.servicoSistemaSeguranca = segurancaService.getServicoLogado()
 
 //        if (AmbienteExecucao.SABOTAGEM)
 //            assert result.codigoLegado != "4", "Erro na familia"
@@ -404,6 +400,7 @@ class ImportarFamiliasService {
                 cidadaoPersistido.nomeCompleto = nomeCidadao
                 cidadaoPersistido.familia = familiaPersistida
                 cidadaoPersistido.criador = usuarioLogado
+                cidadaoPersistido.servicoSistemaSeguranca = segurancaService.getServicoLogado()
             }
 
             if (novoCidadao || !cidadaoPersistido.alteradoAposImportacao()) {
@@ -502,50 +499,57 @@ class ImportarFamiliasService {
     }
 
     private void cleanUpGorm() {
-        sessionFactory.currentSession.flush()
-        sessionFactory.currentSession.clear()
+        def session = ApplicationContextHolder.grailsApplication.mainContext.sessionFactory.currentSession
+//        TentativaImportacao.withSession { HibernateSession session ->
+        session.flush();
+        session.clear();
+//        }
         //Limpando informacoes desnecessarias relativas a validacao de dominios do Grails (http://burtbeckwith.com/blog/?p=73)
         ((SoftThreadLocalMap) org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP).get().clear()
         log.debug("Limpando caches")
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     DefinicoesImportacaoFamilias getDefinicoes() {
-        return DefinicoesImportacaoFamilias.findAll().first();
+        DefinicoesImportacaoFamilias result = DefinicoesImportacaoFamilias.findByServicoSistemaSeguranca(segurancaService.getServicoLogado());
+        if (! result)
+            result = inicializaDefinicoes(segurancaService.getUsuarioLogado())
+        return result
     }
 
     @Transactional
-    void inicializaDefinicoes(UsuarioSistema admin) {
-        if (DefinicoesImportacaoFamilias.count() == 0) {
-            def definicao = new DefinicoesImportacaoFamilias()
-            definicao.linhaDoCabecalho = 1
-            definicao.abaDaPlanilha = 1
-            definicao.ultimoAlterador = admin
-            definicao.lastUpdated = new Date()
-            if (AmbienteExecucao.isDesenvolvimento()) {
-                definicao.linhaDoCabecalho = 2
-                definicao.colunaDataCadastroFamilia = 'Data do Cadastro'
-                definicao.colunaDataNascimento = 'Data de nascimento'
-                definicao.colunaMunicipio = null
-                definicao.colunaNIS = null
-                definicao.colunaNISReferencia = 'NIS da referência'
-                definicao.colunaNomeCidadao = 'Nome do integrante'
-                definicao.colunaNomeLogradouro = 'Nome do logradouro'
-                definicao.colunaNomeReferencia = 'Nome da referência'
-                definicao.colunaNumero = 'Nº'
-                definicao.colunaParentesco = 'Grau de parentesco'
-                definicao.colunaTelefones = 'Telefone'
-                definicao.colunaTipoLogradouro = 'Logradouro'
-                definicao.colunaUF = null
-                definicao.colunaBairro = 'Bairro'
-                definicao.colunaCEP = 'CEP'
-                definicao.colunaCodigoFamilia = 'Nº do Cadastro'
-                definicao.colunaComplemento = 'Complemento'
-                definicao.colunaPBF = 'B.F.'
-                definicao.colunaBPC = 'B.P.C.'
-            }
-            definicao.save()
+    private DefinicoesImportacaoFamilias inicializaDefinicoes(UsuarioSistema usuarioSistema) {
+        DefinicoesImportacaoFamilias definicao = new DefinicoesImportacaoFamilias()
+        definicao.linhaDoCabecalho = 1
+        definicao.abaDaPlanilha = 1
+        definicao.ultimoAlterador = usuarioSistema
+        definicao.lastUpdated = new Date()
+        definicao.servicoSistemaSeguranca = segurancaService.getServicoLogado()
+        /*
+        if (AmbienteExecucao.isDesenvolvimento()) {
+            definicao.linhaDoCabecalho = 2
+            definicao.colunaDataCadastroFamilia = 'Data do Cadastro'
+            definicao.colunaDataNascimento = 'Data de nascimento'
+            definicao.colunaMunicipio = null
+            definicao.colunaNIS = null
+            definicao.colunaNISReferencia = 'NIS da referência'
+            definicao.colunaNomeCidadao = 'Nome do integrante'
+            definicao.colunaNomeLogradouro = 'Nome do logradouro'
+            definicao.colunaNomeReferencia = 'Nome da referência'
+            definicao.colunaNumero = 'Nº'
+            definicao.colunaParentesco = 'Grau de parentesco'
+            definicao.colunaTelefones = 'Telefone'
+            definicao.colunaTipoLogradouro = 'Logradouro'
+            definicao.colunaUF = null
+            definicao.colunaBairro = 'Bairro'
+            definicao.colunaCEP = 'CEP'
+            definicao.colunaCodigoFamilia = 'Nº do Cadastro'
+            definicao.colunaComplemento = 'Complemento'
+            definicao.colunaPBF = 'B.F.'
+            definicao.colunaBPC = 'B.P.C.'
         }
+        */
+        return definicao.save()
     }
 
     @Transactional
@@ -726,8 +730,11 @@ class ImportarFamiliasService {
         }
         bufferImportacao.clear();
 
-        sessionFactory.currentSession.flush()
-        sessionFactory.currentSession.clear()
+        def session = ApplicationContextHolder.grailsApplication.mainContext.sessionFactory.currentSession
+//        TentativaImportacao.withSession { HibernateSession session ->
+            session.flush();
+            session.clear();
+//        }
         //Limpando informacoes desnecessarias relativas a validacao de dominios do Grails (http://burtbeckwith.com/blog/?p=73)
         ((SoftThreadLocalMap) org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP).get().clear()
     }
@@ -737,7 +744,7 @@ class ImportarFamiliasService {
      * Registra uma nova tentativa de importacao no BD (um registro pai para os filhos do tipo LinhaTentativaImportacao inseridos na sequencia).
      */
     public TentativaImportacao registraNovaImportacao(int linhaDoCabecalho, int abaDaPlanilha, UsuarioSistema usuarioLogado) {
-        DefinicoesImportacaoFamilias definicoes = DefinicoesImportacaoFamilias.findAll().first();
+        DefinicoesImportacaoFamilias definicoes = getDefinicoes();
         definicoes.linhaDoCabecalho = linhaDoCabecalho
         definicoes.abaDaPlanilha = abaDaPlanilha
         definicoes.save()
@@ -751,10 +758,16 @@ class ImportarFamiliasService {
         return result
     }
 
-    public Map getUltimaImportacao() {
-        TentativaImportacao ultimaImportacao = TentativaImportacao.find("from TentativaImportacao a where a.status = :status order by a.id desc", [status: StatusImportacao.CONCLUIDA])
-        Date dataUltimaImportacao = ultimaImportacao?.lastUpdated ?: ultimaImportacao?.dateCreated
-        return [data: dataUltimaImportacao, atrasada: dataUltimaImportacao ? new Date() - dataUltimaImportacao > 7 : null]
+    public DataUltimaImportacaoDTO getDataUltimaImportacao() {
+        DataUltimaImportacaoDTO result = new DataUltimaImportacaoDTO()
+        TentativaImportacao ultimaImportacao = TentativaImportacao.find(
+                "from TentativaImportacao a where a.status = :status and a.servicoSistemaSeguranca = :servicoSistema " +
+                        "order by a.id desc",
+                [status: StatusImportacao.CONCLUIDA, servicoSistema: segurancaService.servicoLogado]
+        )
+        result.valor = ultimaImportacao?.lastUpdated ?: ultimaImportacao?.dateCreated
+        result.atrasada = result.valor ? new Date() - result.valor > ALARME_IMPORTACAO_ATRASADA : null
+        return result
     }
 }
 

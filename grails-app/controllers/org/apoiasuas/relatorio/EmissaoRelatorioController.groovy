@@ -7,7 +7,7 @@ import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 
-@Secured([DefinicaoPapeis.USUARIO_LEITURA])
+@Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class EmissaoRelatorioController extends AncestralController {
 
     SegurancaService segurancaService

@@ -1,5 +1,4 @@
-
-<%@ page import="org.apoiasuas.Servico" %>
+<%@ page import="org.apoiasuas.redeSocioAssistencial.Servico" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -39,10 +38,13 @@
                     <th>Descrição</th>
                 </tr></thead>
 				<tbody>
-				<g:each in="${servicoInstanceList}" status="i" var="servicoInstance">
+				<g:each in="${servicoInstanceList}" status="i" var="servicoInstance"> <% Servico servico = servicoInstance %>
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-						<td><g:link action="show" id="${servicoInstance.id}">${raw(servicoInstance.apelido)}</g:link></td>
-						<td>${raw(servicoInstance.descricaoCortada)}</td>
+						<td>
+                            <g:link action="show" id="${servico.id}">${raw(servico.apelido)}</g:link>
+                            <span style="color:red">${servico.habilitado ? "" : " (desativado)"}</span>
+                        </td>
+						<td>${raw(servico.descricaoCortada)}</td>
 					</tr>
 				</g:each>
 				</tbody>

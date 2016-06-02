@@ -2,32 +2,48 @@ package org.apoiasuas
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import groovy.sql.Sql
-import groovy.time.TimeCategory
+import org.apoiasuas.importacao.ImportacaoFamiliasController
+import org.apoiasuas.importacao.ImportarFamiliasService
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
+import org.apoiasuas.seguranca.ApoiaSuasUser
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.ItemMenuDTO
+import org.apoiasuas.seguranca.SegurancaService
+import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
-import org.hibernate.SessionFactory
-import org.hibernate.cfg.Configuration
-import org.hibernate.dialect.PostgreSQL81Dialect
-import org.hibernate.tool.hbm2ddl.DatabaseMetadata
 
-@Secured([DefinicaoPapeis.USUARIO_LEITURA])
-class InicioController {
+@Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+class InicioController extends AncestralController {
 
     public static final A = "A"
 
-    def springSecurityService
-    def grailsApplication
-    def apoiaSuasService
-    def importarFamiliasService
-    def segurancaService
+    GrailsApplication grailsApplication
+    SegurancaService segurancaService
+    ApoiaSuasService apoiaSuasService
+    ImportarFamiliasService importarFamiliasService
+    ServicoSistemaService servicoSistemaService
 
-    static defaultAction = "definePreimeiraTela"
+    static defaultAction = "actionInicial"
 
-    def definePreimeiraTela() {
-        if (segurancaService.usuarioLogado.temPerfil(DefinicaoPapeis.RECEPCAO))
+    def actionInicial() {
+/*
+        UsuarioSistema usuarioLogado = segurancaService.getUsuarioLogado();
+        ApoiaSuasUser principal = segurancaService.getPrincipal();
+
+        if (! principal.servicoSistemaSessaoCorrente) {
+            //primeiro acesso à tela de menu nessa sessao
+            if (segurancaService.isSuperUser()) {
+                return render(view: 'escolheServicoSistema', model: [servicosDisponiveis: ServicoSistema.findAllByHabilitado(true).sort{it.nome}])
+            } else { //demais usuarios nao administradores
+                principal.servicoSistemaSessaoCorrente = usuarioLogado.servicoSistemaSeguranca
+            }
+        }
+         */
+
+        if (segurancaService.getUsuarioLogado().temPerfil(DefinicaoPapeis.STR_RECEPCAO))
             return redirect(controller: "cidadao", action: "procurarCidadao")
         else
             return redirect(action: "menu")
@@ -39,24 +55,14 @@ class InicioController {
     def menu() {
         List<GrailsControllerClass> opcoes = []
         List<GrailsControllerClass> outrasOpcoes = []
-/*
-        opcoes = grailsApplication.controllerClasses.findAll{ it.fullName in [
-                    'org.apoiasuas.formulario.EmissaoFormularioController',
-                    'org.apoiasuas.importacao.ImportacaoFamiliasController',
-                    'org.apoiasuas.seguranca.UsuarioSistemaController'
-            ] }
-*/
+
         if (! AmbienteExecucao.isProducao()) {
             outrasOpcoes = grailsApplication.controllerClasses.minus(opcoes)
         }
 
-//        List<ItemMenuDTO> ops = []
-//        ops << itemMenu('Emissão de formulários', EmissaoFormularioController.getClass(), [DefinicaoPapeis.USUARIO_LEITURA])
-//        ops << itemMenu('Emissão de formulários', forward(controller: 'EmissaoFormularioController', action: 'escolherFamilia'), 'meIgnore')
-
         //armazena na sessao a data e hora da ultima importacao concluida
-        if (! session.ultimaImportacao)
-            session.ultimaImportacao = importarFamiliasService.ultimaImportacao
+        if (! ImportacaoFamiliasController.getDataUltimaImportacao(session))
+            ImportacaoFamiliasController.setDataUltimaImportacao(session, importarFamiliasService.getDataUltimaImportacao())
 
         render view:'menu', model: [/*opcoes: opcoes,*/ outrasOpcoes: outrasOpcoes]
     }
@@ -81,4 +87,17 @@ class InicioController {
         SpringSecurityUtils.reloadSecurityConfig()
         render(view: 'menu')
     }
+
+    def servicoEscolhido() {
+        if (! params.servicoSistema)
+            return render(view: 'escolheServicoSistema', model: [servicosDisponiveis: ServicoSistema.findAllByHabilitado(true).sort{it.nome}])
+
+        segurancaService.setServicoLogado(ServicoSistema.get(params.servicoSistema))
+        return redirect(action: "menu")
+    }
+
+    def escolheServicoSistema() {
+        return render(view: 'escolheServicoSistema', model: [servicosDisponiveis: ServicoSistema.findAllByHabilitado(true).sort{it.nome}])
+    }
+
 }

@@ -6,17 +6,18 @@ import grails.transaction.Transactional
 import grails.util.GrailsNameUtils
 import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.util.StringUtils
-import org.codehaus.groovy.grails.commons.GrailsApplication
+
+import javax.servlet.http.HttpSession
 
 import static org.springframework.http.HttpStatus.*
 
-@Transactional(readOnly = true)
-@Secured([DefinicaoPapeis.USUARIO_LEITURA])
+@Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class CidadaoController extends AncestralController {
 
+    def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Cidadao.class, only: ['show','edit', 'delete', 'update', 'save']]
     static defaultAction = "procurarCidadao"
+    private static final String SESSION_ULTIMO_CIDADAO = "SESSION_ULTIMO_CIDADAO"
 
     def cidadaoService
 
@@ -48,7 +49,8 @@ class CidadaoController extends AncestralController {
     }
 
     def selecionarFamilia(Familia familiaInstance) {
-        forward controller: GrailsNameUtils.getLogicalName(FamiliaController.class, "Controller"), action: "show"
+        redirect(controller: 'familia', action: 'show', params: params)
+//        forward controller: GrailsNameUtils.getLogicalName(FamiliaController.class, "Controller"), action: "show"
     }
 
     def show(Cidadao cidadaoInstance) {
@@ -56,92 +58,17 @@ class CidadaoController extends AncestralController {
         respond cidadaoInstance
     }
 
-    @Secured([DefinicaoPapeis.USUARIO])
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     def create() {
         respond new Cidadao(params)
     }
 
-    @Transactional
-    @Secured([DefinicaoPapeis.USUARIO])
-    def save(Cidadao cidadaoInstance) {
-        if (cidadaoInstance == null) {
-            notFound()
-            return
-        }
-
-        if (cidadaoInstance.hasErrors()) {
-            respond cidadaoInstance.errors, view: 'create'
-            return
-        }
-
-        cidadaoInstance.save flush: true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'cidadao.label', default: 'Cidadao'), cidadaoInstance.id])
-                redirect cidadaoInstance
-            }
-            '*' { respond cidadaoInstance, [status: CREATED] }
-        }
+    public static Cidadao getUltimoCidadao(HttpSession session) {
+        return session[SESSION_ULTIMO_CIDADAO]
     }
 
-    @Secured([DefinicaoPapeis.USUARIO])
-    def edit(Cidadao cidadaoInstance) {
-        respond cidadaoInstance
-    }
-
-    @Transactional
-    @Secured([DefinicaoPapeis.USUARIO])
-    def update(Cidadao cidadaoInstance) {
-        if (cidadaoInstance == null) {
-            notFound()
-            return
-        }
-
-        if (cidadaoInstance.hasErrors()) {
-            respond cidadaoInstance.errors, view: 'edit'
-            return
-        }
-
-        cidadaoInstance.save flush: true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Cidadao.label', default: 'Cidadao'), cidadaoInstance.id])
-                redirect cidadaoInstance
-            }
-            '*' { respond cidadaoInstance, [status: OK] }
-        }
-    }
-
-    @Transactional
-    @Secured([DefinicaoPapeis.USUARIO])
-    def delete(Cidadao cidadaoInstance) {
-
-        if (cidadaoInstance == null) {
-            notFound()
-            return
-        }
-
-        cidadaoInstance.delete flush: true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Cidadao.label', default: 'Cidadao'), cidadaoInstance.id])
-                redirect action: "procurarCidadao", method: "GET"
-            }
-            '*' { render status: NO_CONTENT }
-        }
-    }
-
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'cidadao.label', default: 'Cidadao'), params.id])
-                redirect action: "procurarCidadao", method: "GET"
-            }
-            '*' { render status: NOT_FOUND }
-        }
+    public static void setUltimoCidadao(HttpSession session, Cidadao cidadao) {
+        session[SESSION_ULTIMO_CIDADAO] = cidadao
     }
 }
 
@@ -150,5 +77,4 @@ class FiltroCidadaoCommand implements Serializable {
     String nomeOuCodigoLegado
     String logradouro
     String numero
-//    String codigoLegado
 }

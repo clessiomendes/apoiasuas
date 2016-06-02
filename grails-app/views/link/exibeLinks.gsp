@@ -88,7 +88,7 @@
 
     <div class="nav" role="navigation">
         <ul>
-            <li><g:link class="list" action="index">Configurar</g:link></li>
+            <li><g:link class="list" action="list">Configurar</g:link></li>
         </ul>
     </div>
 

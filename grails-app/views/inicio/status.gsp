@@ -93,7 +93,7 @@
 --}%
     </ul>
 
-    <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.SUPER_USER}">
+    <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.STR_SUPER_USER}">
     <div id="controllerList" class="dialog">
         <h2>Atualizações de Banco de Dados Pendentes:</h2>
         <ul>

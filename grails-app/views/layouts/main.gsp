@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.cidadao.Cidadao; org.apoiasuas.cidadao.Familia; org.apoiasuas.AncestralController" %>
+<%@ page import="org.apoiasuas.cidadao.FamiliaController; org.apoiasuas.cidadao.CidadaoController; org.apoiasuas.cidadao.Cidadao; org.apoiasuas.cidadao.Familia; org.apoiasuas.AncestralController" %>
 <!DOCTYPE html>
 <!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
 <!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
@@ -37,14 +37,12 @@
     %{--   Muda a cor do banner de acordo com o ambiente:   --}%
     <div role="banner" id= ${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "grailsLogoProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "grailsLogoValid" : "grailsLogoLocal"}>
         <table class="vertical-align: middle"><tr>
-%{--
-            <td> Test ${servletContext.getInitParameter("nomeEquipamento")} e <a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a>  </td>
---}%
-            <td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px">${application.configuracao ? application.configuracao.equipamento?.nome : "indefinido" }</span> </td>
+            %{--<td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px">${application.configuracao ? application.configuracao.nome : "indefinido" }</span> </td>--}%
+            <td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px"><sec:loggedInUserInfo field="servicoSistemaSessaoCorrente.nome"/></span> </td>
             <td> %{--  Exibe a última família / cidadão selecionado, se houver:   --}%
                 <%
-                    Familia ultimaFamilia = session[org.apoiasuas.AncestralController.ULTIMA_FAMILIA]
-                    Cidadao ultimoCidadao = session[org.apoiasuas.AncestralController.ULTIMO_CIDADAO]
+                    Familia ultimaFamilia = org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)
+                    Cidadao ultimoCidadao = org.apoiasuas.cidadao.CidadaoController.getUltimoCidadao(session)
                 %>
                 <g:if test="${ultimaFamilia != null}">
                     <div id="caixa-familia">

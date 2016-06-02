@@ -2,6 +2,7 @@ package org.apoiasuas.formulario
 
 import org.apoiasuas.bootstrap.FormularioCertidoes
 import org.apoiasuas.cidadao.Cidadao
+import org.apoiasuas.seguranca.UsuarioSistema
 
 class Formulario implements Serializable {
     public static final String EXTENSAO_ARQUIVO = ".docx"
@@ -20,12 +21,10 @@ class Formulario implements Serializable {
 
     //Campos transientees
     Cidadao cidadao
-//    Map<String, Object> camposAvulsos
-//    Date dataPreenchimento
-//    String nomeResponsavelPreenchimento
+    UsuarioSistema usuarioSistema //Campo transiente para armazenar um usuarioResponsavel (caso ele exista no formulario)
     boolean atualizarPersistencia
     FormularioEmitido formularioEmitido
-    static transients = ['formularioEmitido', 'cidadao', 'dataPreenchimento', 'nomeEquipamento', 'enderecoEquipamento', 'telefoneEquipamento', /*'nomeResponsavelPreenchimento', 'camposAvulsos',*/ 'atualizarPersistencia']
+    static transients = ['formularioEmitido', 'cidadao', 'usuarioSistema', 'dataPreenchimento', 'nomeEquipamento', 'enderecoEquipamento', 'telefoneEquipamento', /*'nomeResponsavelPreenchimento', 'camposAvulsos',*/ 'atualizarPersistencia']
 
     static hasMany = [campos: CampoFormulario]
 
@@ -84,11 +83,18 @@ class Formulario implements Serializable {
 //        campos.find{ it.codigo == CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO }?.valorArmazenado = nome
 //    }
 
-    CampoFormulario getCampoAvulso(String codigo) {
+    public CampoFormulario getCampoAvulso(String codigo) {
         CampoFormulario result = campos.find{ it.codigo == codigo && it.origem?.avulso }
         if (! result)
             throw new RuntimeException("Campo avulso ${codigo} não encontrado")
         return result
+    }
+
+    public Object getConteudoCampo(String codigo) {
+        CampoFormulario result = campos.find{ it.codigo == codigo }
+        if (! result)
+            throw new RuntimeException("Campo ${codigo} não encontrado")
+        return result.valorArmazenado
     }
 
     static constraints = {

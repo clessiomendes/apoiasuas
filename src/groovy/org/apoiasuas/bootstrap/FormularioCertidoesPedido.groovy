@@ -10,6 +10,10 @@ class FormularioCertidoesPedido extends FormularioBase {
     public static String CODIGO_TIPO_CERTIDAO = "tipo_certidao"
     public static String CODIGO_DADOS_CERTIDAO = "dados_certidao"
     public static String CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO = "matricula"
+    public static String CODIGO_NOME_CARTORIO = 'nome_cartorio'
+    public static String CODIGO_BAIRRO_DISTRITO_CARTORIO = 'bairro_distrito_cartorio'
+    public static String CODIGO_MUNICIPIO_CARTORIO = 'municipio_cartorio'
+    public static String CODIGO_UF_CARTORIO = 'uf_cartorio'
 
 
     @Override
@@ -45,7 +49,7 @@ class FormularioCertidoesPedido extends FormularioBase {
             }
             grupo 'Cartório', {
                 campoAvulso {
-                    codigo 'nome_cartorio'
+                    codigo CODIGO_NOME_CARTORIO
                     descricao 'Nome'
                     obrigatorio true
                 }
@@ -55,18 +59,18 @@ class FormularioCertidoesPedido extends FormularioBase {
                     obrigatorio true
                 }
                 campoAvulso {
-                    codigo 'bairro_distrito_cartorio'
+                    codigo CODIGO_BAIRRO_DISTRITO_CARTORIO
                     tamanho 30
                     descricao 'Bairro ou Distrito'
                 }
                 campoAvulso {
-                    codigo 'municipio_cartorio'
+                    codigo CODIGO_MUNICIPIO_CARTORIO
                     tamanho 30
                     descricao 'Município'
                     obrigatorio true
                 }
                 campoAvulso {
-                    codigo 'uf_cartorio'
+                    codigo CODIGO_UF_CARTORIO
                     tamanho 2
                     descricao 'UF'
                     obrigatorio true
