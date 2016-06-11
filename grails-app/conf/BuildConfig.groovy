@@ -118,14 +118,13 @@ grails.project.dependency.resolution = {
 
     plugins {
         runtime ":hibernate4:4.3.5.5" // or ":hibernate:3.6.10.17"
-
-        build ":tomcat:7.0.55"
+//        build ":tomcat:7.0.55"
         build ":release:3.0.1", {
             export = false
         }
 
         compile ":scaffolding:2.1.2"
-        compile ':cache:1.1.7'
+        compile ':cache:1.1.8'
         compile ":asset-pipeline:2.1.0"
         compile ":spring-security-core:2.0-RC4" //autenticacao e authority, definicao de usuarios e papeis.
 //        compile ":filterpane:2.4.5" //filtros para as telas de busca
@@ -162,6 +161,7 @@ grails.project.dependency.resolution = {
         compile "org.grails.plugins:js-tree:0.3.1" //componente visual de treeview
 
         compile ":camunda:0.5.0" //componente de BPM
+        build ':jetty:2.0.3'
 
 //        compile "org.grails.plugins:hibernate-filter:0.3.2" //Hibernate filters
 
