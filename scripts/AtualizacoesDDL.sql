@@ -82,6 +82,7 @@ CREATE TABLE abrangencia_territorial
 create sequence sq_abrangencia_territorial;
 
 ALTER TABLE public.configuracao RENAME TO servico_sistema;
+
 ALTER TABLE public.servico_sistema RENAME COLUMN equipamento_nome TO nome;
 ALTER TABLE public.servico_sistema RENAME COLUMN equipamento_site TO site;
 ALTER TABLE public.servico_sistema RENAME COLUMN equipamento_telefone TO telefone;
@@ -103,6 +104,8 @@ alter table usuario_sistema add column servico_sistema_seguranca_id int8;
 alter table usuario_sistema add constraint FK_ityim037jun7r7ij0x73nlspe foreign key (servico_sistema_seguranca_id) references servico_sistema;
 update usuario_sistema set servico_sistema_seguranca_id = (select min(id) from servico_sistema);
 ALTER TABLE usuario_sistema ALTER COLUMN servico_sistema_seguranca_id SET NOT NULL;
+
+---
 
 alter table cidadao add column servico_sistema_seguranca_id int8 not null default();
 alter table familia add column servico_sistema_seguranca_id int8 not null default();

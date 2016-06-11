@@ -151,7 +151,7 @@ class BootStrap {
             String erro = "Detectadas atualizacoes pendentes no banco de dados:"
             atualizacoesPendentes.each { erro += "\n" + it + ";" }
             log.error(erro);
-            throw new RuntimeException("Banco de dados fora de sincronia com a aplicação (ver mensagens anteriores). Startup interrompido.")
+            throw new RuntimeException("Startup interrompido. Banco de dados fora de sincronia com a aplicação: "+erro)
         }
     }
 

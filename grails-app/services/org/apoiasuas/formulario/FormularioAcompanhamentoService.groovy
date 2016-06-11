@@ -1,11 +1,5 @@
 package org.apoiasuas.formulario
 
-import org.apoiasuas.bootstrap.FormularioAcompanhamento
-import org.apoiasuas.bootstrap.FormularioCertidoes
-import org.apoiasuas.bootstrap.FormularioCertidoesPedido
-import org.apoiasuas.cidadao.Cidadao
-import org.apoiasuas.util.StringUtils
-
 /**
  * Created by admin on 19/04/2015.
  */

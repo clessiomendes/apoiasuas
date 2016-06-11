@@ -33,7 +33,7 @@
                 <li>
                     Data <g:textField name="dataInicio" size="7"/> a <g:textField name="dataFim" size="7"/>
                 </li>
-                <li><g:submitButton formaction="listExecuta" name="list" class="list" value="Procurar"/></li>
+                <li><g:submitButton formaction="list" name="list" class="list" value="Procurar"/></li>
             </ul>
         </g:form>
         </div>

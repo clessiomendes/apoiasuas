@@ -4,6 +4,7 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import org.apoiasuas.AncestralController
+import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
 
@@ -15,6 +16,7 @@ class FamiliaController extends AncestralController {
     def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Familia.class, only: ['show','edit', 'delete', 'update', 'save']]
     private static final String SESSION_ULTIMA_FAMILIA = "SESSION_ULTIMA_FAMILIA"
     def familiaService
+    def pedidoCertidaoProcessoService
 
     def index(Integer max) {
         redirect(controller: 'cidadao', action: 'procurarCidadao')
@@ -25,8 +27,10 @@ class FamiliaController extends AncestralController {
         if (! familiaInstance)
             return notFound()
 
+        List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familiaInstance.id)
+
         guardaUltimaFamiliaSelecionada(familiaInstance)
-        render view: 'show', model: [familiaInstance: familiaInstance]
+        render view: 'show', model: [familiaInstance: familiaInstance, pedidosCertidaoPendentes: pedidosCertidaoPendentes]
     }
 
 /*

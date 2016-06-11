@@ -1,6 +1,5 @@
 package org.apoiasuas.formulario
 
-import org.apoiasuas.bootstrap.FormularioCertidoes
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.seguranca.UsuarioSistema
 

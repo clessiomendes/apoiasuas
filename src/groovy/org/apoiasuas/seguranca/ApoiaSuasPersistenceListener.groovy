@@ -5,12 +5,14 @@ import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener
+import org.grails.datastore.mapping.engine.event.PostDeleteEvent
 import org.grails.datastore.mapping.engine.event.PostLoadEvent
 import org.grails.datastore.mapping.engine.event.PreDeleteEvent
 import org.grails.datastore.mapping.engine.event.PreInsertEvent
+import org.grails.datastore.mapping.engine.event.PreLoadEvent
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent
-
-import javax.xml.bind.ValidationEvent
+import org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent
+import org.grails.datastore.mapping.engine.event.ValidationEvent
 
 /**
  * Event Listener para todas as ações de alteracao e consulta ao banco de dados
@@ -75,7 +77,12 @@ class ApoiaSuasPersistenceListener extends AbstractPersistenceEventListener {
                 eventType.isAssignableFrom(PreUpdateEvent) ||
                 eventType.isAssignableFrom(PreDeleteEvent) ||
                 eventType.isAssignableFrom(ValidationEvent) ||
+                eventType.isAssignableFrom(PreInsertEvent) ||
+                eventType.isAssignableFrom(PreUpdateEvent) ||
+                eventType.isAssignableFrom(SaveOrUpdateEvent) ||
                 eventType.isAssignableFrom(PostLoadEvent)
+
+//      exclude: PostDeleteEvent, PreLoadEvent
     }
 
 }

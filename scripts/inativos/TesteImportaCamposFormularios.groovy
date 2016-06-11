@@ -1,6 +1,6 @@
 import org.apoiasuas.bootstrap.FormularioTesteImportaCampos
 import org.apoiasuas.formulario.Formulario
-import org.apoiasuas.formulario.FormularioBuilder
+import org.apoiasuas.formulario.builder.FormularioBuilder
 
 //includeTargets << grailsScript("_GrailsInit")
 try {

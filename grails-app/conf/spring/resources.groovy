@@ -1,3 +1,4 @@
+import org.apoiasuas.formulario.FormularioCurriculoService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
 import org.apoiasuas.importacao.ImportacaoFamiliasController
 import org.apoiasuas.importacao.ImportarFamiliasBHService

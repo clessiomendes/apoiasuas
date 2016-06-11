@@ -3,7 +3,7 @@ package org.apoiasuas.formulario
 import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
-import org.apoiasuas.bootstrap.FormularioBase
+import org.apoiasuas.formulario.definicao.FormularioBase
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.CidadaoService
 import org.apoiasuas.cidadao.Endereco
@@ -15,6 +15,7 @@ import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
+import javax.servlet.http.HttpSession
 import java.text.ParseException
 import java.text.SimpleDateFormat
 
@@ -22,6 +23,7 @@ import java.text.SimpleDateFormat
 class EmissaoFormularioController extends AncestralController {
 
     static defaultAction = "escolherFamilia"
+    private static final String ULTIMO_FORMULARIO_REPORT_DTO = "ULTIMO_FORMULARIO_REPORT_DTO"
 //    static scope = "prototype" //garante uma nova instancia deste controller para cada request
 
     SegurancaService segurancaService
@@ -29,16 +31,22 @@ class EmissaoFormularioController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def escolherFamilia() {
-        Map<String, List<Formulario>> tiposFormulario = service(null).getFormulariosDisponiveis().sort { [it.tipo, it.descricao] } .groupBy { it.tipo ?: "Outros" }
+        Map<String, List<Formulario>> tiposFormulario = service(null).getFormulariosDisponiveis().sort {
+            [it.tipo, it.descricao]
+        }.groupBy { it.tipo ?: "Outros" }
 //        tiposFormulario.each { chave, valor ->
 //            if (! chave)
 //                chave = "Outros"
+//        }
+//        if (flash.reportDTO) {
+//            flash.reportDTO = flash.reportDTO
 //        }
         render view: 'escolherFamilia', model: [formulariosDisponiveis: tiposFormulario]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def preencherFormulario(Long idFormulario, Long idServico, Long membroSelecionado, Long familiaSelecionada) {
+//        try {
         Formulario formulario = service(Formulario.get(idFormulario)).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
         if (! formulario)
             return render(controller: 'inicio')
@@ -49,6 +57,11 @@ class EmissaoFormularioController extends AncestralController {
                         dtoFormulario: formulario,
                         idServico: idServico,
                         usuarios: segurancaService.getOperadoresOrdenados() ])
+//        } catch (Exception e) {
+//            e.printStackTrace()
+//            throw e
+//        }
+
     }
 
     /**
@@ -74,7 +87,7 @@ class EmissaoFormularioController extends AncestralController {
 
         instanciamento_dos_objetos: try { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
             formulario = service(Formulario.get(idFormulario)).getFormularioComCampos(idFormulario)
-            String idUsuarioSistema = params.avulso.get(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
+            String idUsuarioSistema = params.avulso?.get(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
             if (idUsuarioSistema)
                 formulario.usuarioSistema = UsuarioSistema.get(idUsuarioSistema.toLong())
             formulario.cidadao = new Cidadao(params.cidadao)
@@ -102,10 +115,15 @@ class EmissaoFormularioController extends AncestralController {
             if (verificaPermissao(DefinicaoPapeis.STR_USUARIO))
                 service(formulario).gravarAlteracoes(formulario)
 
-            response.contentType = 'application/octet-stream'
-            response.setHeader 'Content-disposition', "attachment; filename=\"$reportDTO.nomeArquivo\""
-            reportDTO.report.process(reportDTO.context, response.outputStream);
-            response.outputStream.flush()
+            //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
+            //javascript que rodara automaticamente na proxima pagina)
+            setFormularioParaBaixar(session, reportDTO)
+            if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO) {
+                String idProcesso = pedidoCertidaoProcessoService.getIdProcessoPeloFormularioEmitido(reportDTO.formularioEmitido.id)
+                return redirect(controller: "pedidoCertidaoProcesso", action: "mostraProcesso", id:idProcesso)
+            } else {
+                return escolherFamilia()
+            }
         }
     }
 
@@ -129,7 +147,11 @@ class EmissaoFormularioController extends AncestralController {
      * Infere, à partir do formulário sendo gerado, o serviço correspondente
      */
     FormularioService service(Formulario formulario) {
-        Class<? extends FormularioBase> f = formulario ? formulario.formularioPreDefinido.definicaoFormulario.newInstance().classeServico() :  FormularioBase.newInstance().classeServico();
+        Class<? extends FormularioBase> f = null
+        if (formulario && formulario.formularioPreDefinido)
+            f = formulario.formularioPreDefinido.definicaoFormulario.newInstance().classeServico()
+        else
+            f = FormularioBase.newInstance().classeServico();
         return grailsApplication.mainContext.getBean(StringUtils.firstLowerCase(f.simpleName))
 /*
         switch (formulario?.formularioPreDefinido) {
@@ -206,6 +228,31 @@ class EmissaoFormularioController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def mostrarFormularioEmitido(FormularioEmitido formularioEmitidoInstance) {
         render view: "mostrarFormularioEmitido", model: [formularioEmitidoInstance: formularioEmitidoInstance ]
+    }
+
+    def baixarArquivo() {
+        ReportDTO reportDTO = getFormularioParaBaixar(session)
+        try {
+            response.contentType = 'application/octet-stream'
+            if (reportDTO) {
+                response.setHeader 'Content-disposition', "attachment; filename=\"$reportDTO.nomeArquivo\""
+                reportDTO.report.process(reportDTO.context, response.outputStream);
+            } else {
+                response.setHeader 'Content-disposition', "signal; filename=\"erro-favor-cancelar\""
+            }
+            response.outputStream.flush()
+        } finally {
+            setFormularioParaBaixar(session, null)
+        }
+    }
+
+
+    public static ReportDTO getFormularioParaBaixar(HttpSession session) {
+        return session[ULTIMO_FORMULARIO_REPORT_DTO]
+    }
+
+    public static void setFormularioParaBaixar(HttpSession session, ReportDTO formularioParaBaixar) {
+        session[ULTIMO_FORMULARIO_REPORT_DTO] = formularioParaBaixar
     }
 
 }

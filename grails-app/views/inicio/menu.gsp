@@ -84,7 +84,7 @@
             <g:link class="verde_agua" controller="servico">Rede sócio-assistencial</g:link>
             <g:link class="azul" controller="link" action="exibeLinks">Atalhos Externos</g:link>
             <g:link class="magenta" controller="emissaoRelatorio" action="definirListagem">Listagens</g:link>
-            <g:link class="marrom" controller="pedidoCertidao" action="list">Pedidos de Certidão</g:link>
+            <g:link class="marrom" controller="pedidoCertidaoProcesso" action="preList">Pedidos de Certidão</g:link>
             <g:link class="lilas" controller="inicio" action="status">Status do sistema</g:link>
             <g:link class="rosa" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
 

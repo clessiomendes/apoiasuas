@@ -1,10 +1,10 @@
 import groovy.transform.TypeChecked
-import org.apoiasuas.bootstrap.FormularioBase
-import org.apoiasuas.bootstrap.FormularioCertidoes
+import org.apoiasuas.formulario.definicao.FormularioBase
+import org.apoiasuas.formulario.definicao.FormularioCertidoes
 import org.apoiasuas.bootstrap.FormularioTesteGrupos
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.Formulario
-import org.apoiasuas.formulario.FormularioBuilder
+import org.apoiasuas.formulario.builder.FormularioBuilder
 
 class FormularioTeste2 extends FormularioBase {
     @TypeChecked

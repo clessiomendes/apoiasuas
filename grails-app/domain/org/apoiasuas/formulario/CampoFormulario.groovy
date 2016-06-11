@@ -17,6 +17,7 @@ class CampoFormulario {
     public static String CODIGO_ENDERECO_EQUIPAMENTO = "endereco_equipamento"
     public static String CODIGO_TELEFONE_EQUIPAMENTO = "telefone_equipamento"
     public static String CODIGO_RESPONSAVEL_PREENCHIMENTO = "responsavel_preenchimento"
+    public static String CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO = "matricula"
 
     public static enum Tipo { TEXTO, INTEIRO, DATA, TELEFONE, SELECAO
         boolean isData() { return this == DATA }

@@ -5,7 +5,7 @@
   Time: 02:26
 --%>
 
-<%@ page import="org.apoiasuas.seguranca.DefinicaoPapeis" contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.apoiasuas.util.ApplicationContextHolder; org.apoiasuas.seguranca.DefinicaoPapeis" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Status</title>
@@ -59,7 +59,7 @@
                 <li>Domains: ${grailsApplication.domainClasses.size()}</li>
                 <li>Services: ${grailsApplication.serviceClasses.size()}</li>
                 <li>Tag Libraries: ${grailsApplication.tagLibClasses.size()}</li>
-                <li>Uso de banco de dados: ${ocupacaoBD}</li>
+                %{--<li>Uso de banco de dados: ${ocupacaoBD}</li>--}%
             </ul>
             <h1>Installed Plugins</h1>
             <ul>
@@ -81,8 +81,9 @@
 <div id="pageBody">
     <h2>Parâmetros de instalação:</h2>
     <ul>
-        <li>Fornecedor de banco de dados: ${org.apoiasuas.util.AmbienteExecucao.forncedorBancoDados}</li>
+        <li>Fornecedor de banco de dados: ${fornecedorVersaoBancoDeDados}</li>
         <li>Ambiente de hospedagem: ${org.apoiasuas.util.AmbienteExecucao.ambienteHospedagem}</li>
+        <li>Container: ${ApplicationContextHolder.getServletContext().getServerInfo()}</li>
         <li>Ambiente de execução: ${org.apoiasuas.util.AmbienteExecucao.ambienteExecucao}</li>
         <li>Versão: <g:render template="versao"/></li>
         <li>Rodando desde: <g:formatDate format="dd/MM/yyyy HH:mm:ss" date="${org.apoiasuas.util.AmbienteExecucao.inicioAplicacao}"/></li>

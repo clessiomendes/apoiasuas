@@ -21,7 +21,17 @@
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<ol class="property-list familia">
-			
+
+                %{--Exibe pedidos de certidão pendentes--}%
+                <g:if test="${pedidosCertidaoPendentes}">
+                    %{--Aguardando pedido de certidão:--}%
+                    <ul class="errors" role="alert">
+                    <g:each in="${pedidosCertidaoPendentes}" var="pedido">
+                        <li><g:link controller="pedidoCertidaoProcesso" action="mostraProcesso" id="${pedido.id}">Pedido de certidão em <g:formatDate date="${pedido.inicio}" />, situação: ${pedido.situacaoAtual}</g:link></li>
+                    </g:each>
+                    </ul>
+                </g:if>
+
 				<g:if test="${familiaInstance?.codigoLegado}">
 				<li class="fieldcontain">
 					<span id="codigoLegado-label" class="property-label"><g:message code="familia.codigoLegado.label" default="Codigo Legado" /></span>

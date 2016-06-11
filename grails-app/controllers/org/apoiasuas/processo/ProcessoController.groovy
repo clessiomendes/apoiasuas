@@ -3,20 +3,14 @@ package org.apoiasuas.processo
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.seguranca.UsuarioSistema
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.repository.ProcessDefinition
-import org.camunda.bpm.engine.runtime.ProcessInstance
-import org.camunda.bpm.engine.task.Task
-
-import java.text.ParseException
-import java.text.SimpleDateFormat
 
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class ProcessoController extends AncestralController {
 
+    static defaultAction = "preList"
     public static final String SITUACAO_PENDENTE = "PENDENTE"
     public static final String SITUACAO_CONCLUIDO = "CONCLUIDO"
     RuntimeService runtimeService
@@ -26,16 +20,16 @@ class ProcessoController extends AncestralController {
 
     def init() {
         processoService.init()
-        return list()
+        return preList()
     }
 
-    def list() {
+    def preList() {
         Long idUsuarioSistema = params.usuarioSistema ? params.usuarioSistema.toString().toLong() : null;
         String idDefinicaoProcesso = params.definicicaoProcesso ? params.definicicaoProcesso : null;
 
-        List<TarefaDTO> tarefas = processoService.getTarefasPendentes(getServicoCorrente().id, idDefinicaoProcesso, idUsuarioSistema)
+//        List<TarefaDTO> tarefas = processoService.getTarefasPendentes(getServicoCorrente().id, idDefinicaoProcesso, idUsuarioSistema)
 
-        render(view: "/processo/list", model: [tarefas: tarefas, definicoesProcessoDisponiveis: processoService.getDefinicoesProcessos(), ususariosDisponiveis: segurancaService.getOperadoresOrdenados()])
+        render(view: "/processo/list", model: [tarefas: [], definicoesProcessoDisponiveis: processoService.getDefinicoesProcessos(), ususariosDisponiveis: segurancaService.getOperadoresOrdenados()])
     }
 
     def mostraProcesso(ProcessoDTO processoDTO) {
@@ -59,7 +53,7 @@ class ProcessoController extends AncestralController {
 
     def notFound() {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'processo.label', default: 'Processo'), params.id])
-        return redirect(action: "list")
+        return redirect(action: "preList")
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -81,7 +75,7 @@ class ProcessoController extends AncestralController {
     def cancelaProcesso(ProcessoDTO processoDTO) {
         processoService.cancelaProcesso(processoDTO.id)
         flash.message = "Processo ${processoDTO.id} cancelado"
-        return redirect(action: "list")
+        return redirect(action: "preList")
     }
 
 }

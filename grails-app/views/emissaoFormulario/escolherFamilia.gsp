@@ -2,13 +2,16 @@
 <html>
 <head>
     <meta name="layout" content="main">
-    <title><g:message code="importar.cadastro.de.familias"/></title>
+    <title><g:message code="emissao.formularios"/></title>
 </head>
+
 
 <body>
 
+<g:render template="baixarArquivo"/>
+
 <div id="edit-fool" class="content scaffold-edit" role="main">
-    <h1><g:message code="???" default="Emissão de Formulários"/></h1>
+    <h1><g:message code="emissao.formularios"/></h1>
     <g:if test="${flash.message}">
         <div class="message" role="status">${flash.message}</div>
     </g:if>

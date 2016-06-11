@@ -7,10 +7,17 @@
         <title>Ver processo</title>
 	</head>
 	<body>
-		<a href="#show-processo" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+
+%{--
+    Alguns casos de uso de emissao de formulario terminam redirecionando para a exibicao de um processo criado automaticamente.
+    Se for este o caso, o template incluido abaixo permite baixar o arquivo que foi criado na requisicao anterior.
+--}%
+    <g:render template="/emissaoFormulario/baixarArquivo"/>
+
+    <a href="#show-processo" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-                <li><g:link class="list" action="list">Listar</g:link></li>
+                <li><g:link class="list" action="preList">Listar</g:link></li>
 			</ul>
 		</div>
 		<div id="show-processo" class="content scaffold-show" role="main">
@@ -73,7 +80,8 @@
                                 <li class="fieldcontain">
                                     <span class="property-label"></span>
                                     <span class="property-value" aria-labelledby="membros-label">
-                                        <g:submitButton name="concluiTarefa" class="save" value="${tarefa.proximosPassos[0]}" />
+                                        <g:submitButton name="${tarefa.proximosPassos[0]}" class="save" value="${tarefa.proximosPassos[0]}" />
+                                        %{--Caso exista mais de uma proxima tarefa, exibir ao lado de cada botão a tarefa atual correspondente--}%
                                         ${processo.tarefasPendentes.size() > 1 ? "("+tarefa.descricao+")" : ""}
                                     </span>
                                 </li>

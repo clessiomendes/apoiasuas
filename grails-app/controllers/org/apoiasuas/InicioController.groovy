@@ -15,6 +15,8 @@ import org.apoiasuas.util.AmbienteExecucao
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
 
+import javax.sql.DataSource
+
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class InicioController extends AncestralController {
 
@@ -25,6 +27,7 @@ class InicioController extends AncestralController {
     ApoiaSuasService apoiaSuasService
     ImportarFamiliasService importarFamiliasService
     ServicoSistemaService servicoSistemaService
+    DataSource dataSource
 
     static defaultAction = "actionInicial"
 
@@ -68,8 +71,11 @@ class InicioController extends AncestralController {
     }
 
     def status() {
-        request.setAttribute("atualizacoesPendentesBD", apoiaSuasService.atualizacoesPendentes);
-        request.setAttribute("ocupacaoBD", apoiaSuasService.ocupacaoBD());
+        String fornecedorVersaoBancoDeDados = dataSource.getConnection().getMetaData().getDatabaseProductName() + " " + dataSource.getConnection().getMetaData().getDatabaseProductVersion()
+        render view: "status", model: [atualizacoesPendentesBD: apoiaSuasService.atualizacoesPendentes,
+                                       ocupacaoBD: apoiaSuasService.ocupacaoBD(),
+                                       fornecedorVersaoBancoDeDados: fornecedorVersaoBancoDeDados
+        ]
     }
 
     private ItemMenuDTO[] itemMenu(String descricao, Class classeController, String[] papeisAcesso) {

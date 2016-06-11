@@ -1,6 +1,7 @@
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
 import org.apoiasuas.formulario.CampoFormulario
+import org.apoiasuas.formulario.definicao.FormularioBase
 
 import java.lang.reflect.Field
 
@@ -8,7 +9,7 @@ import java.lang.reflect.Field
  * Created by admin on 18/04/2015.
  */
 
-System.out.println("package ${org.apoiasuas.bootstrap.FormularioBase.package}\n" +
+System.out.println("package ${FormularioBase.package}\n" +
         "\n" +
         "import ${groovy.transform.TypeChecked.class.name}\n" +
         "import ${org.apoiasuas.formulario.CampoFormulario.class.name}\n" +

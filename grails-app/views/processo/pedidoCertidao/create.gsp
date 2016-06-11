@@ -9,7 +9,7 @@
 		<a href="#create-link" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-                <li><g:link class="list" action="list">Listar</g:link></li>
+                <li><g:link class="list" action="preList">Listar</g:link></li>
 			</ul>
 		</div>
 		<div id="create-link" class="content scaffold-create" role="main">
@@ -24,7 +24,7 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
-			<g:form url="[controller:'pedidoCertidao', action:'saveNew']" >
+			<g:form url="[controller:'pedidoCertidaoProcesso', action:'saveNew']" >
 				<fieldset class="form">
 					<g:render template="/processo/pedidoCertidao/form"/>
 				</fieldset>

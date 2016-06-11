@@ -117,14 +117,13 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false //usado pelo log4j
-        // TODO: grails.serverURL = "http://www.changeme.com"
+//        grails.serverURL = "https://apoiacras.cleverapps.io"
     }
 }
 
 // log4j configuration
 log4j.main = {
 //    includeLocation="true"
-
     appenders {
 //        console name:'stdout', layout:pattern(conversionPattern: '%c{1}.%M() -> %m -> %l %n')
         switch (AmbienteExecucao.CURRENT) {
@@ -137,6 +136,7 @@ log4j.main = {
                 root {error 'stdout'}
                 break
             case AmbienteExecucao.LOCAL:
+                file name: 'sessionatributes', file: 'c:/workspaces/logs/sessionatributes.log', threshold:org.apache.log4j.Level.DEBUG
 //                file name: 'xml', layout: xml, file: 'c:/workspaces/logs/apoiaSUAS'+new Date().format("yyyy-MM-dd-hh-mm")+'.xml', threshold:org.apache.log4j.Level.DEBUG
                 console name: 'stdout', layout: pattern(conversionPattern: '(loc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
                 root {error 'stdout', 'xml'}
@@ -310,9 +310,10 @@ camunda {
             databaseType = "postgres" // one of (as of writing): [h2, mysql, oracle, postgres, mssql, db2]
             databaseTablePrefix = "bpm."
             databaseSchema = "bpm"
-            databaseSchemaUpdate = false
             jobExecutorActivate = false
             deploymentResources = []
+            databaseSchemaUpdate = false //schemaaupdate nao esta funcionando em schema separado
         }
     }
 }
+

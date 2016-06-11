@@ -9,7 +9,9 @@ import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.history.HistoricProcessInstance
+import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery
 import org.camunda.bpm.engine.history.HistoricTaskInstance
+import org.camunda.bpm.engine.history.HistoricTaskInstanceQuery
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl
@@ -67,9 +69,9 @@ public class ProcessoService {
         }
         return result
     }
-
-    protected TaskQuery _taskQuery(Long idServicoSistema, String definicaoProcesso, Long idUsuarioSistema, Boolean active) {
-        TaskQuery query = taskService.createTaskQuery()
+/*
+    protected HistoricTaskInstanceQuery _taskQuery(Long idServicoSistema, String definicaoProcesso, Long idUsuarioSistema, Boolean active) {
+        HistoricTaskInstanceQuery query = historyService.createHistoricTaskInstanceQuery()
         if (active != null && active == true)
             query = query.active()
         if (definicaoProcesso)
@@ -81,17 +83,20 @@ public class ProcessoService {
         return query
 
     }
+*/
 
+/*
     public List<TarefaDTO> getTarefasPendentes(Long idServicoSistema, String definicaoProcesso, Long idUsuarioSistema) {
-        TaskQuery query = _taskQuery(idServicoSistema, definicaoProcesso, idUsuarioSistema, true)
+        HistoricTaskInstanceQuery query = _taskQuery(idServicoSistema, definicaoProcesso, idUsuarioSistema, true)
         List<TarefaDTO> result = []
         query.listPage(0, ProcessoDTO.MAX_PAGINACAO).each { Task task ->  //FIXME: implementar paginacao na pesquisa de tarefas
             TarefaDTO tarefa = traduzTarefa(task)
-            tarefa.processo = getProcesso(task.processInstanceId, false/*nao preenche colecoes*/)
+            tarefa.processo = getProcesso(task.processInstanceId, false)
             result.add(tarefa)
         }
         return result
     }
+*/
 
 /*
     public List<Task> getTasks(ProcessDefinition processDefinition, ServicoSistema servicoSistema, UsuarioSistema usuarioSistema = null) {
@@ -99,7 +104,6 @@ public class ProcessoService {
         List<Task> tasks = taskService.createTaskQuery().active().list()
     }
 */
-
     /**
      * Lista definicoes de processo disponiveis (apenas a ultima versao)
      */
@@ -119,7 +123,79 @@ public class ProcessoService {
         return result
     }
 
-    private ProcessoDTO getProcessoHistorico(String processId, boolean preencheColecoes) {
+    protected ProcessoDTO preencheProcessoDTOHistorico(ProcessoDTO processoDTO, HistoricProcessInstance processInstance) {
+        processoDTO.id = processInstance.id
+        processoDTO.inicio = processInstance.startTime
+        if (processInstance.endTime)
+            processoDTO.situacaoAtual = ProcessoDTO.SITUACAO_CONCLUIDA
+        else {
+            List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.id).list()
+            processoDTO.situacaoAtual = tasks.collect { it.name }.join(", ")
+        }
+        processoDTO.definicaoProcesso = getDefinicaoProcessoPeloId(processInstance.processDefinitionId)
+
+        String idServicoSistema = getHistoricVariable(processInstance.id, ProcessoDTO.VARIABLE_ID_SERVICO_SISTEMA_SEGURANCA)
+        processoDTO.servicoSistemaSeguranca = idServicoSistema ? ServicoSistema.get(idServicoSistema.toLong()) : null
+        return processoDTO
+    }
+
+    protected Object getHistoricVariable(String processInstanceId, String nomeVariavel) {
+        def variavel = historyService.createHistoricVariableInstanceQuery().
+                variableName(nomeVariavel).processInstanceId(processInstanceId).singleResult()
+        return variavel ? variavel.value : null
+    }
+/*
+    private TarefaDTO traduzTarefaPendente(Task task) {
+        TarefaDTO tarefa = new TarefaDTO()
+        tarefa.id = task.id
+        tarefa.responsavel = task.assignee ? UsuarioSistema.get(task.assignee.toLong()) : null
+        tarefa.proximosPassos = getOutgoingTransitionNames(task)
+        tarefa.ultimaPendente = getOutgoingTransitionsIsLast(task)
+        tarefa.descricao = task.name
+        tarefa.inicio = task.createTime
+        tarefa.situacao = TarefaDTO.SituacaoTarefa.PENDENTE
+        return tarefa
+    }
+*/
+    private TarefaDTO traduzTarefa(HistoricTaskInstance historicTaskInstance) {
+        TarefaDTO tarefa = new TarefaDTO()
+        tarefa.id = historicTaskInstance.id
+        tarefa.descricao = historicTaskInstance.name
+        tarefa.responsavel = historicTaskInstance.assignee ? UsuarioSistema.get(historicTaskInstance.assignee.toLong()) : null
+        tarefa.inicio = historicTaskInstance.startTime
+        tarefa.fim = historicTaskInstance.endTime
+        if (! historicTaskInstance.endTime) {
+            tarefa.situacao = TarefaDTO.SituacaoTarefa.PENDENTE
+            tarefa.proximosPassos = getOutgoingTransitionNames(historicTaskInstance)
+            tarefa.ultimaPendente = getOutgoingTransitionsIsLast(historicTaskInstance)
+        } else {
+            if (historicTaskInstance.deleteReason?.toLowerCase()?.startsWith("completed"))
+                tarefa.situacao = TarefaDTO.SituacaoTarefa.CONCLUIDA
+            else
+                tarefa.situacao = TarefaDTO.SituacaoTarefa.CANCELADA
+        }
+
+        return tarefa
+    }
+
+    public DefinicaoProcessoDTO getDefinicaoProcessoPeloId(String idDefinicaoProcesso) {
+        ProcessDefinition processDefinition = repositoryService.getProcessDefinition(idDefinicaoProcesso)
+        if (! processDefinition)
+            return null
+
+        DefinicaoProcessoDTO result = new DefinicaoProcessoDTO()
+        result.id = idDefinicaoProcesso
+        result.chave = processDefinition.key
+        result.descricao = processDefinition.name
+        result.suspenso = processDefinition.suspended
+        return result
+    }
+/**
+     * Tenta buscar o processo tanto na base de processos em andamento quanto na de processos concluidos
+     * @param processId
+     * @param preencheColecoes Se verdadeiro, popula a lista de tarefas.
+     */
+    public ProcessoDTO getProcesso(String processId, boolean preencheColecoes) {
         ProcessoService servicoEspecifico
 
 //        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processId).singleResult()
@@ -168,84 +244,6 @@ public class ProcessoService {
             result.inicio = result.tarefas[0].inicio
 
         return result
-
-        return null
-    }
-
-    protected ProcessoDTO preencheProcessoDTOHistorico(ProcessoDTO processoDTO, HistoricProcessInstance processInstance) {
-        processoDTO.id = processInstance.id
-        processoDTO.inicio = processInstance.startTime
-        if (processInstance.endTime)
-            processoDTO.situacaoAtual = ProcessoDTO.SITUACAO_CONCLUIDA
-        else {
-            List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.id).list()
-            processoDTO.situacaoAtual = tasks.collect { it.name }.join(", ")
-        }
-        processoDTO.definicaoProcesso = getDefinicaoProcessoPeloId(processInstance.processDefinitionId)
-
-        String idServicoSistema = getHistoricVariable(processInstance.id, ProcessoDTO.VARIABLE_ID_SERVICO_SISTEMA_SEGURANCA)
-        processoDTO.servicoSistemaSeguranca = idServicoSistema ? ServicoSistema.get(idServicoSistema.toLong()) : null
-        return processoDTO
-    }
-
-    protected Object getHistoricVariable(String processInstanceId, String nomeVariavel) {
-        def variavel = historyService.createHistoricVariableInstanceQuery().
-                variableName(nomeVariavel).processInstanceId(processInstanceId).singleResult()
-        return variavel ? variavel.value : null
-    }
-/*
-    private TarefaDTO traduzTarefaPendente(Task task) {
-        TarefaDTO tarefa = new TarefaDTO()
-        tarefa.id = task.id
-        tarefa.responsavel = task.assignee ? UsuarioSistema.get(task.assignee.toLong()) : null
-        tarefa.proximosPassos = getOutgoingTransitionNames(task)
-        tarefa.ultimaPendente = getOutgoingTransitionsIsLast(task)
-        tarefa.descricao = task.name
-        tarefa.inicio = task.createTime
-        tarefa.situacao = TarefaDTO.SituacaoTarefa.PENDENTE
-        return tarefa
-    }
-*/
-    private TarefaDTO traduzTarefa(HistoricTaskInstance historicTaskInstance) {
-        TarefaDTO tarefa = new TarefaDTO()
-        tarefa.id = historicTaskInstance.id
-        tarefa.descricao = historicTaskInstance.name
-        tarefa.responsavel = historicTaskInstance.assignee ? UsuarioSistema.get(historicTaskInstance.assignee.toLong()) : null
-        tarefa.inicio = historicTaskInstance.startTime
-        tarefa.fim = historicTaskInstance.endTime
-        if (! historicTaskInstance.endTime)
-            tarefa.situacao = TarefaDTO.SituacaoTarefa.PENDENTE
-        else {
-            if (historicTaskInstance.deleteReason?.toLowerCase()?.startsWith("completed"))
-                tarefa.situacao = TarefaDTO.SituacaoTarefa.CONCLUIDA
-            else
-                tarefa.situacao = TarefaDTO.SituacaoTarefa.CANCELADA
-        }
-
-        return tarefa
-    }
-
-    public DefinicaoProcessoDTO getDefinicaoProcessoPeloId(String idDefinicaoProcesso) {
-        ProcessDefinition processDefinition = repositoryService.getProcessDefinition(idDefinicaoProcesso)
-        if (! processDefinition)
-            return null
-
-        DefinicaoProcessoDTO result = new DefinicaoProcessoDTO()
-        result.id = idDefinicaoProcesso
-        result.chave = processDefinition.key
-        result.descricao = processDefinition.name
-        result.suspenso = processDefinition.suspended
-        return result
-    }
-/**
-     * Tenta buscar o processo tanto na base de processos em andamento quanto na de processos concluidos
-     * @param processId
-     * @param preencheColecoes Se verdadeiro, popula a lista de tarefas.
-     */
-    public ProcessoDTO getProcesso(String processId, boolean preencheColecoes) {
-//        ProcessoDTO result = getProcessoEmAndamento(processId, preencheColecoes)
-//        if (! result)
-        return getProcessoHistorico(processId, preencheColecoes)
     }
 
     /**
@@ -254,12 +252,13 @@ public class ProcessoService {
      * Importante: Nao sao usadas as interfaces publicas da framework!
      *
      */
-    private List<String> getOutgoingTransitionNames(Task task) {
+    private List<String> getOutgoingTransitionNames(HistoricTaskInstance task) {
         try {
+            task.processDefinitionId
             List<String> result = []
-            ExecutionEntity exe = (ExecutionEntity)runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+//            ExecutionEntity exe = (ExecutionEntity)runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
 //        ScopeImpl a = (ScopeImpl)repositoryService.getProcessDefinition(exe.processDefinitionId)
-            ProcessDefinitionEntity a = repositoryService.getProcessDefinition(exe.processDefinitionId)
+            ProcessDefinitionEntity a = repositoryService.getProcessDefinition(task.processDefinitionId)
 
             a.activities.each { ActivityImpl activity ->
                 if (activity.id == task.taskDefinitionKey) {
@@ -282,12 +281,12 @@ public class ProcessoService {
      * Verifica a definicao para saber se esta eh a ultima tarefa pendente
      * Ver getOutgoingTransitionNames(Task task)
      */
-    private Boolean getOutgoingTransitionsIsLast(Task task) {
+    private Boolean getOutgoingTransitionsIsLast(HistoricTaskInstance task) {
         try {
             Boolean result = true
-            ExecutionEntity exe = (ExecutionEntity)runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+//            ExecutionEntity exe = (ExecutionEntity)runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
 //        ScopeImpl a = (ScopeImpl)repositoryService.getProcessDefinition(exe.processDefinitionId)
-            ProcessDefinitionEntity a = repositoryService.getProcessDefinition(exe.processDefinitionId)
+            ProcessDefinitionEntity a = repositoryService.getProcessDefinition(task.processDefinitionId)
 
             a.activities.each { ActivityImpl activity ->
                 if (activity.id == task.taskDefinitionKey) {
@@ -306,10 +305,11 @@ public class ProcessoService {
         }
     }
 
-    @Transactional
+//    @Transactional
     /**
      * Conclui uma tarefa especifica, atribui uma possivel proxima tarefa ao novo responsavel e retorna o id do processo afetado
      */
+    @Transactional
     public String concluiTarefa(Long idTarefa, Long idProximoResponsavel) {
         Task tarefaConcluida = taskService.createTaskQuery().taskId(idTarefa.toString()).singleResult()
         if (! tarefaConcluida)
@@ -326,10 +326,11 @@ public class ProcessoService {
         return tarefaConcluida.processInstanceId
     }
 
-    @Transactional
+//    @Transactional
     /**
      * Volta o processo até uma tarefa que estava concluida anteriormente
      */
+    @Transactional
     public String reabreTarefa(Long idTarefa) {
 //        Task tarefaConcluida = taskService.createTaskQuery().taskId(idTarefa.toString()).singleResult()
         HistoricTaskInstance tarefaConcluida = historyService.createHistoricTaskInstanceQuery().taskId(idTarefa.toString()).singleResult()
@@ -365,4 +366,25 @@ public class ProcessoService {
         if (historyService.createHistoricProcessInstanceQuery().processInstanceId(idProcesso).singleResult())
             historyService.deleteHistoricProcessInstance(idProcesso)
     }
+
+    protected HistoricProcessInstanceQuery getQuery(Map filtros) {
+        //Filtros compulsorios: tipo de processo, servicoSistema
+        HistoricProcessInstanceQuery result = historyService.createHistoricProcessInstanceQuery()
+                .variableValueEquals(ProcessoDTO.VARIABLE_ID_SERVICO_SISTEMA_SEGURANCA, segurancaService.servicoLogado.id.toString());
+        if (getProcessDefinitionStr())
+            result = result.processDefinitionKey(getProcessDefinitionStr())
+
+        //Filtros opcionais:
+        if (filtros.dataInicio)
+            result = result.startedAfter(filtros.dataInicio)
+        if (filtros.dataFim)
+            result = result.startedBefore(filtros.dataFim+1)
+        if (filtros.pendentes == false)
+            result = result.finished()
+        else if (filtros.pendentes == true)
+            result = result.unfinished()
+
+        return result
+    }
+
 }

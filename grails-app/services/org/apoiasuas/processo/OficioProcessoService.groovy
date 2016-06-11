@@ -1,5 +1,6 @@
 package org.apoiasuas.processo
 
+import grails.transaction.Transactional
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.camunda.bpm.engine.history.HistoricProcessInstance
@@ -36,7 +37,7 @@ class OficioProcessoService extends ProcessoService {
         return oficioProcessoDTO
     }
 
-
+    @Transactional
     public ProcessInstance novoProcesso(UsuarioSistema responsavelProximaTarefa, Long idFamilia, Long idOperadorAutor, String destinatario, String titulo, String numeroOficio) {
         //Informações específicas desta definicao de processo
         Map variables = [:];

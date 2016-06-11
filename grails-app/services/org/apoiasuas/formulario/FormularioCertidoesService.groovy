@@ -1,8 +1,7 @@
 package org.apoiasuas.formulario
 
-import grails.transaction.Transactional
-import org.apoiasuas.bootstrap.FormularioCertidoes
-import org.apoiasuas.bootstrap.FormularioCertidoesPedido
+import org.apoiasuas.formulario.definicao.FormularioCertidoes
+import org.apoiasuas.formulario.definicao.FormularioCertidoesPedido
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.util.StringUtils
 
@@ -49,13 +48,13 @@ class FormularioCertidoesService extends FormularioService {
         if (cidadao.familia.endereco.bairro)
             cidadao.familia.endereco.bairro = " Bairro: "+cidadao.familia.endereco.bairro
 
-        if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO) {
-            CampoFormulario tecnico = formulario.getCampoAvulso(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
-            CampoFormulario matricula = formulario.getCampoAvulso(FormularioCertidoesPedido.CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO)
-            //Substitui , no campo RESPONSAVEL_PREENCHIMENTO, o ID pelo nome completo do usuario
-            tecnico.valorArmazenado = formulario.usuarioSistema?.nomeCompleto
-            matricula.valorArmazenado = formulario.usuarioSistema?.matricula
-        }
+//        if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO) {
+//            CampoFormulario tecnico = formulario.getCampoAvulso(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
+//        tecnico.valorArmazenado = formulario.usuarioSistema?.nomeCompleto
+//        CampoFormulario matricula = formulario.getCampoAvulso(FormularioCertidoesPedido.CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO)
+//        if (matricula)
+//            matricula.valorArmazenado = formulario.usuarioSistema?.matricula
+//        }
 
         String tipoCertidao = defineTipoCertidao(formulario)
         if (tipoCertidao)
@@ -141,7 +140,6 @@ class FormularioCertidoesService extends FormularioService {
     /**
      * Gera um processo de pedido de certidao de nascimento.
      */
-    @Transactional
     @Override
     protected void eventoPosEmissao(Formulario formulario) {
         if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO) {

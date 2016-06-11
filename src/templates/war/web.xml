@@ -46,6 +46,9 @@
     <listener>
         <listener-class>org.apoiasuas.http.ApoiaSuasHttpSessionListener</listener-class>
     </listener>
+    <listener>
+        <listener-class>org.apoiasuas.http.ApoiaSuasSessionAttributeListener</listener-class>
+    </listener>
 -->
 
     <!-- Grails dispatcher servlet -->

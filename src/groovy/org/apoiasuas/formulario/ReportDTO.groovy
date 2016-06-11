@@ -9,4 +9,5 @@ class ReportDTO {
     String nomeArquivo
     IContext context
     FieldsMetadata fieldsMetadata
+    FormularioEmitido formularioEmitido
 }

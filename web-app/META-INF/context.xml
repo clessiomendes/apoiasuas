@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
+<!--
     <Resource name="jdbc/dslocal"
               auth="Container"
               type="javax.sql.DataSource"
@@ -54,5 +55,6 @@
               minIdle="1"
               maxIdle="1"
               initialSize ="1"/>
+-->
 
 </Context>

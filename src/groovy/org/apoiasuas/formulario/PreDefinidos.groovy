@@ -1,14 +1,13 @@
 package org.apoiasuas.formulario
 
-import org.apoiasuas.bootstrap.FormularioAcompanhamento
-import org.apoiasuas.bootstrap.FormularioBase
-import org.apoiasuas.bootstrap.FormularioCertidoes
-import org.apoiasuas.bootstrap.FormularioCertidoesPedido
-import org.apoiasuas.bootstrap.FormularioCurriculoEmprego
-import org.apoiasuas.bootstrap.FormularioEncaminhamento
-import org.apoiasuas.bootstrap.FormularioFotos
-import org.apoiasuas.bootstrap.FormularioIdentidade
-import org.apoiasuas.bootstrap.FormularioIdentidadeFoto
+import org.apoiasuas.formulario.definicao.FormularioBase
+import org.apoiasuas.formulario.definicao.FormularioCertidoes
+import org.apoiasuas.formulario.definicao.FormularioCertidoesPedido
+import org.apoiasuas.formulario.definicao.FormularioCurriculoEmprego
+import org.apoiasuas.formulario.definicao.FormularioEncaminhamento
+import org.apoiasuas.formulario.definicao.FormularioFotos
+import org.apoiasuas.formulario.definicao.FormularioIdentidade
+import org.apoiasuas.formulario.definicao.FormularioIdentidadeFoto
 
 /**
  * Enum contendo os formularios pre-definidos do sistema com informações necessárias para suas respectivas inicializações

@@ -7,6 +7,7 @@ import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.CidadaoService
 import org.apoiasuas.cidadao.Endereco
 import org.apoiasuas.cidadao.Familia
+import org.apoiasuas.formulario.builder.FormularioBuilder
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.Docx4jUtils
@@ -19,6 +20,7 @@ import org.hibernate.Hibernate
 class FormularioService {
 
     public static final Date ANO_CEM = Date.parse("dd/MM/yyyy", "01/01/100")
+
     CidadaoService cidadaoService
     SegurancaService segurancaService
 
@@ -49,7 +51,7 @@ class FormularioService {
         result.fieldsMetadata = result.report.createFieldsMetadata();
 
         valoresFixos(formulario)
-        registraEmissao(formulario) //chamar antes de transferir conteudo
+        result.formularioEmitido = registraEmissao(formulario) //chamar antes de transferir conteudo
         transfereConteudo(formulario, result)
         eventoPosEmissao(formulario)
 
@@ -141,10 +143,17 @@ class FormularioService {
             def valor = campo.valorArmazenado
             if (campo.tipo == CampoFormulario.Tipo.DATA)
                 valor = ((Date) valor)?.format("dd/MM/yyyy")
-
+            //No campo RESPONSAVEL_PREENCHIMENTO, buscar o nome completo do usuario armazenado como transiente no formulario
+            switch (campo.codigo) {
+                case CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO:
+                    valor = formulario.usuarioSistema?.nomeCompleto; break
+                case CampoFormulario.CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO:
+                    valor = formulario.usuarioSistema?.matricula; break
+            }
             def chave = StringUtils.upperToCamelCase(campo.origem.toString()) + "." + campo.codigo
             reportDTO.context.put(chave, valor)
         }
+        log.debug(formulario)
     }
 
     /**

@@ -1,11 +1,10 @@
 package org.apoiasuas.formulario
 
-import org.apoiasuas.bootstrap.FormularioAcompanhamento
-
 /**
  * Created by admin on 19/04/2015.
  */
 class FormularioCurriculoService extends FormularioService {
+
 /*
     @Override
     Formulario preparaPreenchimentoFormulario(Long idFormulario, Long idFamilia, Long idCidadao) {

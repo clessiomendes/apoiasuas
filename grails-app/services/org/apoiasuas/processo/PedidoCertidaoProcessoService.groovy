@@ -1,5 +1,6 @@
 package org.apoiasuas.processo
 
+import grails.transaction.Transactional
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.camunda.bpm.engine.history.HistoricProcessInstance
@@ -41,6 +42,7 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return pedidoCertidaoProcessoDTO
     }
 
+    @Transactional
     public ProcessInstance novoProcesso(UsuarioSistema responsavelProximaTarefa, Long idFamilia,
                                         Long idOperadorResponsavel, String dadosCertidao,
                                         Long idFormularioEmitido, String cartorio, String numeroAR) {
@@ -48,7 +50,7 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         //Verifica se se trata de uma reemissao de um formulario de pedido de certidao ja emitido anteriormente e,
         //neste caso, apaga o processo gerado anteriormente
         if (idFormularioEmitido) {
-            ProcessInstance processoDuplicado = runtimeService.createProcessInstanceQuery().variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_FORMULARIO_EMTIDO, idFormularioEmitido.toString()).singleResult()
+            HistoricProcessInstance processoDuplicado = getQuery(idFormularioEmitido: idFormularioEmitido).singleResult()
             if (processoDuplicado) {
                 runtimeService.deleteProcessInstance(processoDuplicado.id, "Pedido de certidão reemitido")
                 historyService.deleteHistoricProcessInstance(processoDuplicado.id)
@@ -67,29 +69,8 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return super._novoProcesso(responsavelProximaTarefa, variables);
     }
 
-    public List<PedidoCertidaoProcessoDTO> getProcessos(String codigoLegado, String dadosCertidao,
-                          Long idUsuarioSistema, Boolean pendentes, String numeroAR, String cartorio, Date dataInicio, Date dataFim) {
-        HistoricProcessInstanceQuery query = historyService.createHistoricProcessInstanceQuery().processDefinitionKey(getProcessDefinitionStr())
-        if (codigoLegado) {
-            Familia familia = cidadaoService.obtemFamilia(codigoLegado, false)
-            query = query.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_FAMILIA, familia ? familia.id.toString() : "-1"/*nao listara nenhum processo*/)
-        }
-        if (dadosCertidao)
-            query = query.variableValueLike(PedidoCertidaoProcessoDTO.VARIABLE_DADOS_CERTIDAO, "%"+dadosCertidao.toUpperCase()+"%")
-        if (idUsuarioSistema)
-            query = query.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_OPERADOR_RESPONSAVEL, idUsuarioSistema.toString())
-        if (pendentes == false)
-            query = query.finished()
-        else if (pendentes == true)
-            query = query.unfinished()
-        if (numeroAR)
-            query = query.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, numeroAR)
-        if (cartorio)
-            query = query.variableValueLike(PedidoCertidaoProcessoDTO.VARIABLE_CARTORIO, "%"+cartorio.toUpperCase()+"%")
-        if (dataInicio)
-            query = query.startedAfter(dataInicio)
-        if (dataFim)
-            query = query.startedBefore(dataFim+1)
+    public List<PedidoCertidaoProcessoDTO> getProcessos(Map params) {
+        HistoricProcessInstanceQuery query = getQuery(params)
         List<HistoricProcessInstance> processInstances = query.orderByProcessInstanceStartTime().asc().listPage(0, ProcessoDTO.MAX_PAGINACAO)
 
         List<PedidoCertidaoProcessoDTO> result = []
@@ -101,7 +82,63 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return result
     }
 
+    @Transactional
     public void gravaAR(String idProcesso, String numeroAR) {
         runtimeService.setVariable(idProcesso, PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, numeroAR)
+    }
+
+    List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes(long idFamilia) {
+        if (! idFamilia)
+            return []
+
+        List<ProcessInstance> processInstances = runtimeService
+                .createProcessInstanceQuery()
+                .processDefinitionKey(getProcessDefinitionStr())
+                .variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_FAMILIA, idFamilia.toString())
+                .variableValueEquals(ProcessoDTO.VARIABLE_ID_SERVICO_SISTEMA_SEGURANCA, segurancaService.getServicoLogado().id.toString())
+                .list();
+
+        List<PedidoCertidaoProcessoDTO> result = []
+        processInstances.each {
+            result.add(getProcesso(it.id, true))
+        }
+
+        return result
+    }
+
+    public String getIdProcessoPeloFormularioEmitido(Long idFormularioEmitido) {
+        List<HistoricProcessInstance> processos = getQuery(idFormularioEmitido: idFormularioEmitido).list()
+        if (processos.size() == 0)
+            return null
+        else if (processos.size() > 1)
+            log.fatal("Erro. Mais de um processo gerado para o mesmo idFormulario ${idFormularioEmitido} / servicoSistema ${segurancaService.servicoLogado.id}")
+        return processos[0].id
+    }
+
+//    (String codigoLegado, String dadosCertidao, Long idUsuarioSistema, Boolean pendentes, String numeroAR,
+//    String cartorio, Date dataInicio, Date dataFim)
+    @Override
+    protected HistoricProcessInstanceQuery getQuery(Map filtros) {
+        HistoricProcessInstanceQuery result = super.getQuery(filtros)
+
+        //Filtros opcionais:
+        if (filtros.idFormularioEmitido)
+            result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_FORMULARIO_EMTIDO, filtros.idFormularioEmitido.toString())
+        if (filtros.idFamilia)
+            result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_FAMILIA, filtros.idFamilia.toString())
+        else if (filtros.codigoLegado) {
+            Familia familia = cidadaoService.obtemFamilia(filtros.codigoLegado, false)
+            result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_FAMILIA, familia ? familia.id.toString() : "-1"/*nao listara nenhum processo*/)
+        }
+        if (filtros.dadosCertidao)
+            result = result.variableValueLike(PedidoCertidaoProcessoDTO.VARIABLE_DADOS_CERTIDAO, "%"+filtros.dadosCertidao.toUpperCase()+"%")
+        if (filtros.idUsuarioSistema)
+            result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_OPERADOR_RESPONSAVEL, filtros.idUsuarioSistema.toString())
+        if (filtros.numeroAR)
+            result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, filtros.numeroAR.toString().toUpperCase())
+        if (filtros.cartorio)
+            result = result.variableValueLike(PedidoCertidaoProcessoDTO.VARIABLE_CARTORIO, "%"+filtros.cartorio.toUpperCase()+"%")
+
+        return result
     }
 }
