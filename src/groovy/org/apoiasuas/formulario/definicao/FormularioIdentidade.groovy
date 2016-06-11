@@ -96,6 +96,12 @@ class FormularioIdentidade extends FormularioBase {
                 obrigatorio true
             }
             campoAvulso {
+                codigo CampoFormulario.CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                exibirParaPreenchimento false
+                descricao 'Matrícula (BM)'
+            }
+            campoAvulso {
                 codigo CampoFormulario.CODIGO_NOME_EQUIPAMENTO
                 tipo CampoFormulario.Tipo.TEXTO
                 exibirParaPreenchimento false

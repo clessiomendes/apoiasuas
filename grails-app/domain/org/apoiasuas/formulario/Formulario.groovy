@@ -5,8 +5,6 @@ import org.apoiasuas.seguranca.UsuarioSistema
 
 class Formulario implements Serializable {
     public static final String EXTENSAO_ARQUIVO = ".docx"
-//    public static final String CAMPO_DATA_PREENCHIMENTO = "formulario.dataPreenchimento"
-//    public static final String CAMPO_NOME_TECNICO_PREENCHIMENTO = "formulario.nomeResponsavelPreenchimento"
 
     private static final int MEGABYTES = 1024 * 1024
     private static final int TEMPLATE_SIZE = 10 * MEGABYTES

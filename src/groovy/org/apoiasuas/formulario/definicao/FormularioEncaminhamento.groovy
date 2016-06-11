@@ -50,6 +50,12 @@ class FormularioEncaminhamento extends FormularioBase {
                 obrigatorio true
                 descricao 'Responsável (preenchimento)'
             }
+            campoAvulso {
+                codigo CampoFormulario.CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                exibirParaPreenchimento false
+                descricao 'Matrícula (BM)'
+            }
             grupo 'Equipamento', {
                 campoAvulso {
                     codigo CampoFormulario.CODIGO_NOME_EQUIPAMENTO
