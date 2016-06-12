@@ -1,5 +1,6 @@
 package org.apoiasuas.processo
 
+import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.SegurancaService
@@ -11,20 +12,17 @@ import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.history.HistoricProcessInstance
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery
 import org.camunda.bpm.engine.history.HistoricTaskInstance
-import org.camunda.bpm.engine.history.HistoricTaskInstanceQuery
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl
 import org.camunda.bpm.engine.impl.pvm.process.TransitionImpl
 import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.camunda.bpm.engine.task.Task
-import org.camunda.bpm.engine.task.TaskQuery
 import org.springframework.core.io.Resource
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
 
-@Transactional(readOnly = true)
+@Transactional
 public class ProcessoService {
 
     RuntimeService runtimeService
@@ -53,6 +51,7 @@ public class ProcessoService {
     /**
      * A ser sobrescrito nas classes descendentes
      */
+    @NotTransactional
     protected String getProcessDefinitionStr() {
         return null
     }
@@ -69,44 +68,11 @@ public class ProcessoService {
         }
         return result
     }
-/*
-    protected HistoricTaskInstanceQuery _taskQuery(Long idServicoSistema, String definicaoProcesso, Long idUsuarioSistema, Boolean active) {
-        HistoricTaskInstanceQuery query = historyService.createHistoricTaskInstanceQuery()
-        if (active != null && active == true)
-            query = query.active()
-        if (definicaoProcesso)
-            query = query.processDefinitionKey(definicaoProcesso)
-        if (idServicoSistema)
-            query = query.processVariableValueEquals(ProcessoDTO.VARIABLE_ID_SERVICO_SISTEMA_SEGURANCA, idServicoSistema.toString())
-        if (idUsuarioSistema)
-            query = query.taskAssignee(idUsuarioSistema.toString())
-        return query
 
-    }
-*/
-
-/*
-    public List<TarefaDTO> getTarefasPendentes(Long idServicoSistema, String definicaoProcesso, Long idUsuarioSistema) {
-        HistoricTaskInstanceQuery query = _taskQuery(idServicoSistema, definicaoProcesso, idUsuarioSistema, true)
-        List<TarefaDTO> result = []
-        query.listPage(0, ProcessoDTO.MAX_PAGINACAO).each { Task task ->  //FIXME: implementar paginacao na pesquisa de tarefas
-            TarefaDTO tarefa = traduzTarefa(task)
-            tarefa.processo = getProcesso(task.processInstanceId, false)
-            result.add(tarefa)
-        }
-        return result
-    }
-*/
-
-/*
-    public List<Task> getTasks(ProcessDefinition processDefinition, ServicoSistema servicoSistema, UsuarioSistema usuarioSistema = null) {
-        //Todas as tarefas em execuao
-        List<Task> tasks = taskService.createTaskQuery().active().list()
-    }
-*/
     /**
      * Lista definicoes de processo disponiveis (apenas a ultima versao)
      */
+    @Transactional(readOnly = true)
     public List<ProcessDefinition> getDefinicoesProcessos() {
         List<DefinicaoProcessoDTO> result = []
         repositoryService.createProcessDefinitionQuery()./*active().*/latestVersion().orderByProcessDefinitionName().asc().list().each {
@@ -114,6 +80,7 @@ public class ProcessoService {
         }
     }
 
+    @Transactional(readOnly = true)
     private DefinicaoProcessoDTO traduzDefinicaoProcesso(ProcessDefinition processDefinition) {
         DefinicaoProcessoDTO result = new DefinicaoProcessoDTO()
         result.chave = processDefinition.key
@@ -123,6 +90,7 @@ public class ProcessoService {
         return result
     }
 
+    @Transactional(readOnly = true)
     protected ProcessoDTO preencheProcessoDTOHistorico(ProcessoDTO processoDTO, HistoricProcessInstance processInstance) {
         processoDTO.id = processInstance.id
         processoDTO.inicio = processInstance.startTime
@@ -139,24 +107,14 @@ public class ProcessoService {
         return processoDTO
     }
 
+    @Transactional(readOnly = true)
     protected Object getHistoricVariable(String processInstanceId, String nomeVariavel) {
         def variavel = historyService.createHistoricVariableInstanceQuery().
                 variableName(nomeVariavel).processInstanceId(processInstanceId).singleResult()
         return variavel ? variavel.value : null
     }
-/*
-    private TarefaDTO traduzTarefaPendente(Task task) {
-        TarefaDTO tarefa = new TarefaDTO()
-        tarefa.id = task.id
-        tarefa.responsavel = task.assignee ? UsuarioSistema.get(task.assignee.toLong()) : null
-        tarefa.proximosPassos = getOutgoingTransitionNames(task)
-        tarefa.ultimaPendente = getOutgoingTransitionsIsLast(task)
-        tarefa.descricao = task.name
-        tarefa.inicio = task.createTime
-        tarefa.situacao = TarefaDTO.SituacaoTarefa.PENDENTE
-        return tarefa
-    }
-*/
+
+    @Transactional(readOnly = true)
     private TarefaDTO traduzTarefa(HistoricTaskInstance historicTaskInstance) {
         TarefaDTO tarefa = new TarefaDTO()
         tarefa.id = historicTaskInstance.id
@@ -178,6 +136,7 @@ public class ProcessoService {
         return tarefa
     }
 
+    @Transactional(readOnly = true)
     public DefinicaoProcessoDTO getDefinicaoProcessoPeloId(String idDefinicaoProcesso) {
         ProcessDefinition processDefinition = repositoryService.getProcessDefinition(idDefinicaoProcesso)
         if (! processDefinition)
@@ -190,15 +149,16 @@ public class ProcessoService {
         result.suspenso = processDefinition.suspended
         return result
     }
-/**
+
+    /**
      * Tenta buscar o processo tanto na base de processos em andamento quanto na de processos concluidos
      * @param processId
      * @param preencheColecoes Se verdadeiro, popula a lista de tarefas.
      */
+    @Transactional(readOnly = true)
     public ProcessoDTO getProcesso(String processId, boolean preencheColecoes) {
         ProcessoService servicoEspecifico
 
-//        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processId).singleResult()
         HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processId).singleResult()
         if (! processInstance)
             return null
@@ -226,13 +186,6 @@ public class ProcessoService {
             historyService.createHistoricTaskInstanceQuery().processInstanceId(processId).list().each { HistoricTaskInstance historicTaskInstance ->
                 result.addTarefa(traduzTarefa(historicTaskInstance))
             }
-/*
-            //tarefas pendentes
-            if (! processInstance.endTime)
-                taskService.createTaskQuery().processInstanceId(processInstance.id).orderByProcessInstanceId().asc().list().each { Task task ->
-                    result.addTarefa(traduzTarefaPendente(task))
-                }
-*/
         }
 
         servicoEspecifico.preencheProcessoDTOHistorico(result, processInstance)
@@ -252,6 +205,7 @@ public class ProcessoService {
      * Importante: Nao sao usadas as interfaces publicas da framework!
      *
      */
+    @Transactional(readOnly = true)
     private List<String> getOutgoingTransitionNames(HistoricTaskInstance task) {
         try {
             task.processDefinitionId
@@ -281,6 +235,7 @@ public class ProcessoService {
      * Verifica a definicao para saber se esta eh a ultima tarefa pendente
      * Ver getOutgoingTransitionNames(Task task)
      */
+    @Transactional(readOnly = true)
     private Boolean getOutgoingTransitionsIsLast(HistoricTaskInstance task) {
         try {
             Boolean result = true
@@ -326,7 +281,6 @@ public class ProcessoService {
         return tarefaConcluida.processInstanceId
     }
 
-//    @Transactional
     /**
      * Volta o processo até uma tarefa que estava concluida anteriormente
      */
@@ -367,6 +321,7 @@ public class ProcessoService {
             historyService.deleteHistoricProcessInstance(idProcesso)
     }
 
+    @Transactional(readOnly = true)
     protected HistoricProcessInstanceQuery getQuery(Map filtros) {
         //Filtros compulsorios: tipo de processo, servicoSistema
         HistoricProcessInstanceQuery result = historyService.createHistoricProcessInstanceQuery()

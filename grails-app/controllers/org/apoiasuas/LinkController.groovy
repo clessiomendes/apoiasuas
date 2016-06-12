@@ -98,22 +98,4 @@ class LinkController extends AncestralController {
         return redirect(action: "list");
     }
 
-    /**
-     * Tenta acessar o objeto a ser utilizado na action e, caso o acesso seja negado, captura a excessao e exibe uma
-     * mensagem de erro para o usuário. obs: A excessao é levantada nos eventos de persistência em ApoiaSuasPersistenceListener
-     *
-     * (defined with private scope, so it's not considered an action)
-     */
-    private interceptaSeguranca(String aa) {
-        try {
-            if (params.getIdentifier())
-                Link.get(params.getIdentifier())
-//            if (! Link.get(params.getIdentifier()))
-//                throw new AcessoNegadoPersistenciaException(segurancaService.usuarioLogado.username, "Link", "")
-        } catch  (AcessoNegadoPersistenceException e) {
-            flash.message = e.getMessage()
-            redirect(uri: request.getHeader('referer') )
-            return false
-        }
-    }
 }

@@ -50,16 +50,16 @@
 
 <div class="fieldcontain ${hasErrors(bean: usuarioSistemaInstance, field: 'password', 'error')}">
     <label for="password1">
-        <g:message code="usuarioSistema.digiteSenha.label" default="Escolha uma senha" />
+        <g:message code="usuarioSistema.digiteSenha.label" default="Escolha uma senha"/>
     </label>
-    <g:passwordField name="password1"/>
+    <g:passwordField name="password1" autocomplete="new-password"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: usuarioSistemaInstance, field: 'password', 'error')}">
     <label for="password2">
         <g:message code="usuarioSistema.redigiteSenha.label" default="Redigite a senha" />
     </label>
-    <g:passwordField name="password2"/>
+    <g:passwordField name="password2" autocomplete="new-password"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoUsuarioSistema, field: 'criador', 'error')}">

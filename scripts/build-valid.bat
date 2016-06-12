@@ -5,4 +5,4 @@ cd ..\deploy-cc\valid\
 git add .
 git commit -m "deploy validacao"
 git push clever master
-cd c:\workspaces\apoiaSUAS\scripts
+rem cd c:\workspaces\apoiaSUAS\scripts

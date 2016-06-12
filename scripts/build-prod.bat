@@ -5,4 +5,4 @@ cd ..\deploy-cc\prod\
 git add .
 git commit -m "deploy producao"
 git push clever master
-cd c:\workspaces\apoiaSUAS\scripts
+rem cd c:\workspaces\apoiaSUAS\scripts

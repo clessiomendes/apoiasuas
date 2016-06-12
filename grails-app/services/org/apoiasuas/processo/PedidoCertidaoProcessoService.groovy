@@ -42,7 +42,6 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return pedidoCertidaoProcessoDTO
     }
 
-    @Transactional
     public ProcessInstance novoProcesso(UsuarioSistema responsavelProximaTarefa, Long idFamilia,
                                         Long idOperadorResponsavel, String dadosCertidao,
                                         Long idFormularioEmitido, String cartorio, String numeroAR) {
@@ -82,7 +81,6 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return result
     }
 
-    @Transactional
     public void gravaAR(String idProcesso, String numeroAR) {
         runtimeService.setVariable(idProcesso, PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, numeroAR)
     }
