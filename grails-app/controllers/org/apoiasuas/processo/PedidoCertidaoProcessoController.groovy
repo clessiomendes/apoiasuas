@@ -22,7 +22,7 @@ class PedidoCertidaoProcessoController extends ProcessoController {
      * Exibe apenas os filtros, simulando um resultado vazio de processos "encontrados"
      */
     def preList() {
-        render(view: "/processo/pedidoCertidao/list", model: [processos: [], ususariosDisponiveis: segurancaService.getOperadoresOrdenados()])
+        render(view: "/processo/pedidoCertidao/list", model: [processos: [], ususariosDisponiveis: getOperadoresOrdenadosController(false)])
     }
 
     def list() {
@@ -53,7 +53,7 @@ class PedidoCertidaoProcessoController extends ProcessoController {
                     dadosCertidao: params.dadosCertidao, idUsuarioSistema: idUsuarioSistema, pendentes: pendentes,
                     numeroAR: params.numeroAR, cartorio: params.cartorio, dataInicio: dataInicio, dataFim: dataFim]);
 
-        render(view: "/processo/pedidoCertidao/list", model: [processos: processos, ususariosDisponiveis: segurancaService.getOperadoresOrdenados()])
+        render(view: "/processo/pedidoCertidao/list", model: [processos: processos, ususariosDisponiveis: getOperadoresOrdenadosController(false)])
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -84,7 +84,7 @@ class PedidoCertidaoProcessoController extends ProcessoController {
 */
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def create() {
-        render(view: "/processo/pedidoCertidao/create", model: [processoInstance: new PedidoCertidaoProcessoDTO(), operadores: segurancaService.getOperadoresOrdenados()])
+        render(view: "/processo/pedidoCertidao/create", model: [processoInstance: new PedidoCertidaoProcessoDTO(), operadores: getOperadoresOrdenadosController(true)])
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -95,7 +95,7 @@ class PedidoCertidaoProcessoController extends ProcessoController {
             familia = cidadaoService.obtemFamilia(processoDTO.cadTransiente, false)
             if (! familia) {
                 flash.message = "Erro! Cadastro de familia nao encontrado"
-                return render(view: "/processo/pedidoCertidao/create", model: [processoInstance: processoDTO, operadores: segurancaService.getOperadoresOrdenados()])
+                return render(view: "/processo/pedidoCertidao/create", model: [processoInstance: processoDTO, operadores: getOperadoresOrdenadosController(true)])
             }
         }
         //Cria nova instancia do processo na engine BPM

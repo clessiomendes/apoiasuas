@@ -22,7 +22,6 @@ class InicioController extends AncestralController {
     public static final A = "A"
 
     GrailsApplication grailsApplication
-    SegurancaService segurancaService
     ApoiaSuasService apoiaSuasService
     ImportarFamiliasService importarFamiliasService
     ServicoSistemaService servicoSistemaService

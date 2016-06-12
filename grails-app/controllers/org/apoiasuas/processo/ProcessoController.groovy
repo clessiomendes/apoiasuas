@@ -29,7 +29,7 @@ class ProcessoController extends AncestralController {
 
 //        List<TarefaDTO> tarefas = processoService.getTarefasPendentes(getServicoCorrente().id, idDefinicaoProcesso, idUsuarioSistema)
 
-        render(view: "/processo/list", model: [tarefas: [], definicoesProcessoDisponiveis: processoService.getDefinicoesProcessos(), ususariosDisponiveis: segurancaService.getOperadoresOrdenados()])
+        render(view: "/processo/list", model: [tarefas: [], definicoesProcessoDisponiveis: processoService.getDefinicoesProcessos(), ususariosDisponiveis: getOperadoresOrdenadosController(true)])
     }
 
     def mostraProcesso(ProcessoDTO processoDTO) {
@@ -41,7 +41,7 @@ class ProcessoController extends AncestralController {
         if (! processoDTO)
             return notFound()
 
-        render(view: "/processo/show", model: [processo: processoDTO, ususariosDisponiveis: segurancaService.getOperadoresOrdenados(), templateProcessoEspecifico: getTemplateProcessoEspecifico()])
+        render(view: "/processo/show", model: [processo: processoDTO, ususariosDisponiveis: getOperadoresOrdenadosController(true), templateProcessoEspecifico: getTemplateProcessoEspecifico()])
     }
 
     /**

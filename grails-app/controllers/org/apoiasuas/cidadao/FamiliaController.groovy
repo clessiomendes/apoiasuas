@@ -60,7 +60,7 @@ class FamiliaController extends AncestralController {
         programasDisponiveis.each { programaDisponivel ->
             programaDisponivel.selected = familiaInstance.programas.find { it.programa == programaDisponivel }
         }
-        return [familiaInstance: familiaInstance, programasDisponiveis: programasDisponiveis, operadores: segurancaService.getOperadoresOrdenados()]
+        return [familiaInstance: familiaInstance, programasDisponiveis: programasDisponiveis, operadores: getOperadoresOrdenadosController(true)]
     }
 
     def edit(Familia familiaInstance) {

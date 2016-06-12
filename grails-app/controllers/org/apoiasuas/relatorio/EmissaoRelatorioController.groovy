@@ -4,13 +4,11 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class EmissaoRelatorioController extends AncestralController {
 
-    SegurancaService segurancaService
     RelatorioService relatorioService
 
     def definirListagem() {
@@ -21,7 +19,7 @@ class EmissaoRelatorioController extends AncestralController {
         Map<Long, String> operadoresOrdenados = [:]
         operadoresOrdenados.put(UsuarioSistema.SELECAO_ALGUM_TECNICO, "-algum técnico-");
         operadoresOrdenados.put(UsuarioSistema.SELECAO_NENHUM_TECNICO, "-nenhum técnico-");
-        segurancaService.getOperadoresOrdenados().each {
+        getOperadoresOrdenadosController(false).each {
             operadoresOrdenados.put(it.id, it.username)
         }
         return operadoresOrdenados

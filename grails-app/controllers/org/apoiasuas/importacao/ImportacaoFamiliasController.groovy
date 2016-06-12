@@ -24,7 +24,6 @@ import javax.servlet.http.HttpSession
 class ImportacaoFamiliasController extends AncestralController {
 
     ImportarFamiliasService servicoImportarFamilias
-    SegurancaService segurancaService
 
     private static final String SESSION_ID_IMPORTACAO_EM_CURSO = "SESSION_ID_IMPORTACAO_EM_CURSO"
     private static final String SESSION_DATA_ULTIMA_IMPORTACAO = "SESSION_ULTIMA_IMPORTACAO"

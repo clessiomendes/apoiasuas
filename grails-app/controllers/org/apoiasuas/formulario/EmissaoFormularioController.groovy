@@ -26,7 +26,6 @@ class EmissaoFormularioController extends AncestralController {
     private static final String ULTIMO_FORMULARIO_REPORT_DTO = "ULTIMO_FORMULARIO_REPORT_DTO"
 //    static scope = "prototype" //garante uma nova instancia deste controller para cada request
 
-    SegurancaService segurancaService
     CidadaoService cidadaoService
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
@@ -56,7 +55,7 @@ class EmissaoFormularioController extends AncestralController {
                 model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
                         dtoFormulario: formulario,
                         idServico: idServico,
-                        usuarios: segurancaService.getOperadoresOrdenados() ])
+                        usuarios: getOperadoresOrdenadosController(true) ])
 //        } catch (Exception e) {
 //            e.printStackTrace()
 //            throw e
@@ -102,13 +101,13 @@ class EmissaoFormularioController extends AncestralController {
         } catch (ParseException e) {
             //TODO: Identificar exatamente o(s) campo(s) com erro de conversão e informar ao operador com precisão (vai dar trabalho. teremos que abrir mão do bind automático do Grails)
             formulario.errors.reject(null, "Erro de conversão. Conteúdo fornecido inválido em algum dos campos")
-            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, usuarios: segurancaService.getOperadoresOrdenados() ])
+            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, usuarios: getOperadoresOrdenadosController(true) ])
         }
 
         boolean validacaoPreenchimento = service(formulario).validarPreenchimento(formulario)
         boolean validacaoDatas = validaFormatoDatas(formulario, params)
         if (! validacaoPreenchimento || ! validacaoDatas) //exibe o formulario novamente em caso de problemas na validacao
-            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, usuarios: segurancaService.getOperadoresOrdenados() ])
+            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, usuarios: getOperadoresOrdenadosController(true) ])
 
         geraFormularioPreenchidoEgrava: {
             ReportDTO reportDTO = service(formulario).prepararImpressao(formulario)

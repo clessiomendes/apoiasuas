@@ -261,9 +261,27 @@ class SegurancaService {
     /**
      * Lista todos os operadores filtrados para o Servico logado
      */
-    public ArrayList<UsuarioSistema> getOperadoresOrdenados() {
-        ArrayList<UsuarioSistema> result = [usuarioLogado]
-        ArrayList<UsuarioSistema> usuarios = UsuarioSistema.findAllByServicoSistemaSeguranca(getServicoLogado()).sort {it.username}
+    public ArrayList<UsuarioSistema> getOperadoresOrdenados(boolean somenteHabilitados) {
+        //adiciona o usuario logado no topo da lista, marcando com *
+        UsuarioSistema logado = getUsuarioLogado()
+        logado.discard()
+        logado.username = "*"+logado.username
+        ArrayList<UsuarioSistema> result = [logado]
+
+        //Busa lista de usuarios ativos
+        ArrayList<UsuarioSistema> usuarios = UsuarioSistema.findAllByServicoSistemaSegurancaAndEnabled(getServicoLogado(), true).sort {it.username}
+
+        if (! somenteHabilitados) {
+            //Busa lista de usuarios NAO ativos, marcados com -
+            ArrayList<UsuarioSistema> usuariosNaoHabilitados = UsuarioSistema.findAllByServicoSistemaSegurancaAndEnabled(getServicoLogado(), false).sort {it.username}
+            usuariosNaoHabilitados.each {
+                it.discard()
+                it.username = "-"+it.username
+                usuarios << it
+            }
+        }
+
+        //Remove usuario logado (duplicado) da lista ao montar o resultado
         usuarios.each {
             if (it.id != usuarioLogado.id)
                 result << it

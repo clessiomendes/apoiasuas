@@ -8,6 +8,7 @@ import org.apoiasuas.cidadao.FamiliaController
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.AcessoNegadoPersistenceException
 import org.apoiasuas.seguranca.SegurancaService
+import org.apoiasuas.seguranca.UsuarioSistema
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
 
 /**
@@ -68,6 +69,10 @@ class AncestralController {
             redirect(uri: request.getHeader('referer') )
             return false
         }
+    }
+
+    protected ArrayList<UsuarioSistema> getOperadoresOrdenadosController(boolean somenteHabilitados) {
+            return segurancaService.getOperadoresOrdenados(somenteHabilitados)
     }
 
     /**

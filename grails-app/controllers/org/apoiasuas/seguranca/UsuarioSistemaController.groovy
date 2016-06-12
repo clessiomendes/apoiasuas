@@ -12,8 +12,6 @@ class UsuarioSistemaController extends AncestralController {
     def beforeInterceptor = [action: this.&interceptaSeguranca, entity:UsuarioSistema.class, only: ['show','edit', 'delete', 'update', 'save']]
     static defaultAction = "list"
 
-    SegurancaService segurancaService
-
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def show(UsuarioSistema usuarioSistemaInstance) {
         if (! usuarioSistemaInstance)

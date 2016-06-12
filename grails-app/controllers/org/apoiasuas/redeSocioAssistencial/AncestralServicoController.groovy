@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest
  * Created by admin on 04/05/2016.
  */
 class AncestralServicoController extends AncestralController {
-    ServicoSistemaService servicoSistemaService
     AbrangenciaTerritorialService abrangenciaTerritorialService
 
     protected void atribuiAbrangenciaTerritorial(def servicoSistemaInstance/*generico para aceitar tanto Servico quanto ServicoSistema*/) {

@@ -13,7 +13,6 @@ class ServicoSistemaController extends AncestralServicoController {
     private static final String SESSION_SERVICO_SISTEMA_ATUAL = "SESSION_SERVICO_SISTEMA_ATUAL"
 
     static defaultAction = "list"
-    SegurancaService segurancaService
     ServicoSistemaService servicoSistemaService
 
     def list(Integer max) {
