@@ -617,7 +617,7 @@ class ImportarFamiliasService {
                             linhaTentativaImportacao.setOrdem(rowNum - linhaDoCabecalho + 1L)
 
                             //Contador persistente de linhas nesta importacao
-                            importacao.addLinhasEncontradas();
+                            importacao.addlinhasencontradas();
 
                             List tempList = new ArrayList();
                             for (String key : map.keySet()) {

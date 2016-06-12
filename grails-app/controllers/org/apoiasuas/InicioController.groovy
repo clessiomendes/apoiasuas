@@ -6,7 +6,6 @@ import org.apoiasuas.importacao.ImportacaoFamiliasController
 import org.apoiasuas.importacao.ImportarFamiliasService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
-import org.apoiasuas.seguranca.ApoiaSuasUser
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.ItemMenuDTO
 import org.apoiasuas.seguranca.SegurancaService

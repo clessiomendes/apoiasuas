@@ -56,7 +56,12 @@ class ImportacaoFamiliasController extends AncestralController {
                 return render ([errorMessage: "Configuracoes nao definidas (linha do cabecalho ou aba da planilha)"] as JSON)
             }
             TentativaImportacao tentativaImportacao = servicoImportarFamilias.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, operador)
-            tentativaImportacao = servicoImportarFamilias.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)
+            try {
+                tentativaImportacao = servicoImportarFamilias.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)
+            } catch (org.apache.poi.openxml4j.exceptions.InvalidFormatException e) {
+                response.status = 500
+                return render ([errorMessage: "Formato invalido ou arquivo de importacao nao enviado"] as JSON)
+            }
             log.info("pre importacao encerrada")
             if (!tentativaImportacao?.id) {
                 response.status = 500
@@ -159,12 +164,16 @@ class ImportacaoFamiliasController extends AncestralController {
     }
 
     private UsuarioSistema autentica(HttpServletRequest request) {
+/*
         if (request instanceof MultipartHttpServletRequest) {
             String login = ((MultipartHttpServletRequest) request).getParameter('user')
             String pass = ((MultipartHttpServletRequest) request).getParameter('pass')
             return segurancaService.autentica(login, pass, DefinicaoPapeis.STR_WEB_SERVICE )
         }
-        return null
+*/
+        String login = request.getParameter('user')
+        String pass = request.getParameter('pass')
+        return segurancaService.autentica(login, pass, DefinicaoPapeis.STR_WEB_SERVICE )
     }
 
     /**

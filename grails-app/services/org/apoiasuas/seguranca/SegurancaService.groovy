@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 
 class SegurancaService {
 
@@ -15,6 +16,8 @@ class SegurancaService {
     public static final int MIN_TAMANHO_SENHA = 4
     def springSecurityService
     def authenticationManager
+    def userDetailsService
+    def userDetailsManager
 
     static transactional = false
 
@@ -38,13 +41,23 @@ class SegurancaService {
     @Transactional(readOnly = true)
     public UsuarioSistema autentica(String login, String senha, String papel) {
         try {
-            Authentication token = new UsernamePasswordAuthenticationToken(login, senha);
+            //Primeiro precisamos construir um "user detail" aa partir do login
+            UsuarioSistema user = UsuarioSistema.findByUsername(login)
+            ApoiaSuasUser apoiaSuasUser = userDetailsService.createUserDetails(user, [])
+            //passamos o "user detail" (do nosso tipo especializado ApoiaSuasUser) para o mecanismo de autenticacao do spring
+            Authentication token = new UsernamePasswordAuthenticationToken(apoiaSuasUser, senha);
             token = authenticationManager.authenticate(token)
-            if (token.authenticated && token.authorities.contains(new SimpleGrantedAuthority(papel)))
-                return UsuarioSistema.get(token.principal.id)
+            if (token.authenticated && token.authorities.contains(new SimpleGrantedAuthority(papel))) {
+                //E necessario atualizar o token recem gerado no contexto de seguranca do spring
+                //http://stackoverflow.com/a/7903912/1916198
+                SecurityContextHolder.getContext().setAuthentication(token)
+                setServicoLogado(user.servicoSistemaSeguranca)
+                return user
+            }
             else
                 return null
         } catch (BadCredentialsException e) {
+            log.error(e.getMessage())
             return null
         }
     }

@@ -21,6 +21,9 @@ class SecurityFilters {
                 if (controllerName == "login" || controllerName == "logout")
                     return true;
 
+                if (controllerName == "importacaoFamilias" && actionName == "restUpload")
+                    return true;
+
                 //Testa se o componente de ServicoLogado ja esta presente no ambiente de segurança
                 if (segurancaService.servicoLogado)
                     return true;
