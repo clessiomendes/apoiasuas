@@ -17,7 +17,6 @@ class SegurancaService {
     def springSecurityService
     def authenticationManager
     def userDetailsService
-    def userDetailsManager
 
     static transactional = false
 

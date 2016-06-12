@@ -33,7 +33,12 @@ class ${className}Controller extends AncestralController {
     def edit(${className} ${propertyName}) {
         if (! ${propertyName})
             return notFound()
-        render view:"edit", model: [${propertyName}:${propertyName}]
+        render view:"edit", model: getEditCreateModel(${propertyName})
+    }
+
+    private Map getEditCreateModel(${className} ${propertyName}) {
+        //adicione aqui mais entidades a serem disponibilizadas nas telas de criacao e edicao
+        return [${propertyName}:${propertyName}]
     }
 
     def save(${className} ${propertyName}) {

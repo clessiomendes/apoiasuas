@@ -35,26 +35,24 @@ class UsuarioSistemaController extends AncestralController {
         render view: "list", model:[usuarioSistemaInstanceList: listUsuarios, usuarioSistemaInstanceCount: listUsuarios.getTotalCount(), servicosDisponiveis: ServicoSistema.listOrderByNome(), filtro: params.findAll { it.value }]
     }
 
-    def create(UsuarioSistema usuarioSistemaInstance) {
-        if (! usuarioSistemaInstance)
-            usuarioSistemaInstance = new UsuarioSistema(params)
+    def create() {
+        UsuarioSistema usuarioSistemaInstance = new UsuarioSistema(params)
         usuarioSistemaInstance.enabled = true
-        render view:"create", model: [usuarioSistemaInstance:usuarioSistemaInstance, servicosDisponiveis: ServicoSistema.listOrderByNome()]
+        render view:"create", model: getEditCreateModel(usuarioSistemaInstance)
     }
 
     def edit(UsuarioSistema usuarioSistemaInstance) {
         if (! usuarioSistemaInstance)
             return notFound()
         preenchePapel(usuarioSistemaInstance)
-        render view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance, servicosDisponiveis: ServicoSistema.listOrderByNome()]
+        render view:"edit", model: getEditCreateModel(usuarioSistemaInstance)
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def alteraPerfil(UsuarioSistema usuarioSistemaInstance) {
-        if (! usuarioSistemaInstance)
+        if (segurancaService.usuarioLogado.id != usuarioSistemaInstance.id)
             return notFound()
-        preenchePapel(usuarioSistemaInstance)
-        render view:"edit", model: [usuarioSistemaInstance:usuarioSistemaInstance]
+        edit(usuarioSistemaInstance)
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
@@ -64,14 +62,11 @@ class UsuarioSistemaController extends AncestralController {
 
         boolean modoCriacao = usuarioSistemaInstance.id == null
 
-        if (! usuarioSistemaInstance.validate())
-//            return render(view: modoCriacao ? "create" : "edit" , model: [usuarioSistemaInstance:usuarioSistemaInstance, servicosDisponiveis: ServicoSistema.listOrderByNome()])
-            return modoCriacao ? create(usuarioSistemaInstance) : edit(usuarioSistemaInstance)
-        else //Grava
-            segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2"))
-//        if (! segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2"))) {
+//  ATENCAO! A validacao do usuario e feita dentro da chamada gravaUsuario, no servico
+//        if (! usuarioSistemaInstance.validate())
+        if (! segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2")))
             //exibe o formulario novamente em caso de problemas na validacao
-//            return render(view: modoCriacao ? "create" : "edit" , model: [usuarioSistemaInstance:usuarioSistemaInstance])
+            return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(usuarioSistemaInstance))
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'usuarioSistema.label', default: 'Operador do sistema'), usuarioSistemaInstance.id])
         render view: "show", model: [usuarioSistemaInstance: usuarioSistemaInstance]
@@ -94,18 +89,22 @@ class UsuarioSistemaController extends AncestralController {
 
     protected def notFound() {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'usuarioSistema.label', default: 'Usuário do sistema'), params.id])
-        return redirect(action: "list")
+        return redirect(controller: "inicio")
     }
 
     @Override
     protected interceptaSeguranca() {
         if (params?.getIdentifier() && ! segurancaService.isSuperUser()) {
-            if (UsuarioSistema.get(params.getIdentifier())?.servicoSistemaSeguranca != segurancaService.servicoLogado) {
+            if (UsuarioSistema.get(params.getIdentifier())?.servicoSistemaSeguranca?.id != segurancaService.servicoLogado?.id) {
                 flash.message = new AcessoNegadoPersistenceException(segurancaService.usuarioLogado.username, "Operador do sistema", UsuarioSistema.get(params.getIdentifier())?.username)
-                redirect(controller: "menu")
+                redirect(controller: "inicio")
                 return false
             }
         }
+    }
+
+    private Map getEditCreateModel(UsuarioSistema usuarioSistemaInstance) {
+        return [usuarioSistemaInstance:usuarioSistemaInstance, servicosDisponiveis: ServicoSistema.listOrderByNome()]
     }
 
 }

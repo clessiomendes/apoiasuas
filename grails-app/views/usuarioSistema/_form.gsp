@@ -25,7 +25,7 @@
             <g:message code="usuarioSistema.servico.label"/>
             <span class="required-indicator">*</span>
         </label>
-        <g:select name="servicoSistema" noSelection="${['':'']}" from="${servicos.collect{it.nome}}" keys="${servicos.collect{it.id}}" required="" value="${localDtoUsuarioSistema?.servicoSistemaSeguranca?.id}"/>
+        <g:select name="servicoSistemaSeguranca" noSelection="${['':'']}" from="${servicos.collect{it.nome}}" keys="${servicos.collect{it.id}}" required="" value="${localDtoUsuarioSistema?.servicoSistemaSeguranca?.id}"/>
     </div>
     <div class="fieldcontain ${hasErrors(bean: localDtoUsuarioSistema, field: 'papel', 'error')} required">
         <label for="papel">

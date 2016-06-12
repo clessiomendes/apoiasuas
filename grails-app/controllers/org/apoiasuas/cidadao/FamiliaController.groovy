@@ -2,7 +2,6 @@ package org.apoiasuas.cidadao
 
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.transaction.Transactional
 import org.apoiasuas.AncestralController
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.programa.Programa
@@ -48,20 +47,24 @@ class FamiliaController extends AncestralController {
         //Grava
         if (! familiaService.grava(familiaInstance, programasCommand)) {
             //exibe o formulario novamente em caso de problemas na validacao
-            return render(view: modoCriacao ? "create" : "edit" , model: [familiaInstance:familiaInstance])
+            return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(familiaInstance))
         }
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'familia.label', default: 'Família'), familiaInstance.id])
         return show(familiaInstance)
     }
 
-    def edit(Familia familiaInstance) {
-        def programasDisponiveis = Programa.all
+    private Map getEditCreateModel(Familia familiaInstance) {
+        List<Programa> programasDisponiveis = Programa.all
         //Marca dentre os programas disponiveis, aqueles que estão atualmente associados à família
         programasDisponiveis.each { programaDisponivel ->
             programaDisponivel.selected = familiaInstance.programas.find { it.programa == programaDisponivel }
         }
-        render view: 'edit', model: [familiaInstance: familiaInstance, programasDisponiveis: programasDisponiveis, operadores: segurancaService.getOperadoresOrdenados()]
+        return [familiaInstance: familiaInstance, programasDisponiveis: programasDisponiveis, operadores: segurancaService.getOperadoresOrdenados()]
+    }
+
+    def edit(Familia familiaInstance) {
+        render view: 'edit', model: getEditCreateModel(familiaInstance)
     }
 
 /*
