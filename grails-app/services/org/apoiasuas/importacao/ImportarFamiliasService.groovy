@@ -758,6 +758,7 @@ class ImportarFamiliasService {
         return result
     }
 
+    @Transactional(readOnly = true)
     public DataUltimaImportacaoDTO getDataUltimaImportacao() {
         DataUltimaImportacaoDTO result = new DataUltimaImportacaoDTO()
         TentativaImportacao ultimaImportacao = TentativaImportacao.find(

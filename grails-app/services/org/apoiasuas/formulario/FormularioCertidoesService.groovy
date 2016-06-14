@@ -10,17 +10,60 @@ import org.apoiasuas.util.StringUtils
  */
 class FormularioCertidoesService extends FormularioService {
 
+    public static final String NACIONALIDADE_PADRAO = "brasileira"
     def pedidoCertidaoProcessoService
 
+    class CertidoesDTO {
+        Formulario formulario
+        CampoFormulario nomeNascimento
+        CampoFormulario dataNascimento
+        CampoFormulario maeNascimento
+        CampoFormulario paiNascimento
+        CampoFormulario conjuge1
+        CampoFormulario conjuge2
+        CampoFormulario dataCasamento
+        CampoFormulario nomeFalecido
+        CampoFormulario dataFalecimento
+        CampoFormulario maeObito
+        CampoFormulario paiObito
+        CampoFormulario nacionalidade
+        public CertidoesDTO(Formulario formulario) {
+            this.formulario = formulario
+            nomeNascimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_NOME_NASCIMENTO)
+            dataNascimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_DATA_NASCIMENTO)
+            maeNascimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_MAE_NASCIMENTO)
+            paiNascimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_PAI_NASCIMENTO)
+            conjuge1 = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_CONJUGE_1)
+            conjuge2 = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_CONJUGE_2)
+            dataCasamento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_DATA_CASAMENTO)
+            nomeFalecido = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_NOME_FALECIDO)
+            dataFalecimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_DATA_FALECIMENTO)
+            maeObito = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_MAE_OBITO)
+            paiObito = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_PAI_OBITO)
+            nacionalidade = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_NACIONALIDADE)
+        }
+        public boolean isTipoNascimento() {
+            return StringUtils.isNotBlank(nomeNascimento?.valorArmazenado?.toString())
+        }
+        public boolean isTipoCasamento() {
+            return StringUtils.isNotBlank(conjuge1?.valorArmazenado?.toString()) && ! tipoNascimento
+        }
+        public boolean isTipoObito() {
+            return StringUtils.isNotBlank(nomeFalecido?.valorArmazenado?.toString()) && ! tipoNascimento && ! tipoCasamento
+        }
+    }
+    
     @Override
     Formulario preparaPreenchimentoFormulario(Long idFormulario, Long idFamilia, Long idCidadao) {
         Formulario formulario = super.preparaPreenchimentoFormulario(idFormulario, idFamilia, idCidadao)
+        CertidoesDTO dto = new CertidoesDTO(formulario)
 
         //Atribui valores default para alguns campos
-        formulario.getCampoAvulso(FormularioCertidoes.CODIGO_NOME_NASCIMENTO).valorArmazenado = formulario.cidadao.nomeCompleto
-        formulario.getCampoAvulso(FormularioCertidoes.CODIGO_DATA_NASCIMENTO).valorArmazenado = formulario.cidadao.dataNascimento
-        formulario.getCampoAvulso(FormularioCertidoes.CODIGO_MAE_NASCIMENTO).valorArmazenado = formulario.cidadao.nomeMae
-        formulario.getCampoAvulso(FormularioCertidoes.CODIGO_PAI_NASCIMENTO).valorArmazenado = formulario.cidadao.nomePai
+        dto.nomeNascimento.valorArmazenado = formulario.cidadao.nomeCompleto
+        dto.dataNascimento.valorArmazenado = formulario.cidadao.dataNascimento
+        dto.maeNascimento.valorArmazenado = formulario.cidadao.nomeMae
+        dto.paiNascimento.valorArmazenado = formulario.cidadao.nomePai
+        dto.nacionalidade.valorArmazenado = NACIONALIDADE_PADRAO
         return formulario
     }
 
@@ -32,22 +75,22 @@ class FormularioCertidoesService extends FormularioService {
 
     @Override
     protected void transfereConteudo(Formulario formulario, ReportDTO reportDTO) {
+        CertidoesDTO dto = new CertidoesDTO(formulario)
         Cidadao cidadao = formulario.cidadao
-        if (cidadao.identidade)
-            cidadao.identidade = "Cart. Identidade "+cidadao.identidade
-        if (cidadao.numeroCTPS) {
-            cidadao.numeroCTPS = "CTPS Nº " + cidadao.numeroCTPS
-            cidadao.serieCTPS = "Série " + cidadao.serieCTPS
-        }
-        if (cidadao.cpf)
-            cidadao.cpf = "CPF "+cidadao.cpf
-        if (cidadao.estadoCivil)
-            cidadao.estadoCivil = "Estado Civil "+cidadao.estadoCivil
-        if (cidadao.familia.endereco.complemento)
-            cidadao.familia.endereco.complemento = " Complemento: "+cidadao.familia.endereco.complemento
-        if (cidadao.familia.endereco.bairro)
-            cidadao.familia.endereco.bairro = " Bairro: "+cidadao.familia.endereco.bairro
-
+//        if (cidadao.identidade)
+//            cidadao.identidade = "Cart. Identidade "+cidadao.identidade
+//        if (cidadao.numeroCTPS) {
+//            cidadao.numeroCTPS = "CTPS Nº " + cidadao.numeroCTPS
+//            cidadao.serieCTPS = "Série " + cidadao.serieCTPS
+//        }
+//        if (cidadao.cpf)
+//            cidadao.cpf = "CPF "+cidadao.cpf
+//        if (cidadao.estadoCivil)
+//            cidadao.estadoCivil = "Estado Civil "+cidadao.estadoCivil
+//        if (cidadao.familia.endereco.complemento)
+//            cidadao.familia.endereco.complemento = " Complemento: "+cidadao.familia.endereco.complemento
+//        if (cidadao.familia.endereco.bairro)
+//            cidadao.familia.endereco.bairro = " Bairro: "+cidadao.familia.endereco.bairro
 //        if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO) {
 //            CampoFormulario tecnico = formulario.getCampoAvulso(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
 //        tecnico.valorArmazenado = formulario.usuarioSistema?.nomeCompleto
@@ -56,85 +99,83 @@ class FormularioCertidoesService extends FormularioService {
 //            matricula.valorArmazenado = formulario.usuarioSistema?.matricula
 //        }
 
-        String tipoCertidao = defineTipoCertidao(formulario)
-        if (tipoCertidao)
-            reportDTO.context.put(StringUtils.upperToCamelCase(CampoFormulario.Origem.AVULSO.toString()) + "." + FormularioCertidoesPedido.CODIGO_TIPO_CERTIDAO, tipoCertidao)
+        if (defineTipoCertidao(dto))
+            reportDTO.context.put(StringUtils.upperToCamelCase(CampoFormulario.Origem.AVULSO.toString()) + "." + FormularioCertidoes.CODIGO_TIPO_CERTIDAO, defineTipoCertidao(dto))
 
-        String conteudoCertidao = defineConteudoCertidao(formulario)
+        //Maraca um X no tipo de certidao:
+        reportDTO.context.put(FormularioCertidoes.CODIGO_IS_NASCIMENTO, dto.tipoNascimento ? "X" : "_")
+        reportDTO.context.put(FormularioCertidoes.CODIGO_IS_CASAMENTO, dto.tipoCasamento ? "X" : "_")
+        reportDTO.context.put(FormularioCertidoes.CODIGO_IS_OBITO, dto.tipoObito ? "X" : "_")
+
+        String dataRegistro
+        String filiacaoConjuge
+        if (dto.tipoNascimento) {
+            dataRegistro = ((Date) dto.dataNascimento?.valorArmazenado)?.format("dd/MM/yyyy")
+            filiacaoConjuge = filiacao(dto.maeNascimento, dto.paiNascimento)
+        } else if (dto.tipoCasamento) {
+            dataRegistro = ((Date) dto.dataCasamento?.valorArmazenado)?.format("dd/MM/yyyy")
+            filiacaoConjuge = dto.conjuge2?.valorArmazenado + ""
+        } else if (dto.tipoObito) {
+            dataRegistro = ((Date) dto.dataFalecimento?.valorArmazenado)?.format("dd/MM/yyyy")
+            filiacaoConjuge = filiacao(dto.maeObito, dto.paiObito)
+        }
+
+        reportDTO.context.put(CampoFormulario.Origem.AVULSO.toCamelCase() + "." + FormularioCertidoes.CODIGO_DATA_REGISTRO, dataRegistro)
+        reportDTO.context.put(CampoFormulario.Origem.AVULSO.toCamelCase() + "." + FormularioCertidoes.CODIGO_FILIACAO_CONJUGE, filiacaoConjuge)
+
+        String conteudoCertidao = defineConteudoCertidao(dto)
         if (conteudoCertidao)
-            reportDTO.context.put(StringUtils.upperToCamelCase(CampoFormulario.Origem.AVULSO.toString()) + "." + FormularioCertidoesPedido.CODIGO_DADOS_CERTIDAO, conteudoCertidao)
+            reportDTO.context.put(CampoFormulario.Origem.AVULSO.toCamelCase() + "." + FormularioCertidoes.CODIGO_DADOS_CERTIDAO, conteudoCertidao)
 
         super.transfereConteudo(formulario, reportDTO)
     }
 
-    private String defineTipoCertidao(Formulario formulario) {
-        CampoFormulario nomeNascimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_NOME_NASCIMENTO)
-        CampoFormulario conjuge1 = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_CONJUGE_1)
-        CampoFormulario nomeFalecido = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_NOME_FALECIDO)
-
-        String tipoCertidao = nomeNascimento?.valorArmazenado ? "Certidão de Nascimento" :
-                conjuge1?.valorArmazenado ? "Certidão de Casamento" :
-                        nomeFalecido?.valorArmazenado ? "Certidão de Óbito" :
-                                null
+    private String defineTipoCertidao(CertidoesDTO dto) {
+        String tipoCertidao = dto.tipoNascimento ? "Certidão de Nascimento" :
+                              dto.tipoCasamento ? "Certidão de Casamento" :
+                              dto.tipoObito ? "Certidão de Óbito" :
+                              null
         return tipoCertidao
     }
 
-    private String defineConteudoCertidao(Formulario formulario) {
-        CampoFormulario nomeNascimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_NOME_NASCIMENTO)
-        CampoFormulario dataNascimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_DATA_NASCIMENTO)
-        CampoFormulario maeNascimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_MAE_NASCIMENTO)
-        CampoFormulario paiNascimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_PAI_NASCIMENTO)
-        CampoFormulario conjuge1 = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_CONJUGE_1)
-        CampoFormulario conjuge2 = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_CONJUGE_2)
-        CampoFormulario dataCasamento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_DATA_CASAMENTO)
-        CampoFormulario nomeFalecido = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_NOME_FALECIDO)
-        CampoFormulario dataFalecimento = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_DATA_FALECIMENTO)
-        CampoFormulario maeObito = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_MAE_OBITO)
-        CampoFormulario paiObito = formulario.getCampoAvulso(FormularioCertidoes.CODIGO_PAI_OBITO)
-
-        String lDataNascimento = ((Date) dataNascimento?.valorArmazenado)?.format("dd/MM/yyyy")
-        String lDataCasamento = ((Date) dataCasamento?.valorArmazenado)?.format("dd/MM/yyyy")
-        String lDataFalecimento = ((Date) dataFalecimento?.valorArmazenado)?.format("dd/MM/yyyy")
-
-//            String conteudoCertidaoPPP = nomeNascimento?.valorArmazenado ? nomeNascimento?.valorArmazenado + " nascido(a) em " + lDataNascimento + " filho(a) de " + maeNascimento?.valorArmazenado + paiNascimento?.valorArmazenado :
-//                    conjuge1?.valorArmazenado ? conjuge1?.valorArmazenado + conjuge2?.valorArmazenado + " casados em " + lDataCasamento :
-//                            nomeFalecido ? nomeFalecido?.valorArmazenado + " falecido em " + lDataFalecimento + " filho(a) de " + maeObito?.valorArmazenado + paiObito?.valorArmazenado : null
+    private String defineConteudoCertidao(CertidoesDTO dto) {
+        String lDataNascimento = ((Date) dto.dataNascimento?.valorArmazenado)?.format("dd/MM/yyyy")
+        String lDataCasamento = ((Date) dto.dataCasamento?.valorArmazenado)?.format("dd/MM/yyyy")
+        String lDataFalecimento = ((Date) dto.dataFalecimento?.valorArmazenado)?.format("dd/MM/yyyy")
 
         String conteudoCertidao = ""
-        if (nomeNascimento.valorArmazenado) {
-            conteudoCertidao += nomeNascimento.valorArmazenado;
+        if (dto.nomeNascimento.valorArmazenado) {
+            conteudoCertidao += dto.nomeNascimento.valorArmazenado;
             if (lDataNascimento)
                 conteudoCertidao += " nascido(a) em " + lDataNascimento
-            if (maeNascimento.valorArmazenado)
-                conteudoCertidao += " filho(a) de " + maeNascimento.valorArmazenado
-            if (paiNascimento.valorArmazenado) {
-                if (maeNascimento.valorArmazenado)
-                    conteudoCertidao += " e "
-                else
-                    conteudoCertidao += " filho(a) de "
-                conteudoCertidao += paiNascimento.valorArmazenado
-            }
-        } else if (conjuge1.valorArmazenado) {
-            conteudoCertidao += conjuge1.valorArmazenado;
-            if (conjuge2.valorArmazenado)
-                conteudoCertidao += " e " + conjuge2.valorArmazenado
+            conteudoCertidao += " "+filiacao(dto.maeNascimento, dto.paiNascimento)
+        } else if (dto.conjuge1.valorArmazenado) {
+            conteudoCertidao += dto.conjuge1.valorArmazenado;
+            if (dto.conjuge2.valorArmazenado)
+                conteudoCertidao += " e " + dto.conjuge2.valorArmazenado
             if (lDataCasamento)
                 conteudoCertidao += " casados em " + lDataCasamento
-        } else if (nomeFalecido.valorArmazenado) {
-            conteudoCertidao += nomeFalecido.valorArmazenado
+        } else if (dto.nomeFalecido.valorArmazenado) {
+            conteudoCertidao += dto.nomeFalecido.valorArmazenado
             if (lDataFalecimento)
                 conteudoCertidao += " falecido(a) em " + lDataFalecimento
-            if (maeObito.valorArmazenado)
-                conteudoCertidao += " filho(a) de " + maeObito.valorArmazenado
-            if (paiObito.valorArmazenado) {
-                if (maeObito.valorArmazenado)
-                    conteudoCertidao += " e "
-                else
-                    conteudoCertidao += " filho(a) de "
-                conteudoCertidao += paiObito.valorArmazenado
-            }
+            conteudoCertidao += " "+filiacao(dto.maeObito, dto.paiObito)
         }
         return conteudoCertidao
+    }
+
+    private String filiacao(CampoFormulario mae, CampoFormulario pai) {
+        String result = ""
+        if (mae.valorArmazenado)
+            result += "filho(a) de " + mae.valorArmazenado
+        if (pai.valorArmazenado) {
+            if (mae.valorArmazenado)
+                result += " e "
+            else
+                result += " filho(a) de "
+            result += pai.valorArmazenado
+        }
+        result
     }
 
     /**
@@ -148,10 +189,11 @@ class FormularioCertidoesService extends FormularioService {
                     formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_MUNICIPIO_CARTORIO) + ", " +
                     formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_UF_CARTORIO)
 
+            CertidoesDTO dto = new CertidoesDTO(formulario)
             pedidoCertidaoProcessoService.novoProcesso(formulario.usuarioSistema,
                     formulario.cidadao?.familia?.id,
                     formulario.usuarioSistema.id,
-                    defineTipoCertidao(formulario) + " em nome de " + defineConteudoCertidao(formulario),
+                    defineTipoCertidao(dto) + " em nome de " + defineConteudoCertidao(dto),
                     formulario.formularioEmitido.id,
                     cartorio, null/*sem AR por enquanto*/)
         }

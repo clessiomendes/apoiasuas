@@ -27,6 +27,7 @@ class EmissaoFormularioController extends AncestralController {
 //    static scope = "prototype" //garante uma nova instancia deste controller para cada request
 
     CidadaoService cidadaoService
+    def pedidoCertidaoProcessoService
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def escolherFamilia() {

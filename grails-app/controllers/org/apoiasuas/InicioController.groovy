@@ -1,5 +1,6 @@
 package org.apoiasuas
 
+import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.importacao.ImportacaoFamiliasController
@@ -102,6 +103,12 @@ class InicioController extends AncestralController {
 
     def escolheServicoSistema() {
         return render(view: 'escolheServicoSistema', model: [servicosDisponiveis: ServicoSistema.findAllByHabilitado(true).sort{it.nome}])
+    }
+
+    @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
+    def alive() {
+        response.status = 200 //OK
+        return render ([mensagem: "apoiasuas ok"] as JSON)
     }
 
 }

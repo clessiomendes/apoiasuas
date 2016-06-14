@@ -31,6 +31,9 @@ class CampoFormulario {
         boolean isCidadao() { return this == CIDADAO }
         boolean isFamilia() { return this == FAMILIA }
         boolean isEndereco() { return this == ENDERECO }
+        String toCamelCase() {
+            return StringUtils.upperToCamelCase(this.toString())
+        }
     }
 
 //Propriedades persistentes

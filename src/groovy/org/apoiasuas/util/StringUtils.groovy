@@ -56,7 +56,6 @@ class StringUtils {
         }
         return builder.toString();
     }
-
     public static String removeAcentos(String string) {
         if (string != null){
             string = Normalizer.normalize(string, Normalizer.Form.NFD);
@@ -64,11 +63,13 @@ class StringUtils {
         }
         return string;
     }
-
     static String htmlSpaces(int count) {
         String result = "";
         for (int i = 0; i < count; i++)
             result += "&nbsp;";
         return result;
+    }
+    static boolean isNotBlank(String s) {
+        return org.apache.commons.lang.StringUtils.isNotBlank(s)
     }
 }

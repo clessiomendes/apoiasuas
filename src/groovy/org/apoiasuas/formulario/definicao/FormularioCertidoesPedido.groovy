@@ -7,13 +7,10 @@ import org.apoiasuas.formulario.FormularioService
 
 class FormularioCertidoesPedido extends FormularioBase {
 
-    public static String CODIGO_TIPO_CERTIDAO = "tipo_certidao"
-    public static String CODIGO_DADOS_CERTIDAO = "dados_certidao"
-    public static String CODIGO_NOME_CARTORIO = 'nome_cartorio'
-    public static String CODIGO_BAIRRO_DISTRITO_CARTORIO = 'bairro_distrito_cartorio'
-    public static String CODIGO_MUNICIPIO_CARTORIO = 'municipio_cartorio'
-    public static String CODIGO_UF_CARTORIO = 'uf_cartorio'
-
+    public static final String CODIGO_NOME_CARTORIO = 'nome_cartorio'
+    public static final String CODIGO_BAIRRO_DISTRITO_CARTORIO = 'bairro_distrito_cartorio'
+    public static final String CODIGO_MUNICIPIO_CARTORIO = 'municipio_cartorio'
+    public static final String CODIGO_UF_CARTORIO = 'uf_cartorio'
 
     @Override
     public Class<? extends FormularioService> classeServico() { return FormularioCertidoesService.class }

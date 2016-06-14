@@ -259,12 +259,13 @@ class SegurancaService {
 
     @Transactional(readOnly = true)
     /**
-     * Lista todos os operadores filtrados para o Servico logado
+     * Lista todos os operadores filtrados para o Servico logado. Marca o operador logado com * e os operadores desabilitados
+     * com -. Mostra primeiro os operadores habilitados e, por ultimo, os desabilitados
      */
     public ArrayList<UsuarioSistema> getOperadoresOrdenados(boolean somenteHabilitados) {
         //adiciona o usuario logado no topo da lista, marcando com *
+        getUsuarioLogado().discard() //desconecta dos objetos na cache da sessao hibernate
         UsuarioSistema logado = getUsuarioLogado()
-        logado.discard()
         logado.username = "*"+logado.username
         ArrayList<UsuarioSistema> result = [logado]
 
@@ -275,9 +276,10 @@ class SegurancaService {
             //Busa lista de usuarios NAO ativos, marcados com -
             ArrayList<UsuarioSistema> usuariosNaoHabilitados = UsuarioSistema.findAllByServicoSistemaSegurancaAndEnabled(getServicoLogado(), false).sort {it.username}
             usuariosNaoHabilitados.each {
-                it.discard()
-                it.username = "-"+it.username
-                usuarios << it
+                it.discard() //desconecta dos objetos na cache da sessao hibernate
+                UsuarioSistema usuario = UsuarioSistema.get(it.id)
+                usuario.username = "-"+usuario.username
+                usuarios << usuario
             }
         }
 

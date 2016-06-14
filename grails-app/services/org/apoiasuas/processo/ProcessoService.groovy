@@ -285,7 +285,7 @@ public class ProcessoService {
      * Volta o processo até uma tarefa que estava concluida anteriormente
      */
     @Transactional
-    public String reabreTarefa(Long idTarefa) {
+    public Map reabreTarefa(Long idTarefa) {
 //        Task tarefaConcluida = taskService.createTaskQuery().taskId(idTarefa.toString()).singleResult()
         HistoricTaskInstance tarefaConcluida = historyService.createHistoricTaskInstanceQuery().taskId(idTarefa.toString()).singleResult()
         if (! tarefaConcluida)
@@ -310,7 +310,9 @@ public class ProcessoService {
             taskService.setAssignee(proximaTarefa.id, idProximoResponsavel.toString())
         }
 */
-        return tarefaConcluida.processInstanceId
+        UsuarioSistema novoResponsavel = UsuarioSistema.get(tarefaConcluida.assignee)
+        String mensagem = "Retornando proceso para situação '${novaTarefaPendente.name}' sob responsabilidade de ${novoResponsavel.username}"
+        return [idProcesso: tarefaConcluida.processInstanceId, mensagem: mensagem]
     }
 
     @Transactional

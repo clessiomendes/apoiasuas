@@ -1,6 +1,6 @@
 /**
  * Filtro que deve garantir que o sistema de seguranca esta devidamente configurado antes de se acessar qualquer parte da aplicacao
- * (exceto as actions
+ * (exceto algumas actions)
  */
 class SecurityFilters {
 
@@ -9,13 +9,7 @@ class SecurityFilters {
     def filters = {
         loginCheck(controller: '*', actionExclude: '*') {
             before = {
-                if (controllerName == "inicio" && actionName == "actionInicial")
-                    return true;
-
-                if (controllerName == "inicio" && actionName == "servicoEscolhido")
-                    return true;
-
-                if (controllerName == "inicio" && actionName == "escolheServicoSistema")
+                if (controllerName == "inicio" && actionName in["actionInicial","servicoEscolhido","escolheServicoSistema","alive"])
                     return true;
 
                 if (controllerName == "login" || controllerName == "logout")

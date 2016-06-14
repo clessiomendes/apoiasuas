@@ -66,8 +66,9 @@ class ProcessoController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def reabreTarefa(TarefaDTO tarefaDTO) {
-        String idProcesso = processoService.reabreTarefa(tarefaDTO.id.toLong())
-        redirect(action: "mostraProcesso", id: idProcesso)
+        Map result = processoService.reabreTarefa(tarefaDTO.id.toLong())
+        flash.message = result.mensagem
+        redirect(action: "mostraProcesso", id: result.idProcesso)
 //        mostraProcesso(new ProcessoDTO(id: idProcesso))
     }
 
