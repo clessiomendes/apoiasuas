@@ -104,8 +104,9 @@ class BootStrap {
                 programaService.inicializaProgramas(admin)
 
                 try {
-                    //Se ambiente de desenvolvimento, descarta eventuais alteracoes em formularios e reinicializa tudo
-                    formularioService.inicializaFormularios(admin, AmbienteExecucao.desenvolvimento) //Para producao, acionar o menu "Reinstalar formularios pre-definidos"
+                    //Descarta eventuais alteracoes em formularios e reinicializa tudo
+                    formularioService.inicializaFormularios(admin)
+                    //NAO PRECISA MAIS ==> Para producao, acionar o menu "Reinstalar formularios pre-definidos"
 
                 } catch (Throwable t) {
                     if (AmbienteExecucao.desenvolvimento)

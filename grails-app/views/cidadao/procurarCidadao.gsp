@@ -6,7 +6,22 @@
     <g:set var="entityName" value="${message(code: 'cidadao.label', default: 'Cidadao')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 
+    <style type="text/css">
+    table.search {margin: 0;}
+    table.search tr:hover { background: none; }
+    table.search td { padding: 0; }
+    table.search div { text-indent: 0; }
+    </style>
+
 </head>
+
+<g:javascript>
+    function expandePesquisa() {
+        $("#expansivel").slideDown(1000);
+        $("#slidedown").hide();
+        return false;
+    };
+</g:javascript>
 
 <body>
 
@@ -18,23 +33,32 @@
     <div class="message" role="status">${flash.message}</div>
 </g:if>
 
-<div id="filtro-cidadao">
-    <g:form action="procurarCidadao">
-%{--
-        TODO Centralizar verticalmente o conteúdo da tabela abaixo (filtro de cidadaos) usando css
-        <td style="vertical-align:middle">Nome:<g:textField name="nome" size="20" autofocus="" value="${flash.filtroCidadao?.nome}"/></td>
---}%
-        <table>
+<g:form action="procurarCidadaoExecuta">
+    <fieldset class="buttons">
+        <table class="search">
             <tr>
-                <td>Nome ou Cad: <g:textField name="nomeOuCodigoLegado" size="25" autofocus=""/></td>
-                <td>Logradouro: <g:textField name="logradouro" size="25"/></td>
-                <td>Numero: <g:textField name="numero" size="1"/></td>
-                %{--<td>Cad:<g:textField name="codigoLegado" size="1"/></td>--}%
-                <td><g:submitButton name="procurar" value="Procurar"/></td>
+                <td>
+                    <div>
+                        Nome ou Cad: <g:textField name="nomeOuCodigoLegado" size="23" autofocus=""/>
+                        Endereço: <g:textField name="logradouro" size="23"/> Nº <g:textField name="numero" size="1"/>
+                        %{--<td>Cad:<g:textField name="codigoLegado" size="1"/></td>--}%
+                    </div>
+%{--
+                    <div id="expansivel" style="display: none">
+                        Segundo membro: <g:textField name="segundoMembro" size="23" autofocus=""/>
+                    </div>
+--}%
+                </td>
+                <td>
+                    <div>
+%{--    SLIDEDOWN                    <input type="button" id="slidedown" class="slidedown" value="." title="mais opções" onclick="expandePesquisa();"/>--}%
+                        <g:submitButton name="procurar" class="search" value="Procurar"/>
+                    </div>
+                </td>
             </tr>
         </table>
-    </g:form>
-</div>
+    </fieldset>
+</g:form>
 
 <div id="list-cidadao" class="content scaffold-list" role="main">
     <table>

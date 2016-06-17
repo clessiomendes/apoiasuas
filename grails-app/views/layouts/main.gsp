@@ -30,13 +30,15 @@
         padding: 0.25em 1em;
         float: right;
     }
+    #cabecalho tr:hover { background: none; }
+
     </style>
 
 </head>
 	<body>
     %{--   Muda a cor do banner de acordo com o ambiente:   --}%
     <div role="banner" id= ${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "grailsLogoProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "grailsLogoValid" : "grailsLogoLocal"}>
-        <table class="vertical-align: middle"><tr>
+        <table id="cabecalho" class="vertical-align: middle"><tr>
             %{--<td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px">${application.configuracao ? application.configuracao.nome : "indefinido" }</span> </td>--}%
             <td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px"><sec:loggedInUserInfo field="servicoSistemaSessaoCorrente.nome"/></span> </td>
             <td> %{--  Exibe a última família / cidadão selecionado, se houver:   --}%

@@ -35,7 +35,7 @@
         <table style="border-top: 0; margin-bottom: 0;">
             <tr>
                 <td style="width: 14em;">Nome ou cadastro de usuário:</td>
-                <td><g:form action="procurarCidadao" controller="cidadao"> <g:textField name="nomeOuCodigoLegado" size="50" autofocus=""/>
+                <td><g:form action="procurarCidadaoExecuta" controller="cidadao"> <g:textField name="nomeOuCodigoLegado" size="50" autofocus=""/>
                     <g:submitButton name="procurar" value="Procurar"/></g:form></td>
             </tr>
             <tr>

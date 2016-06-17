@@ -11,6 +11,7 @@ import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.util.IOUtils
 import org.apoiasuas.ProgramasPreDefinidos
 import org.apoiasuas.cidadao.Cidadao
+import org.apoiasuas.cidadao.CidadaoService
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.SituacaoFamilia
 import org.apoiasuas.cidadao.Telefone
@@ -30,7 +31,8 @@ import java.sql.SQLException
 class ImportarFamiliasService {
 
     static transactional = false
-    private static final int ALARME_IMPORTACAO_ATRASADA = 7 //dias
+    private static final int ALARME_IMPORTACAO_ATRASADA = 7
+    //dias
 
     SegurancaService segurancaService
     def groovySql
@@ -407,7 +409,7 @@ class ImportarFamiliasService {
                 //se o cidadao nao for novo, atualiza apenas se nao houve alteracao apos a importacao
 
                 cidadaoPersistido.referencia = referencia
-                cidadaoPersistido.parentescoReferencia = trim(mapaDeCampos.get("Parentesco"))
+                cidadaoPersistido.parentescoReferencia = referencia ? CidadaoService.PARENTESCO_REFERENCIA : trim(mapaDeCampos.get("Parentesco"))
                 cidadaoPersistido.ultimoAlterador = usuarioLogado
                 cidadaoPersistido.dataUltimaImportacao = new Date()
                 cidadaoPersistido.dataNascimento = convertExcelDate(mapaDeCampos.get("DataNascimento"))

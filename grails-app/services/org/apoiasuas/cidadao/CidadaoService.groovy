@@ -1,6 +1,5 @@
 package org.apoiasuas.cidadao
 
-import grails.gorm.DetachedCriteria
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringEscapeUtils
 import org.apoiasuas.util.AmbienteExecucao
@@ -14,6 +13,7 @@ import java.util.regex.Pattern
 //TODO: separar servico CidadaoService e FamiliaService
 class CidadaoService {
 
+    public static final String PARENTESCO_REFERENCIA = "REFERENCIA"
     def segurancaService
     static transactional = false
 
@@ -27,10 +27,14 @@ class CidadaoService {
             else
                 filtroCodigoLegado = filtro.nomeOuCodigoLegado
         }
+        def filtros = [:]
 
         String hql = 'from Cidadao a where 1=1 '
+        if (!filtroNome) {
+            hql += "and a.parentescoReferencia = :parentesco"
+            filtros << [parentesco: PARENTESCO_REFERENCIA]
+        }
 
-        def filtros = [:]
 
         hql += ' and a.servicoSistemaSeguranca = :servicoSistema'
         filtros << [servicoSistema: segurancaService.getServicoLogado()]
@@ -60,7 +64,13 @@ class CidadaoService {
             filtros << [numero: filtro.numero]
         }
 
-        String hqlOrder = filtro.logradouro ? 'order by ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero') : ' order by a.nomeCompleto'
+        String hqlOrder = ""
+        if (filtroNome)
+            hqlOrder = 'order by a.nomeCompleto'
+        else if (filtro.logradouro)
+            hqlOrder = 'order by ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero')
+        else if (filtro.numero)
+            hqlOrder = 'order by a.familia.endereco.nomeLogradouro, ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero')
 
         int count = Cidadao.executeQuery("select count(*) " + hql, filtros)[0]
         List cidadaos = Cidadao.executeQuery(hql + ' ' + hqlOrder, filtros, params)

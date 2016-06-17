@@ -180,7 +180,7 @@ class FormularioService {
     }
 
     @Transactional
-    def inicializaFormularios(UsuarioSistema usuarioSistema, boolean sobrescrever) {
+    def inicializaFormularios(UsuarioSistema usuarioSistema) {
 
         PreDefinidos.values().each { enumForm ->
             try {
@@ -188,7 +188,7 @@ class FormularioService {
                 Closure closure = enumForm.definicaoFormulario.newInstance().run()
                 Formulario transiente = new FormularioBuilder(closure).build()
                 transiente.setFormularioPreDefinido(enumForm)
-                if (formulario && sobrescrever) { //atualiza formulário existente
+                if (formulario) { //atualiza formulário existente
                     formulario.campos?.each { it.delete() } //Apagar todos os filhos
                     formulario.campos?.clear()
 /*

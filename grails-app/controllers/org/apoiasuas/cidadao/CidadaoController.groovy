@@ -34,7 +34,11 @@ class CidadaoController extends AncestralController {
         return result
     }
 
-    def procurarCidadao(FiltroCidadaoCommand filtro) {
+    def procurarCidadao() {
+        render(view: "procurarCidadao", model: [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:]])
+    }
+
+    def procurarCidadaoExecuta(FiltroCidadaoCommand filtro) {
         //Preenchimento de numeros no primeiro campo de busca indica pesquisa por codigo legado
         boolean buscaPorCodigoLegado = filtro.nomeOuCodigoLegado && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCodigoLegado)
         params.max = params.max ?: 20
@@ -45,7 +49,7 @@ class CidadaoController extends AncestralController {
             Cidadao cidadao = cidadaos?.resultList[0]
             redirect(controller: "familia", action: "show", id: cidadao.familia.id)
         } else
-            return [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
+            render(view:"procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ])
     }
 
     def selecionarFamilia(Familia familiaInstance) {
@@ -75,6 +79,7 @@ class CidadaoController extends AncestralController {
 @grails.validation.Validateable
 class FiltroCidadaoCommand implements Serializable {
     String nomeOuCodigoLegado
+//    String segundoMembro
     String logradouro
     String numero
 }
