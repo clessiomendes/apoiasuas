@@ -23,6 +23,12 @@ class Formulario implements Serializable {
     FormularioEmitido formularioEmitido
     static transients = ['formularioEmitido', 'cidadao', 'usuarioSistema', 'dataPreenchimento', 'nomeEquipamento', 'enderecoEquipamento', 'telefoneEquipamento', /*'nomeResponsavelPreenchimento', 'camposAvulsos',*/ 'atualizarPersistencia']
 
+    static searchable = {                           // <-- elasticsearch plugin
+        only = ["nome","descricao"]
+        nome alias:"meu_titulo", index:'analyzed', boost:10
+        descricao alias:"meus_detalhes", index:'analyzed', boost:5
+    }
+
     static hasMany = [campos: CampoFormulario]
 
     static mapping = {

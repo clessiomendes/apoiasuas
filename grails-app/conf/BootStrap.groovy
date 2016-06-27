@@ -1,4 +1,5 @@
 import org.apoiasuas.ApoiaSuasService
+import org.apoiasuas.fileStorage.FileStorageService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaController
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
@@ -34,6 +35,7 @@ class BootStrap {
     ServicoSistemaService servicoSistemaService
     AbrangenciaTerritorialService abrangenciaTerritorialService
     GrailsApplication grailsApplication
+    FileStorageService fileStorageService
 
     public final String VW_REFERENCIAS = "create view vw_referencias as select min(id) as referencia_id, familia_id " +
             " from cidadao where referencia = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+
@@ -101,6 +103,7 @@ class BootStrap {
         UsuarioSistema.withTransaction { status ->
             try {
 //                importarFamiliasService.inicializaDefinicoes(admin)
+                fileStorageService.init()
                 programaService.inicializaProgramas(admin)
 
                 try {

@@ -124,4 +124,12 @@ ALTER TABLE definicoes_importacao_familias ADD CONSTRAINT unique_servico_sistema
 ALTER TABLE public.familia DROP CONSTRAINT ;
 CREATE UNIQUE INDEX ix_familia_codigo_legado ON familia (codigo_legado, servico_sistema_seguranca_id);
 
+-- versao ate aqui: current (local:feito, producao:feito, validacao:feito
+
+alter table link add column file_label varchar(255);
+alter table link add column tipo varchar(255) not null DEFAULT 'URL';
+create table file_storage_index (id int8 not null, version int8 not null, bucket varchar(255) not null, nome_arquivo varchar(255) not null, primary key (id));
+create sequence sq_file_storage_index;
+
 -- versao ate aqui: current (local:feito, producao:feito
+

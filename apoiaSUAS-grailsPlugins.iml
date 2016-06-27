@@ -50,6 +50,10 @@
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/grails-app/controllers" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/grails-app/services" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/target/work/plugins/elasticsearch-0.1.0">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/elasticsearch-0.1.0/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/elasticsearch-0.1.0/grails-app/services" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/excel-export-0.2.1">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/excel-export-0.2.1/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/excel-export-0.2.1/grails-app/i18n" isTestSource="false" />

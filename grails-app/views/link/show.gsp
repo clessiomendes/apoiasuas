@@ -22,34 +22,42 @@
 			</g:if>
 			<ol class="property-list link">
 			
-				<g:if test="${linkInstance?.descricao}">
-				<li class="fieldcontain">
-					<span id="descricao-label" class="property-label"><g:message code="link.descricao.label" default="Descricao" /></span>
-					
-						<span class="property-value" aria-labelledby="descricao-label"><g:fieldValue bean="${linkInstance}" field="descricao"/></span>
-					
-				</li>
-				</g:if>
-			
-				<g:if test="${linkInstance?.instrucoes}">
-				<li class="fieldcontain">
-					<span id="instrucoes-label" class="property-label"><g:message code="link.instrucoes.label" default="Instrucoes" /></span>
-					
-						<span class="property-value" aria-labelledby="instrucoes-label"><g:fieldValue bean="${linkInstance}" field="instrucoes"/></span>
-					
-				</li>
-				</g:if>
-			
 				<g:if test="${linkInstance?.url}">
-				<li class="fieldcontain">
-					<span id="url-label" class="property-label"><g:message code="link.url.label" default="Url" /></span>
-					
+					<li class="fieldcontain">
+						<span id="url-label" class="property-label"><g:message code="link.URL.label" /></span>
 						<span class="property-value" aria-labelledby="url-label"><g:fieldValue bean="${linkInstance}" field="url"/></span>
-					
-				</li>
+					</li>
 				</g:if>
-			
-			</ol>
+
+				<g:if test="${linkInstance?.fileName}">
+					<li class="fieldcontain">
+						<span id="fileName-label" class="property-label"><g:message code="link.FILE.label" /></span>
+						<span class="property-value" aria-labelledby="fileName-label">
+                            <g:link action="downloadFile" id="${linkInstance.id}">
+                                <g:fieldValue bean="${linkInstance}" field="fileName"/>
+                            </g:link>
+						</span>
+					</li>
+				</g:if>
+
+                <g:if test="${linkInstance?.descricao}">
+                    <li class="fieldcontain">
+                        <span id="descricao-label" class="property-label"><g:message code="link.descricao.label" default="Descricao" /></span>
+                        <span class="property-value" aria-labelledby="descricao-label"><g:fieldValue bean="${linkInstance}" field="descricao"/></span>
+                    </li>
+                </g:if>
+
+                <g:if test="${linkInstance?.instrucoes}">
+                    <li class="fieldcontain">
+                        <span id="instrucoes-label" class="property-label"><g:message code="link.instrucoes.label"/></span>
+                        <span class="property-value" aria-labelledby="instrucoes-label">
+                            ${raw(org.apoiasuas.util.StringUtils.toHtml(linkInstance?.instrucoes))}
+                            %{--<g:fieldValue bean="${linkInstance}" field="instrucoes"/>--}%
+                        </span>
+                    </li>
+                </g:if>
+
+            </ol>
 			<g:form url="[resource:linkInstance, action:'delete']">
 				<fieldset class="buttons">
 					<g:link class="edit" action="edit" resource="${linkInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>

@@ -13,7 +13,7 @@ class SegurancaListener implements ApplicationListener<AuthenticationSuccessEven
     SegurancaService segurancaService;
 
     void onApplicationEvent(AuthenticationSuccessEvent event) {
-        System.out.println("logado")
+//        System.out.println("logado")
 //        event.authentication
 //        UsuarioSistema usuario = segurancaService.usuarioLogado
 //        usuario.servicoSistemaSessaoCorrente = ServicoSistema.get(3/*Vila Antena*/)

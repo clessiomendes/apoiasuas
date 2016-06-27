@@ -39,8 +39,8 @@
                     <g:submitButton name="procurar" value="Procurar"/></g:form></td>
             </tr>
             <tr>
-                <td>Rede sócio-assistencial:</td>
-                <td><g:form action="list" controller="servico"> <g:textField name="palavraChave" size="50" autofocus="" value="${filtro?.nome}"/>
+                <td>Procurar no ApoiaCRAS:</td>
+                <td><g:form action="list" controller="buscaCentralizada"> <g:textField name="palavraChave" size="50" autofocus="" value="${filtro?.nome}"/>
                     <g:submitButton name="list" class="list" value="Procurar"/></g:form></td>
             </tr>
         </table>

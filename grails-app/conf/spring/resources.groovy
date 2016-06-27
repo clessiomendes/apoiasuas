@@ -1,3 +1,4 @@
+import org.apoiasuas.fileStorage.LocalFSService
 import org.apoiasuas.formulario.FormularioCurriculoService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
 import org.apoiasuas.importacao.ImportacaoFamiliasController
@@ -7,10 +8,18 @@ import org.apoiasuas.seguranca.ApoiaSuasDetailsService
 import org.apoiasuas.seguranca.ApoiaSuasPersistenceListener
 import org.apoiasuas.seguranca.SegurancaListener
 import org.apoiasuas.services.ImportarFamiliasJavaService
+import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ApplicationContextHolder
 
 // Place your Spring DSL code here
 beans = {
+
+
+//  springConfig.addAlias 'fileStorageService', 'cleverCloudFSService'
+    springConfig.addAlias 'fileStorageService', 'localFSService'
+    localFSService(LocalFSService) {
+        caminhoRepositorio=AmbienteExecucao.getCaminhoRepositorioArquivos()
+    }
 
     localeResolver(org.springframework.web.servlet.i18n.SessionLocaleResolver) {
         defaultLocale = new Locale("pt","BR")

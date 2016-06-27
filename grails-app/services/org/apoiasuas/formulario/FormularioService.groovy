@@ -28,6 +28,10 @@ class FormularioService {
         return Formulario.list().sort({ it.nome })
     }
 
+    public Formulario getFormulario(Long id) {
+        return Formulario.get(id)
+    }
+
     private void valoresFixos(Formulario formulario) {
         formulario.nomeEquipamento = segurancaService.servicoLogado?.nome
         formulario.enderecoEquipamento = segurancaService.servicoLogado?.endereco?.enderecoCompleto

@@ -93,7 +93,7 @@ class AmbienteExecucao {
     /**
      * Usado para testes que simulam erros. Garantimos que nunca esses testes serão levados para producao por engano
      */
-    public static final boolean SABOTAGEM = sysProperties('org.apoiasuas.sabotagem') == "TRUE" && (Environment.current != Environment.PRODUCTION)
+    public static final boolean SABOTAGEM = "true".equalsIgnoreCase(sysProperties('org.apoiasuas.sabotagem')) && (Environment.current != Environment.PRODUCTION)
 
     public static String getForncedorBancoDados() {
         if (CURRENT in H2) return "H2"
@@ -125,7 +125,7 @@ class AmbienteExecucao {
     }
 
     public static String sysProperties(String nome) {
-        return System.properties[nome]?.toString()?.toUpperCase()
+        return System.properties[nome]?.toString();
     }
 
     /**
@@ -153,24 +153,34 @@ class AmbienteExecucao {
         }
     }
 
-    static void sabota(String mensagem) {
+    public static String getCaminhoRepositorioArquivos() {
+        String result = ""
+        if (CURRENT in CLEVERCLOUD)
+            result += sysProperties("APP_HOME") + File.separator + "repositorio-fs-prod"
+        else
+            result += sysProperties("user.home")
+        result += File.separator + "apoiasuas-repositorio"
+        return result
+    }
+
+    public static void sabota(String mensagem) {
         if (SABOTAGEM)
             throw new RuntimeException(mensagem)
     }
 
-    static boolean isDesenvolvimento() {
+    public static boolean isDesenvolvimento() {
         return CURRENT in DESENVOLVIMENTO
     }
 
-    static boolean isValidacao() {
+    public static boolean isValidacao() {
         return CURRENT in VALIDACAO
     }
 
-    static boolean isProducao() {
+    public static boolean isProducao() {
         return CURRENT in PRODUCAO
     }
 
-    static String toString() {
+    public static String toString() {
         if (isDesenvolvimento())
             return "(Desenvolvimento)"
         if (isValidacao())

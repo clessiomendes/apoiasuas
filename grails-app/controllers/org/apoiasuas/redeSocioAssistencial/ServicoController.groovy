@@ -18,6 +18,7 @@ class ServicoController extends AncestralServicoController {
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def getServico(Long idServico) {
         Servico servico = Servico.get(idServico)
+
         String endereco = ""
         if (! servico) {
             response.status = 500
@@ -35,6 +36,7 @@ class ServicoController extends AncestralServicoController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def list(String palavraChave) {
+
         params.max = 20
         PagedResultList servicos = servicoService.procurarServico(palavraChave, params)
         if (servicos && servicos.size() > 1) {

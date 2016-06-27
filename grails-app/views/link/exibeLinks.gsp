@@ -1,3 +1,6 @@
+<%
+    List<Link> linkInstanceListDTO = linkInstanceList
+%>
 
 <%@ page import="org.apoiasuas.Link" %>
 <!DOCTYPE html>
@@ -94,11 +97,16 @@
 
     <div id="controller-list" role="navigation">
 		<a href="#list-link" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-        <h1>Atalhos Externos</h1>
+        <h1><g:message code="link.label" default="Skip to content&hellip;"/></h1>
 		<div id="list-link" class="content scaffold-list" role="main">
             <ul>
-				<g:each in="${linkInstanceList}" status="i" var="linkInstance">
-                    <li><g:link target="new" url="${linkInstance.urlCompleta}" id="${linkInstance.id}">${fieldValue(bean: linkInstance, field: "descricao")}</g:link></li>
+				<g:each in="${linkInstanceListDTO}" status="i" var="linkInstance">
+                    <g:if test="${linkInstance?.tipo.isUrl()}">
+                        <li><g:link target="new" title="${linkInstance.instrucoes}" url="${linkInstance.urlCompleta}" id="${linkInstance.id}">${fieldValue(bean: linkInstance, field: "descricao")}</g:link></li>
+                    </g:if>
+                    <g:if test="${linkInstance?.tipo.isFile()}">
+                        <li><g:link action="downloadFile" title="${linkInstance.instrucoes}" id="${linkInstance.id}"><g:fieldValue bean="${linkInstance}" field="descricao"/></g:link></li>
+                    </g:if>
 				</g:each>
             </ul>
 		</div>

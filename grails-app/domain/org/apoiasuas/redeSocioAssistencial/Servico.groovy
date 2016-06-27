@@ -25,6 +25,19 @@ class Servico {
 //    UsuarioSistema criador, ultimoAlterador;
 //    Date dateCreated, lastUpdated;
 
+    static searchable = {                           // <-- elasticsearch plugin
+        only = ["apelido","nomeFormal","descricao","site"]
+        apelido alias:"meu_titulo", index:'analyzed', boost:10
+        nomeFormal alias:"meu_titulo", index:'analyzed', boost:10
+        descricao alias:"meus_detalhes", index:'analyzed', boost:5
+        site alias:"meus_detalhes", index:'analyzed', boost:5
+    }
+
+    @Override
+    public String toString() {
+        return apelido
+    }
+
     static embedded = ['endereco']
 
     static transients = ['descricaoCortada']

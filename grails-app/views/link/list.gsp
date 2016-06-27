@@ -1,3 +1,6 @@
+<%
+	List<Link> linkInstanceListDTO = linkInstanceList
+%>
 
 <%@ page import="org.apoiasuas.Link" %>
 <!DOCTYPE html>
@@ -22,21 +25,21 @@
 			<table>
 			<thead>
 					<tr>
-					
-						<g:sortableColumn property="descricao" title="${message(code: 'link.descricao.label', default: 'Descricao')}" />
-					
+						<g:sortableColumn property="descricao" title="${message(code: 'link.descricao.label')}" />
+						<g:sortableColumn property="tipo" title="${message(code: 'link.tipo.label')}" />
+%{--
 						<g:sortableColumn property="url" title="${message(code: 'link.url.label', default: 'Url')}" />
-					
+--}%
 					</tr>
 				</thead>
 				<tbody>
-				<g:each in="${linkInstanceList}" status="i" var="linkInstance">
+				<g:each in="${linkInstanceListDTO}" status="i" var="linkInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-					
 						<td><g:link action="show" id="${linkInstance.id}">${fieldValue(bean: linkInstance, field: "descricao")}</g:link></td>
-					
+						<td>${message(code: "link."+linkInstance.tipo+".label")}</td>
+%{--
 						<td>${fieldValue(bean: linkInstance, field: "url")}</td>
-					
+--}%
 					</tr>
 				</g:each>
 				</tbody>

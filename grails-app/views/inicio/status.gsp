@@ -81,10 +81,11 @@
 <div id="pageBody">
     <h2>Parâmetros de instalação:</h2>
     <ul>
-        <li>Fornecedor de banco de dados: ${fornecedorVersaoBancoDeDados}</li>
+        %{--<li>Fornecedor de banco de dados: ${fornecedorVersaoBancoDeDados}</li>--}%
         <li>Ambiente de hospedagem: ${org.apoiasuas.util.AmbienteExecucao.ambienteHospedagem}</li>
         <li>Container: ${ApplicationContextHolder.getServletContext().getServerInfo()}</li>
         <li>Ambiente de execução: ${org.apoiasuas.util.AmbienteExecucao.ambienteExecucao}</li>
+        <li>Repositorio de arquivos: ${configuracoesRepostiorio}</li>
         <li>Versão: <g:render template="versao"/></li>
         <li>Rodando desde: <g:formatDate format="dd/MM/yyyy HH:mm:ss" date="${org.apoiasuas.util.AmbienteExecucao.inicioAplicacao}"/></li>
 %{--
@@ -95,13 +96,28 @@
     </ul>
 
     <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.STR_SUPER_USER}">
+        <div id="logList" class="dialog">
+            <h2>Logs:</h2>
+        <g:form action="changeLog">
+            <g:each var="appender" in="${logAppenders}">
+                <li class="controller">
+                    ${appender.key} <g:select name="${appender.key}" from="${logLevels}" value="${appender.value}"> </g:select>
+                    %{--<g:select autofocus="" name="servicoSistema" noSelection="${['':'']}" from="${servicosDisponiveis.collect{it.nome}}" keys="${servicosDisponiveis.collect{it.id}}" required="" />--}%
+                </li>
+            </g:each>
+            <g:submitButton name="chage" value="Alterar log"/>
+        </g:form>
+        </div>
+
     <div id="controllerList" class="dialog">
+%{--
         <h2>Atualizações de Banco de Dados Pendentes:</h2>
         <ul>
             <g:each var="c" in="${atualizacoesPendentesBD}">
                 <li class="controller">${c}</li>
             </g:each>
         </ul>
+--}%
         <h2>Controllers disponíveis:</h2>
         <ul>
             <g:each var="c" in="${grailsApplication.controllerClasses}">

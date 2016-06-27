@@ -10,7 +10,6 @@ import org.apoiasuas.cidadao.Endereco
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.FiltroCidadaoCommand
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
@@ -31,25 +30,23 @@ class EmissaoFormularioController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def escolherFamilia() {
-        Map<String, List<Formulario>> tiposFormulario = service(null).getFormulariosDisponiveis().sort {
+        List<Formulario> formulariosDisponiveis = [];
+        if (params.idFormulario)
+            formulariosDisponiveis << servico(null).getFormulario(params.idFormulario.toLong())
+        else
+            formulariosDisponiveis = servico(null).getFormulariosDisponiveis();
+        Map<String, List<Formulario>> tiposFormulario = formulariosDisponiveis.sort {
             [it.tipo, it.descricao]
         }.groupBy { it.tipo ?: "Outros" }
-//        tiposFormulario.each { chave, valor ->
-//            if (! chave)
-//                chave = "Outros"
-//        }
-//        if (flash.reportDTO) {
-//            flash.reportDTO = flash.reportDTO
-//        }
         render view: 'escolherFamilia', model: [formulariosDisponiveis: tiposFormulario]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def preencherFormulario(Long idFormulario, Long idServico, Long membroSelecionado, Long familiaSelecionada) {
 //        try {
-        Formulario formulario = service(Formulario.get(idFormulario)).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
+        Formulario formulario = servico(Formulario.get(idFormulario)).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
         if (! formulario)
-            return render(controller: 'inicio')
+            return redirect(controller: 'inicio')
         guardaUltimaFamiliaSelecionada(formulario.cidadao.familia)
         guardaUltimoCidadaoSelecionado(formulario.cidadao)
         render(view: 'preencherFormulario',
@@ -86,7 +83,7 @@ class EmissaoFormularioController extends AncestralController {
         Formulario formulario
 
         instanciamento_dos_objetos: try { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
-            formulario = service(Formulario.get(idFormulario)).getFormularioComCampos(idFormulario)
+            formulario = servico(Formulario.get(idFormulario)).getFormularioComCampos(idFormulario)
             String idUsuarioSistema = params.avulso?.get(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
             if (idUsuarioSistema)
                 formulario.usuarioSistema = UsuarioSistema.get(idUsuarioSistema.toLong())
@@ -105,15 +102,15 @@ class EmissaoFormularioController extends AncestralController {
             return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, usuarios: getOperadoresOrdenadosController(true) ])
         }
 
-        boolean validacaoPreenchimento = service(formulario).validarPreenchimento(formulario)
+        boolean validacaoPreenchimento = servico(formulario).validarPreenchimento(formulario)
         boolean validacaoDatas = validaFormatoDatas(formulario, params)
         if (! validacaoPreenchimento || ! validacaoDatas) //exibe o formulario novamente em caso de problemas na validacao
             return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, usuarios: getOperadoresOrdenadosController(true) ])
 
         geraFormularioPreenchidoEgrava: {
-            ReportDTO reportDTO = service(formulario).prepararImpressao(formulario)
+            ReportDTO reportDTO = servico(formulario).prepararImpressao(formulario)
             if (verificaPermissao(DefinicaoPapeis.STR_USUARIO))
-                service(formulario).gravarAlteracoes(formulario)
+                servico(formulario).gravarAlteracoes(formulario)
 
             //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
             //javascript que rodara automaticamente na proxima pagina)
@@ -146,7 +143,7 @@ class EmissaoFormularioController extends AncestralController {
 /**
      * Infere, à partir do formulário sendo gerado, o serviço correspondente
      */
-    FormularioService service(Formulario formulario) {
+    private FormularioService servico(Formulario formulario) {
         Class<? extends FormularioBase> f = null
         if (formulario && formulario.formularioPreDefinido)
             f = formulario.formularioPreDefinido.definicaoFormulario.newInstance().classeServico()

@@ -672,3 +672,7 @@ a.skip {
 	position: absolute;
 	left: -9999px;
 }
+
+.hidden {
+	display: none;
+}

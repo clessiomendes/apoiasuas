@@ -87,8 +87,11 @@ grails.project.dependency.resolution = {
         compile "org.apache.poi:poi:3.9"
         compile "org.apache.poi:poi-ooxml:3.9"
         compile "commons-beanutils:commons-beanutils:1.9.2"
+        compile "com.google.guava:guava:18.0"
 
-        compile "org.docx4j:docx4j:3.2.1" //manipulacao de documentos docx
+        compile("org.docx4j:docx4j:3.2.1") { //manipulacao de documentos docx
+            excludes "com.google.guava:guava:17.0"
+        }
         //XDocReport (geracao de relatorio a partir de templates docx ou odt)
         compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.core:1.0.4"
         compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.document:1.0.4"
@@ -163,6 +166,7 @@ grails.project.dependency.resolution = {
         compile ":camunda:0.5.0" //componente de BPM
         build ':jetty:2.0.3'
 
+        runtime ':elasticsearch:0.1.0'
 //        compile "org.grails.plugins:hibernate-filter:0.3.2" //Hibernate filters
 
     }
