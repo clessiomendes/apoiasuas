@@ -48,7 +48,7 @@
                                 <span class="property-value" aria-labelledby="membros-label">
                                     <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CONCLUIDA}">
                                         Concluída por ${tarefa.responsavel?.username} em <g:formatDate date="${tarefa.fim}"/>
-                                        <g:submitButton name="reabreTarefa" class="save" value="voltar" />
+                                        <g:submitButton showif="${processo.fim == null}" name="reabreTarefa" class="save" value="voltar" />
                                     </g:if>
                                     <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.PENDENTE}">
                                         Aguardando por ${tarefa.responsavel?.username} desde <g:formatDate date="${tarefa.inicio}"/>

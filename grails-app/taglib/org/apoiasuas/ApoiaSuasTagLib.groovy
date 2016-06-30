@@ -9,6 +9,7 @@ import org.apoiasuas.seguranca.UsuarioSistema
 import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
+import org.codehaus.groovy.grails.plugins.web.taglib.FormTagLib
 
 class ApoiaSuasTagLib {
     static defaultEncodeAs = [taglib: 'raw']
@@ -204,6 +205,18 @@ class ApoiaSuasTagLib {
 //        <g:actionSubmit value="${it.nome}" action="preencherFormulario" onclick="this.form.idFormulario.value = '${it.id}'; return true"/>
         Formulario formulario = attrs.formulario
         out << actionSubmit([value: formulario.nome, onclick: "document.getElementById('preencherFormulario').idFormulario.value = '${formulario.id}'; document.getElementById('preencherFormulario').submit(); return true"])
+    }
+
+    /**
+     * Overriding FormTagLib.submitButton to check for condicions before rendering
+     */
+    Closure submitButton = { attrs ->
+        if (attrs.showif != null && attrs.showif == false)
+            return;
+
+        //Eh preciso buscar a tag original antes de executa-la, pois ela foi sobrescrita
+        FormTagLib original = grailsAttributes.applicationContext.getBean(FormTagLib.name)
+        original.submitButton.call(attrs)
     }
 
 }

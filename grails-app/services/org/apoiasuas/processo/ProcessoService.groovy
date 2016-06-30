@@ -94,7 +94,8 @@ public class ProcessoService {
     protected ProcessoDTO preencheProcessoDTOHistorico(ProcessoDTO processoDTO, HistoricProcessInstance processInstance) {
         processoDTO.id = processInstance.id
         processoDTO.inicio = processInstance.startTime
-        if (processInstance.endTime)
+        processoDTO.fim = processInstance.endTime
+        if (processoDTO.fim)
             processoDTO.situacaoAtual = ProcessoDTO.SITUACAO_CONCLUIDA
         else {
             List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.id).list()
