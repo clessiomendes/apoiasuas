@@ -128,10 +128,10 @@ log4j.main = {
         switch (AmbienteExecucao.CURRENT) {
             case AmbienteExecucao.CLEVERCLOUD:
                 appenders {
-                    file name: 'file', file: '/home/bas/application.log', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.ERROR
-//                console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.DEBUG
+//                    file name: 'file', file: '/home/bas/application.log', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.ERROR
+                    console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.ERROR
                 }
-                root { error 'file' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
+                root { error 'stdout' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
                 break
             case AmbienteExecucao.APPFOG:
                 appenders {

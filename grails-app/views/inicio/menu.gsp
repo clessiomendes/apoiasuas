@@ -31,20 +31,20 @@
         <div class="message" role="status">${flash.message}</div>
     </g:if>
 
-    <div id="filtros">
+    <fieldset class="buttons">
         <table style="border-top: 0; margin-bottom: 0;">
             <tr>
                 <td style="width: 14em;">Nome ou cadastro de usuário:</td>
                 <td><g:form action="procurarCidadaoExecuta" controller="cidadao"> <g:textField name="nomeOuCodigoLegado" size="50" autofocus=""/>
-                    <g:submitButton name="procurar" value="Procurar"/></g:form></td>
+                    <g:submitButton name="procurar" class="search" value="Procurar"/></g:form></td>
             </tr>
             <tr>
                 <td>Procurar no ApoiaCRAS:</td>
                 <td><g:form action="list" controller="buscaCentralizada"> <g:textField name="palavraChave" size="50" autofocus="" value="${filtro?.nome}"/>
-                    <g:submitButton name="list" class="list" value="Procurar"/></g:form></td>
+                    <g:submitButton name="list" class="search" value="Procurar"/></g:form></td>
             </tr>
         </table>
-    </div>
+    </fieldset>
 
 %{--
     <div filtro-cidadao>
