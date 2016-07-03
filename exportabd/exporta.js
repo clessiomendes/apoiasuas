@@ -7,16 +7,17 @@
   * de http://curl.haxx.se/download.html.
   */
 
-WScript.Echo("Iniciando");
+WScript.Echo("Iniciando javascript");
 
 var fso = new ActiveXObject("Scripting.filesystemobject");
 var shell = new ActiveXObject( "WScript.Shell" );
-//var BASE_DIR = "Y:\\Consolidado EletrÙnico\\Planilhas Monitoramento e InformaÁ„o 2016 - CRAS HavaÌ Ventosa"
+//var BASE_DIR = "Y:\\Consolidado Eletr√¥nico\\Planilhas Monitoramento e Informa√ß√£o 2016 - CRAS Hava√≠ Ventosa"
 //var BASE_DIR = "g:\\workspaces\\CRAS"
 //var args:String[] = System.Environment.GetCommandLineArgs();
 //var BASE_DIR = WScript.Arguments(0);
-var CAMINHO_ARQUIVO_ORIGINAL = "Y:\\Consolidado EletrÙnico\\Planilhas Monitoramento e InformaÁ„o 2016 - CRAS HavaÌ Ventosa\\Cadastro de FamÌlias 2.0 - 2016 CRAS.xls"
-var NOME_ARQUIVO_INTERMEDIARIO = "intermediario.xls";
+var CAMINHO_ARQUIVO_ORIGINAL = ""; // = "Y:\\Consolidado Eletr√¥nico\\Planilhas Monitoramento e Informa√ß√£o 2016 - CRAS Hava√≠ Ventosa\\Cadastro de Fam√≠lias 2.0 - 2016 CRAS.xls"
+var NOME_ARQUIVO_INTERMEDIARIO = ""; // = "intermediario.xls";
+var ARQUIVO_CONFIGURACOES = "parametros.cfg"
 //var COMANDO_CURL = '"Y:\\BANCO DE DADOS GPSOB\\apoiasuas\\curl.exe" -k http://apoiacras.cleverapps.io/importacaoFamilias/restUpload -F "qqfile=@' + caminhoArquivoConvertido+'"';
 
 
@@ -29,6 +30,45 @@ if (fso.FileExists(TESTE)) {
 	WScript.echo("Arquivo nao encontrado: " + TESTE);
 }	
 */
+
+if (fso.FileExists(ARQUIVO_CONFIGURACOES)) {
+    var regex = {
+        section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
+        param: /^\s*([\w\.\-\_]+)\s*=\s*(.*?)\s*$/,
+        comment: /^\s*;.*$/
+    };
+
+    f = fso.OpenTextFile(ARQUIVO_CONFIGURACOES);
+// Read from the file and display the results.
+    while (!f.AtEndOfStream) {
+        var linha = f.ReadLine();
+        if (regex.comment.test(linha)) {
+        } else if (regex.param.test(linha)) {
+            var match = linha.match(regex.param);
+            if (match[1] == "CAMINHO_ARQUIVO_ORIGINAL")
+                CAMINHO_ARQUIVO_ORIGINAL = match[2].replace(/\\/g, "\\\\");
+            if (match[1] == "NOME_ARQUIVO_INTERMEDIARIO")
+                NOME_ARQUIVO_INTERMEDIARIO = match[2].replace(/\\/g, "\\\\");
+        }
+    }
+    f.Close();
+} else {
+    WScript.echo("Arquivo de configura√ß√µes n√£o encontrado: " + ARQUIVO_CONFIGURACOES)
+    WScript.Quit(404)
+}
+
+if (CAMINHO_ARQUIVO_ORIGINAL != "")
+    WScript.echo("CAMINHO_ARQUIVO_ORIGINAL: " + CAMINHO_ARQUIVO_ORIGINAL)
+else {
+    WScript.echo("CAMINHO_ARQUIVO_ORIGINAL n√£o encontrado em " + ARQUIVO_CONFIGURACOES)
+    WScript.Quit(404)
+}
+if (CAMINHO_ARQUIVO_ORIGINAL != "")
+    WScript.echo("NOME_ARQUIVO_INTERMEDIARIO: " + NOME_ARQUIVO_INTERMEDIARIO);
+else {
+    WScript.echo("NOME_ARQUIVO_INTERMEDIARIO n√£o encontrado em " + ARQUIVO_CONFIGURACOES)
+    WScript.Quit(404)
+}
 
 var arquivoOriginal = fso.GetFile(CAMINHO_ARQUIVO_ORIGINAL);
 if (fso.FileExists(NOME_ARQUIVO_INTERMEDIARIO)) {
@@ -43,7 +83,7 @@ if (fso.FileExists(NOME_ARQUIVO_INTERMEDIARIO)) {
 	WScript.echo("Primeira vez");
 	converte();
 }
-WScript.echo("FIM");
+WScript.echo("Fim do javascprit");
 
 //       ==================              FIM DO FLUXO PRINCIPAL DO SCRIPT          ====================
 
@@ -79,11 +119,47 @@ function converte() {
         WScript.Quit(500)
 
 }
+
+function parseINIString(data){
+    var regex = {
+        section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
+        param: /^\s*([\w\.\-\_]+)\s*=\s*(.*?)\s*$/,
+        comment: /^\s*;.*$/
+    };
+    var value = {};
+    var lines = data.split(/\r\n|\r|\n/);
+    var section = null;
+
+    for(x=0;x<lines.length;x++)
+    {
+
+        if(regex.comment.test(lines[x])){
+            return;
+        }else if(regex.param.test(lines[x])){
+            var match = lines[x].match(regex.param);
+            if(section){
+                value[section][match[1]] = match[2];
+            }else{
+                value[match[1]] = match[2];
+            }
+        }else if(regex.section.test(lines[x])){
+            var match = lines[x].match(regex.section);
+            value[match[1]] = {};
+            section = match[1];
+        }else if(line.length == 0 && section){
+            section = null;
+        };
+
+    }
+
+    return value;
+}
+
 /*
 function curl() {
 	var comando = COMANDO_CURL;
 	WScript.Echo(comando);
-	//ReferÍncia: https://msdn.microsoft.com/en-us/library/ateytk4a(v=vs.84).aspx
+	//Refer√™ncia: https://msdn.microsoft.com/en-us/library/ateytk4a(v=vs.84).aspx
 	var resultShell = shell.exec(comando);
 	WScript.Echo(resultShell.stdOut.ReadAll())
 
