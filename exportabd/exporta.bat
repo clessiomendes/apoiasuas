@@ -74,7 +74,7 @@ rem echo Linha de comando completa: %LINHA_COMANDO_COMPLETO%
 echo Todos os parâmetros foram definidos corretamente
 
 @echo chamando exporta.js
-cscript /nologo exporta.js
+cscript /nologo exporta.js %1
 if errorlevel 500 set ENVIA=true
 @echo exporta.js returned %errorlevel%
 

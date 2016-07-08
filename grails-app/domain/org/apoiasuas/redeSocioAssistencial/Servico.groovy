@@ -5,6 +5,7 @@ import org.apoiasuas.cidadao.Endereco
 import org.apoiasuas.cidadao.Telefone
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.FullTextSearchUtils
 
 class Servico {
 
@@ -27,10 +28,10 @@ class Servico {
 
     static searchable = {                           // <-- elasticsearch plugin
         only = ["apelido","nomeFormal","descricao","site"]
-        apelido alias:"meu_titulo", index:'analyzed', boost:10
-        nomeFormal alias:"meu_titulo", index:'analyzed', boost:10
-        descricao alias:"meus_detalhes", index:'analyzed', boost:5
-        site alias:"meus_detalhes", index:'analyzed', boost:5
+        apelido alias:FullTextSearchUtils.MEU_TITULO, index:'analyzed', boost:10
+        nomeFormal alias:FullTextSearchUtils.MEU_TITULO, index:'analyzed', boost:10
+        descricao alias:FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:5
+        site alias:FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:5
     }
 
     @Override

@@ -1,6 +1,8 @@
 package org.apoiasuas
 
+import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+import org.apoiasuas.util.FullTextSearchUtils
 
 class Link {
 
@@ -17,36 +19,30 @@ class Link {
     ServicoSistema servicoSistemaSeguranca
     //Transiente:
     String fileName
+//    AbrangenciaTerritorial compartilhadoCom
 
     static searchable = {                           // <-- elasticsearch plugin
-        only = ["descricao","instrucoes","url"]
-        descricao alias:"meu_titulo", index:'analyzed', boost:10
-        instrucoes alias:"meus_detalhes", index:'analyzed', boost:5
-        url alias:"meus_detalhes", index:'analyzed', boost:3
+        only = ["descricao","instrucoes","url",FullTextSearchUtils.ID_SERVICO_SISTEMA/*, 'fileContent'*/]
+        descricao alias: FullTextSearchUtils.MEU_TITULO, index:'analyzed', boost:10
+        instrucoes alias: FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:5
+        url alias: FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:3
     }
 
-    static transients = ['fileName']
+    static transients = ['fileName', FullTextSearchUtils.ID_SERVICO_SISTEMA/*, 'fileContent'*/]
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_link']
     }
 
     static constraints = {
-        //Referencia: http://stackoverflow.com/a/11447609/1916198
-/*
-        url(maxSize: 255, validator: {val, obj ->
-            if (obj.tipo?.isUrl() && !val)
-                return ['url.required']
-        }, nullable: true)
-        fileLabel(maxSize: 255, validator: {val, obj ->
-            if (obj.tipo?.isFile() && !val)
-                return ['fileLabel.required']
-        }, nullable: true);
-*/
         tipo(nullable: false);
         descricao(nullable: false, maxSize: 255);
         instrucoes(nullable: true, maxSize: 255);
         servicoSistemaSeguranca(nullable: false);
+    }
+
+    public Long getIdServicoSistema() {
+        return servicoSistemaSeguranca?.id
     }
 
     public String getUrlCompleta() {

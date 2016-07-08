@@ -9,27 +9,25 @@
 
 WScript.Echo("Iniciando javascript");
 
+//WScript.Echo(getText("http://www.microsoft.com/default.htm"));
+
 var fso = new ActiveXObject("Scripting.filesystemobject");
 var shell = new ActiveXObject( "WScript.Shell" );
+
+if (WScript.Arguments.count() != 1) {
+    WScript.echo("parametros incorretos. forma correta: cscript exporta.js nome-arquivo-configuracao");
+    WScript.Quit(404)
+}
+var ARQUIVO_CONFIGURACOES = WScript.Arguments(0);
+
 //var BASE_DIR = "Y:\\Consolidado Eletrônico\\Planilhas Monitoramento e Informação 2016 - CRAS Havaí Ventosa"
 //var BASE_DIR = "g:\\workspaces\\CRAS"
 //var args:String[] = System.Environment.GetCommandLineArgs();
 //var BASE_DIR = WScript.Arguments(0);
+
 var CAMINHO_ARQUIVO_ORIGINAL = ""; // = "Y:\\Consolidado Eletrônico\\Planilhas Monitoramento e Informação 2016 - CRAS Havaí Ventosa\\Cadastro de Famílias 2.0 - 2016 CRAS.xls"
 var NOME_ARQUIVO_INTERMEDIARIO = ""; // = "intermediario.xls";
-var ARQUIVO_CONFIGURACOES = "parametros.cfg"
 //var COMANDO_CURL = '"Y:\\BANCO DE DADOS GPSOB\\apoiasuas\\curl.exe" -k http://apoiacras.cleverapps.io/importacaoFamilias/restUpload -F "qqfile=@' + caminhoArquivoConvertido+'"';
-
-
-/* TESTE:  arquivo presente?
-var TESTE = ".\\teste.xlsx"
-WScript.Echo(TESTE);
-if (fso.FileExists(TESTE)) {
-	WScript.echo("Arquivo encontrado: " + fso.GetFile(TESTE).Path);
-} else {
-	WScript.echo("Arquivo nao encontrado: " + TESTE);
-}	
-*/
 
 if (fso.FileExists(ARQUIVO_CONFIGURACOES)) {
     var regex = {
@@ -155,27 +153,33 @@ function parseINIString(data){
     return value;
 }
 
-/*
-function curl() {
-	var comando = COMANDO_CURL;
-	WScript.Echo(comando);
-	//Referência: https://msdn.microsoft.com/en-us/library/ateytk4a(v=vs.84).aspx
-	var resultShell = shell.exec(comando);
-	WScript.Echo(resultShell.stdOut.ReadAll())
+function getText(strURL)
+{
+    var strResult;
 
-	while (resultShell.Status == 0) {
-		WScript.Sleep(3000);
-		WScript.StdErr.Write(resultShell.stdErr.ReadAll());
-		WScript.StdOut.Write(resultShell.stdOut.ReadAll());
-		WScript.StdOut.Write(".");
-	}
+    try
+    {
+        // Create the WinHTTPRequest ActiveX Object.
+        var WinHttpReq = new ActiveXObject(
+            "WinHttp.WinHttpRequest.5.1");
 
-	if (resultShell.ExitCode != 0) {
-		fso.DeleteFile(NOME_ARQUIVO_INTERMEDIARIO);
-		WScript.Echo("Erro enviando arquivo para o servidor. Codigo "+resultShell.ExitCode);
-	} else {
-//		fso.DeleteFile(caminhoArquivoConvertido);
-		WScript.Echo("Arquivo enviado com sucesso para o servidor.");
-	}
+        //  Create an HTTP request.
+        var temp = WinHttpReq.Open("GET", strURL, false);
+
+        //  Send the HTTP request.
+        WinHttpReq.Send();
+
+        //  Retrieve the response text.
+        strResult = WinHttpReq.ResponseText;
+    }
+    catch (objError)
+    {
+        strResult = objError + "\n"
+        strResult += "WinHTTP returned error: " +
+            (objError.number & 0xFFFF).toString() + "\n\n";
+        strResult += objError.description;
+    }
+
+    //  Return the response text.
+    return strResult;
 }
-*/

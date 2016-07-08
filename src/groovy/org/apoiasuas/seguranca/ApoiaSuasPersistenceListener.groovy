@@ -22,6 +22,7 @@ import org.grails.datastore.mapping.engine.event.ValidationEvent
 class ApoiaSuasPersistenceListener extends AbstractPersistenceEventListener {
 
     public static final String ATRIBUTO_SERVICO_SISTEMA = 'servicoSistemaSeguranca'
+    public static final boolean DEF_HABILITADO = true; //FIXME: manter habilitado em produção
 
     public SegurancaService segurancaService
     ApoiaSuasPersistenceListener(Datastore datastore) {
@@ -42,7 +43,7 @@ class ApoiaSuasPersistenceListener extends AbstractPersistenceEventListener {
     }
 
     private void verificaServicoSistema(def entityObject) {
-        if (segurancaService.isSuperUser())
+        if (segurancaService.isSuperUser() || (! DEF_HABILITADO))
             return; //Super usuário tem acesso irrestrito
 
         if (entityObject instanceof UsuarioSistema)

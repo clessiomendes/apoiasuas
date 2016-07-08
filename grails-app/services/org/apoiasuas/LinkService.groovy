@@ -64,7 +64,7 @@ class LinkService {
 
     public Link getServico(long id) {
         Link result = Link.get(id);
-        if (result.tipo.isFile())
+        if (result.tipo.isFile() && result.fileLabel)
             result.fileName = fileStorageService.getFileName(BUCKET, result.fileLabel);
         return result
     }

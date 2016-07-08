@@ -2,6 +2,7 @@ package org.apoiasuas.formulario
 
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.seguranca.UsuarioSistema
+import org.apoiasuas.util.FullTextSearchUtils
 
 class Formulario implements Serializable {
     public static final String EXTENSAO_ARQUIVO = ".docx"
@@ -25,8 +26,8 @@ class Formulario implements Serializable {
 
     static searchable = {                           // <-- elasticsearch plugin
         only = ["nome","descricao"]
-        nome alias:"meu_titulo", index:'analyzed', boost:10
-        descricao alias:"meus_detalhes", index:'analyzed', boost:5
+        nome alias:FullTextSearchUtils.MEU_TITULO, index:'analyzed', boost:10
+        descricao alias:FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:5
     }
 
     static hasMany = [campos: CampoFormulario]

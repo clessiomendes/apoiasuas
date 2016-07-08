@@ -178,7 +178,8 @@ log4j.main = {
             'org.springframework.security',                  //login, seguranca, etc
             'com.myjeeva.poi', //debug para o extrator excel
             'org.camunda.bpm.engine.persistence', //BPM Engine
-            'org.camunda.bpm'   //BPM Engine
+            'org.camunda.bpm',   //BPM Engine
+            'org.grails.plugins.elasticsearch'
 
 //So eh preciso especificar nivel "error" para pacotes internos aos definidos acima nos quais se deseja desligar o log
     error   'org.camunda.bpm.engine.jobexecutor' //desligar logs de job da Engine BPM
@@ -288,5 +289,9 @@ elasticSearch {
     datastoreImpl = 'hibernateDatastore';
     index.store.type = 'simplefs';
     index.analysis.analyzer.default.type = 'brazilian'
+    bulkIndexOnStartup = false
+    disableAutoIndex = false
+
+//    elasticSearch.index.name = "apoiasuas"
 //    elasticSearch.path.data = 'c://temp//es';
 }

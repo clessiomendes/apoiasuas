@@ -1,4 +1,5 @@
 import org.apoiasuas.ApoiaSuasService
+import org.apoiasuas.FullTextSearchService
 import org.apoiasuas.fileStorage.FileStorageService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaController
@@ -15,6 +16,7 @@ import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.FullTextSearchUtils
 import org.camunda.bpm.engine.task.Task
 import org.codehaus.groovy.grails.commons.ApplicationAttributes
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -35,6 +37,7 @@ class BootStrap {
     ServicoSistemaService servicoSistemaService
     AbrangenciaTerritorialService abrangenciaTerritorialService
     GrailsApplication grailsApplication
+    FullTextSearchService fullTextSearchService
     FileStorageService fileStorageService
 
     public final String VW_REFERENCIAS = "create view vw_referencias as select min(id) as referencia_id, familia_id " +
@@ -67,6 +70,9 @@ class BootStrap {
         abrangenciaTerritorialService.registraJSON()
 
         addPersistenceListener()
+
+        fullTextSearchService.index()
+
     }
 
     private void addPersistenceListener() {

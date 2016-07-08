@@ -133,3 +133,5 @@ create sequence sq_file_storage_index;
 
 -- versao ate aqui: current (local:feito, producao:feito
 
+alter table link add column compartilhado_com_id int8;
+alter table link add constraint FK_23a8hv1o9otsollmbjddnxqeq foreign key (compartilhado_com_id) references abrangencia_territorial;
