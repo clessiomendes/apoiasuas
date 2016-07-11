@@ -17,18 +17,19 @@ class Link {
     String instrucoes
     Tipo tipo
     ServicoSistema servicoSistemaSeguranca
+    AbrangenciaTerritorial compartilhadoCom
     //Transiente:
     String fileName
-//    AbrangenciaTerritorial compartilhadoCom
+    Boolean compartilhar
 
     static searchable = {                           // <-- elasticsearch plugin
-        only = ["descricao","instrucoes","url",FullTextSearchUtils.ID_SERVICO_SISTEMA/*, 'fileContent'*/]
+        only = ["descricao", "instrucoes", "url", FullTextSearchUtils.ID_SERVICO_SISTEMA, FullTextSearchUtils.ID_COMPARTILHADO_COM]
         descricao alias: FullTextSearchUtils.MEU_TITULO, index:'analyzed', boost:10
         instrucoes alias: FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:5
         url alias: FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:3
     }
 
-    static transients = ['fileName', FullTextSearchUtils.ID_SERVICO_SISTEMA/*, 'fileContent'*/]
+    static transients = ['fileName', 'compartilhar', FullTextSearchUtils.ID_SERVICO_SISTEMA, FullTextSearchUtils.ID_COMPARTILHADO_COM]
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_link']
@@ -41,10 +42,6 @@ class Link {
         servicoSistemaSeguranca(nullable: false);
     }
 
-    public Long getIdServicoSistema() {
-        return servicoSistemaSeguranca?.id
-    }
-
     public String getUrlCompleta() {
         if (! url)
             return url
@@ -54,6 +51,25 @@ class Link {
     @Override
     public String toString() {
         return descricao
+    }
+
+    /**
+     * Se o link NAO FOR compartilhado, restringir ao ServicoSistema que o criou
+     */
+    public Long getIdServicoSistema() {
+        return compartilhadoCom ? null : servicoSistemaSeguranca?.id
+    }
+
+    /**
+     * Se o link FOR compartilhado, restringir pela AbrangenciaTerritorial escolhida
+     */
+    public Long getIdComparilhadoCom() {
+        return compartilhadoCom ? compartilhadoCom.id : null
+    }
+
+    public setCompartilhadoCom(AbrangenciaTerritorial abrangenciaTerritorial) {
+        compartilhar = abrangenciaTerritorial != null
+        compartilhadoCom = abrangenciaTerritorial
     }
 
 }

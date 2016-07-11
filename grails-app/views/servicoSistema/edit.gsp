@@ -6,10 +6,7 @@
 		<g:set var="entityName" value="${message(code: 'servicoSistema.label', default: 'Serviço (sistema)')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 
-        %{-- Para o componente treeview: --}%
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 	</head>
 
 	<body>
@@ -25,7 +22,7 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
-			<g:form onsubmit="submeteAbrangenciaTerritorial(this)" url="[resource:servicoSistemaInstance, action:'save']" >
+			<g:form url="[resource:servicoSistemaInstance, action:'save']" >
 				<g:hiddenField name="version" value="${servicoSistemaInstance?.version}" />
 				<fieldset class="form">
 					<g:render template="form"/>

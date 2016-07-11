@@ -40,6 +40,7 @@ class DaoForJavaService {
     TentativaImportacao novaTentativaImportacao() {
         TentativaImportacao result = new TentativaImportacao()
         result.criador = segurancaService.usuarioLogado
+        result.servicoSistemaSeguranca = segurancaService.getServicoLogado()
         result.dateCreated = new Date()
         result.setStatus(StatusImportacao.EM_ANDAMENTO)
         result.save(failOnError: true)

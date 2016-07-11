@@ -6,7 +6,9 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'link.label', default: 'Link')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
 	</head>
+
 	<body>
 		<a href="#show-link" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
@@ -56,6 +58,15 @@
                         </span>
                     </li>
                 </g:if>
+
+				<g:if test="${linkInstance?.compartilhar}">
+				<li class="fieldcontain">
+					<span id="abrangenciaTerritorial-label" class="property-label"><g:message code="link.compartilhadoCom.label" default="Compartilhado com" /></span>
+					<span class="property-value" aria-labelledby="abrangenciaTerritorial-label">
+						<g:render template="/abrangenciaTerritorial"/>
+					</span>
+				</li>
+				</g:if>
 
             </ol>
 			<g:form url="[resource:linkInstance, action:'delete']">

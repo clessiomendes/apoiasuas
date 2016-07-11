@@ -5,35 +5,8 @@
         <g:set var="entityName" value="${message(code: 'servico.label', default: 'Serviço')}" />
         <title><g:message code="default.show.label" args="[entityName]" /></title>
 		<meta name="layout" content="main">
-        %{-- Para o componente treeview: --}%
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
     </head>
-
-<g:javascript>
-        function submitFormEncaminhamento() {
-            document.getElementById('preencherFormulario').idFormulario.value = '${formularioEncaminhamento?.id}';
-            document.getElementById('preencherFormulario').idServico.value = '${servicoInstance?.id}';
-            document.getElementById('preencherFormulario').submit();
-        }
-
-    $(document).ready(function() {
-        $('#div_abrangenciaTerritorial').jstree({
-            //'plugins' : ['checkbox'],
-            'core' : {
-                'data' : ${raw(hierarquiaTerritorial)}
-    },
-    "rules":{
-        multiple : false
-    },
-    "ui" : {
-        "select_limit" : 0  //no selection
-    }//ui
-});//jstree
-});//function
-
-</g:javascript>
 
 	<body>
 		<a href="#show-servico" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -61,7 +34,7 @@
 
                 <g:if test="${servicoInstance?.descricao}">
                     <li class="fieldcontain">
-                        <span id="encaminhamentoPadrao-label" class="property-label"><g:message
+                        <span id="descricao-label" class="property-label"><g:message
                                 code="servico.descricao.label" default="Descrição"/></span>
                         <span class="property-value" aria-labelledby="descricao-label">
                             %{--Substitui o escape padrao do Grails por um customizado que interpreta \n como <br> --}%
@@ -88,7 +61,9 @@
 
                 <li class="fieldcontain">
                     <span id="abrangenciaTerritorial-label" class="property-label"><g:message code="servico.abrangenciaTerritorial.label" default="Atende" /></span>
-                    <span class="property-value" aria-labelledby="abrangenciaTerritorial-label"><div id="div_abrangenciaTerritorial"/></span>
+                    <span class="property-value" aria-labelledby="abrangenciaTerritorial-label">
+                        <g:render template="/abrangenciaTerritorial"/>
+                    </span>
                 </li>
 
                 <g:if test="${servicoInstance?.podeEncaminhar}">

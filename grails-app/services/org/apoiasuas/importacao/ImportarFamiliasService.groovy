@@ -753,6 +753,7 @@ class ImportarFamiliasService {
 
         TentativaImportacao result = new TentativaImportacao()
         result.criador = usuarioLogado
+        result.servicoSistemaSeguranca = segurancaService.getServicoLogado();
         result.dateCreated = new Date()
         atualizaProgressoImportacao(result, StatusImportacao.ENVIANDO_ARQUIVO)
         result.save(failOnError: true)

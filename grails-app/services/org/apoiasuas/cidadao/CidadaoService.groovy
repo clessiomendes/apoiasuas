@@ -143,4 +143,11 @@ class CidadaoService {
         return Cidadao.get(idCidadao)?.familia?.telefones
     }
 
+    public boolean testaAcessoDominio(Cidadao cidadao) {
+        //Restringir acesso apenas ao servicoSistema que criou a familia
+        if (cidadao.servicoSistemaSeguranca && segurancaService.getServicoLogado() &&
+                cidadao.servicoSistemaSeguranca.id != segurancaService.getServicoLogado().id)
+            return false
+        return true;
+    }
 }

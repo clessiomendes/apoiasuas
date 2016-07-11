@@ -1,7 +1,12 @@
 package org.apoiasuas.seguranca
 
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.transaction.NotTransactional
 import grails.transaction.Transactional
+import org.apoiasuas.Link
+import org.apoiasuas.cidadao.Cidadao
+import org.apoiasuas.cidadao.Familia
+import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.springframework.security.authentication.BadCredentialsException
@@ -14,25 +19,28 @@ class SegurancaService {
 
     public static final String LOGIN_AMD = "admin"
     public static final int MIN_TAMANHO_SENHA = 4
+    public static final String ATRIBUTO_SERVICO_SISTEMA = 'servicoSistemaSeguranca'
+    public static final boolean HABILITAR_RESTRICAO_DE_ACESSO_AO_DOMINIO = true; //FIXME: manter habilitado em produção, se ainda não estiver
+
     def springSecurityService
     def authenticationManager
     def userDetailsService
+    def linkService
+    def familiaService
+    def cidadaoService
+    def abrangenciaTerritorialService
 
     static transactional = false
 
+    @NotTransactional
     public UsuarioSistema getUsuarioLogado() {
         return springSecurityService.currentUser
     }
 
-
+    @NotTransactional
     public ServicoSistema getServicoLogado() {
         return getPrincipal()?.servicoSistemaSessaoCorrente
     }
-/*
-    public void setServicoLogado(ServicoSistema servicoSistemaSessao) {
-        getUsuarioLogado()?.apoiaSuasUser = servicoSistemaSessao
-    }
-*/
 
     /**
      * Verifica usuario e senha e retorna o registro do banco de dados ou nulo.
@@ -122,127 +130,29 @@ class SegurancaService {
         return result
     }
 
-    @Transactional
-    /**
-     * Grava usuário ou retorna uma mensagem de erro em caso de violacao de regras de integridade
-     */
-    public boolean gravaUsuario(UsuarioSistema usuarioSistema, String senha, String confirmacaoSenha) {
-        String erroSenha = null
-
-        //Criacao de novo usuario
-        if (! usuarioSistema.id) {
-            usuarioSistema.accountExpired = false
-            usuarioSistema.accountLocked = false
-            usuarioSistema.passwordExpired = false
-            usuarioSistema.criador = getUsuarioLogado()
-            if (! senha)
-                erroSenha = "Senha é ogragatória"
-        }
-
-        usuarioSistema.ultimoAlterador = getUsuarioLogado()
-
-        if (senha || confirmacaoSenha) {
-            if (senha != confirmacaoSenha)
-                erroSenha = "Senhas digitadas não conferem"
-            if (senha?.length() < MIN_TAMANHO_SENHA)
-                erroSenha = "Senhas devem ter pelo menos ${MIN_TAMANHO_SENHA} dígitos"
-            usuarioSistema.password = senha
-        }
-
-        usuarioSistema.validate()
-
-        validacoesEspecificas: { //Validacoes especificas
-
-            //permissoes exclusivas de administradores
-            if (SpringSecurityUtils.ifNotGranted(DefinicaoPapeis.STR_SUPER_USER)) {
-
-                //Valida se um operador esta tentando alterar outro operador que nao ele proprio
-                if (usuarioLogado.id != usuarioSistema.id)
-                    usuarioSistema.errors.reject("", "Você não tem permissão para alterar outros operadores")
-
-                //Valida se um operador esta tentando modificar campos que ele nao pode
-                if (usuarioSistema.enabled != usuarioSistema.getPersistentValue("enabled"))
-                    usuarioSistema.errors.reject("", "Você não tem permissão para habilitar/desabilitar operadores")
-                if (usuarioSistema.username != usuarioSistema.getPersistentValue("username"))
-                    usuarioSistema.errors.reject("", "Você não tem permissão para alterar um apelido de operador")
-                if (usuarioSistema.papel)
-                    usuarioSistema.errors.reject("", "Você não tem permissão para definir papeis de operadores")
-            }
-
-            //TODO: Validacoes pendentes -> Pelo menos um usuario administrador habilitado.
-//                  usuarioSistema.errors.reject("Deve haver pelo menos um operador administrador habilitado")
-        }
-
-        if (erroSenha || usuarioSistema.errors.hasErrors()) {
-            usuarioSistema.discard()
-            if (erroSenha)
-                usuarioSistema.errors.rejectValue("password", "", erroSenha)
-            return false
-        } else {
-            usuarioSistema.save()
-            gravaPapel(usuarioSistema)
-            return true //registro gravado com sucesso
-        }
-
-    }
-
-/*
-    @Transactional
-    void atualizaUsuario(UsuarioSistema usuarioSistema) {
-        usuarioSistema.ultimoAlterador = getUsuarioLogado()
-        usuarioSistema.save()
-
-        gravaPapel(usuarioSistema)
-    }
-*/
-
-    @Transactional
-    public boolean apagaUsuario(UsuarioSistema usuarioSistema) {
-        UsuarioSistemaPapel.findAllByUsuarioSistema(usuarioSistema)?.each {
-            it.delete() //apaga papeis existentes
-        }
-        //TODO: Validacoes pendentes -> Pelo menos um usuario administrador habilitado.
-        usuarioSistema.delete()
-
-        return true
-    }
-
-    private void gravaPapel(UsuarioSistema usuarioSistemaInstance) {
-        if (! usuarioSistemaInstance.papel)
-            return //Papel eh obrigatorio na tela do CRUD QUANDO ELE EH EXIBIDO. Logo, a ausencia desta informacao indica que ela nao eh para ser modificada.
-
-//Define o papel no sistema de seguranca
-        Papel papel = Papel.findByAuthority(usuarioSistemaInstance.papel)
-        boolean papelExistente = false
-        UsuarioSistemaPapel.findAllByUsuarioSistema(usuarioSistemaInstance)?.each {
-            if (it.papel == papel)
-                papelExistente = true
-            else
-                it.delete() //apaga eventuais papeis anteriores
-        }
-        if (!papelExistente) //cria novo papel (quando ainda nao existir)
-            new UsuarioSistemaPapel(usuarioSistema: usuarioSistemaInstance, papel: papel).save()
-    }
-
-
-//TODO: Criar parâmetros persistentes para o equipamento ao qual o usuário logado esta vinculado e buscar de la os dados
     @Transactional(readOnly = true)
     String getMunicipio() {
-        return "Belo Horizonte"
+        ServicoSistema servicoLogado = getServicoLogado()
+        servicoLogado.attach();
+        return servicoLogado.endereco.municipio
     }
 
     @Transactional(readOnly = true)
     String getUF() {
-        return "MG"
+        ServicoSistema servicoLogado = getServicoLogado()
+        servicoLogado.attach();
+        return servicoLogado.endereco.UF
     }
 
+/*
     @Transactional(readOnly = true)
     String getDDDpadrao() {
         return "31"
     }
+*/
 
     @Transactional(readOnly = true)
-    List<Papel> getPapeisUsuario(UsuarioSistema usuarioSistema = null) {
+    public List<Papel> getPapeisUsuario(UsuarioSistema usuarioSistema = null) {
         if (! usuarioSistema)
             usuarioSistema = usuarioLogado
         List<Papel> result = []
@@ -257,11 +167,11 @@ class SegurancaService {
         return UsuarioSistema.findByUsername("admin")
     }
 
-    @Transactional(readOnly = true)
     /**
      * Lista todos os operadores filtrados para o Servico logado. Marca o operador logado com * e os operadores desabilitados
      * com -. Mostra primeiro os operadores habilitados e, por ultimo, os desabilitados
      */
+    @Transactional(readOnly = true)
     public ArrayList<UsuarioSistema> getOperadoresOrdenados(boolean somenteHabilitados) {
         //adiciona o usuario logado no topo da lista, marcando com *
         getUsuarioLogado().discard() //desconecta dos objetos na cache da sessao hibernate
@@ -291,41 +201,73 @@ class SegurancaService {
         return result
     }
 
-    @Transactional(readOnly = true)
-    public boolean temAcesso(String definicaoPapel) {
+    @NotTransactional
+    public boolean usuarioLogadoTemAcesso(String definicaoPapel) {
         SpringSecurityUtils.ifAnyGranted(definicaoPapel)
     }
 
+    @NotTransactional
     public boolean isSuperUser() {
-        return temAcesso(DefinicaoPapeis.STR_SUPER_USER)
+        return usuarioLogadoTemAcesso(DefinicaoPapeis.STR_SUPER_USER)
     }
 
-    /**
-     * Retorna um resultado PAGINADO filtrado por login/nome ou servicoSistema e ordenado por nomeCompleto
-     * O mesmo parametro loginOuNome e usado para uma busca do tipo like em ambos os campos username e nomeCompleto
-     * Os parametros offset, max e sort sao responsaveis pela paginacao
-     */
-    def listUsuarios(FiltroUsuarioSistemaCommand filtro, def offset, def max) {
-        //converte parametro string para long
-        Long idServicoSistema = filtro?.servicoSistema?.toString()?.matches("\\d+") ? Long.parseLong(filtro.servicoSistema) : null;
-
-        return UsuarioSistema.createCriteria().list(offset: offset, max: max) {
-            if (filtro.nome) {
-                or { ilike("username", "%$filtro.nome%") ilike("nomeCompleto", "%$filtro.nome%") }
-            }
-            if (idServicoSistema) {
-                eq("servicoSistemaSeguranca.id", idServicoSistema)
-            }
-            order("nomeCompleto")
-        }
-    }
-
+    @NotTransactional
     public ApoiaSuasUser getPrincipal() {
         return springSecurityService.principal
     }
 
+    @NotTransactional
     public void setServicoLogado(ServicoSistema servicoSistema) {
         ApoiaSuasUser principal = getPrincipal();
         principal.servicoSistemaSessaoCorrente = servicoSistema;
     }
+
+    /**
+     * Monta a hierarquia de abrangencias territoriais a partir do servico logado
+     */
+    @Transactional(readOnly = true)
+    public List<AbrangenciaTerritorial> getAbrangenciasTerritoriaisAcessiveis() {
+        //Recarrega a partir do banco para preencher o atributo "abrangenciaTerritorial"
+        ServicoSistema servicoLogado = ServicoSistema.get(getServicoLogado().id);
+        return abrangenciaTerritorialService.getAbrangenciasTerritoriaisMaes(servicoLogado.abrangenciaTerritorial)
+    }
+
+    /**
+     * Confirma se o usuario logado tem permicoes de acesso a uma entidade de dominio qualquer (de acordo com as regras de seguranca de cada entidade)
+     */
+    @Transactional(readOnly = true)
+    public void testaAcessoDominio(def entityObject) {
+//        if (entityObject && temPropriedadeSeguranca(entityObject)) {
+
+        if (    isSuperUser() //Administrador tem acesso restrito
+                || (! HABILITAR_RESTRICAO_DE_ACESSO_AO_DOMINIO) //flag de teste para desabilitar checagem de seguranca
+                || (! getUsuarioLogado())) //se estiver fora de um contexto de sessao de usuario, manter acesso irrestrito
+            return; //Super usuário tem acesso irrestrito
+
+        boolean temAcesso = true;
+        if (entityObject instanceof Link)
+            temAcesso = linkService.testaAcessoDominio(entityObject)
+        else if (entityObject instanceof Familia)
+            temAcesso = familiaService.testaAcessoDominio(entityObject)
+        else if (entityObject instanceof Cidadao)
+            temAcesso = cidadaoService.testaAcessoDominio(entityObject)
+/*
+        //Despresar classe de usuarios (porque usuarios aparecem como "criador/ultimoAlterador" de entidades que podem ser
+        //vistas de servicos diferentes do que criou a entidade
+        else if (entityObject instanceof UsuarioSistema)
+            temAcesso = usuarioSistemaService.testaAcessoDominio(entityObject)
+*/
+        if (! temAcesso) {
+            def e = new AcessoNegadoPersistenceException(getUsuarioLogado().username, entityObject.class.simpleName, entityObject.toString())
+            log.error(e.getMessage())
+            throw e;
+        }
+
+//        ServicoSistema servicoLogado = segurancaService.servicoLogado
+//        ServicoSistema propriedadeServicoSistema = entityObject.metaClass.getMetaProperty(ATRIBUTO_SERVICO_SISTEMA)?.getProperty(entityObject)
+//        if (propriedadeServicoSistema && servicoLogado && propriedadeServicoSistema.id != servicoLogado.id) {
+//            return false
+//        }
+    }
+
 }

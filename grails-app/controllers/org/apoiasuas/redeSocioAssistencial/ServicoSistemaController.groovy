@@ -1,11 +1,7 @@
 package org.apoiasuas.redeSocioAssistencial
 
-import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.seguranca.SegurancaService
-
-import javax.servlet.http.HttpSession
 
 @Secured([DefinicaoPapeis.STR_SUPER_USER])
 class ServicoSistemaController extends AncestralServicoController {
@@ -31,24 +27,21 @@ class ServicoSistemaController extends AncestralServicoController {
             servicoSistemaInstance = segurancaService.servicoLogado
         //evitar erros de lazy initialization
         servicoSistemaInstance = servicoSistemaService.get(servicoSistemaInstance.id)
-        render view: 'edit', model: [servicoSistemaInstance: servicoSistemaInstance, territoriosDisponiveis: getAreasAtuacaoDisponiveis(servicoSistemaInstance.abrangenciaTerritorial)]
+        render view: 'edit', model: getModelEdicao(servicoSistemaInstance)
     }
 
     def create() {
         ServicoSistema servicoSistema = new ServicoSistema(params)
         servicoSistema.habilitado = true
 //        servicoSistema.abrangenciaTerritorial = servicoSistemaService.getServicoSistemaReadOnly().abrangenciaTerritorial
-        render view: 'create', model: [servicoSistemaInstance: servicoSistema, territoriosDisponiveis: getAreasAtuacaoDisponiveis(null)]
+        render view: 'create', model: getModelEdicao(servicoSistema)
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def show(ServicoSistema servicoSistemaInstance) {
         if (! servicoSistemaInstance)
             return notFound()
-        render view: 'show', model: [
-                servicoSistemaInstance: servicoSistemaInstance,
-                hierarquiaTerritorial: abrangenciaTerritorialService.JSONhierarquiaTerritorial(servicoSistemaInstance.abrangenciaTerritorial)
-        ]
+        render view: 'show', model: getModelExibicao(servicoSistemaInstance)
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -58,17 +51,17 @@ class ServicoSistemaController extends AncestralServicoController {
 
         boolean modoCriacao = servicoSistemaInstance.id == null
 
-        if (modoCriacao && ! segurancaService.superUser) {
+        if (modoCriacao && ! segurancaService.isSuperUser()) {
             flash.message = "Você não tem permissão para criar novo Serviço com acesso ao sistema";
-            return show(servicoSistemaInstance)
+            return render(view: 'show', model: getModelExibicao(servicoSistemaInstance))
         }
 
-        atribuiAbrangenciaTerritorial(servicoSistemaInstance)
+        servicoSistemaInstance.abrangenciaTerritorial = atribuiAbrangenciaTerritorial();
 
         //Grava
         if (! servicoSistemaInstance.validate()) {
             //exibe o formulario novamente em caso de problemas na validacao
-            return show(servicoSistemaInstance)
+            return render(view: 'show', model: getModelExibicao(servicoSistemaInstance))
         }
 
         //Grava
@@ -89,14 +82,13 @@ class ServicoSistemaController extends AncestralServicoController {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'servico.label', default: 'Servico'), params.id])
         return redirect(action: "list")
     }
-/*
-    public static void setSessionServicoSistemaAtual(HttpSession session, ServicoSistema servicoSistema) {
-        log.debug("guardando servico sistema ${servicoSistema.nome}")
-        session[SESSION_SERVICO_SISTEMA_ATUAL] = servicoSistema
+
+    private LinkedHashMap<String, Object> getModelEdicao(ServicoSistema servicoSistemaInstance) {
+        [servicoSistemaInstance: servicoSistemaInstance, JSONAbrangenciaTerritorial: getAbrangenciasTerritoriaisEdicao(servicoSistemaInstance?.abrangenciaTerritorial)]
     }
 
-    public static ServicoSistema getSessionServicoSistemaAtual(HttpSession session) {
-        return (ServicoSistema) session[SESSION_SERVICO_SISTEMA_ATUAL];
+    private Map<String, Object> getModelExibicao(ServicoSistema servicoSistemaInstance) {
+        [servicoSistemaInstance: servicoSistemaInstance,
+         JSONAbrangenciaTerritorial: getAbrangenciasTerritoriaisExibicao(servicoSistemaInstance.abrangenciaTerritorial)]
     }
-*/
 }

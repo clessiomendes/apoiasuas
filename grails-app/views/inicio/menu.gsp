@@ -40,8 +40,10 @@
             </tr>
             <tr>
                 <td>Procurar no ApoiaCRAS:</td>
-                <td><g:form action="list" controller="buscaCentralizada"> <g:textField name="palavraChave" size="50" autofocus="" value="${filtro?.nome}"/>
-                    <g:submitButton name="list" class="search" value="Procurar"/></g:form></td>
+                <td><g:form action="list" controller="buscaCentralizada">
+                    <g:textField name="palavraChave" size="50" onfocus="if(this.value == 'ex: jovem aprendiz') { this.value = ''; }" value="ex: jovem aprendiz"/>
+                    <g:submitButton name="list" class="search" value="Procurar"/>
+                </g:form></td>
             </tr>
         </table>
     </fieldset>

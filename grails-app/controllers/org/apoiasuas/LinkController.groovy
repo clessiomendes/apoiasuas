@@ -3,22 +3,22 @@ package org.apoiasuas
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import org.apoiasuas.fileStorage.FileStorageDTO
-import org.apoiasuas.seguranca.AcessoNegadoPersistenceException
+import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import grails.transaction.Transactional
+import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasException
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class LinkController extends AncestralController {
 
-    static defaultAction = "list"
     LinkService linkService
+
+    static defaultAction = "list"
+    public static String CHECKBOX_COMPARTILHAR = "compartilhar"
+    public static String INPUT_FILE = "file"
     def beforeInterceptor = [action: this.&interceptaSeguranca/*("ola")*/, (ENTITY_CLASS_ENTRY):Link.class, only: ['show','edit', 'delete', 'update', 'save']]
 
     def exibeLinks() {
@@ -28,7 +28,7 @@ class LinkController extends AncestralController {
 
     def list(Integer max) {
         params.max = Math.min(max ?: 50, 100)
-        respond Link.findAllByServicoSistemaSeguranca(getServicoCorrente(), params), model:[linkInstanceCount: Link.count()]
+        respond Link.findAllByServicoSistemaSeguranca(getServicoCorrente(), params).sort { it.id }, model:[linkInstanceCount: Link.count()]
     }
 
     def show(Link linkInstance) {
@@ -36,7 +36,7 @@ class LinkController extends AncestralController {
             return notFound()
         //recarrega objeto para preencher campos transientes
         linkInstance = linkService.getServico(linkInstance.id)
-        render view: 'show', model: [ linkInstance: linkInstance ]
+        render view: 'show', model: getModelExibicao(linkInstance)
     }
 
     @Transactional
@@ -50,27 +50,41 @@ class LinkController extends AncestralController {
         FileStorageDTO file = null
         if (linkInstance.tipo?.isFile()) {
             if (request instanceof MultipartHttpServletRequest) {
-                MultipartFile multipartFile = ((MultipartHttpServletRequest)request).getFile("file")
+                MultipartFile multipartFile = ((MultipartHttpServletRequest)request).getFile(INPUT_FILE)
                 file = new FileStorageDTO(multipartFile.originalFilename, multipartFile.bytes)
             } else {
                 throw new ApoiaSuasException("Tipo inesperado de request para upload de arquivos: "+request.getClass().name)
             }
         }
+
         try {
+            //Definindo a abrangência territorial para compartilhamento do link
+            AbrangenciaTerritorial abrangenciaTerritorial = atribuiAbrangenciaTerritorial();
+            if (request.getParameter(CHECKBOX_COMPARTILHAR)) {
+                if (abrangenciaTerritorial)
+                    linkInstance.compartilhadoCom =  abrangenciaTerritorial
+                else {
+                    linkInstance.errors.rejectValue("compartilhadoCom","","É necessário escolher uma área de abrangência para compartilhar este link.")
+                    throw new ValidationException(null, linkInstance.errors)
+                }
+            } else {
+                linkInstance.compartilhadoCom = null
+            }
+
             linkService.grava(linkInstance, file)
         } catch (ValidationException e) {
             linkInstance.errors = e.errors
             //exibe o formulario novamente em caso de problemas na validacao
-            return render(view: modoCriacao ? "create" : "edit" , model: [linkInstance:linkInstance]);
+            return render(view: modoCriacao ? "create" : "edit" , model: getModelEdicao(linkInstance));
         }
         flash.message = message(code: 'default.updated.message', args: [message(code: 'link.label'), linkInstance.toString()])
-        render view: 'show', model: [ linkInstance: linkInstance ]
+        render view: 'show', model: getModelExibicao(linkInstance)
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def create() {
         Link link = new Link(params)
-        render view: 'create', model: [linkInstance: link]
+        render view: 'create', model: getModelEdicao(link)
 //        respond link
     }
 
@@ -80,7 +94,7 @@ class LinkController extends AncestralController {
             return notFound()
         //recarrega objeto para preencher campos transientes
         linkInstance = linkService.getServico(linkInstance.id)
-        render view: 'edit', model: [linkInstance: linkInstance]
+        render view: 'edit', model: getModelEdicao(linkInstance)
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -112,34 +126,12 @@ class LinkController extends AncestralController {
         response.outputStream.flush()
     }
 
-/*  Testa presen�a de arquivos/pastas no filesystem
-
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def teste(String caminho) {
-        if (! caminho)
-            caminho = System.properties.getProperty('APP_HOME')
-        render testaCaminho(caminho)
+    private LinkedHashMap<String, Object> getModelEdicao(Link linkInstance) {
+        [linkInstance: linkInstance, JSONAbrangenciaTerritorial: getAbrangenciasTerritoriaisEdicao(linkInstance?.compartilhadoCom)]
     }
 
-    private String testaCaminho(String caminho) {
-        String result = ""
-        Path meuCaminho = Paths.get(caminho)
-        result += meuCaminho.toString()
-        if (Files.exists(meuCaminho)) {
-            result += " ...found"
-            File file = new File(caminho);
-            String[] directories = file.list(new FilenameFilter() {
-                @Override
-                public boolean accept(File current, String name) {
-                    return new File(current, name).isDirectory();
-                }
-            });
-            directories?.each {
-                result += "<br> "+it
-            }
-        } else
-            result += " ...not found"
-        return result
+    private Map<String, Object> getModelExibicao(Link linkInstance) {
+        [linkInstance: linkInstance, JSONAbrangenciaTerritorial: getAbrangenciasTerritoriaisExibicao(linkInstance.compartilhadoCom)]
     }
-*/
+
 }

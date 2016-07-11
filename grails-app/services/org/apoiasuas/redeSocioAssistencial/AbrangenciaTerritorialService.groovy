@@ -3,6 +3,7 @@ package org.apoiasuas.redeSocioAssistencial
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
+import org.hibernate.Hibernate
 
 class AbrangenciaTerritorialService {
 
@@ -18,6 +19,43 @@ class AbrangenciaTerritorialService {
         abrangenciaTerritorial.delete()
     }
 
+    public void registraJSON() {
+        JSON.registerObjectMarshaller(AbrangenciaTerritorial) { AbrangenciaTerritorial it ->
+            def output = [:]
+            output['id'] = ID_TERRITORIOS_ATUACAO + it.id.toString()
+            output['text'] = it.nome
+            def state = [:]
+            if (it.componenteVisual.aberto != null)
+                state['open'] = it.componenteVisual.aberto
+            if (it.componenteVisual.selecionado != null)
+                state['selected'] = it.componenteVisual.selecionado
+            if (it.componenteVisual.desabilitado != null)
+                state['disabled'] = it.componenteVisual.desabilitado
+            output['state'] = state;
+            output['text'] = it.nome
+            output['children'] = it.filhos
+            return output;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    AbrangenciaTerritorial getAbrangenciaTerritorial(long id) {
+        return AbrangenciaTerritorial.get(id)
+    }
+
+    /**
+     * Monta estrutura JSON para o componente visual jctree exibindo todas as abrangencias territoriais disponiveis
+     * (exceto, se for o caso, a passada no parametro "ignora") e mantem o componente aberto para alteracao
+     */
+    @Transactional(readOnly = true)
+    public String JSONAbrangenciasTerritoriaisEdicao(AbrangenciaTerritorial ignora, List<AbrangenciaTerritorial> selecionados) {
+        List<AbrangenciaTerritorial> result = populaFilhos(null, ignora, selecionados);
+        return result as JSON
+    }
+
+    /**
+     * Metodo recursivo para preencher todos os sub-nos da arvore a partir do passado em "mae" (ou a arvore inteira, se nao for passado nenhum no em "mae")
+     */
     private List<AbrangenciaTerritorial> populaFilhos(AbrangenciaTerritorial mae, AbrangenciaTerritorial ignora, List<AbrangenciaTerritorial> selecionados) {
         List<AbrangenciaTerritorial> result = []
         List<AbrangenciaTerritorial> tempList = AbrangenciaTerritorial.findAllByMae(mae)
@@ -49,73 +87,12 @@ class AbrangenciaTerritorialService {
         return result
     }
 
-/*
-    private List<AbrangenciaTerritorial> ignoradosEselecionados(List<AbrangenciaTerritorial> filhos, AbrangenciaTerritorial ignora, List<AbrangenciaTerritorial> selecionados) {
-        List<AbrangenciaTerritorial> result = []
-        filhos.each {
-            it.open = true
-            if (ignora && it.id == ignora.id) {
-                //ignora (dã)
-            } else {
-                if (it.id in selecionados.collect {it.id} )
-                    it.selected = true
-                it.filhos = ignoradosEselecionados(it.filhos, ignora, selecionados)
-                result += it
-            }
-        }
-        return result
-    }
-*/
-
+    /**
+     * Monta estrutura JSON para o componente visual jctree exibindo apenas a abrangenciaTerritorial escolhida e suas
+     * respectivas contenedoras(maes) hierarquicas
+     */
     @Transactional(readOnly = true)
-    public String JSONareasAtuacaoDisponiveis(AbrangenciaTerritorial ignora, List<AbrangenciaTerritorial> selecionados) {
-        List<AbrangenciaTerritorial> result = populaFilhos(null, ignora, selecionados);
-//        Ignorados e selecionados nao ta funcionando
-//        List<AbrangenciaTerritorial> resultFiltrado = ignoradosEselecionados(result, ignora, selecionados)
-        return result as JSON
-/*
-        AbrangenciaTerritorial hv = new AbrangenciaTerritorial()
-        hv.id = 1
-        hv.nome = "Havai-Ventosa"
-
-        AbrangenciaTerritorial mp = new AbrangenciaTerritorial()
-        mp.id = 3
-        mp.nome = "Morro das Pedras"
-
-        AbrangenciaTerritorial va = new AbrangenciaTerritorial()
-        va.id = 2
-        va.nome = "Vista Alegre"
-        va.filhos << mp
-
-        return [hv, va] as JSON;
-*/
-    }
-
-    public void registraJSON() {
-        JSON.registerObjectMarshaller(AbrangenciaTerritorial) { AbrangenciaTerritorial it ->
-            def output = [:]
-            output['id'] = ID_TERRITORIOS_ATUACAO + it.id.toString()
-            output['text'] = it.nome
-            def state = [:]
-            if (it.componenteVisual.aberto != null)
-                state['open'] = it.componenteVisual.aberto
-            if (it.componenteVisual.selecionado != null)
-                state['selected'] = it.componenteVisual.selecionado
-            if (it.componenteVisual.desabilitado != null)
-                state['disabled'] = it.componenteVisual.desabilitado
-            output['state'] = state;
-            output['text'] = it.nome
-            output['children'] = it.filhos
-            return output;
-        }
-    }
-
-    @Transactional(readOnly = true)
-    AbrangenciaTerritorial getAbrangenciaTerritorial(long id) {
-        return AbrangenciaTerritorial.get(id)
-    }
-
-    public String JSONhierarquiaTerritorial(AbrangenciaTerritorial abrangenciaTerritorial) {
+    public String JSONAbrangenciasTerritoriaisExibicao(AbrangenciaTerritorial abrangenciaTerritorial) {
         if (! abrangenciaTerritorial)
             return [] as JSON;
 
@@ -132,4 +109,21 @@ class AbrangenciaTerritorialService {
         filho.componenteVisual.desabilitado = true
         return filho as JSON
     }
+
+    /**
+     * Retorna uma lista com a hierarquia de abrangencias territoriais que contem a abrangencia solicitada, INCLUIDO A MESMA
+     */
+    @Transactional(readOnly = true)
+    public ArrayList<AbrangenciaTerritorial> getAbrangenciasTerritoriaisMaes(AbrangenciaTerritorial abrangenciaTerritorial) {
+        ArrayList<AbrangenciaTerritorial> result = []
+        while (abrangenciaTerritorial != null) {
+            result << abrangenciaTerritorial;
+            abrangenciaTerritorial.attach()
+//            Hibernate.initialize(abrangenciaTerritorial)
+            abrangenciaTerritorial = abrangenciaTerritorial.mae
+        }
+        return result
+    }
+
+
 }

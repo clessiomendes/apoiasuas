@@ -86,7 +86,6 @@ class FormularioIdentidade extends FormularioBase {
                 codigo CampoFormulario.CODIGO_DATA_PREENCHIMENTO
                 tipo CampoFormulario.Tipo.DATA
                 descricao 'Data (preenchimento)'
-                obrigatorio true
             }
             campoAvulso {
                 codigo CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO

@@ -51,18 +51,14 @@ class ServicoController extends AncestralServicoController {
     def show(Servico servicoInstance) {
         if (! servicoInstance)
             return notFound()
-        render view: 'show', model: [
-                servicoInstance: servicoInstance,
-                formularioEncaminhamento: formularioService.getFormularioPreDefinido(PreDefinidos.ENCAMINHAMENTO),
-                hierarquiaTerritorial: abrangenciaTerritorialService.JSONhierarquiaTerritorial(servicoInstance.abrangenciaTerritorial)
-        ]
+        render view: 'show', model: getModelExibicao(servicoInstance)
     }
 
     def create() {
         Servico servico = new Servico(params)
         servico.podeEncaminhar = true
         servico.habilitado = true
-        render view: 'create', model: [servicoInstance: servico, territoriosDisponiveis: getAreasAtuacaoDisponiveis(null)]
+        render view: 'create', model: getModelEdicao(servico)
     }
 
     def save(Servico servicoInstance) {
@@ -71,7 +67,7 @@ class ServicoController extends AncestralServicoController {
 
         boolean modoCriacao = servicoInstance.id == null
 
-        atribuiAbrangenciaTerritorial(servicoInstance)
+        servicoInstance.abrangenciaTerritorial = atribuiAbrangenciaTerritorial();
 
         //Validações:
 //        if (! servicoInstance.abrangenciaTerritorial) //exibe o formulario novamente em caso de problemas na validacao
@@ -82,17 +78,17 @@ class ServicoController extends AncestralServicoController {
             servicoService.grava(servicoInstance)
         } else {
             //exibe o formulario novamente em caso de problemas na validacao
-            return render(view: modoCriacao ? "create" : "edit" , model: [servicoInstance:servicoInstance, territoriosDisponiveis: getAreasAtuacaoDisponiveis(servicoInstance?.abrangenciaTerritorial)])
+            return render(view: modoCriacao ? "create" : "edit" , model: getModelEdicao(servicoInstance))
         }
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'servico.label', default: 'Serviço'), servicoInstance.apelido])
-        return show(servicoInstance)
+        render view: 'show', model: getModelExibicao(servicoInstance)
     }
 
     def edit(Servico servicoInstance) {
         if (! servicoInstance)
             return notFound()
-        render view: 'edit', model: [servicoInstance: servicoInstance, territoriosDisponiveis: getAreasAtuacaoDisponiveis(servicoInstance.abrangenciaTerritorial)]
+        render view: 'edit', model: getModelEdicao(servicoInstance)
     }
 
     def delete(Servico servicoInstance) {
@@ -109,4 +105,15 @@ class ServicoController extends AncestralServicoController {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'servico.label', default: 'Servico'), params.id])
         return redirect(action: "list")
     }
+
+    private LinkedHashMap<String, Object> getModelEdicao(Servico servicoInstance) {
+        [servicoInstance: servicoInstance, JSONAbrangenciaTerritorial: getAbrangenciasTerritoriaisEdicao(servicoInstance?.abrangenciaTerritorial)]
+    }
+
+    private Map<String, Object> getModelExibicao(Servico servicoInstance) {
+        [servicoInstance: servicoInstance,
+         formularioEncaminhamento: formularioService.getFormularioPreDefinido(PreDefinidos.ENCAMINHAMENTO),
+         JSONAbrangenciaTerritorial: getAbrangenciasTerritoriaisExibicao(servicoInstance.abrangenciaTerritorial)]
+    }
+
 }

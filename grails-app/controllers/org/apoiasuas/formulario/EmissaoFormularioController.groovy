@@ -119,7 +119,7 @@ class EmissaoFormularioController extends AncestralController {
                 String idProcesso = pedidoCertidaoProcessoService.getIdProcessoPeloFormularioEmitido(reportDTO.formularioEmitido.id)
                 return redirect(controller: "pedidoCertidaoProcesso", action: "mostraProcesso", id:idProcesso)
             } else {
-                return escolherFamilia()
+                redirect action: 'escolherFamilia'
             }
         }
     }

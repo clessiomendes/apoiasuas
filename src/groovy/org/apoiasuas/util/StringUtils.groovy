@@ -1,6 +1,7 @@
 package org.apoiasuas.util
 
 import com.google.common.base.CaseFormat
+import org.codehaus.plexus.util.Base64
 
 import java.text.Normalizer
 import java.util.regex.Pattern
@@ -63,13 +64,37 @@ class StringUtils {
         }
         return string;
     }
-    static String htmlSpaces(int count) {
+    public static String htmlSpaces(int count) {
         String result = "";
         for (int i = 0; i < count; i++)
             result += "&nbsp;";
         return result;
     }
-    static boolean isNotBlank(String s) {
+    public static boolean isNotBlank(String s) {
         return org.apache.commons.lang.StringUtils.isNotBlank(s)
+    }
+
+    /**
+     * Converte de byte[] para String
+     * http://www.codesolution.org/encode-a-file-into-base64-format/
+     * @param file
+     * @return
+     */
+    public static String encodeFileToBase64Binary(byte[] bytes){
+        String encodedfile = null;
+        try {
+//            FileInputStream fileInputStreamReader = new FileInputStream(file);
+//            byte[] bytes = new byte[(int)file.length()];
+//            fileInputStreamReader.read(bytes);
+            encodedfile = Base64.encodeBase64(bytes).toString();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch <span id="IL_AD4" class="IL_AD">block</span>
+            e.printStackTrace();
+    } catch (IOException e) {
+        // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return encodedfile;
     }
 }

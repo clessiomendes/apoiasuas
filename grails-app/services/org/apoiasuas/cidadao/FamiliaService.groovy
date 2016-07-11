@@ -7,6 +7,7 @@ import org.apoiasuas.programa.ProgramaFamilia
 class FamiliaService {
 
     public static final int MAX_AUTOCOMPLETE_LOGRADOUROS = 10
+    def segurancaService
 
     @Transactional
     public Familia grava(Familia familia, ProgramasCommand programasCommand) {
@@ -72,4 +73,11 @@ class FamiliaService {
 
     }
 
+    public boolean testaAcessoDominio(Familia familia) {
+        //Restringir acesso apenas ao servicoSistema que criou a familia
+        if (familia.servicoSistemaSeguranca && segurancaService.getServicoLogado() &&
+                familia.servicoSistemaSeguranca.id != segurancaService.getServicoLogado().id)
+            return false
+        return true;
+    }
 }

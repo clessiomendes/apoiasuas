@@ -3,38 +3,6 @@
     Servico localDtoServico = servicoInstance
 %>
 
-<g:javascript>
-    $(document).ready(function() {
-        $('#div_abrangenciaTerritorial').jstree({
-            //'plugins' : ['checkbox'],
-            'core' : {
-                'data' : ${raw(territoriosDisponiveis)}
-    },
-    "rules":{
-        'multiple' : false
-    },
-    "ui" : {
-        "select_limit" : 1  //only allow one node to be selected at a time
-    }//ui
-});//jstree
-});//function
-
-/**
-* Transfere os checkbox'es marcados na treeview de Areas de Atuacao para um parametro hidden a ser submetido no post do formulario
-*/
-function submeteAbrangenciaTerritorial(calee) {
-    var selectedElmsIds = [];
-    var selectedElms = $('#div_abrangenciaTerritorial').jstree("get_selected", true);
-    $.each(selectedElms, function() {
-        selectedElmsIds.push(this.id);
-    });
-    document.getElementById("territorioAtuacao").value = selectedElmsIds.join(",");
-    return true
-}
-</g:javascript>
-
-<g:hiddenField name="territorioAtuacao"/>
-
 <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'apelido', 'error')} required">
     <label for="apelido">
         <g:message code="servico.apelido.label" default="Nome popular" />
@@ -76,7 +44,7 @@ function submeteAbrangenciaTerritorial(calee) {
 <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'abrangenciaTerritorial', 'error')} required">
     <span id="uf-label" class="property-label"><g:message code="servico.abrangenciaTerritorial.label" default="Atende *" /></span>
     <span class="property-value" style="margin-left:25%" aria-labelledby="uf-label">
-        <div id="div_abrangenciaTerritorial"></div>
+        <g:render template="/abrangenciaTerritorial"/>
     </span>
 </div>
 

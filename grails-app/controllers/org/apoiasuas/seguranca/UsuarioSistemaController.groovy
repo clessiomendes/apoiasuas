@@ -9,6 +9,7 @@ import org.codehaus.groovy.grails.commons.GrailsControllerClass
 @Secured([DefinicaoPapeis.STR_SUPER_USER])
 class UsuarioSistemaController extends AncestralController {
 
+    def usuarioSistemaService
     def beforeInterceptor = [action: this.&interceptaSeguranca, entity:UsuarioSistema.class, only: ['show','edit', 'delete', 'update', 'save']]
     static defaultAction = "list"
 
@@ -29,7 +30,7 @@ class UsuarioSistemaController extends AncestralController {
         params.offset = params.offset ?: 0
         params.max = params.max ?: 20
 
-        def listUsuarios = segurancaService.listUsuarios(filtro, params.offset, params.max)
+        def listUsuarios = usuarioSistemaService.listUsuarios(filtro, params.offset, params.max)
         render view: "list", model:[usuarioSistemaInstanceList: listUsuarios, usuarioSistemaInstanceCount: listUsuarios.getTotalCount(), servicosDisponiveis: ServicoSistema.listOrderByNome(), filtro: params.findAll { it.value }]
     }
 
@@ -75,7 +76,7 @@ class UsuarioSistemaController extends AncestralController {
             return notFound()
 
         //Remove
-        if (! segurancaService.apagaUsuario(usuarioSistemaInstance)) {
+        if (! usuarioSistemaService.apagaUsuario(usuarioSistemaInstance)) {
             //exibe o formulario novamente em caso de problemas na validacao
             preenchePapel(usuarioSistemaInstance)
             return render(view:"show", model: [usuarioSistemaInstance:usuarioSistemaInstance])

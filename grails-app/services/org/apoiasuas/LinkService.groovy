@@ -4,17 +4,29 @@ import grails.transaction.Transactional
 import grails.validation.ValidationException
 import org.apoiasuas.fileStorage.FileStorageDTO
 import org.apoiasuas.fileStorage.FileStorageService
-import org.apoiasuas.processo.ProcessoService
-import org.springframework.web.multipart.MultipartFile
+import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
+import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorialService
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+import org.apoiasuas.seguranca.SegurancaService
 
 @Transactional(readOnly = true)
 class LinkService {
 
     FileStorageService fileStorageService
+    SegurancaService segurancaService
+    AbrangenciaTerritorialService abrangenciaTerritorialService
+
     private static final String BUCKET = "link"
 
     @Transactional
     public Link grava(Link link, FileStorageDTO file) {
+
+        //Criacao de novo usuario
+        if (! link.id) {
+//            usuarioSistema.criador = getUsuarioLogado()
+            link.servicoSistemaSeguranca = segurancaService.getServicoLogado()
+        }
+//        link.ultimoAlterador = getUsuarioLogado()
 
         //Efetua validacoes antes de iniciar gravacao (já que a manipulação do fileStorage não respeita as regras de uma transacao atomica - ou tudo ou nada)
         link.validate();
@@ -77,6 +89,21 @@ class LinkService {
             return null
     }
 
-
-
+    public boolean testaAcessoDominio(Link link) {
+        //Se eh do mesmo servico que criou o link, sempre permitir acesso
+        if (link.servicoSistemaSeguranca && segurancaService.getServicoLogado() &&
+                link.servicoSistemaSeguranca.id == segurancaService.getServicoLogado().id)
+            return true
+        //Se eh um link compartilhado, verificar a abrangencia territorial
+        if (link.compartilhadoCom) { //Link compartilhado com outros serviços
+            List<Long> idsMaes = segurancaService.getAbrangenciasTerritoriaisAcessiveis().collect {it.id}
+            if (! idsMaes.contains(link.compartilhadoCom.id))
+                return false;
+        } else { //Link NAO compartilhado => restringir acesso apenas ao servicoSistema que criou o link
+            if (link.servicoSistemaSeguranca && segurancaService.getServicoLogado() &&
+                    link.servicoSistemaSeguranca.id != segurancaService.getServicoLogado().id)
+                return false
+        }
+        return true;
+    }
 }

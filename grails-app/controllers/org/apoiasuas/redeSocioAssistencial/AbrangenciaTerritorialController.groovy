@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest
 class AbrangenciaTerritorialController extends AncestralController {
 
     static defaultAction = "list"
-    AbrangenciaTerritorialService abrangenciaTerritorialService
 
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -20,21 +19,21 @@ class AbrangenciaTerritorialController extends AncestralController {
     def show(AbrangenciaTerritorial abrangenciaTerritorialInstance) {
         if (!abrangenciaTerritorialInstance)
             return notFound()
-        render view: "show", model: [abrangenciaTerritorialInstance: abrangenciaTerritorialInstance, hierarquiaTerritorial: abrangenciaTerritorialService.JSONhierarquiaTerritorial(abrangenciaTerritorialInstance) ]
+        render view: "show", model: [abrangenciaTerritorialInstance: abrangenciaTerritorialInstance, hierarquiaTerritorial: abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisExibicao(abrangenciaTerritorialInstance) ]
     }
 
     @Secured([DefinicaoPapeis.STR_SUPER_USER])
     def create() {
         AbrangenciaTerritorial abrangenciaTerritorial = new AbrangenciaTerritorial(params)
         abrangenciaTerritorial.habilitado = true
-        render view: "create", model: [abrangenciaTerritorialInstance: abrangenciaTerritorial, territoriosDisponiveis: abrangenciaTerritorialService.JSONareasAtuacaoDisponiveis(null, [])]
+        render view: "create", model: [abrangenciaTerritorialInstance: abrangenciaTerritorial, territoriosDisponiveis: abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisEdicao(null, [])]
     }
 
     @Secured([DefinicaoPapeis.STR_SUPER_USER])
     def edit(AbrangenciaTerritorial abrangenciaTerritorialInstance) {
         if (!abrangenciaTerritorialInstance)
             return notFound()
-        render view: "edit", model: [abrangenciaTerritorialInstance: abrangenciaTerritorialInstance, territoriosDisponiveis: abrangenciaTerritorialService.JSONareasAtuacaoDisponiveis(abrangenciaTerritorialInstance, abrangenciaTerritorialInstance.mae ? [abrangenciaTerritorialInstance.mae] : [])]
+        render view: "edit", model: [abrangenciaTerritorialInstance: abrangenciaTerritorialInstance, territoriosDisponiveis: abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisEdicao(abrangenciaTerritorialInstance, abrangenciaTerritorialInstance.mae ? [abrangenciaTerritorialInstance.mae] : [])]
     }
 
     @Secured([DefinicaoPapeis.STR_SUPER_USER])

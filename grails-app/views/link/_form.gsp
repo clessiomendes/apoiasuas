@@ -1,27 +1,35 @@
-<%@ page import="org.apoiasuas.Link" %>
+<%@ page import="org.apoiasuas.LinkController; org.apoiasuas.Link" %>
 
 <%
     Link linkDTO = linkInstance
 %>
 
+%{--Javascript para a selecao do tipo de link--}%
 <g:javascript>
-    jQuery(document).ready(function ()
-    {
-        $("input[name='tipo']").change(radioValueChanged);
+    jQuery(document).ready(function () {
+        $("input[name='tipo']").change(eventoSelecaoTipo);
+        $("input[name='compartilhar']").change(eventoCompartilhar);
     })
 
-    function radioValueChanged()
-    {
+    function eventoSelecaoTipo() {
         radioValue = $(this).val();
-
-//        alert(radioValue);
-
         if (radioValue == "${Link.Tipo.FILE.toString()}") {
             $('#tipoFile').slideDown(500);
             $('#tipoUrl').hide();
         } else {
             $('#tipoFile').hide();
             $('#tipoUrl').slideDown(500);
+        }
+    }
+
+    function eventoCompartilhar() {
+        checked = $(this).prop('checked')
+        console.log(checked);
+        if (checked == true) {
+            $('#compartilhadoCom').slideDown(500);
+        } else {
+            $('#compartilhadoCom').slideUp(500);
+            //$('#compartilhadoCom').hide();
         }
     }
 
@@ -44,10 +52,10 @@
 </div>
 
 <div id="tipoFile" class="fieldcontain ${linkDTO.tipo?.isFile() ? '' : 'hidden'} ${hasErrors(bean: linkDTO, field: 'file', 'error')} ">
-    <label for="file">
+    <label for="${LinkController.INPUT_FILE}">
         Enviar novo arquivo
     </label>
-    <input type="file" id="file" name="file"/>
+    <input type="file" name="${LinkController.INPUT_FILE}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: linkDTO, field: 'descricao', 'error')} ">
@@ -57,11 +65,21 @@
 	<g:textField maxlength="80" size="60" name="descricao" value="${linkDTO?.descricao}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: linkInstance, field: 'instrucoes', 'error')} ">
-	<label for="instrucoes">
-		<g:message code="link.instrucoes.label"/>
-	</label>
-	<g:textArea name="instrucoes" rows="3" cols="60" value="${linkInstance?.instrucoes}"/>
+<div class="fieldcontain ${hasErrors(bean: linkDTO, field: 'instrucoes', 'error')} ">
+    <label for="instrucoes">
+        <g:message code="link.instrucoes.label"/>
+    </label>
+    <g:textArea name="instrucoes" rows="3" cols="60" value="${linkDTO?.instrucoes}"/>
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: linkDTO, field: 'compartihar', 'error')} ">
+    <label></label>
+    <g:checkBox name="${LinkController.CHECKBOX_COMPARTILHAR}" value="${linkDTO.compartilhar}"/> Compartilhar com outros serviços?
+</div>
 
+<div id="compartilhadoCom" class="fieldcontain ${linkDTO.compartilhar ? '' : 'hidden'} class="fieldcontain ${hasErrors(bean: linkDTO, field: 'compartilhadoCom', 'error')}">
+    <span id="uf-label" class="property-label"><g:message code="link.compartilhadoCom.label" default="Compartilhado com" /></span>
+    <span class="property-value" style="margin-left:25%" aria-labelledby="uf-label">
+        <g:render template="/abrangenciaTerritorial"/>
+    </span>
+</div>

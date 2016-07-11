@@ -5,27 +5,8 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'servicoSistema.label', default: 'ServicoSistema')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
-    %{-- Para o componente treeview: --}%
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 </head>
-
-<g:javascript>
-    $(document).ready(function() {
-        $('#div_abrangenciaTerritorial').jstree({
-            'core' : {
-                'data' : ${raw(hierarquiaTerritorial)}
-            },
-            "rules":{
-                multiple : false
-            },
-            "ui" : {
-                "select_limit" : 0  //no selection
-            }//ui
-        });//jstree
-    });//function
-</g:javascript>
 
 <body>
 <a href="#show-servicoSistema" class="skip" tabindex="-1"><g:message code="default.link.skip.label"
@@ -64,7 +45,9 @@
             <li class="fieldcontain">
                 <span id="abrangenciaTerritorial-label" class="property-label"><g:message
                         code="servicoSistema.abrangenciaTerritorial.label" default="Abrangencia Territorial"/></span>
-                <span class="property-value" aria-labelledby="abrangenciaTerritorial-label"><div id="div_abrangenciaTerritorial"/></span>
+                <span class="property-value" aria-labelledby="abrangenciaTerritorial-label">
+                    <g:render template="/abrangenciaTerritorial"/>
+                </span>
             </li>
         </g:if>
 

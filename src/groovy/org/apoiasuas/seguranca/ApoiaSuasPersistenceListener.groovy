@@ -1,15 +1,12 @@
 package org.apoiasuas.seguranca
 
 import groovy.util.logging.Log4j
-import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener
-import org.grails.datastore.mapping.engine.event.PostDeleteEvent
 import org.grails.datastore.mapping.engine.event.PostLoadEvent
 import org.grails.datastore.mapping.engine.event.PreDeleteEvent
 import org.grails.datastore.mapping.engine.event.PreInsertEvent
-import org.grails.datastore.mapping.engine.event.PreLoadEvent
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent
 import org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent
 import org.grails.datastore.mapping.engine.event.ValidationEvent
@@ -21,10 +18,8 @@ import org.grails.datastore.mapping.engine.event.ValidationEvent
 @Log4j
 class ApoiaSuasPersistenceListener extends AbstractPersistenceEventListener {
 
-    public static final String ATRIBUTO_SERVICO_SISTEMA = 'servicoSistemaSeguranca'
-    public static final boolean DEF_HABILITADO = true; //FIXME: manter habilitado em produção
+    SegurancaService segurancaService
 
-    public SegurancaService segurancaService
     ApoiaSuasPersistenceListener(Datastore datastore) {
         super(datastore)
     }
@@ -32,32 +27,21 @@ class ApoiaSuasPersistenceListener extends AbstractPersistenceEventListener {
     @Override
     protected void onPersistenceEvent(AbstractPersistenceEvent event) {
 
+        segurancaService.testaAcessoDominio(event.entityObject)
+
+/*
         def entityObject = event.entityObject
 
         if (entityObject && temPropriedadeSeguranca(entityObject)) {
             if (entityObject.id)
-                verificaServicoSistema(entityObject)
+                testaAcessoDominio(entityObject)
             else
                 setServicoSistema(entityObject)
         }
+*/
     }
 
-    private void verificaServicoSistema(def entityObject) {
-        if (segurancaService.isSuperUser() || (! DEF_HABILITADO))
-            return; //Super usuário tem acesso irrestrito
-
-        if (entityObject instanceof UsuarioSistema)
-            return; //Despresar classe de usuarios (porque ler o usuario admin, que eh de outro servico, nao deveria gerar erro)
-
-        ServicoSistema servicoLogado = segurancaService.servicoLogado
-        ServicoSistema propriedadeServicoSistema = entityObject.metaClass.getMetaProperty(ATRIBUTO_SERVICO_SISTEMA)?.getProperty(entityObject)
-        if (propriedadeServicoSistema && servicoLogado && propriedadeServicoSistema.id != servicoLogado.id) {
-            def e = new AcessoNegadoPersistenceException(segurancaService.getUsuarioLogado().username, entityObject.class.simpleName, entityObject.toString())
-            log.error(e.getMessage())
-            throw e;
-        }
-    }
-
+/*
     private boolean temPropriedadeSeguranca(def entityObject) {
         return entityObject.metaClass.hasProperty(entityObject, ATRIBUTO_SERVICO_SISTEMA)
     }
@@ -70,6 +54,7 @@ class ApoiaSuasPersistenceListener extends AbstractPersistenceEventListener {
         if (propriedadeServicoSistema)
             propriedadeServicoSistema.setProperty(entityObject, servicoSistema)
     }
+*/
 
     @Override
     boolean supportsEventType(Class eventType) {
