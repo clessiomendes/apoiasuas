@@ -25,7 +25,7 @@ class FormularioService {
     SegurancaService segurancaService
 
     public List<Formulario> getFormulariosDisponiveis() {
-        return Formulario.list().sort({ it.nome })
+        return Formulario.list().findAll({it.formularioPreDefinido.habilitado}).sort({ it.nome })
     }
 
     public Formulario getFormulario(Long id) {

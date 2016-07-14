@@ -63,7 +63,7 @@ class UsuarioSistemaController extends AncestralController {
 
 //  ATENCAO! A validacao do usuario e feita dentro da chamada gravaUsuario, no servico
 //        if (! usuarioSistemaInstance.validate())
-        if (! segurancaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2")))
+        if (! usuarioSistemaService.gravaUsuario(usuarioSistemaInstance, params.get("password1"), params.get("password2")))
             //exibe o formulario novamente em caso de problemas na validacao
             return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(usuarioSistemaInstance))
 

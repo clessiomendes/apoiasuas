@@ -6,21 +6,6 @@
     <meta name="layout" content="main"/>
     <title>Apoia SUAS</title>
     <asset:stylesheet src="metro.css"/>
-    <style type="text/css" media="screen">
-    #controller-list {
-        /*float: left;*/
-        margin-left: 20px;
-        list-style-type: none;
-    }
-    #controller-list ul {
-        list-style-position: inside;
-    }
-    #controller-list li {
-        line-height: 1.3;
-        list-style-position: inside;
-        margin: 0.25em 0;
-    }
-    </style>
 </head>
 
 <body>
@@ -75,39 +60,33 @@
         </g:form>
     </div>
 --}%
+    <g:render template="anuncioRedeSocioAssistencial"/>
 
     <div class="wrap">
-        <div id="menu">
-            <g:link class="verde_oliva" controller="emissaoFormulario" action="escolherFamilia">
-                Emissão de Formulários
-            %{--<br><br><asset:image src="apple-touch-icon.png"/>--}%
-            </g:link>
-            <g:link class="laranja" controller="cidadao" action="procurarCidadao">Pesquisa de Usuários</g:link>
-            <g:link class="verde_agua" controller="servico">Rede sócio-assistencial</g:link>
-            <g:link class="azul" controller="link" action="exibeLinks">Atalhos Externos</g:link>
-            <g:link class="magenta" controller="emissaoRelatorio" action="definirListagem">Listagens</g:link>
-            <g:link class="marrom" controller="pedidoCertidaoProcesso" action="preList">Pedidos de Certidão</g:link>
-            <g:link class="lilas" controller="inicio" action="status">Status do sistema</g:link>
-            <g:link class="rosa" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
+    <div id="menu">
+            <g:link title="Formulários emitidos on-line com preenchimento automático à partir do banco de dados de cidadãos (quando disponíveis)" class="verde_oliva" controller="emissaoFormulario" action="escolherFamilia">Emissão de Formulários</g:link>
+            <g:link title="Banco de dados de famílias cadastradas em ${sec.loggedInUserInfo(field:'servicoSistemaSessaoCorrente.nome')}" class="laranja" controller="cidadao" action="procurarCidadao">Pesquisa de Usuários</g:link>
+            <g:link title="Serviços, programas, projetos e ações disponíveis na rede sócio-assistencial" class="verde_agua" controller="servico">Rede sócio-assistencial</g:link>
+            <g:link title="Links para sites externos ou documentos, formulários, planilhas, etc salvos no sistema para consulta posterior" class="azul" controller="link" action="exibeLinks">Links e documentos</g:link>
+            <g:link title="Geração de planilhas com a relação de famílias ou membros de acordo com diferentes critérios (idade, técnico de referência, programa de que participa, etc)" class="magenta" controller="emissaoRelatorio" action="definirListagem">Listagens</g:link>
+            <g:link title="Consultar a situação de pedidos de certidão emitidos anteriormente (ou registrar manualmente um pedido feito fora do sistema)" class="marrom" controller="pedidoCertidaoProcesso" action="preList">Gestão de Pedidos de Certidão</g:link>
+            <g:link title="Informações técnicas do sistema" class="lilas" controller="inicio" action="status">Status do sistema</g:link>
+            <g:link title="Alterar suas informações como nome, matrícula, senha, etc" class="rosa" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
 
             %{--TODO: Crirar perfil usuario avancado--}%
 
             <sec:ifAnyGranted roles="${DefinicaoPapeis.STR_SUPER_USER}">
                 <g:link class="rosa" controller="formulario" action="list">Configuração de formulários</g:link>
-                <g:link class="beje" controller="abrangenciaTerritorial">Territórios</g:link>
-                <g:link class="verde_oliva" controller="importacaoFamilias"
-                        action="list">Importação de famílias</g:link>
-                <g:link class="laranja" controller="usuarioSistema" action="list">Operadores do sistema</g:link>
-            </sec:ifAnyGranted>
-            <sec:ifAnyGranted roles="${DefinicaoPapeis.STR_SUPER_USER}">
-                <g:link class="verde_agua" controller="servicoSistema" action="list">Serviços utilizando o sistema</g:link>
+                <g:link title="Definição das áreas geográficas de atuação dos serviços, programas, para compartilhamento de links, etc" class="beje" controller="abrangenciaTerritorial">Territórios, Regionais e Entes federativos</g:link>
+                <g:link title="Importação de planilhas de banco de dados do cadastro de famílias do seu serviço para uso no sistema" class="verde_oliva" controller="importacaoFamilias" action="list">Importação de famílias</g:link>
+                <g:link title="Criação e modificação dos usuários (operadores) do sistema, respectivos perfis e serviços a que estão vinculados" class="laranja" controller="usuarioSistema" action="list">Operadores do sistema</g:link>
+                <g:link title="Criação e modificação dos serviços habilitados a usarem o sistema" class="verde_agua" controller="servicoSistema" action="list">Serviços utilizando o sistema</g:link>
             </sec:ifAnyGranted>
             <sec:ifAnyGranted roles="${DefinicaoPapeis.STR_USUARIO}">
                 <sec:ifNotGranted roles="${DefinicaoPapeis.STR_SUPER_USER}">
-                    <g:link class="verde_agua" controller="servicoSistema" action="editCurrent">Configurações do serviço</g:link>
+                    <g:link title="Alteração das informações institucionais do seu serviço, como nome, endereço, etc" class="verde_agua" controller="servicoSistema" action="editCurrent">Configurações do serviço</g:link>
                 </sec:ifNotGranted>
             </sec:ifAnyGranted>
-
 
             <br style="clear: both"/>
             <br style="clear: both"/>

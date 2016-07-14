@@ -97,4 +97,10 @@ class StringUtils {
 
         return encodedfile;
     }
+
+    public static String toHtmlNoEmptyLines(String s) {
+        //Remove linhas em branco http://stackoverflow.com/a/4123485/1916198
+//        s.replaceAll("\n[ \t]*\n", "\n");
+        return toHtml(s.replaceAll("(?m)^[ \t]*\r?\n", ""))
+    }
 }

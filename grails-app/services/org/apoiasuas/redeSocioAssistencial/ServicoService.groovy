@@ -3,6 +3,7 @@ package org.apoiasuas.redeSocioAssistencial
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringEscapeUtils
 import org.apoiasuas.redeSocioAssistencial.Servico
+import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.util.HqlPagedResultList
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
@@ -11,6 +12,7 @@ import java.util.regex.Pattern
 class ServicoService {
 
     static final int TAMANHO_DESCRICAO_CORTADA = 150
+    SegurancaService segurancaService
 
     @Transactional
     public Servico grava(Servico servico) {
@@ -136,4 +138,15 @@ class ServicoService {
         return result
     }
 
+    public Servico getServicoParaAnuncio() {
+        String idsAbrangenciaTerritorial = segurancaService.getAbrangenciasTerritoriaisAcessiveis().collect {it.id}.join(",")
+        String hql = "from Servico where length(descricao) > 10 and " +
+                "((abrangenciaTerritorial is null) or abrangenciaTerritorial in(${idsAbrangenciaTerritorial}))"
+        int count = Servico.executeQuery("select count(*) " + hql)[0]
+        int index = new Random().nextInt(count);
+        if (count)
+            return Servico.executeQuery(hql, [offset: index, max:1]).find()
+        else
+            return null
+    }
 }

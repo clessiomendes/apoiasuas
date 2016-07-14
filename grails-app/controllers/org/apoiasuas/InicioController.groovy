@@ -11,6 +11,7 @@ import org.apache.log4j.Priority
 import org.apoiasuas.fileStorage.FileStorageService
 import org.apoiasuas.importacao.ImportacaoFamiliasController
 import org.apoiasuas.importacao.ImportarFamiliasService
+import org.apoiasuas.redeSocioAssistencial.ServicoService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -32,6 +33,7 @@ class InicioController extends AncestralController {
     ApoiaSuasService apoiaSuasService
     ImportarFamiliasService importarFamiliasService
     ServicoSistemaService servicoSistemaService
+    ServicoService servicoService
     DataSource dataSource
     FileStorageService fileStorageService
 
@@ -73,7 +75,8 @@ class InicioController extends AncestralController {
         if (! ImportacaoFamiliasController.getDataUltimaImportacao(session))
             ImportacaoFamiliasController.setDataUltimaImportacao(session, importarFamiliasService.getDataUltimaImportacao())
 
-        render view:'menu', model: [/*opcoes: opcoes,*/ outrasOpcoes: outrasOpcoes]
+        //Busca um servico aleatorio da rede socio assistencial para usar como anuncio
+        render view:'menu', model: [/*opcoes: opcoes,*/ outrasOpcoes: outrasOpcoes, servicoAnuncio: servicoService.getServicoParaAnuncio()]
     }
 
     def status() {
