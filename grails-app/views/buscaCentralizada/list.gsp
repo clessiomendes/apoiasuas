@@ -4,6 +4,16 @@
 	<head>
 		<meta name="layout" content="main">
 		<title><g:message code="buscaCentralizado.titulo" /></title>
+		%{--<style type="text/css" media="screen">--}%
+		%{--.imagem-centralizada {--}%
+			%{--position: absolute;--}%
+			%{--margin: auto;--}%
+			%{--top: 0;--}%
+			%{--left: 0;--}%
+			%{--right: 0;--}%
+			%{--bottom: 0;--}%
+		%{--}--}%
+		%{--</style>--}%
 	</head>
 	<body>
 		%{--<a href="#list-servico" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>--}%
@@ -34,9 +44,13 @@
 			<tbody>
 			<g:each in="${resultadoDTO?.objetosEncontrados}" status="i" var="objetoEncontrado">
 				<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+					<td style="vertical-align: middle">
+						%{--<div class="imagem-centralizada"></div>--}%
+						<g:img file="${objetoEncontrado.imagem}" title="${objetoEncontrado.tipo}" height="40" width="40"/>
+					</td>
 					<td>
-                        ${raw(objetoEncontrado.url + " ("+objetoEncontrado.tipo+")")}<br>
-                        ${raw(objetoEncontrado.detalhes?.toString() ?: "")}
+						${raw(objetoEncontrado.url)}<br>
+						${raw(objetoEncontrado.detalhes?.toString() ?: "")}
 					</td>
 				</tr>
 			</g:each>

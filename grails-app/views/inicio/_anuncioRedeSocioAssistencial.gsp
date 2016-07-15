@@ -5,7 +5,7 @@
         <style type="text/css" media="screen" scoped>
         .anuncio-rede-socio-assistencial {
             /*background: #f3f3ff url(../images/rede-socio-assistencial.png) 0.5em 50% no-repeat; */
-            background: #f3f3ff url(/apoiasuas/assets/rede-socio-assistencial.png) 0.5em 50% no-repeat;
+            background: #f3f3ff url(/apoiasuas/assets/rede-socio-assistencial-azul.png) 0.5em 50% no-repeat;
             background-size: 40px 40px;
             cursor: pointer;
             padding: 7px;
