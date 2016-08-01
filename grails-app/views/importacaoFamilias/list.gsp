@@ -19,7 +19,7 @@
 			<g:if test="${flash.error}">
 				<div class="errors" role="status">${flash.error}</div>
 			</g:if>
-			<table>
+			<table class="tabelaListagem">
 				<thead>
 				<tr>
 

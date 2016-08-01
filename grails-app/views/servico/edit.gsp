@@ -5,8 +5,6 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'servico.label', default: 'Servico')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
 	</head>
 	<body>
 		<a href="#edit-servico" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>

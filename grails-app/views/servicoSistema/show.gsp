@@ -5,7 +5,6 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'servicoSistema.label', default: 'ServicoSistema')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
 </head>
 
 <body>

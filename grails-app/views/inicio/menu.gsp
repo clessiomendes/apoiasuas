@@ -16,7 +16,7 @@
         <div class="message" role="status">${flash.message}</div>
     </g:if>
 
-    <fieldset class="buttons">
+    %{--<fieldset class="buttons">--}%
         <table style="border-top: 0; margin-bottom: 0;">
             <tr>
                 <td style="width: 14em;">Nome ou cadastro de usuário:</td>
@@ -31,35 +31,7 @@
                 </g:form></td>
             </tr>
         </table>
-    </fieldset>
-
-%{--
-    <div filtro-cidadao>
-        <g:form action="procurarCidadao">
-            <table>
-                <tr>
-                    <td>Nome ou cadastro de usuário: <g:textField name="nomeOuCodigoLegado" size="25" autofocus=""/></td>
-                    <td><g:submitButton name="procurar" value="Procurar"/></td>
-                </tr>
-                <tr>
-                    <td>Rede sócio-assistencial:<g:textField name="palavraChave" size="20" autofocus="" value="${filtro?.nome}"/></td>
-                    <td><g:submitButton name="list" class="list" value="Procurar"/></td>
-                </tr>
-            </table>
-        </g:form>
-    </div>
-
-    <div id="filtro-servico">
-        <g:form action="list">
-            <table>
-                <tr>
-                    <td>Rede sócio-assistencial:<g:textField name="palavraChave" size="20" autofocus="" value="${filtro?.nome}"/></td>
-                    <td><g:submitButton name="list" class="list" value="Procurar"/></td>
-                </tr>
-            </table>
-        </g:form>
-    </div>
---}%
+    %{--</fieldset>--}%
     <g:render template="anuncioRedeSocioAssistencial"/>
 
     <div class="wrap">

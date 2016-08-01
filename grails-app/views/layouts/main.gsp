@@ -30,7 +30,23 @@
         padding: 0.25em 1em;
         float: right;
     }
-    #cabecalho tr:hover { background: none; }
+    #textoBanner {
+        text-align: justify;
+        text-indent: 0;
+        font-family: "Georgia", serif;
+        font-size:20px;
+        font-weight: bold;
+        color: black;
+    }
+    #cabecalho tr:hover {
+        background: none;
+    }
+    #imgLogo {
+        float: left;
+        margin: 0 10px 0 0;
+        width: 50px;
+        height: 50px;
+    }
 
     </style>
 
@@ -40,8 +56,10 @@
     <div role="banner" id= ${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "grailsLogoProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "grailsLogoValid" : "grailsLogoLocal"}>
         <table id="cabecalho" class="vertical-align: middle"><tr>
             %{--<td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px">${application.configuracao ? application.configuracao.nome : "indefinido" }</span> </td>--}%
-            <td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px"><sec:loggedInUserInfo field="servicoSistemaSessaoCorrente.nome"/></span> </td>
-            <td> %{--  Exibe a última família / cidadão selecionado, se houver:   --}%
+            <td>
+                <a href="${createLink(controller: "inicio", action: "menu")}"><asset:image id="imgLogo" src="suas.png" alt="Apoia CRAS"/>
+                <p id="textoBanner">APOIA CRAS<br/><sec:loggedInUserInfo field="servicoSistemaSessaoCorrente.nome"/></p></a>
+            </td><td> %{--  Exibe a última família / cidadão selecionado, se houver:   --}%
                 <%
                     Familia ultimaFamilia = org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)
                     Cidadao ultimoCidadao = org.apoiasuas.cidadao.CidadaoController.getUltimoCidadao(session)

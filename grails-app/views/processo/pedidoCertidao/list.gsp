@@ -6,20 +6,12 @@
 		<meta name="layout" content="main">
         <g:set var="entityName" value="Pedidos de Certidão" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
-        <style type="text/css">
-        table.search {margin: 0;}
-        table.search tr:hover { background: none; }
-        table.search td { padding: 0; }
-        table.search div { text-indent: 0; }
-        </style>
-
 	</head>
 
 <g:javascript>
     function expandePesquisa() {
         $("#expansivel").slideDown(1000);
-        $("#slidedown").hide();
+        $("#slideDown").hide();
         return false;
     };
 </g:javascript>
@@ -27,8 +19,7 @@
 	<body>
 		<a href="#list-task" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
         <g:form>
-            <fieldset class="buttons">
-            <table class="search">
+            <table class="parametrosPesquisa">
                 <tr>
                     <td>
                         <div>
@@ -45,20 +36,20 @@
                     </td>
                     <td>
                         <div>
-                            <input type="button" id="slidedown" class="slidedown" value="." title="mais opções" onclick="expandePesquisa();"/>
+                            %{--<input type="button" id="adicionarArquivo" name="adicionarArquivo" class="botaoIndependente" onclick="adicionarArquivoClick();" title="escolher um arquivo em seu computador"/>--}%
+                            <input type="button" id="slideDown" class="botaoIndependente" title="mais opções" onclick="expandePesquisa();"/>
                             <g:submitButton formaction="list" name="list" id="search" class="search" value="Procurar"/>
                         </div>
                     </td>
                 </tr>
             </table>
-            </fieldset>
         </g:form>
 		<div id="list-task" class="content scaffold-list" role="main">
 			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
-			<table>
+            <table class="tabelaListagem">
 			<thead>
 					<tr>
                         <g:sortableColumn  property="criacao" title="Data" />

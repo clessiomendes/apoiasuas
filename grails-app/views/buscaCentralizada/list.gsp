@@ -40,13 +40,14 @@
         <g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 		</g:if>
-		<table>
+		<table class="tabelaListagem">
 			<tbody>
 			<g:each in="${resultadoDTO?.objetosEncontrados}" status="i" var="objetoEncontrado">
 				<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					<td style="vertical-align: middle">
 						%{--<div class="imagem-centralizada"></div>--}%
-						<g:img file="${objetoEncontrado.imagem}" title="${objetoEncontrado.tipo}" height="40" width="40"/>
+						%{--<g:img file="${objetoEncontrado.imagem}" title="${objetoEncontrado.tipo}" height="40" width="40"/>--}%
+						<asset:image src="${objetoEncontrado.imagem}" title="${objetoEncontrado.tipo}" height="40" width="40"/>
 					</td>
 					<td>
 						${raw(objetoEncontrado.url)}<br>

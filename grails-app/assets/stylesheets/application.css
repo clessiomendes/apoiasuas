@@ -7,7 +7,12 @@
 * You're free to add application-wide styles to this file and they'll appear at the top of the
 * compiled file, but it's generally better to create a new file per style scope.
 *
-*= require main
+* Faz com que todos os css's sejam carregados como um so:
+*= require_tree .
+*= require main.less
 *= require mobile
+* Ponto em que css definidos na pagina sao carregados (deixar sempre por ultimo)
 *= require_self
 */
+
+@import "jstree/default/style.css";

@@ -247,12 +247,14 @@ environments {
 }
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-	'/':                              ['permitAll'],
-//	'/index':                         ['permitAll'],
-//	'/index.gsp':                     ['permitAll'],
-	'/error.gsp':                     ['permitAll'],
+    '/':                              ['permitAll'],
+//    '/**/**':                         ['permitAll'],
+    '/grails-errorhandler/**':                     ['permitAll'],
+    '/error.gsp':                     ['permitAll'],
 	'/403.gsp':                       ['permitAll'],
-	'/assets/**':                     ['permitAll'],
+    '/**/*.css':                      ['permitAll'],
+    '/**/*.less':                     ['permitAll'],
+    '/assets/**':                     ['permitAll'],
 	'/**/js/**':                      ['permitAll'],
     '/searchable/**':                 ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.STR_SUPER_USER}"],
     '/console/**':                    ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.STR_SUPER_USER}"],

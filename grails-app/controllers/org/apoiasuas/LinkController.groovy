@@ -6,7 +6,6 @@ import org.apoiasuas.fileStorage.FileStorageDTO
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import grails.transaction.Transactional
-import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasException
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
@@ -18,7 +17,7 @@ class LinkController extends AncestralController {
 
     static defaultAction = "list"
     public static String CHECKBOX_COMPARTILHAR = "compartilhar"
-    public static String INPUT_FILE = "file"
+
     def beforeInterceptor = [action: this.&interceptaSeguranca/*("ola")*/, (ENTITY_CLASS_ENTRY):Link.class, only: ['show','edit', 'delete', 'update', 'save']]
 
     def exibeLinks() {
@@ -35,7 +34,7 @@ class LinkController extends AncestralController {
         if (! linkInstance)
             return notFound()
         //recarrega objeto para preencher campos transientes
-        linkInstance = linkService.getServico(linkInstance.id)
+        linkInstance = linkService.getLink(linkInstance.id)
         render view: 'show', model: getModelExibicao(linkInstance)
     }
 
@@ -45,12 +44,17 @@ class LinkController extends AncestralController {
             return notFound()
 
         boolean modoCriacao = linkInstance.id == null
+        linkInstance.fileAction = FileStorageDTO.FileActions.valueOf(request.getParameter("fileAction"))
 
         //Upload de arquivo
         FileStorageDTO file = null
-        if (linkInstance.tipo?.isFile()) {
+        if (linkInstance.tipo?.isFile() && linkInstance.fileAction == FileStorageDTO.FileActions.ATUALIZAR) {
             if (request instanceof MultipartHttpServletRequest) {
-                MultipartFile multipartFile = ((MultipartHttpServletRequest)request).getFile(INPUT_FILE)
+                MultipartFile multipartFile = ((MultipartHttpServletRequest)request).getFile(FileStorageDTO.INPUT_FILE)
+                //FIXME: configurar o servidor de aplicacao para vetar arquivos grandes antes que eles cheguem ao servidor e causem grandes danos. Cuidado para nao vetar os tamanhos de arquivos de importacao de bancos de dados
+                if (multipartFile.size > FileStorageDTO.MAX_FILE_SIZE)
+                    throw new ApoiaSuasException("Tamanho do arquivo (${multipartFile.size}) maior do que o permitido (${FileStorageDTO.MAX_FILE_SIZE})")
+
                 file = new FileStorageDTO(multipartFile.originalFilename, multipartFile.bytes)
             } else {
                 throw new ApoiaSuasException("Tipo inesperado de request para upload de arquivos: "+request.getClass().name)
@@ -83,7 +87,7 @@ class LinkController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def create() {
-        Link link = new Link(params)
+        Link link = new Link()
         render view: 'create', model: getModelEdicao(link)
 //        respond link
     }
@@ -92,8 +96,6 @@ class LinkController extends AncestralController {
     def edit(Link linkInstance) {
         if (! linkInstance)
             return notFound()
-        //recarrega objeto para preencher campos transientes
-        linkInstance = linkService.getServico(linkInstance.id)
         render view: 'edit', model: getModelEdicao(linkInstance)
     }
 
@@ -127,6 +129,9 @@ class LinkController extends AncestralController {
     }
 
     private LinkedHashMap<String, Object> getModelEdicao(Link linkInstance) {
+        //recarrega objeto para preencher campos transientes
+        if (linkInstance?.id)
+            linkInstance = linkService.getLink(linkInstance?.id)
         [linkInstance: linkInstance, JSONAbrangenciaTerritorial: getAbrangenciasTerritoriaisEdicao(linkInstance?.compartilhadoCom)]
     }
 

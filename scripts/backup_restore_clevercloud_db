@@ -1,0 +1,3 @@
+pg_dump -U uqupfxoijo5ecvvkw3cj -h bemstxtxm1dayhm-postgresql.services.clever-cloud.com -p 5432 -d bemstxtxm1dayhm > dumpfilename.sql
+
+adp0EGEZCmO9taiK6g3x

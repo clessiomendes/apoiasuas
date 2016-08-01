@@ -91,6 +91,7 @@ grails.project.dependency.resolution = {
 
         compile("org.docx4j:docx4j:3.2.1") { //manipulacao de documentos docx
             excludes "com.google.guava:guava:17.0"
+            excludes "org.antlr:antlr-runtime:3.3" //o plugin LESS Grails Asset-Pipeline exige versao 3.5
         }
         //XDocReport (geracao de relatorio a partir de templates docx ou odt)
         compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.core:1.0.4"
@@ -121,14 +122,13 @@ grails.project.dependency.resolution = {
 
     plugins {
         runtime ":hibernate4:4.3.5.5" // or ":hibernate:3.6.10.17"
-//        build ":tomcat:7.0.55"
         build ":release:3.0.1", {
             export = false
         }
 
         compile ":scaffolding:2.1.2"
         compile ':cache:1.1.8'
-        compile ":asset-pipeline:2.1.0"
+        compile ":asset-pipeline:2.1.5"
         compile ":spring-security-core:2.0-RC4" //autenticacao e authority, definicao de usuarios e papeis.
 //        compile ":filterpane:2.4.5" //filtros para as telas de busca
 //        compile ":perf4j:0.1.1" //plugin para profiling minucioso
@@ -154,7 +154,7 @@ grails.project.dependency.resolution = {
 
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.9.0"
-        //compile ":less-asset-pipeline:1.10.0"
+        compile ":less-asset-pipeline:2.1.0"
         //compile ":coffee-asset-pipeline:1.8.0"
         //compile ":handlebars-asset-pipeline:1.3.0.3"
 
@@ -164,7 +164,8 @@ grails.project.dependency.resolution = {
         compile "org.grails.plugins:js-tree:0.3.1" //componente visual de treeview
 
         compile ":camunda:0.5.0" //componente de BPM
-        build ':jetty:2.0.3'
+//        build ':jetty:2.0.3'
+        build ":tomcat:7.0.55"
 
         runtime ':elasticsearch:0.1.0'
 //        compile "org.grails.plugins:hibernate-filter:0.3.2" //Hibernate filters

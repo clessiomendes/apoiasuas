@@ -5,14 +5,6 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'cidadao.label', default: 'Cidadao')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
-
-    <style type="text/css">
-    table.search {margin: 0;}
-    table.search tr:hover { background: none; }
-    table.search td { padding: 0; }
-    table.search div { text-indent: 0; }
-    </style>
-
 </head>
 
 <g:javascript>
@@ -34,34 +26,19 @@
 </g:if>
 
 <g:form action="procurarCidadaoExecuta">
-    <fieldset class="buttons">
-        <table class="search">
-            <tr>
-                <td>
-                    <div>
+        <table class="parametrosPesquisa">
+            <tr> <td> <div>
                         Nome ou Cad: <g:textField name="nomeOuCodigoLegado" size="23" autofocus=""/>
                         Endereço: <g:textField name="logradouro" size="23"/> Nº <g:textField name="numero" size="1"/>
-                        %{--<td>Cad:<g:textField name="codigoLegado" size="1"/></td>--}%
-                    </div>
-%{--
-                    <div id="expansivel" style="display: none">
-                        Segundo membro: <g:textField name="segundoMembro" size="23" autofocus=""/>
-                    </div>
---}%
-                </td>
-                <td>
-                    <div>
-%{--    SLIDEDOWN                    <input type="button" id="slidedown" class="slidedown" value="." title="mais opções" onclick="expandePesquisa();"/>--}%
+                </div> </td>
+                <td> <div>
                         <g:submitButton name="procurar" class="search" value="Procurar"/>
-                    </div>
-                </td>
-            </tr>
+            </div> </td> </tr>
         </table>
-    </fieldset>
 </g:form>
 
 <div id="list-cidadao" class="content scaffold-list" role="main">
-    <table>
+    <table class="tabelaListagem">
         <thead><tr>
             <th><g:message code="cidadao.familia.codigoLegado.label" default="Cad"/></th>
             %{--<th><g:sortableColumn property="nomeCompleto" title="${message(code: 'cidadao.nomeCompleto.label', default: 'Nome')}" /></th>--}%

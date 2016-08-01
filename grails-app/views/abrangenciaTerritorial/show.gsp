@@ -5,11 +5,6 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'abrangenciaTerritorial.label')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
-
-        %{-- Para o componente treeview: --}%
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
     </head>
 
 <g:javascript>
@@ -57,7 +52,9 @@
 
                 <li class="fieldcontain">
                     <span id="pai-label" class="property-label"><g:message code="abrangenciaTerritorial.mae.label" default="Subordinado a" /></span>
-                    <span class="property-value" aria-labelledby="pai-label"><div id="div_territoriosAtuacao"/></span>
+                    <span class="property-value" aria-labelledby="pai-label">
+						<g:render template="/abrangenciaTerritorial"/>
+					</span>
                 </li>
 
 			</ol>

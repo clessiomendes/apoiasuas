@@ -5,9 +5,12 @@
 <head>
     <meta name="layout" content="main">
     <title>${dtoFormulario.nome}</title>
-    <r:require module="jquery" />
     <r:require module="jquery-ui" />
-    <g:javascript>
+</head>
+
+<body>
+
+<g:javascript>
             /**
             * Preenche automaticamente logradouros à partir do que já está na base de dados
             */
@@ -17,11 +20,7 @@
                });
 
             });
-    </g:javascript>
-
-</head>
-
-<body>
+</g:javascript>
 
 <div class="nav" role="navigation">
     <ul><li><g:link class="create" action="escolherFamilia">

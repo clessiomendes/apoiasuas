@@ -22,7 +22,7 @@
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
-			<table>
+			<table class="tabelaListagem">
 			<thead>
 					<tr>
 						<g:sortableColumn property="descricao" title="${message(code: 'link.descricao.label')}" />

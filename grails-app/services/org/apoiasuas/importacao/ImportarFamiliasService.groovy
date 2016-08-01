@@ -566,7 +566,8 @@ class ImportarFamiliasService {
     }
 
 
-    //nao transacional(do ponto de vista de Banco de dados)
+    //transacional para poder truncar tabela de importacao(do ponto de vista de Banco de dados)
+    @Transactional
     public TentativaImportacao preImportacao(InputStream inputStream, TentativaImportacao importacao, int linhaDoCabecalho, int abaDaPlanilha, boolean assincrono) throws Exception {
 
         final ArrayList<LinhaTentativaImportacao> bufferImportacao = new ArrayList<LinhaTentativaImportacao>();
@@ -574,7 +575,7 @@ class ImportarFamiliasService {
 
         log.info(["Iniciando preImportacao ", importacao.id])
         //Limpando tabelas temporarias
-//        limpaTabelasTemporarias()
+        limpaTabelasTemporarias()
 
         OPCPackage pkg = null;
 

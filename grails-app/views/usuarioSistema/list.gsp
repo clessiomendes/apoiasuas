@@ -35,7 +35,7 @@
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
 
-			<table>
+			<table class="tabelaListagem">
 			<thead>
 					<tr>
 						<g:sortableColumn property="nomeCompleto" title="${message(code: 'usuarioSistema.nomeCompleto.label', default: 'Nome Completo')}" />

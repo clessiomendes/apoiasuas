@@ -145,15 +145,15 @@ class BootStrap {
     }
 
 //Movido para FormularioService (antes de cada nova importação)
-//    private void limpaTabelasTemporarias() {
-//        try {
-//            log.debug("truncate table linha_tentativa_importacao")
-//            groovySql.execute("truncate table linha_tentativa_importacao")
-//        } catch (SQLException e) {
-//            log.error("Erro limpando tabela temporaria de importação")
-//            e.printStackTrace();
-//        }
-//    }
+    private void limpaTabelasTemporarias() {
+        try {
+            log.debug("truncate table linha_tentativa_importacao")
+            groovySql.execute("truncate table linha_tentativa_importacao")
+        } catch (SQLException e) {
+            log.error("Erro limpando tabela temporaria de importação")
+            e.printStackTrace();
+        }
+    }
 
     private void validaEsquemaBD() {
         String[] atualizacoesPendentes = apoiaSuasService.getAtualizacoesPendentes()

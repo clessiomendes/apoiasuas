@@ -19,7 +19,7 @@ class AbrangenciaTerritorialController extends AncestralController {
     def show(AbrangenciaTerritorial abrangenciaTerritorialInstance) {
         if (!abrangenciaTerritorialInstance)
             return notFound()
-        render view: "show", model: [abrangenciaTerritorialInstance: abrangenciaTerritorialInstance, hierarquiaTerritorial: abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisExibicao(abrangenciaTerritorialInstance) ]
+        render view: "show", model: [abrangenciaTerritorialInstance: abrangenciaTerritorialInstance, JSONAbrangenciaTerritorial: abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisExibicao(abrangenciaTerritorialInstance.mae) ]
     }
 
     @Secured([DefinicaoPapeis.STR_SUPER_USER])

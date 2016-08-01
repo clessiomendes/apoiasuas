@@ -144,9 +144,7 @@
           <root url="jar://$MAVEN_REPOSITORY$/org/apache/poi/poi/3.9/poi-3.9.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/springframework/security/spring-security-web/3.2.3.RELEASE/spring-security-web-3.2.3.RELEASE.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/springframework/security/spring-security-core/3.2.3.RELEASE/spring-security-core-3.2.3.RELEASE.jar!/" />
-          <root url="jar://$MAVEN_REPOSITORY$/com/bertramlabs/plugins/asset-pipeline-core/2.1.0/asset-pipeline-core-2.1.0.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/antlr/stringtemplate/3.2.1/stringtemplate-3.2.1.jar!/" />
-          <root url="jar://$MAVEN_REPOSITORY$/org/antlr/antlr-runtime/3.3/antlr-runtime-3.3.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/postgresql/postgresql/9.3-1101-jdbc41/postgresql-9.3-1101-jdbc41.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/liquibase/liquibase-core/3.3.2/liquibase-core-3.3.2.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/mysql/mysql-connector-java/5.1.12/mysql-connector-java-5.1.12.jar!/" />
@@ -315,6 +313,13 @@
           <root url="jar://$MAVEN_REPOSITORY$/net/sourceforge/jmatio/jmatio/1.0/jmatio-1.0.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/com/healthmarketscience/jackcess/jackcess-encrypt/2.1.0/jackcess-encrypt-2.1.0.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/18.0/guava-18.0.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/com/bertramlabs/plugins/less-asset-pipeline/2.1.0/less-asset-pipeline-2.1.0.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/com/bertramlabs/plugins/asset-pipeline-core/2.1.1/asset-pipeline-core-2.1.1.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/ro/isdc/wro4j/rhino/1.7R5-20130223-1/rhino-1.7R5-20130223-1.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/com/github/sommeri/less4j-javascript/0.0.1/less4j-javascript-0.0.1.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/json/json/20090211/json-20090211.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/antlr/antlr-runtime/3.5.2/antlr-runtime-3.5.2.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/com/github/sommeri/less4j/1.10.0/less4j-1.10.0.jar!/" />
         </CLASSES>
         <JAVADOC>
           <root url="jar://$MAVEN_REPOSITORY$/net/arnx/wmf2svg/0.9.0/wmf2svg-0.9.0-javadoc.jar!/" />

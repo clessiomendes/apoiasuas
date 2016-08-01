@@ -1,5 +1,6 @@
 package org.apoiasuas
 
+import org.apoiasuas.fileStorage.FileStorageDTO
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.util.FullTextSearchUtils
@@ -21,6 +22,7 @@ class Link {
     //Transiente:
     String fileName
     Boolean compartilhar
+    FileStorageDTO.FileActions fileAction
 
     static searchable = {                           // <-- elasticsearch plugin
         only = ["descricao", "instrucoes", "url", FullTextSearchUtils.ID_SERVICO_SISTEMA, FullTextSearchUtils.ID_COMPARTILHADO_COM]
@@ -29,7 +31,7 @@ class Link {
         url alias: FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:3
     }
 
-    static transients = ['fileName', 'compartilhar', FullTextSearchUtils.ID_SERVICO_SISTEMA, FullTextSearchUtils.ID_COMPARTILHADO_COM]
+    static transients = ['fileName', 'compartilhar', 'fileAction', FullTextSearchUtils.ID_SERVICO_SISTEMA, FullTextSearchUtils.ID_COMPARTILHADO_COM]
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_link']
@@ -37,7 +39,8 @@ class Link {
 
     static constraints = {
         tipo(nullable: false);
-        descricao(nullable: false, maxSize: 255);
+        descricao(nullable: false);
+        descricao(unique: ['servicoSistemaSeguranca'], maxSize: 255);
         instrucoes(nullable: true, maxSize: 255);
         servicoSistemaSeguranca(nullable: false);
     }
