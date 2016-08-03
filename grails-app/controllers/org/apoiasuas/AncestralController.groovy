@@ -5,6 +5,7 @@ import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.CidadaoController
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.FamiliaController
+import org.apoiasuas.cidadao.FamiliaService
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorialService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
@@ -21,6 +22,7 @@ class AncestralController {
 
     SegurancaService segurancaService
     AbrangenciaTerritorialService abrangenciaTerritorialService
+    FamiliaService familiaService
     public static String ENTITY_CLASS_ENTRY = "entity"
     public static String JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL = "JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL"
 
@@ -29,7 +31,8 @@ class AncestralController {
         if (cidadao && cidadao.id) {
             CidadaoController.setUltimoCidadao(session, cidadao)
             if (cidadao.familia && cidadao.familia.id)
-                FamiliaController.setUltimaFamilia(session, cidadao.familia)
+//                forward(controller: "familia", action: "setUltimaFamilia", params: [familia: cidadao.familia])
+                setUltimaFamilia(cidadao.familia)
             else
                 throw new RuntimeException("Impossivel determinar familia do cidadao sendo armazenado na sessao. Id cidadao = ${cidadao.id}")
         } else {
@@ -39,14 +42,32 @@ class AncestralController {
 
     protected void guardaUltimaFamiliaSelecionada(Familia familia) {
         if (familia && familia.id) {
-            FamiliaController.setUltimaFamilia(session, familia)
+//            forward(controller: "familia", action: "setUltimaFamilia", params: [familia: familia])
+            setUltimaFamilia(familia)
             //Elimina o ultimo cidadao selecionado da sessao se houver mudança da familia selecionada
             Cidadao ultimoCidadao = CidadaoController.getUltimoCidadao(session)
             if (! ultimoCidadao || ultimoCidadao.familia.id != familia.id)
                 CidadaoController.setUltimoCidadao(session, null)
         } else {
-            FamiliaController.setUltimaFamilia(session, null)
+            setUltimaFamilia(null)
+//            forward(controller: "familia", action: "setUltimaFamilia", params: [familia: null])
             CidadaoController.setUltimoCidadao(session, null)
+        }
+    }
+
+    private void setUltimaFamilia(Familia familia) {
+        if (session[FamiliaController.SESSION_ULTIMA_FAMILIA]?.id != familia.id) {
+            session[FamiliaController.SESSION_ULTIMA_FAMILIA] = familia;
+            Set notificacoes = familiaService.getNotificacoes(familia.id);
+            String textoNotificacoes = "";
+            notificacoes.each {
+                if (! textoNotificacoes)
+                    textoNotificacoes += it
+                else
+                    textoNotificacoes += "<br>"+it
+            }
+            session[FamiliaController.SESSION_NOTIFICACAO_FAMILIA] = textoNotificacoes;
+            session[FamiliaController.SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES] = 0L
         }
     }
 

@@ -14,7 +14,8 @@ class FamiliaController extends AncestralController {
 
     def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Familia.class, only: ['show','edit', 'delete', 'update', 'save']]
     private static final String SESSION_ULTIMA_FAMILIA = "SESSION_ULTIMA_FAMILIA"
-    def familiaService
+    private static final String SESSION_NOTIFICACAO_FAMILIA = "SESSION_NOTIFICACAO_FAMILIA"
+    private static final String SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES = "SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES"
     def pedidoCertidaoProcessoService
 
     def index(Integer max) {
@@ -97,13 +98,26 @@ class FamiliaController extends AncestralController {
         }
     }
 
+    public static Long getNumeroExibicoesNotificacao(HttpSession session) {
+        return session[SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES]
+    }
+
+    public static String getNotificacao(HttpSession session) {
+        return session[SESSION_NOTIFICACAO_FAMILIA]
+    }
+
     public static Familia getUltimaFamilia(HttpSession session) {
+        Long numeroExibicoes = getNumeroExibicoesNotificacao(session) ?: 0L;
+        numeroExibicoes++
+        session[SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES] = numeroExibicoes;
         return session[SESSION_ULTIMA_FAMILIA]
     }
 
-    public static void setUltimaFamilia(HttpSession session, Familia familia) {
-        session[SESSION_ULTIMA_FAMILIA] = familia
+    def limparNotificacoes() {
+        session[SESSION_NOTIFICACAO_FAMILIA] = null;
+        render 200;
     }
+
 }
 
 class ProgramasCommand {

@@ -5,7 +5,6 @@
 <head>
     <meta name="layout" content="main">
     <title>${dtoFormulario.nome}</title>
-    <r:require module="jquery-ui" />
 </head>
 
 <body>

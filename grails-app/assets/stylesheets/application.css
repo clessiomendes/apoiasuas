@@ -11,6 +11,9 @@
 *= require_tree .
 *= require main.less
 *= require mobile
+*= require fileuploader
+*= require notificacoes.less
+*= require themes/ui-lightness/jquery-ui-1.10.4.custom
 * Ponto em que css definidos na pagina sao carregados (deixar sempre por ultimo)
 *= require_self
 */

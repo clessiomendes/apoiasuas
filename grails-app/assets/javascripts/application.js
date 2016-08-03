@@ -7,6 +7,12 @@
 //
 //= require jquery
 //= require jstree/jstree.js
+//= require fileuploader.js
+//= require js/jquery-ui-1.10.4.custom
+//= require notificacoes.js
+//
+//Manter as instruções abaixo sempre como as últimas:
+//
 //= require_tree .
 //= require_self
 
@@ -33,3 +39,4 @@ function fileSizeToString(bytes) {
 	var i = Math.floor(Math.log(bytes) / Math.log(k));
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
+

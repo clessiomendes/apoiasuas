@@ -80,4 +80,22 @@ class FamiliaService {
             return false
         return true;
     }
+
+    Set<String> getNotificacoes(Long idFamilia) {
+        if (! idFamilia)
+            return []
+        Set<String> result = []
+        Familia familia = Familia.get(idFamilia);
+        //testa se a familia eh acompanhada por algum tecnico
+        if (familia.tecnicoReferencia)
+            result << "Família acompanhada por "+familia.tecnicoReferencia.username+"."
+        //testa idades voltadas ao SCFV
+        familia.membros.each { Cidadao cidadao ->
+            if (cidadao.idade && cidadao.idade < 4)
+                result << "Família elegível ao SCFV de 0 a 3."
+            if (cidadao.idade && cidadao.idade >= 60)
+                result << "Família elegível ao SCFV para idosos."
+        }
+        return result
+    }
 }

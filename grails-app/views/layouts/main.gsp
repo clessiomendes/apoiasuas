@@ -22,6 +22,7 @@
     #caixa-familia {
         background: none repeat scroll 0% 0% #E1F2B6;
         border: 1px solid #83955c;
+        max-width: 400px;
         /*color: #83955c;*/
         /*box-shadow: 1px 1px 0.5em #9cb26e;*/
         font-size: 0.8em;
@@ -30,13 +31,16 @@
         padding: 0.25em 1em;
         float: right;
     }
-    #textoBanner {
+    #textoBanner, #textoBanner a:hover, #textoBanner a:visited, #textoBanner a:link, #textoBanner a:active {
         text-align: justify;
         text-indent: 0;
         font-family: "Georgia", serif;
-        font-size:20px;
         font-weight: bold;
-        color: black;
+        color: white;
+        line-height: 0.9em;
+        margin-top: 10px;
+        text-decoration: none !important;
+        border:0!important;
     }
     #cabecalho tr:hover {
         background: none;
@@ -52,13 +56,19 @@
 
 </head>
 	<body>
+
+    <g:render template="/layouts/notificacoes"></g:render>
+
     %{--   Muda a cor do banner de acordo com o ambiente:   --}%
-    <div role="banner" id= ${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "grailsLogoProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "grailsLogoValid" : "grailsLogoLocal"}>
+    <div role="banner" id= ${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "grailsLogoProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "grailsLogoValid" : "grailsLogoProd"}>
         <table id="cabecalho" class="vertical-align: middle"><tr>
             %{--<td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px">${application.configuracao ? application.configuracao.nome : "indefinido" }</span> </td>--}%
             <td>
-                <a href="${createLink(controller: "inicio", action: "menu")}"><asset:image id="imgLogo" src="suas.png" alt="Apoia CRAS"/>
-                <p id="textoBanner">APOIA CRAS<br/><sec:loggedInUserInfo field="servicoSistemaSessaoCorrente.nome"/></p></a>
+                <a href="${createLink(controller: "inicio", action: "menu")}"><asset:image id="imgLogo" src="suas-2.png" alt="Apoia CRAS"/></a>
+                <p id="textoBanner">
+                    <span style="font-size: 30px;">APOIA CRAS</span><br/>
+                    <span style="font-size: 15px;"><sec:loggedInUserInfo style="font-size:20px;" field="servicoSistemaSessaoCorrente.nome"/></span>
+                </p>
             </td><td> %{--  Exibe a última família / cidadão selecionado, se houver:   --}%
                 <%
                     Familia ultimaFamilia = org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)

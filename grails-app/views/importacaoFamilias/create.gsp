@@ -4,8 +4,6 @@
 <head>
     <meta name="layout" content="main">
     <title><g:message code="importar.cadastro.de.familias"/></title>
-    <r:require module="fileuploader"/>
-    <r:require module="jquery" />
 </head>
 
 <body>
