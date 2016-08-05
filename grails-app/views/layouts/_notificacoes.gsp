@@ -1,7 +1,8 @@
 <%@ page import="org.apoiasuas.cidadao.FamiliaController" %>
 
 <g:if test="${FamiliaController.getNotificacao(session)}">
-    <script>
+    <g:javascript>
+
         //Exibe as notificacoes
         $( document ).ready(function() {
             //$.notify("Hello Box", { className: 'warn', autoHide: false, clickToHide: false, position:"right" });
@@ -15,29 +16,11 @@
 //            alert(conteudo);
 //            $("#caixa-familia").notify({title: "Família elegível a SCFV 0 a 3 <a href='http://www.uol.com.br'>encaminhar</a><br>Família elegível a SCFV > 60 <a href='http://www.uol.com.br'>encaminhar</a>", button: 'Confirm'},
             $("#caixa-familia").notify({title: conteudo},
-                    //{style: 'foo', arrowSize: 10, showDuration: 1000, hideDuration: 0, className: "warn", autoHide: false, clickToHide: false, position:"bottom right" });
-                    {style: 'foo', arrowSize: 10, showDuration: showDuration, hideDuration: 0, className: "warn", autoHide: false, clickToHide: false, position:"bottom right" });
+                    {style: 'notificacoesFamilia', arrowSize: 10, showDuration: showDuration, hideDuration: 0, className: "warn", autoHide: false, clickToHide: false, position:"bottom right" });
         });
 
-        //= require notify.js
-
-        //        $.notify.addStyle('happyblue', {
-        //            html: "<div>☺<span data-notify-text/>☺</div>",
-        //            classes: {
-        //                base: {
-        //                    "white-space": "nowrap",
-        //                    "background-color": "lightblue",
-        //                    "padding": "5px"
-        //                },
-        //                superblue: {
-        //                    "color": "white",
-        //                    "background-color": "blue"
-        //                }
-        //            }
-        //        });
-
-        //add a new style 'foo'
-        $.notify.addStyle('foo', {
+        //add a new style
+        $.notify.addStyle('notificacoesFamilia', {
             html:
             "<div>" +
             "<div class='clearfix'>" +
@@ -46,19 +29,15 @@
             "<button title='Fechar' class='fechar'>X</button>" +
             "</div>" +
             "<div class='title' data-notify-html='title'/>" +
-//                    "<a href='http://www.uol.com.br'>Uol</a>" +
             "</div>" +
             "</div>"
         });
 
         //listen for click events from this style
-        $(document).on('click', '.notifyjs-foo-base .fechar', function() {
-//    alert($(this).text() + " clicked!");
+        $(document).on('click', '.notifyjs-notificacoesFamilia-base .fechar', function() {
             ${remoteFunction(controller: 'familia', action: 'limparNotificacoes', method: "post")};
-            //programmatically trigger propogating hide event
             $(this).trigger('notify-hide');
         });
 
-
-    </script>
+    </g:javascript>
 </g:if>

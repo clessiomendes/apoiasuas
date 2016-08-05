@@ -155,6 +155,12 @@ class FormularioService {
                     valor = formulario.usuarioSistema?.matricula; break
             }
             def chave = StringUtils.upperToCamelCase(campo.origem.toString()) + "." + campo.codigo
+            //remove caracteres que não são interpretados corretamente no arquivo word (como TAB)
+            if (campo.getTipo() == CampoFormulario.Tipo.TEXTO) {
+                String temp = valor;
+                valor = temp.replaceAll("\\t", " ");
+            }
+
             reportDTO.context.put(chave, valor)
         }
         log.debug(formulario)

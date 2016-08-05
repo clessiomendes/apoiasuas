@@ -56,7 +56,11 @@ class AncestralController {
     }
 
     private void setUltimaFamilia(Familia familia) {
-        if (session[FamiliaController.SESSION_ULTIMA_FAMILIA]?.id != familia.id) {
+        if (! familia) {
+            session[FamiliaController.SESSION_ULTIMA_FAMILIA] = null;
+            session[FamiliaController.SESSION_NOTIFICACAO_FAMILIA] = null;
+            session[FamiliaController.SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES] = 0L;
+        } else if (session[FamiliaController.SESSION_ULTIMA_FAMILIA]?.id != familia.id) {
             session[FamiliaController.SESSION_ULTIMA_FAMILIA] = familia;
             Set notificacoes = familiaService.getNotificacoes(familia.id);
             String textoNotificacoes = "";

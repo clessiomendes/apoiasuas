@@ -16,6 +16,7 @@ import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.SituacaoFamilia
 import org.apoiasuas.cidadao.Telefone
 import org.apoiasuas.programa.ProgramaFamilia
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
@@ -142,6 +143,8 @@ class ImportarFamiliasService {
         Map criticaFamilias = [:]
         Map criticaCidadaos = [:]
         TentativaImportacao tentativaImportacao
+        //Associa o servico obtido da sessao http com a sessao hibernate, para evitar erros de instancias duplicadas (NonUniqueObjectException)
+        ServicoSistema servicoLogado = segurancaService.getServicoLogado().merge(validate: false, flush: false);
 
         aguardaPreImportacao(idImportacao)
 
@@ -183,7 +186,7 @@ class ImportarFamiliasService {
                             familiaPersistida?.discard() //Tira do cache a ultima familia para agilizar a importacao
 
                             //Importa familia, endereco e telefones
-                            familiaPersistida = importaFamilia(mapaDeCampos, resultadoImportacao, usuarioLogado)
+                            familiaPersistida = importaFamilia(mapaDeCampos, resultadoImportacao, usuarioLogado, servicoLogado)
                             nomeReferencia = trim(mapaDeCampos.get("NomeReferencia"))
                             nisReferencia = trim(mapaDeCampos.get("NISReferencia"))
                         } catch (Throwable t) {
@@ -198,7 +201,7 @@ class ImportarFamiliasService {
                     //Importa cada cidadão referente à última família importada, considerando o primeiro cidadão como a referência familiar
                     if (!erroNaFamilia) {
                         try {
-                            importaCidadaos(nomeReferencia, mapaDeCampos, nisReferencia, familiaPersistida, resultadoImportacao, referencia, usuarioLogado, tentativaImportacao)
+                            importaCidadaos(nomeReferencia, mapaDeCampos, nisReferencia, familiaPersistida, resultadoImportacao, referencia, usuarioLogado, servicoLogado, tentativaImportacao)
                         } catch (Throwable t) {
                             log.warn("Erro importando cidadao especifico", t)
                             //o objeto persistente cidadao ja foi descartado dentro de importaCidadao
@@ -258,14 +261,14 @@ class ImportarFamiliasService {
     }
 
     @Transactional
-    private Familia importaFamilia(SafeMap mapaDeCampos, ResumoImportacaoDTO resumoImportacaoDTO, UsuarioSistema usuarioLogado) {
+    private Familia importaFamilia(SafeMap mapaDeCampos, ResumoImportacaoDTO resumoImportacaoDTO, UsuarioSistema usuarioLogado, ServicoSistema servicoLogado) {
 
         boolean novaFamilia = false
         boolean familiaGravada = false
         boolean podeAtualizar = false
 
 //busca familia na tabela Familia
-        Familia result = Familia.findByCodigoLegadoAndServicoSistemaSeguranca(trim(mapaDeCampos.get("CodigoFamilia")), segurancaService.getServicoLogado())
+        Familia result = Familia.findByCodigoLegadoAndServicoSistemaSeguranca(trim(mapaDeCampos.get("CodigoFamilia")), servicoLogado)
         if (!result) {
             //se nao encontrar, insere nova
             novaFamilia = true
@@ -289,7 +292,7 @@ class ImportarFamiliasService {
             result.endereco.municipio = trim(mapaDeCampos.get("Municipio")) ?: segurancaService.getMunicipio()
             result.endereco.UF = trim(mapaDeCampos.get("UF")) ?: segurancaService.getUF()
             result.dataUltimaImportacao = new Date()
-            result.servicoSistemaSeguranca = segurancaService.getServicoLogado()
+            result.servicoSistemaSeguranca = servicoLogado
 
 //        if (AmbienteExecucao.SABOTAGEM)
 //            assert result.codigoLegado != "4", "Erro na familia"
@@ -379,7 +382,7 @@ class ImportarFamiliasService {
     }
 
     @Transactional
-    private void importaCidadaos(nomeReferencia, SafeMap mapaDeCampos, nisReferencia, Familia familiaPersistida, ResumoImportacaoDTO resumoImportacaoDTO, boolean referencia, UsuarioSistema usuarioLogado, TentativaImportacao importacao) {
+    private void importaCidadaos(nomeReferencia, SafeMap mapaDeCampos, nisReferencia, Familia familiaPersistida, ResumoImportacaoDTO resumoImportacaoDTO, boolean referencia, UsuarioSistema usuarioLogado, ServicoSistema servicoLogado, TentativaImportacao importacao) {
 
         String nomeCidadao = referencia ? nomeReferencia : trim(mapaDeCampos.get("NomeCidadao"))
         String nis = referencia ? nisReferencia : trim(mapaDeCampos.get("NIS"))
@@ -402,7 +405,7 @@ class ImportarFamiliasService {
                 cidadaoPersistido.nomeCompleto = nomeCidadao
                 cidadaoPersistido.familia = familiaPersistida
                 cidadaoPersistido.criador = usuarioLogado
-                cidadaoPersistido.servicoSistemaSeguranca = segurancaService.getServicoLogado()
+                cidadaoPersistido.servicoSistemaSeguranca = servicoLogado
             }
 
             if (novoCidadao || !cidadaoPersistido.alteradoAposImportacao()) {
@@ -440,26 +443,6 @@ class ImportarFamiliasService {
         }
 
     }
-
-/*
-    Parentesco idetificaParentesco(String valorImportado) {
-        switch (valorImportado.toLowerCase().trim()) {
-            case ["SOGRO", "SOGRA"]: return Parentesco.SOGRO
-            case ["NORA", "GENRO"]: return Parentesco.GENRO
-            case ["IRMA", "IRMAO"]: return Parentesco.IRMAO
-            case ["SOBRINHO", "SOBRINHA"]: return Parentesco.SOBRINHO
-            case ["MAE", "PAI"]: return Parentesco.PAI
-            case ["NETO", "NETA", "BISNETO", "BISNETA"]: return Parentesco.NETO
-            case ["FILHO", "FILHA"]: return Parentesco.FILHO
-            case ["ENTEADO", "ENTEADA"]: return Parentesco.ENTEADO
-            case ["AGREGADO", "AGREGADA"]: return Parentesco.NAO_PARENTE
-            case "AVO": return Parentesco.AVO
-            case "REFERENCIA": return Parentesco.RF
-            case ["MARIDO", "COMPANHEIRO", "COMPANHEIRA", "ESPOSA", "ESPOSO"]: return Parentesco.COMPANHEIRO
-            default: return Parentesco.OUTRO
-        }
-    }
-*/
 
     private Date convertExcelDate(def data) {
         if (data instanceof Number)
@@ -515,18 +498,18 @@ class ImportarFamiliasService {
     DefinicoesImportacaoFamilias getDefinicoes() {
         DefinicoesImportacaoFamilias result = DefinicoesImportacaoFamilias.findByServicoSistemaSeguranca(segurancaService.getServicoLogado());
         if (! result)
-            result = inicializaDefinicoes(segurancaService.getUsuarioLogado())
+            result = inicializaDefinicoes(segurancaService.getUsuarioLogado(), segurancaService.getServicoLogado())
         return result
     }
 
     @Transactional
-    private DefinicoesImportacaoFamilias inicializaDefinicoes(UsuarioSistema usuarioSistema) {
+    private DefinicoesImportacaoFamilias inicializaDefinicoes(UsuarioSistema usuarioSistema, ServicoSistema servicoLogado) {
         DefinicoesImportacaoFamilias definicao = new DefinicoesImportacaoFamilias()
         definicao.linhaDoCabecalho = 1
         definicao.abaDaPlanilha = 1
         definicao.ultimoAlterador = usuarioSistema
         definicao.lastUpdated = new Date()
-        definicao.servicoSistemaSeguranca = segurancaService.getServicoLogado()
+        definicao.servicoSistemaSeguranca = servicoLogado
         /*
         if (AmbienteExecucao.isDesenvolvimento()) {
             definicao.linhaDoCabecalho = 2
@@ -634,29 +617,6 @@ class ImportarFamiliasService {
 
                     });
 
-/*
-                    } else {      TESTE DE IMPORTACAO DA VERSAO ANTIGA DO EXCEL (.XLS)
-
-                        HSSFWorkbook wb = new HSSFWorkbook(inputStream);
-                        HSSFSheet sheet = wb.getSheetAt(0);
-                        HSSFRow row;
-                        HSSFCell cell;
-                        Iterator rows = sheet.rowIterator();
-                        long totalLinhas = 0
-                        long totalCelulas = 0
-                        while (rows.hasNext()) {
-                            row = (HSSFRow) rows.next();
-                            Iterator cells = row.cellIterator();
-                            totalLinhas++;
-                            while (cells.hasNext()) {
-                                cell=(HSSFCell) cells.next();
-                                totalCelulas++
-                            }
-                        }
-                        log.info("total ${totalLinhas} linhas e ${totalCelulas} celulas")
-                    }
-*/
-
             if (assincrono) {
                 Promise p = Promises.task {
                     processExcelReader(pkg, sheetRowCallbackHandler, importacao, abaDaPlanilha, bufferImportacao)
@@ -746,7 +706,7 @@ class ImportarFamiliasService {
     /**
      * Registra uma nova tentativa de importacao no BD (um registro pai para os filhos do tipo LinhaTentativaImportacao inseridos na sequencia).
      */
-    public TentativaImportacao registraNovaImportacao(int linhaDoCabecalho, int abaDaPlanilha, UsuarioSistema usuarioLogado) {
+    public TentativaImportacao registraNovaImportacao(int linhaDoCabecalho, int abaDaPlanilha, UsuarioSistema usuarioLogado, ServicoSistema servicoLogado) {
         DefinicoesImportacaoFamilias definicoes = getDefinicoes();
         definicoes.linhaDoCabecalho = linhaDoCabecalho
         definicoes.abaDaPlanilha = abaDaPlanilha
@@ -754,7 +714,7 @@ class ImportarFamiliasService {
 
         TentativaImportacao result = new TentativaImportacao()
         result.criador = usuarioLogado
-        result.servicoSistemaSeguranca = segurancaService.getServicoLogado();
+        result.servicoSistemaSeguranca = servicoLogado;
         result.dateCreated = new Date()
         atualizaProgressoImportacao(result, StatusImportacao.ENVIANDO_ARQUIVO)
         result.save(failOnError: true)

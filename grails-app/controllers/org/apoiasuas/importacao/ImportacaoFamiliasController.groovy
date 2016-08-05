@@ -54,7 +54,7 @@ class ImportacaoFamiliasController extends AncestralController {
                 response.status = 500
                 return render ([errorMessage: "Configuracoes nao definidas (linha do cabecalho ou aba da planilha)"] as JSON)
             }
-            TentativaImportacao tentativaImportacao = servicoImportarFamilias.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, operador)
+            TentativaImportacao tentativaImportacao = servicoImportarFamilias.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, operador, segurancaService.servicoLogado)
             try {
                 tentativaImportacao = servicoImportarFamilias.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)
             } catch (org.apache.poi.openxml4j.exceptions.InvalidFormatException e) {
@@ -136,7 +136,7 @@ class ImportacaoFamiliasController extends AncestralController {
             int linhaDoCabecalho = params.int("linhaDoCabecalho")
             int abaDaPlanilha = params.int("abaDaPlanilha")
 
-            TentativaImportacao tentativaImportacao = servicoImportarFamilias.registraNovaImportacao(linhaDoCabecalho, abaDaPlanilha, segurancaService.usuarioLogado)
+            TentativaImportacao tentativaImportacao = servicoImportarFamilias.registraNovaImportacao(linhaDoCabecalho, abaDaPlanilha, segurancaService.usuarioLogado, segurancaService.servicoLogado)
 
             servicoImportarFamilias.preImportacao(inputStream, tentativaImportacao, linhaDoCabecalho, abaDaPlanilha, true/*assincrono*/)
 

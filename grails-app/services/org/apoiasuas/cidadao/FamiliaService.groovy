@@ -1,6 +1,7 @@
 package org.apoiasuas.cidadao
 
 import grails.transaction.Transactional
+import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.programa.ProgramaFamilia
 
@@ -8,6 +9,7 @@ class FamiliaService {
 
     public static final int MAX_AUTOCOMPLETE_LOGRADOUROS = 10
     def segurancaService
+    def pedidoCertidaoProcessoService
 
     @Transactional
     public Familia grava(Familia familia, ProgramasCommand programasCommand) {
@@ -81,14 +83,16 @@ class FamiliaService {
         return true;
     }
 
-    Set<String> getNotificacoes(Long idFamilia) {
+    public Set<String> getNotificacoes(Long idFamilia) {
         if (! idFamilia)
             return []
         Set<String> result = []
         Familia familia = Familia.get(idFamilia);
+
         //testa se a familia eh acompanhada por algum tecnico
         if (familia.tecnicoReferencia)
             result << "Família acompanhada por "+familia.tecnicoReferencia.username+"."
+
         //testa idades voltadas ao SCFV
         familia.membros.each { Cidadao cidadao ->
             if (cidadao.idade && cidadao.idade < 4)
@@ -96,6 +100,7 @@ class FamiliaService {
             if (cidadao.idade && cidadao.idade >= 60)
                 result << "Família elegível ao SCFV para idosos."
         }
+
         return result
     }
 }
