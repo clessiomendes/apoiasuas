@@ -167,7 +167,7 @@ grails.project.dependency.resolution = {
 //        build ':jetty:2.0.3'
         build ":tomcat:7.0.55"
 
-        runtime ':elasticsearch:0.1.0'
+        compile ':elasticsearch:0.1.0'
 //        compile "org.grails.plugins:hibernate-filter:0.3.2" //Hibernate filters
 
     }

@@ -4,38 +4,6 @@
     AbrangenciaTerritorial abrangenciaTerritorial = abrangenciaTerritorialInstance;
 %>
 
-<g:javascript>
-    $(document).ready(function() {
-        $('#div_territoriosAtuacao').jstree({
-            //'plugins' : ['checkbox'],
-            'core' : {
-                'data' : ${raw(territoriosDisponiveis)}
-    },
-    "rules":{
-        'multiple' : false
-    },
-    "ui" : {
-        "select_limit" : 1  //only allow one node to be selected at a time
-    }//ui
-});//jstree
-});//function
-
-/**
-* Transfere os checkbox'es marcados na treeview de Areas de Atuacao para um parametro hidden a ser submetido no post do formulario
-*/
-function submeteTerritoriosAtuacao(calee) {
-    var selectedElmsIds = [];
-    var selectedElms = $('#div_territoriosAtuacao').jstree("get_selected", true);
-    $.each(selectedElms, function() {
-        selectedElmsIds.push(this.id);
-    });
-    document.getElementById("territoriosAtuacao").value = selectedElmsIds.join(",");
-    return true
-}
-
-</g:javascript>
-
-<g:hiddenField name="territoriosAtuacao"/>
 
 <div class="fieldcontain ${hasErrors(bean: abrangenciaTerritorial, field: 'nome', 'error')} ">
 	<label for="nome">
@@ -55,6 +23,6 @@ function submeteTerritoriosAtuacao(calee) {
 <div class="fieldcontain">
     <span id="uf-label" class="property-label"><g:message code="abrangenciaTerritorial.pai.label" default="Subordinado a" /></span>
     <span class="property-value" style="margin-left:25%" aria-labelledby="uf-label">
-        <div id="div_territoriosAtuacao"></div>
+        <g:render template="/abrangenciaTerritorial"/>
     </span>
 </div>

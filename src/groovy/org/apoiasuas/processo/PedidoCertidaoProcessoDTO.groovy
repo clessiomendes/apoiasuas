@@ -1,11 +1,13 @@
 package org.apoiasuas.processo
 
+import grails.validation.Validateable
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.seguranca.UsuarioSistema
 
 /**
  * Created by admin on 25/05/2016.
  */
+@Validateable
 class PedidoCertidaoProcessoDTO extends ProcessoDTO {
 
     public final static String VARIABLE_ID_FAMILIA = "idFamilia"

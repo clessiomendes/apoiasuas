@@ -1,10 +1,12 @@
 package org.apoiasuas.processo
 
+import grails.validation.Validateable
 import org.apoiasuas.seguranca.UsuarioSistema
 
 /**
  * DTO usado para representar tarefas da engine BPM Camunda, tanto para tarefas concluidas quanto para pendentes
  */
+@Validateable
 class TarefaDTO {
     public enum SituacaoTarefa {PENDENTE, CONCLUIDA, CANCELADA}
 

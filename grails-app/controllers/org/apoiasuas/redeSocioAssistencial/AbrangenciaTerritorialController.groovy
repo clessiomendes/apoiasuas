@@ -26,14 +26,14 @@ class AbrangenciaTerritorialController extends AncestralController {
     def create() {
         AbrangenciaTerritorial abrangenciaTerritorial = new AbrangenciaTerritorial(params)
         abrangenciaTerritorial.habilitado = true
-        render view: "create", model: [abrangenciaTerritorialInstance: abrangenciaTerritorial, territoriosDisponiveis: abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisEdicao(null, [])]
+        render view: "create", model: [abrangenciaTerritorialInstance: abrangenciaTerritorial, JSONAbrangenciaTerritorial: abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisEdicao(null, [])]
     }
 
     @Secured([DefinicaoPapeis.STR_SUPER_USER])
     def edit(AbrangenciaTerritorial abrangenciaTerritorialInstance) {
         if (!abrangenciaTerritorialInstance)
             return notFound()
-        render view: "edit", model: [abrangenciaTerritorialInstance: abrangenciaTerritorialInstance, territoriosDisponiveis: abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisEdicao(abrangenciaTerritorialInstance, abrangenciaTerritorialInstance.mae ? [abrangenciaTerritorialInstance.mae] : [])]
+        render view: "edit", model: [abrangenciaTerritorialInstance: abrangenciaTerritorialInstance, JSONAbrangenciaTerritorial: abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisEdicao(abrangenciaTerritorialInstance, abrangenciaTerritorialInstance.mae ? [abrangenciaTerritorialInstance.mae] : [])]
     }
 
     @Secured([DefinicaoPapeis.STR_SUPER_USER])
@@ -44,11 +44,10 @@ class AbrangenciaTerritorialController extends AncestralController {
             return
         }
 
-        Long[] idsTerritoriosAtuacao = obtemTerritoriosRequest(request)
-
-        assert idsTerritoriosAtuacao.size() < 2, "Mais de uma area de atuacao selecionada. Apenas uma era esperada"
-        if (idsTerritoriosAtuacao)
-            abrangenciaTerritorialInstance.mae = abrangenciaTerritorialService.getAbrangenciaTerritorial(idsTerritoriosAtuacao[0]);
+//        Long[] idsTerritoriosAtuacao = obtemTerritoriosRequest(request)
+//        assert idsTerritoriosAtuacao.size() < 2, "Mais de uma area de atuacao selecionada. Apenas uma era esperada"
+//        if (idsTerritoriosAtuacao)
+        abrangenciaTerritorialInstance.mae = atribuiAbrangenciaTerritorial(); //abrangenciaTerritorialService.getAbrangenciaTerritorial(idsTerritoriosAtuacao[0]);
 
         if (! abrangenciaTerritorialService.gravaAbrangenciaTerritorial(abrangenciaTerritorialInstance) ) {
             //exibe o formulario novamente em caso de problemas na validacao

@@ -33,6 +33,8 @@ class ImportarFamiliasService {
 
     static transactional = false
     private static final int ALARME_IMPORTACAO_ATRASADA = 7
+    public static final String NOME_PLANILHA_IMPORTACAO = "importacao.xlsx"
+    public static final String BUCKET = "planilhasImportacao"
     //dias
 
     SegurancaService segurancaService

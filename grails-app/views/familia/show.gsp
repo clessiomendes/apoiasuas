@@ -76,11 +76,13 @@
 				<g:if test="${familiaInstance?.membros}">
 				<li class="fieldcontain">
 					<span id="membros-label" class="property-label"><g:message code="familia.membros.label" default="Membros" /></span>
-					
 						<g:each in="${familiaInstance.membros}" var="m">
-						<span class="property-value" aria-labelledby="membros-label"><g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link> ${m.parentescoReferencia ? " ("+m.parentescoReferencia+")" : ""} </span>
+							<span class="property-value" aria-labelledby="membros-label">
+								<g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link>
+								${m.parentescoReferencia ? ", "+m.parentescoReferencia : ""}
+								${m.idade ? ", "+m.idade + " anos" : ""}
+							</span>
 						</g:each>
-					
 				</li>
 				</g:if>
 %{--

@@ -53,7 +53,8 @@ class BuscaCentralizadaController extends AncestralController {
                     } else if (linkInstance.tipo.url) {
                         objetoEncontrado.tipo = "link externo"
                         objetoEncontrado.imagem = "link.png"
-                        objetoEncontrado.url = link([target: "new", url: linkInstance.url]) { linkInstance.descricao }
+                        String urlCorrigida = linkInstance.url.toLowerCase().startsWith("http") ? linkInstance.url : "http://"+linkInstance.url
+                        objetoEncontrado.url = link([target: "new", url: urlCorrigida]) { linkInstance.descricao }
                     }
                 } else if (objeto instanceof Formulario) {
                     Formulario formularioInstance = formularioService.getFormulario(objeto.id)

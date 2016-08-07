@@ -6,9 +6,12 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonSlurper
 import org.apoiasuas.AncestralController
+import org.apoiasuas.fileStorage.FileStorageDTO
+import org.apoiasuas.fileStorage.FileStorageService
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ApoiaSuasException
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -23,7 +26,8 @@ import javax.servlet.http.HttpSession
 @Secured([DefinicaoPapeis.STR_USUARIO])
 class ImportacaoFamiliasController extends AncestralController {
 
-    ImportarFamiliasService servicoImportarFamilias
+    ImportarFamiliasService servicoImportarFamilias;
+    FileStorageService fileStorageService;
 
     private static final String SESSION_ID_IMPORTACAO_EM_CURSO = "SESSION_ID_IMPORTACAO_EM_CURSO"
     private static final String SESSION_DATA_ULTIMA_IMPORTACAO = "SESSION_ULTIMA_IMPORTACAO"
@@ -67,15 +71,6 @@ class ImportacaoFamiliasController extends AncestralController {
                 return render ([errorMessage: "Erro na pre-importacao"] as JSON)
             }
 
-//            List<ColunaImportadaCommand> colunasImportadas = importarFamiliasService.obtemColunasImportadas(tentativaImportacao.id)
-//            if (!colunasImportadas) {
-//                //Algum erro na preImportacao pode fazer com que nao haja nenhuma coluna importada. Redirecionar para listagem com mensagem de erro
-//                result << 'Erro na importação. Consulte os "detalhes" da importação para ver o motivo. id: ' + tentativaImportacao.id
-//                return render(result as JSON)
-//            }
-
-//            Faltando alimentar o mapa camposPreenchidos a ser passado para concluiImportacao. Chave:"campo no BD", Valor:"coluna na planilha"
-
             Map camposPreenchidos = servicoImportarFamilias.getDefinicoesImportacaoFamilia()
 
             log.info("concluindo importacao")
@@ -93,6 +88,73 @@ class ImportacaoFamiliasController extends AncestralController {
             render (["Erro na importação: ${t.message}", org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(t)] as JSON)
         }
 
+    }
+
+    /**
+     * Chamar com: curl http://localhost:8080/apoiasuas/importacaoFamilias/restUpload -F user=exportabd -F pass=senha -F qqFile=@c:\temp\out.txt
+     */
+    @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
+    def restUploadBatch() {
+        log.debug("restUploadBatch acionado")
+
+        try {
+
+            final UsuarioSistema operador = autentica(request)
+            if (! operador) {
+                response.status = 403 //Forbidden
+                return render ([errorMessage: "Usuario e senha invalidos ou parametros (user e pass) ausentes"] as JSON)
+            } else {
+                log.debug("Usuario ${operador.username} autorizado a importar familias")
+            }
+
+            //Upload de arquivo
+            FileStorageDTO file = null
+            if (request instanceof MultipartHttpServletRequest) {
+                MultipartFile multipartFile = ((MultipartHttpServletRequest)request).getFile(FileStorageDTO.INPUT_FILE)
+                //FIXME: configurar o servidor de aplicacao para vetar arquivos grandes antes que eles cheguem ao servidor e causem grandes danos. Cuidado para nao vetar os tamanhos de arquivos de importacao de bancos de dados
+                if (multipartFile.size > FileStorageDTO.MAX_FILE_SIZE)
+                    throw new ApoiaSuasException("Tamanho do arquivo (${multipartFile.size}) maior do que o permitido (${FileStorageDTO.MAX_FILE_SIZE})")
+
+                file = new FileStorageDTO(ImportarFamiliasService.NOME_PLANILHA_IMPORTACAO, multipartFile.bytes)
+                fileStorageService.add(ImportarFamiliasService.BUCKET, file)
+            } else {
+                throw new ApoiaSuasException("Tipo inesperado de request para upload de arquivos: "+request.getClass().name)
+            }
+
+
+
+
+//            DefinicoesImportacaoFamilias definicoes = servicoImportarFamilias.getDefinicoes();
+//            if (!definicoes.linhaDoCabecalho || !definicoes.abaDaPlanilha) {
+//                response.status = 500
+//                return render ([errorMessage: "Configuracoes nao definidas (linha do cabecalho ou aba da planilha)"] as JSON)
+//            }
+//            TentativaImportacao tentativaImportacao = servicoImportarFamilias.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, operador, segurancaService.servicoLogado)
+//            try {
+//                tentativaImportacao = servicoImportarFamilias.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)
+//            } catch (org.apache.poi.openxml4j.exceptions.InvalidFormatException e) {
+//                response.status = 500
+//                return render ([errorMessage: "Formato invalido ou arquivo de importacao nao enviado"] as JSON)
+//            }
+//            log.info("pre importacao encerrada")
+//            if (!tentativaImportacao?.id) {
+//                response.status = 500
+//                return render ([errorMessage: "Erro na pre-importacao"] as JSON)
+//            }
+//
+//            Map camposPreenchidos = servicoImportarFamilias.getDefinicoesImportacaoFamilia()
+//
+//            log.info("concluindo importacao")
+//            servicoImportarFamilias.concluiImportacao(camposPreenchidos, tentativaImportacao.id, operador)
+
+            def result = []
+            result << "Arquivo enviado e aguardando processamento."
+            render result as JSON
+
+        } catch (Throwable e) {
+            log.error("Failed to upload file.", e)
+            render(["Erro no recebimento do arquivo: ${e.message}", org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(e)] as JSON)
+        }
     }
 
     def list(Integer max) {
@@ -158,8 +220,9 @@ class ImportacaoFamiliasController extends AncestralController {
         if (request instanceof MultipartHttpServletRequest) {
             MultipartFile uploadedFile = ((MultipartHttpServletRequest) request).getFile('qqfile')
             return uploadedFile.inputStream
+        } else {
+            throw new ApoiaSuasException("Tipo inesperado de request para upload de arquivos: "+request.getClass().name)
         }
-        return request.inputStream
     }
 
     private UsuarioSistema autentica(HttpServletRequest request) {

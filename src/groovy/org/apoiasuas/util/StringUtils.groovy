@@ -12,6 +12,8 @@ import java.util.regex.Pattern
 class StringUtils {
     public static final Pattern PATTERN_TEM_NUMEROS = Pattern.compile("(.)*(\\d)(.)*")
     public static final Pattern PATTERN_TEM_LETRAS = Pattern.compile("(.)*[a-zA-Z]+(.)*")
+    public static final String PATTERN_URL = '(http|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?'
+//    public static final String PATTERN_URL = "(http|ftp|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?"
 
     public static String firstLowerCase(String value) {
         return value[0].toLowerCase() + value.substring(1)
@@ -41,7 +43,7 @@ class StringUtils {
 //                case ']': builder.append("</li></ul>"); ul=false; break;
                 case '<': builder.append("&lt;"); break;
                 case '>': builder.append("&gt;"); break;
-                case '&': builder.append("&amp;"); break;
+//                case '&': builder.append("&amp;"); break;
                 case '"': builder.append("&quot;"); break;
 //                case '\n': builder.append(ul ? "</li><li>" : "<br>"); break;
                 case '\n': builder.append("<br>"); break;
@@ -55,7 +57,17 @@ class StringUtils {
                     }
             }
         }
-        return builder.toString();
+        String result = builder.toString();
+
+        //Formatando URLs como hyperlinks HTML
+        result = result.replaceAll('(http://www|https://www)', 'www'); //remove o http:// de urls contendo www
+        result = result.replaceAll('www', 'http://www'); //adiciona o http:// em urls contendo www
+        result = result.replaceAll(PATTERN_URL, '<a href="$0" target="_blank">$0</a>'); //remove o http:// de urls contendo www
+
+        //Trocando linhas em branco por um espaçamento de meia linha
+//        result = result.replaceAll('(<br>\n){2,}','<span style="font-size: 50%;"><br></span>')
+
+        return result;
     }
     public static String removeAcentos(String string) {
         if (string != null){

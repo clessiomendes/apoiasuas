@@ -31,8 +31,8 @@ if (typeof jQuery !== 'undefined') {
  * Funcao auxiliar para imprimir numeros grandes de arquivos
  */
 function fileSizeToString(bytes) {
-	const decimals = 0 //máximo de casas decimais
 	if(bytes == 0) return '0 Byte';
+	var decimals = 0; //máximo de casas decimais
 	var k = 1000; // or 1024 for binary
 	var dm = decimals + 1 || 3;
 	var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];

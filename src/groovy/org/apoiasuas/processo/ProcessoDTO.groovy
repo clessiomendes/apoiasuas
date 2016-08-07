@@ -1,10 +1,12 @@
 package org.apoiasuas.processo
 
+import grails.validation.Validateable
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 
 /**
  * DTO usado para representar instancias de processo da engine BPM Camunda, tanto para processos concluidos quanto para em andamento
  */
+@Validateable
 class ProcessoDTO {
 
     public static final String SITUACAO_CONCLUIDA = "Concluído"

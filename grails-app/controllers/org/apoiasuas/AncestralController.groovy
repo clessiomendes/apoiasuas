@@ -138,7 +138,7 @@ class AncestralController {
     }
 
     protected String getAbrangenciasTerritoriaisEdicao(AbrangenciaTerritorial abrangenciaTerritorial) {
-        return abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisEdicao(null, [abrangenciaTerritorial])
+        return abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisEdicao(null, abrangenciaTerritorial ? [abrangenciaTerritorial] : [])
     }
 
     protected String getAbrangenciasTerritoriaisExibicao(AbrangenciaTerritorial abrangenciaTerritorial) {

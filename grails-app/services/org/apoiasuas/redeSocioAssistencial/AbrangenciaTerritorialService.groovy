@@ -2,12 +2,12 @@ package org.apoiasuas.redeSocioAssistencial
 
 import grails.converters.JSON
 import grails.transaction.Transactional
-import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
-import org.hibernate.Hibernate
 
 class AbrangenciaTerritorialService {
 
     public static final String ID_TERRITORIOS_ATUACAO = "id_territoriosAtuacao_"
+
+    def segurancaService;
 
     @Transactional
     boolean gravaAbrangenciaTerritorial(AbrangenciaTerritorial abrangenciaTerritorial) {
@@ -19,6 +19,9 @@ class AbrangenciaTerritorialService {
         abrangenciaTerritorial.delete()
     }
 
+    /**
+     * Converte a estrutura AmbrangenciaTerritorial.ComponenteVisual no format JSON esperado pelo componente jsTree
+     */
     public void registraJSON() {
         JSON.registerObjectMarshaller(AbrangenciaTerritorial) { AbrangenciaTerritorial it ->
             def output = [:]
@@ -26,7 +29,7 @@ class AbrangenciaTerritorialService {
             output['text'] = it.nome
             def state = [:]
             if (it.componenteVisual.aberto != null)
-                state['open'] = it.componenteVisual.aberto
+                state['opened'] = it.componenteVisual.aberto
             if (it.componenteVisual.selecionado != null)
                 state['selected'] = it.componenteVisual.selecionado
             if (it.componenteVisual.desabilitado != null)
@@ -44,19 +47,23 @@ class AbrangenciaTerritorialService {
     }
 
     /**
-     * Monta estrutura JSON para o componente visual jctree exibindo todas as abrangencias territoriais disponiveis
+     * Monta estrutura JSON para o componente visual jstree exibindo todas as abrangencias territoriais disponiveis
      * (exceto, se for o caso, a passada no parametro "ignora") e mantem o componente aberto para alteracao
      */
     @Transactional(readOnly = true)
     public String JSONAbrangenciasTerritoriaisEdicao(AbrangenciaTerritorial ignora, List<AbrangenciaTerritorial> selecionados) {
-        List<AbrangenciaTerritorial> result = populaFilhos(null, ignora, selecionados);
+        List<AbrangenciaTerritorial> exibir = []
+        if (! selecionados) {
+            exibir = segurancaService.abrangenciasTerritoriaisAcessiveis;
+        }
+        List<AbrangenciaTerritorial> result = populaFilhos(null, ignora, selecionados, exibir);
         return result as JSON
     }
 
     /**
      * Metodo recursivo para preencher todos os sub-nos da arvore a partir do passado em "mae" (ou a arvore inteira, se nao for passado nenhum no em "mae")
      */
-    private List<AbrangenciaTerritorial> populaFilhos(AbrangenciaTerritorial mae, AbrangenciaTerritorial ignora, List<AbrangenciaTerritorial> selecionados) {
+    private List<AbrangenciaTerritorial> populaFilhos(AbrangenciaTerritorial mae, AbrangenciaTerritorial ignora, List<AbrangenciaTerritorial> selecionados, List<AbrangenciaTerritorial> exibir) {
         List<AbrangenciaTerritorial> result = []
         List<AbrangenciaTerritorial> tempList = AbrangenciaTerritorial.findAllByMae(mae)
         for (int i = 0; i < tempList.size(); i++) {
@@ -64,10 +71,14 @@ class AbrangenciaTerritorialService {
             if (ignora && it.id == ignora.id) {
                 //ignora (dã)
             } else {
-                if (selecionado(selecionados, it)) {
+                if (contem(selecionados, it)) {
                     it.componenteVisual.selecionado = true
                 }
-                populaFilhos(it, ignora, selecionados);
+                if (contem(exibir, it)) {
+//                    it.componenteVisual.selecionado = true
+                    it.componenteVisual.aberto = true
+                }
+                populaFilhos(it, ignora, selecionados, exibir);
                 result += it;
                 if (mae)
                     mae.addFilho(it)
@@ -76,7 +87,7 @@ class AbrangenciaTerritorialService {
         return result
     }
 
-    private boolean selecionado(List<AbrangenciaTerritorial> selecionados, AbrangenciaTerritorial abrangenciaTerritorial) {
+    private boolean contem(List<AbrangenciaTerritorial> selecionados, AbrangenciaTerritorial abrangenciaTerritorial) {
         boolean result = false
         selecionados.each {
             if (it) {
@@ -88,7 +99,7 @@ class AbrangenciaTerritorialService {
     }
 
     /**
-     * Monta estrutura JSON para o componente visual jctree exibindo apenas a abrangenciaTerritorial escolhida e suas
+     * Monta estrutura JSON para o componente visual jstree exibindo apenas a abrangenciaTerritorial escolhida e suas
      * respectivas contenedoras(maes) hierarquicas
      */
     @Transactional(readOnly = true)
