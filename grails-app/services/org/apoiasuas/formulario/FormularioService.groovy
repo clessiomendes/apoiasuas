@@ -156,7 +156,7 @@ class FormularioService {
             }
             def chave = StringUtils.upperToCamelCase(campo.origem.toString()) + "." + campo.codigo
             //remove caracteres que não são interpretados corretamente no arquivo word (como TAB)
-            if (campo.getTipo() == CampoFormulario.Tipo.TEXTO) {
+            if (valor && campo.getTipo() == CampoFormulario.Tipo.TEXTO) {
                 String temp = valor;
                 valor = temp.replaceAll("\\t", " ");
             }

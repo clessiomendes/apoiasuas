@@ -12,7 +12,7 @@
             var numExibicoes = ${FamiliaController.getNumeroExibicoesNotificacao(session)}; //Busca na sessao o numero de vezes que a notificacao ja foi exibida
 //            alert(numExibicoes);
             var showDuration = (numExibicoes > 0) ? 0 : 1000;
-            var conteudo = "${raw(FamiliaController.getNotificacao(session))}"; //Busca na sessao a(s) mensagens a serem exibidas
+            var conteudo = '${raw(FamiliaController.getNotificacao(session))}'; //Busca na sessao a(s) mensagens a serem exibidas
 //            alert(conteudo);
 //            $("#caixa-familia").notify({title: "Família elegível a SCFV 0 a 3 <a href='http://www.uol.com.br'>encaminhar</a><br>Família elegível a SCFV > 60 <a href='http://www.uol.com.br'>encaminhar</a>", button: 'Confirm'},
             $("#caixa-familia").notify({title: conteudo},

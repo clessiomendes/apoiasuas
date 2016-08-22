@@ -10,6 +10,7 @@ class FamiliaService {
     public static final int MAX_AUTOCOMPLETE_LOGRADOUROS = 10
     def segurancaService
     def pedidoCertidaoProcessoService
+    def messageSource
 
     @Transactional
     public Familia grava(Familia familia, ProgramasCommand programasCommand) {
@@ -83,7 +84,7 @@ class FamiliaService {
         return true;
     }
 
-    public Set<String> getNotificacoes(Long idFamilia) {
+    public Set<String> getNotificacoes(Long idFamilia, Locale locale) {
         if (! idFamilia)
             return []
         Set<String> result = []
@@ -91,15 +92,19 @@ class FamiliaService {
 
         //testa se a familia eh acompanhada por algum tecnico
         if (familia.tecnicoReferencia)
-            result << "Família acompanhada por "+familia.tecnicoReferencia.username+"."
+            result << messageSource.getMessage("notificacao.familia.acompanhada", [familia.tecnicoReferencia.username].toArray(), locale);
 
         //testa idades voltadas ao SCFV
         familia.membros.each { Cidadao cidadao ->
             if (cidadao.idade && cidadao.idade < 4)
-                result << "Família elegível ao SCFV de 0 a 3."
+                result << messageSource.getMessage("notificacao.familia.SCFV.0a3", null, locale);
             if (cidadao.idade && cidadao.idade >= 60)
-                result << "Família elegível ao SCFV para idosos."
+                result << messageSource.getMessage("notificacao.familia.SCFV.idosos", null, locale);
         }
+
+        List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familia.id)
+        if (pedidosCertidaoPendentes)
+            result << messageSource.getMessage("notificacao.familia.pedidosCertidao", null, locale);
 
         return result
     }

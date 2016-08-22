@@ -107,6 +107,13 @@
                             <div class="fieldcontain">
                                 <label>
                                     <g:actionSubmit value="Encaminhar" onclick="submitFormEncaminhamento(); return true;"/>
+                                    <g:javascript>
+                                    function submitFormEncaminhamento() {
+                                        document.getElementById('preencherFormulario').idFormulario.value = '${formularioEncaminhamento?.id}';
+                                        document.getElementById('preencherFormulario').idServico.value = '${servicoInstance?.id}';
+                                        document.getElementById('preencherFormulario').submit();
+                                    }
+                                    </g:javascript>
                                 </label>
                             </div>
                         </fieldset>

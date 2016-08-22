@@ -85,7 +85,7 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         runtimeService.setVariable(idProcesso, PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, numeroAR)
     }
 
-    List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes(long idFamilia) {
+    public List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes(long idFamilia) {
         if (! idFamilia)
             return []
 

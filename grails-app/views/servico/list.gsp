@@ -19,15 +19,12 @@
     <div id="list-servico" class="content scaffold-list" role="main">
 			<h1>Rede sócio-assistencial</h1>
 
-        <div class="nav" role="navigation">
-            <g:form action="list">
-                <ul>
-                    <li>Palavra chave:<g:textField name="palavraChave" size="20" autofocus="" value="${filtro?.nome}"/></li>
-                    <li><g:submitButton name="list" class="list" value="Procurar"/></li>
-                    <li><g:link class="create" action="create">Incluir novo serviço</g:link></li>
-                </ul>
+            <g:form style="padding-left: 1em">
+                Palavra chave:<g:textField name="palavraChave" size="20" autofocus="" value="${filtro?.nome}"/>
+				<g:actionSubmit action="list" class="search" value="Procurar"/>
+				<g:actionSubmit action="create" class="create" value="Incluir novo serviço"/>
+                %{--<g:link class="create" action="create">Incluir novo serviço</g:link>--}%
             </g:form>
-        </div>
 
         <g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>

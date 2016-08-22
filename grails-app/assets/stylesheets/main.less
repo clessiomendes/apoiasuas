@@ -677,14 +677,27 @@ th.desc a {
   .tamanho-icones();
 }
 
-.speedButton(@imagem) {
+.imageButton() {
   .painelNavegacaoOuBotoes();
-  .botaoIndependente;
-  background: @cor-fundo-paineis-e-botoes @imagem no-repeat center;
+  .botaoIndependente();
   .tamanho-icones();
   &:hover {
 	.hoverBotoes();
   }
+}
+
+.speedButton(@imagem) {
+  .imageButton();
+  background: @cor-fundo-paineis-e-botoes @imagem no-repeat center;
+}
+
+.imageTextButton(@imagem) {
+  .imageButton();
+  background-color: @cor-fundo-paineis-e-botoes;
+  background-image: @imagem;
+  background-repeat: no-repeat;
+  background-position: 5px 5px;
+  padding-left: 25px;
 }
 
 .buttons .search {
@@ -699,6 +712,14 @@ a.skip {
 
 .hidden {
 	display: none;
+}
+
+input.search {
+  .imageTextButton(url(../images/skin/search.png));
+}
+
+input.create {
+  .imageTextButton(url(../images/skin/database_add.png));
 }
 
 input#adicionarArquivo {

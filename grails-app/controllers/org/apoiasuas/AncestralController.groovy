@@ -6,6 +6,7 @@ import org.apoiasuas.cidadao.CidadaoController
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.FamiliaController
 import org.apoiasuas.cidadao.FamiliaService
+import org.apoiasuas.processo.PedidoCertidaoProcessoController
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorialService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
@@ -14,6 +15,7 @@ import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
+import org.springframework.web.servlet.support.RequestContextUtils
 
 /**
  * Created by admin on 20/04/2015.
@@ -62,14 +64,21 @@ class AncestralController {
             session[FamiliaController.SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES] = 0L;
         } else if (session[FamiliaController.SESSION_ULTIMA_FAMILIA]?.id != familia.id) {
             session[FamiliaController.SESSION_ULTIMA_FAMILIA] = familia;
-            Set notificacoes = familiaService.getNotificacoes(familia.id);
+            Set notificacoes = familiaService.getNotificacoes(familia.id, RequestContextUtils.getLocale(request));
             String textoNotificacoes = "";
-            notificacoes.each {
+            notificacoes.each { strNotificacao ->
+                if (strNotificacao == g.message(code: "notificacao.familia.pedidosCertidao"))
+                    strNotificacao = g.link(controller:"pedidoCertidaoProcesso", action:"list", title: "Ver pedidos pendentes",
+                            params: [situacao: PedidoCertidaoProcessoController.SITUACAO_PENDENTE, codigoLegado: familia.codigoLegado]){
+                        g.message(code: "notificacao.familia.pedidosCertidao")
+                    }
+
                 if (! textoNotificacoes)
-                    textoNotificacoes += it
+                    textoNotificacoes += strNotificacao
                 else
-                    textoNotificacoes += "<br>"+it
+                    textoNotificacoes += "<br> "+strNotificacao
             }
+            log.debug(textoNotificacoes);
             session[FamiliaController.SESSION_NOTIFICACAO_FAMILIA] = textoNotificacoes;
             session[FamiliaController.SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES] = 0L
         }
