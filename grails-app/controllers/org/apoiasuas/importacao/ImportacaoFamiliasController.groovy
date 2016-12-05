@@ -1,5 +1,6 @@
 package org.apoiasuas.importacao
 
+import apoiasuas.ImportacaoJob
 import grails.async.Promise
 import grails.async.Promises
 import grails.converters.JSON
@@ -8,7 +9,7 @@ import groovy.json.JsonSlurper
 import org.apoiasuas.AncestralController
 import org.apoiasuas.fileStorage.FileStorageDTO
 import org.apoiasuas.fileStorage.FileStorageService
-import org.apoiasuas.seguranca.SegurancaService
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasException
@@ -36,7 +37,7 @@ class ImportacaoFamiliasController extends AncestralController {
     static responseFormats = ['json']
 
     /**
-     * Chamar com: curl http://localhost:8080/apoiasuas/importacaoFamilias/restUpload -F user=exportabd -F pass=senha -F qqFile=@c:\temp\out.txt
+     * Chamar com: curl http://localhost:8080/apoiasuas/importacaoFamilias/restUpload -F user=exportabd -F pass=senha -F qqFile=@c:\temp\bd.xlsx
      */
     @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
     def restUpload() {
@@ -51,14 +52,15 @@ class ImportacaoFamiliasController extends AncestralController {
             } else {
                 log.debug("Usuario ${operador.username} autorizado a importar familias")
             }
-            InputStream inputStream = selectInputStream(request)
+            InputStream inputStream = selectMultipartInputStream(request)
+            final ServicoSistema servicoSistema = segurancaService.servicoLogado
 
-            DefinicoesImportacaoFamilias definicoes = servicoImportarFamilias.getDefinicoes();
+            DefinicoesImportacaoFamilias definicoes = servicoImportarFamilias.getDefinicoes(servicoSistema);
             if (!definicoes.linhaDoCabecalho || !definicoes.abaDaPlanilha) {
                 response.status = 500
                 return render ([errorMessage: "Configuracoes nao definidas (linha do cabecalho ou aba da planilha)"] as JSON)
             }
-            TentativaImportacao tentativaImportacao = servicoImportarFamilias.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, operador, segurancaService.servicoLogado)
+            TentativaImportacao tentativaImportacao = servicoImportarFamilias.registraNovaImportacao(definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, operador, servicoSistema)
             try {
                 tentativaImportacao = servicoImportarFamilias.preImportacao(inputStream, tentativaImportacao, definicoes.linhaDoCabecalho, definicoes.abaDaPlanilha, false/*assincrono*/)
             } catch (org.apache.poi.openxml4j.exceptions.InvalidFormatException e) {
@@ -71,10 +73,10 @@ class ImportacaoFamiliasController extends AncestralController {
                 return render ([errorMessage: "Erro na pre-importacao"] as JSON)
             }
 
-            Map camposPreenchidos = servicoImportarFamilias.getDefinicoesImportacaoFamilia()
+            Map camposPreenchidos = servicoImportarFamilias.getDefinicoesImportacaoFamilia(servicoSistema)
 
             log.info("concluindo importacao")
-            servicoImportarFamilias.concluiImportacao(camposPreenchidos, tentativaImportacao.id, operador)
+            servicoImportarFamilias.concluiImportacao(camposPreenchidos, tentativaImportacao.id, operador, servicoSistema)
 
             def result = []
             result << "Importação concluída com sucesso (id ${tentativaImportacao.id}). Veja detalhes na tela de importações."
@@ -108,14 +110,13 @@ class ImportacaoFamiliasController extends AncestralController {
             }
 
             //Upload de arquivo
-            FileStorageDTO file = null
             if (request instanceof MultipartHttpServletRequest) {
                 MultipartFile multipartFile = ((MultipartHttpServletRequest)request).getFile(FileStorageDTO.INPUT_FILE)
                 //FIXME: configurar o servidor de aplicacao para vetar arquivos grandes antes que eles cheguem ao servidor e causem grandes danos. Cuidado para nao vetar os tamanhos de arquivos de importacao de bancos de dados
                 if (multipartFile.size > FileStorageDTO.MAX_FILE_SIZE)
                     throw new ApoiaSuasException("Tamanho do arquivo (${multipartFile.size}) maior do que o permitido (${FileStorageDTO.MAX_FILE_SIZE})")
 
-                file = new FileStorageDTO(ImportarFamiliasService.NOME_PLANILHA_IMPORTACAO, multipartFile.bytes)
+                FileStorageDTO file = new FileStorageDTO(ImportarFamiliasService.NOME_PLANILHA_IMPORTACAO, multipartFile.bytes)
                 fileStorageService.add(ImportarFamiliasService.BUCKET, file)
             } else {
                 throw new ApoiaSuasException("Tipo inesperado de request para upload de arquivos: "+request.getClass().name)
@@ -192,7 +193,9 @@ class ImportacaoFamiliasController extends AncestralController {
     def upload() {
         try {
 
-            InputStream inputStream = selectInputStream(request)
+            //O componente ajax envia um arquivo diretamente (enctype="application/octet-stream") e não um form contendo um arquivo (enctype="multipart/form-data")
+            InputStream inputStream = request.getInputStream();
+
             //idImportacao e enviado para o proximo request a fim de que se possa dar continuidade ao processo de importacao dos dados
             //à partir do que já foi persistido
             int linhaDoCabecalho = params.int("linhaDoCabecalho")
@@ -216,10 +219,16 @@ class ImportacaoFamiliasController extends AncestralController {
 
     }
 
-    private InputStream selectInputStream(HttpServletRequest request) {
+    /**
+     * Obtem o arquivo de um dos inputs, PARTE de um form enviado via HTTP post
+     * @param request
+     * @return
+     */
+    private InputStream selectMultipartInputStream(HttpServletRequest request) {
         if (request instanceof MultipartHttpServletRequest) {
-            MultipartFile uploadedFile = ((MultipartHttpServletRequest) request).getFile('qqfile')
-            return uploadedFile.inputStream
+            return request.getFile("qqFile").inputStream
+//            MultipartFile uploadedFile = ((MultipartHttpServletRequest) request).getFile('qqfile')
+//            return uploadedFile.inputStream
         } else {
             throw new ApoiaSuasException("Tipo inesperado de request para upload de arquivos: "+request.getClass().name)
         }
@@ -245,7 +254,7 @@ class ImportacaoFamiliasController extends AncestralController {
     def create() {
         //Limpa a sessão
         session.removeAttribute(SESSION_ID_IMPORTACAO_EM_CURSO)
-        DefinicoesImportacaoFamilias definicoes = servicoImportarFamilias.getDefinicoes();
+        DefinicoesImportacaoFamilias definicoes = servicoImportarFamilias.getDefinicoes(segurancaService.servicoLogado);
         request.linhaDoCabecalho = definicoes.linhaDoCabecalho
         request.abaDaPlanilha = definicoes.abaDaPlanilha
     }
@@ -273,7 +282,7 @@ class ImportacaoFamiliasController extends AncestralController {
         }
 
         wrapperCabecalhos.colunasImportadas =  colunasImportadas
-        wrapperCabecalhos.camposBDDisponiveis = servicoImportarFamilias.obtemCamposBDDisponiveis()
+        wrapperCabecalhos.camposBDDisponiveis = servicoImportarFamilias.obtemCamposBDDisponiveis(segurancaService.servicoLogado)
         return [wrapperCabecalhos: wrapperCabecalhos]
         //Adiciona um objeto de nome "wrapperCabecalhos" no escopo da página correspondente a esta action
     }
@@ -282,6 +291,9 @@ class ImportacaoFamiliasController extends AncestralController {
      * Chamado pelo botao "Processar" para 1-atualizar as configuracoes no banco e 2-concluir o processamento da planilha
      */
     def concluirImportacao(WrapperCabecalhosCommand wrapperCabecalhos) {
+        ServicoSistema servicoSistema = segurancaService.servicoLogado;
+        UsuarioSistema usuarioSistema = segurancaService.usuarioLogado;
+
         if (! getIdImportacaoEmCurso()) {
             redirect(action: 'list')
             return false
@@ -335,19 +347,19 @@ class ImportacaoFamiliasController extends AncestralController {
         //Gravar as novas definicoes (obs1: transacao separada da importacao em si porque, caso haja algum erro, as
         //definicoes que acabaram de ser feitas pelo usuario não serão perdidas)
         //obs2: as escolhas do usuario serao gravadas independentes de eventuais erros de validaca (duplicidade)
-        servicoImportarFamilias.atualizaDefinicoesImportacaoFamilia(camposPreenchidos);
+        servicoImportarFamilias.atualizaDefinicoesImportacaoFamilia(camposPreenchidos, servicoSistema);
 
         if (wrapperCabecalhos.hasErrors()) {
-            wrapperCabecalhos.camposBDDisponiveis = servicoImportarFamilias.obtemCamposBDDisponiveis()
+            wrapperCabecalhos.camposBDDisponiveis = servicoImportarFamilias.obtemCamposBDDisponiveis(servicoSistema)
             render view: "create2", model: [wrapperCabecalhos: wrapperCabecalhos]
         } else {
             if (AmbienteExecucao.desenvolvimento) {
-                servicoImportarFamilias.concluiImportacao(camposPreenchidos, getIdImportacaoEmCurso(), segurancaService.getUsuarioLogado())
+                servicoImportarFamilias.concluiImportacao(camposPreenchidos, getIdImportacaoEmCurso(), usuarioSistema, servicoSistema)
             }
             else //Rodar assincronamente
                 Promise p = Promises.task {
                 //Efetivar a importação dos dados da planilha, que foram gravados previamente em uma tabela temporaria no BD
-                    servicoImportarFamilias.concluiImportacao(camposPreenchidos, getIdImportacaoEmCurso(), segurancaService.getUsuarioLogado())
+                    servicoImportarFamilias.concluiImportacao(camposPreenchidos, getIdImportacaoEmCurso(), usuarioSistema, servicoSistema)
                 }
             redirect action: 'show', id: getIdImportacaoEmCurso()
         }
@@ -367,6 +379,12 @@ class ImportacaoFamiliasController extends AncestralController {
 
     private void setIdImportacaoEmCurso(Long idImportacao) {
         session[SESSION_ID_IMPORTACAO_EM_CURSO] = idImportacao
+    }
+
+    def fire() {
+//        ImportacaoJob.schedule("0 35 16 ? * *")
+        ImportacaoJob.triggerNow();
+        redirect(action: 'list')
     }
 
 }

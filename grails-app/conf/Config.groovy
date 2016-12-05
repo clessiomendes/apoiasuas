@@ -179,7 +179,8 @@ log4j.main = {
             'com.myjeeva.poi', //debug para o extrator excel
             'org.camunda.bpm.engine.persistence', //BPM Engine
             'org.camunda.bpm',   //BPM Engine
-            'org.grails.plugins.elasticsearch'
+            'org.grails.plugins.elasticsearch',  //ElasticSearch
+            'grails.app.jobs' //Quartz
 
 //So eh preciso especificar nivel "error" para pacotes internos aos definidos acima nos quais se deseja desligar o log
     error   'org.camunda.bpm.engine.jobexecutor' //desligar logs de job da Engine BPM

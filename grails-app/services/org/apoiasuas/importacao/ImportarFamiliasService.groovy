@@ -10,11 +10,7 @@ import grails.transaction.Transactional
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.util.IOUtils
 import org.apoiasuas.ProgramasPreDefinidos
-import org.apoiasuas.cidadao.Cidadao
-import org.apoiasuas.cidadao.CidadaoService
-import org.apoiasuas.cidadao.Familia
-import org.apoiasuas.cidadao.SituacaoFamilia
-import org.apoiasuas.cidadao.Telefone
+import org.apoiasuas.cidadao.*
 import org.apoiasuas.programa.ProgramaFamilia
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.SegurancaService
@@ -41,7 +37,7 @@ class ImportarFamiliasService {
     def groovySql
 
     @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED /*para conseguir ler o primeiro cabecalho*/)
-    List<ColunaImportadaCommand> obtemColunasImportadas(long idImportacao) {
+    public List<ColunaImportadaCommand> obtemColunasImportadas(long idImportacao) {
 
         log.info(["Obtendo colunas da preImportacao", idImportacao])
 
@@ -75,7 +71,7 @@ class ImportarFamiliasService {
             }
         }
 
-        paraCadaDefinicaoCampoBD { fieldName, fieldValue ->
+        paraCadaDefinicaoCampoBD(importacao.servicoSistemaSeguranca) { fieldName, fieldValue ->
             def selectedValue = null;
             //2.1º Compara os nomes das colunas(planilha) com os conteúdos dos campos(BD)
             result.each() { colunaImportada ->
@@ -88,30 +84,30 @@ class ImportarFamiliasService {
     }
 
     @Transactional(readOnly = true)
-    List<String> obtemCamposBDDisponiveis() {
+    List<String> obtemCamposBDDisponiveis(ServicoSistema servicoSistema) {
         List<String> result = []
-        paraCadaDefinicaoCampoBD { fieldName, fieldValue ->
+        paraCadaDefinicaoCampoBD(servicoSistema) { fieldName, fieldValue ->
             result << fieldName
         }
         return result
     }
 
     @Transactional
-    def atualizaDefinicoesImportacaoFamilia(Map camposPreenchidos) {
+    def atualizaDefinicoesImportacaoFamilia(Map camposPreenchidos, ServicoSistema servicoSistema) {
         log.info(["Atualizando definicoes de importacao", camposPreenchidos]);
-        DefinicoesImportacaoFamilias definicoes = getDefinicoes();
+        DefinicoesImportacaoFamilias definicoes = getDefinicoes(servicoSistema);
 
-        paraCadaDefinicaoCampoBD { fieldName, fieldValue ->
+        paraCadaDefinicaoCampoBD(servicoSistema) { fieldName, fieldValue ->
             log.info("camposPreenchidos.get(fieldName)": camposPreenchidos.get(fieldName))
             definicoes.setProperty("coluna" + fieldName, camposPreenchidos.get(fieldName))
         }
         definicoes.save()
     }
 
-    Map getDefinicoesImportacaoFamilia() {
+    @Transactional(readOnly = true)
+    public Map getDefinicoesImportacaoFamilia(ServicoSistema servicoSistema) {
         Map result = [:]
-        DefinicoesImportacaoFamilias definicoes = getDefinicoes();
-        paraCadaDefinicaoCampoBD { fieldName, fieldValue ->
+        paraCadaDefinicaoCampoBD(servicoSistema) { fieldName, fieldValue ->
             if (fieldValue) //despreza campos sem definicao de importacao
                 result.put(fieldName, fieldValue)
         }
@@ -119,7 +115,7 @@ class ImportarFamiliasService {
     }
 
     //NÃO TRANSACIONAL
-    void concluiImportacao(Map camposPreenchidos, long idImportacao, UsuarioSistema usuarioLogado) {
+    public void concluiImportacao(Map camposPreenchidos, long idImportacao, UsuarioSistema usuarioSistema, ServicoSistema servicoSistema) {
 
         log.info(["Concluindo importacao id ", idImportacao])
 
@@ -132,7 +128,7 @@ class ImportarFamiliasService {
             if (it.value)
                 camposPreenchidosInvertido.put(it.value, it.key)
         }
-        List camposBDDisponiveis = obtemCamposBDDisponiveis();
+        List camposBDDisponiveis = obtemCamposBDDisponiveis(servicoSistema);
 
         String ultimaFamilia = "-1"
         String nomeReferencia = null
@@ -146,7 +142,7 @@ class ImportarFamiliasService {
         Map criticaCidadaos = [:]
         TentativaImportacao tentativaImportacao
         //Associa o servico obtido da sessao http com a sessao hibernate, para evitar erros de instancias duplicadas (NonUniqueObjectException)
-        ServicoSistema servicoLogado = segurancaService.getServicoLogado().merge(validate: false, flush: false);
+        servicoSistema = servicoSistema.merge(validate: false, flush: false);
 
         aguardaPreImportacao(idImportacao)
 
@@ -156,7 +152,7 @@ class ImportarFamiliasService {
             atualizaProgressoImportacao(tentativaImportacao, StatusImportacao.INCLUINDO_FAMILIAS, null, 0, 0)
             log.info("depois obtemTentativaImportacaoComLinhas")
 
-            if (! usuarioLogado)
+            if (! usuarioSistema)
                 throw new RuntimeException("Nenhum operador do sistema definido como autor da importação")
 
             tentativaImportacao.linhas.each { it ->
@@ -188,7 +184,7 @@ class ImportarFamiliasService {
                             familiaPersistida?.discard() //Tira do cache a ultima familia para agilizar a importacao
 
                             //Importa familia, endereco e telefones
-                            familiaPersistida = importaFamilia(mapaDeCampos, resultadoImportacao, usuarioLogado, servicoLogado)
+                            familiaPersistida = importaFamilia(mapaDeCampos, resultadoImportacao, usuarioSistema, servicoSistema)
                             nomeReferencia = trim(mapaDeCampos.get("NomeReferencia"))
                             nisReferencia = trim(mapaDeCampos.get("NISReferencia"))
                         } catch (Throwable t) {
@@ -203,7 +199,7 @@ class ImportarFamiliasService {
                     //Importa cada cidadão referente à última família importada, considerando o primeiro cidadão como a referência familiar
                     if (!erroNaFamilia) {
                         try {
-                            importaCidadaos(nomeReferencia, mapaDeCampos, nisReferencia, familiaPersistida, resultadoImportacao, referencia, usuarioLogado, servicoLogado, tentativaImportacao)
+                            importaCidadaos(nomeReferencia, mapaDeCampos, nisReferencia, familiaPersistida, resultadoImportacao, referencia, usuarioSistema, servicoSistema, tentativaImportacao)
                         } catch (Throwable t) {
                             log.warn("Erro importando cidadao especifico", t)
                             //o objeto persistente cidadao ja foi descartado dentro de importaCidadao
@@ -263,27 +259,27 @@ class ImportarFamiliasService {
     }
 
     @Transactional
-    private Familia importaFamilia(SafeMap mapaDeCampos, ResumoImportacaoDTO resumoImportacaoDTO, UsuarioSistema usuarioLogado, ServicoSistema servicoLogado) {
+    private Familia importaFamilia(SafeMap mapaDeCampos, ResumoImportacaoDTO resumoImportacaoDTO, UsuarioSistema usuarioSistema, ServicoSistema servicoSistema) {
 
         boolean novaFamilia = false
         boolean familiaGravada = false
         boolean podeAtualizar = false
 
 //busca familia na tabela Familia
-        Familia result = Familia.findByCodigoLegadoAndServicoSistemaSeguranca(trim(mapaDeCampos.get("CodigoFamilia")), servicoLogado)
+        Familia result = Familia.findByCodigoLegadoAndServicoSistemaSeguranca(trim(mapaDeCampos.get("CodigoFamilia")), servicoSistema)
         if (!result) {
             //se nao encontrar, insere nova
             novaFamilia = true
             result = Familia.novaInstacia()
             result.codigoLegado = trim(mapaDeCampos.get("CodigoFamilia"))
-            result.criador = usuarioLogado
+            result.criador = usuarioSistema
 //                        familiaPersistida.dateCreated = new Date()
         }
 
         if (novaFamilia || !result.alteradoAposImportacao()) {
             //se a familia nao for nova, atualiza apenas se nao houve alteracao apos a importacao
 
-            result.ultimoAlterador = usuarioLogado
+            result.ultimoAlterador = usuarioSistema
             result.situacaoFamilia = SituacaoFamilia.CADASTRADA
             result.endereco.tipoLogradouro = trim(mapaDeCampos.get("TipoLogradouro"))
             result.endereco.nomeLogradouro = trim(mapaDeCampos.get("NomeLogradouro"))
@@ -291,10 +287,11 @@ class ImportarFamiliasService {
             result.endereco.complemento = trim(mapaDeCampos.get("Complemento"))
             result.endereco.bairro = trim(mapaDeCampos.get("Bairro"))
             result.endereco.CEP = trim(mapaDeCampos.get("CEP"))
-            result.endereco.municipio = trim(mapaDeCampos.get("Municipio")) ?: segurancaService.getMunicipio()
-            result.endereco.UF = trim(mapaDeCampos.get("UF")) ?: segurancaService.getUF()
+            //OBS: Se não houver informação de município e UF na planilha, assumiremos o município e UF do serviçoSistema
+            result.endereco.municipio = trim(mapaDeCampos.get("Municipio")) ?: servicoSistema.endereco.municipio;
+            result.endereco.UF = trim(mapaDeCampos.get("UF")) ?: servicoSistema.endereco.UF;
             result.dataUltimaImportacao = new Date()
-            result.servicoSistemaSeguranca = servicoLogado
+            result.servicoSistemaSeguranca = servicoSistema
 
 //        if (AmbienteExecucao.SABOTAGEM)
 //            assert result.codigoLegado != "4", "Erro na familia"
@@ -311,7 +308,7 @@ class ImportarFamiliasService {
         }
 
         //Gravando telefone(s)
-        importarTelefones(mapaDeCampos, result, usuarioLogado)
+        importarTelefones(mapaDeCampos, result, usuarioSistema)
 
         if (novaFamilia)
             resumoImportacaoDTO.novasFamilias++
@@ -339,7 +336,7 @@ class ImportarFamiliasService {
         }
     }
 
-    private void importarTelefones(SafeMap mapaDeCampos, Familia familiaPersistida, UsuarioSistema usuarioLogado) {
+    private void importarTelefones(SafeMap mapaDeCampos, Familia familiaPersistida, UsuarioSistema usuarioSistema) {
         String numeroTelefone = trim(mapaDeCampos.get("Telefones"))
 
         //Desconsiderar telefones sem numeros (ex: "-")
@@ -352,10 +349,10 @@ class ImportarFamiliasService {
             if (!telefone) {
                 telefone = new Telefone()
                 telefone.familia = familiaPersistida
-                telefone.criador = usuarioLogado
+                telefone.criador = usuarioSistema
 //                            telefone.dateCreated = convertExcelDate(mapaDeCampos.get("DataCadastroFamilia"));
             }
-            telefone.ultimoAlterador = usuarioLogado
+            telefone.ultimoAlterador = usuarioSistema
             telefone.numero = numeroTelefone
             telefone.dataUltimaImportacao = new Date()
 
@@ -384,7 +381,7 @@ class ImportarFamiliasService {
     }
 
     @Transactional
-    private void importaCidadaos(nomeReferencia, SafeMap mapaDeCampos, nisReferencia, Familia familiaPersistida, ResumoImportacaoDTO resumoImportacaoDTO, boolean referencia, UsuarioSistema usuarioLogado, ServicoSistema servicoLogado, TentativaImportacao importacao) {
+    private void importaCidadaos(nomeReferencia, SafeMap mapaDeCampos, nisReferencia, Familia familiaPersistida, ResumoImportacaoDTO resumoImportacaoDTO, boolean referencia, UsuarioSistema usuarioSistema, ServicoSistema servicoSistema, TentativaImportacao importacao) {
 
         String nomeCidadao = referencia ? nomeReferencia : trim(mapaDeCampos.get("NomeCidadao"))
         String nis = referencia ? nisReferencia : trim(mapaDeCampos.get("NIS"))
@@ -406,8 +403,8 @@ class ImportarFamiliasService {
                 cidadaoPersistido = Cidadao.novaInstancia()
                 cidadaoPersistido.nomeCompleto = nomeCidadao
                 cidadaoPersistido.familia = familiaPersistida
-                cidadaoPersistido.criador = usuarioLogado
-                cidadaoPersistido.servicoSistemaSeguranca = servicoLogado
+                cidadaoPersistido.criador = usuarioSistema
+                cidadaoPersistido.servicoSistemaSeguranca = servicoSistema
             }
 
             if (novoCidadao || !cidadaoPersistido.alteradoAposImportacao()) {
@@ -415,7 +412,7 @@ class ImportarFamiliasService {
 
                 cidadaoPersistido.referencia = referencia
                 cidadaoPersistido.parentescoReferencia = referencia ? CidadaoService.PARENTESCO_REFERENCIA : trim(mapaDeCampos.get("Parentesco"))
-                cidadaoPersistido.ultimoAlterador = usuarioLogado
+                cidadaoPersistido.ultimoAlterador = usuarioSistema
                 cidadaoPersistido.dataUltimaImportacao = new Date()
                 cidadaoPersistido.dataNascimento = convertExcelDate(mapaDeCampos.get("DataNascimento"))
                 cidadaoPersistido.nis = trim(nis)
@@ -470,14 +467,14 @@ class ImportarFamiliasService {
      * no BD (primeiro parametro) e o valor atualmente definido para correspondência com a coluna da planilha
      * (segundo parametro).
      */
-    def private paraCadaDefinicaoCampoBD(Closure c) {
+    def private paraCadaDefinicaoCampoBD(ServicoSistema servicoSistema, Closure c) {
 
         //2º Para cada título de cabeçalho, verifica se ele já está definido nas configurações do sistema
-        DefinicoesImportacaoFamilias definicoes = getDefinicoes()
+        DefinicoesImportacaoFamilias definicoes = getDefinicoes(servicoSistema)
         //TODO Listar campos na ordem em que estes sao declarados, e nao em ordem alfabetica como parece ser o padrao
         definicoes.domainClass.persistentProperties.each { persistentProperty ->
             String fieldName = persistentProperty.name;
-            String fieldValue = definicoes.getPersistentValue(fieldName);
+            String fieldValue = definicoes.getAt(fieldName);
             if (fieldName.toLowerCase().startsWith("coluna")) {
                 //Remove o inicio do nome do campo (coluna) antes de passa-lo para o closure
                 c.call(fieldName.replaceFirst("coluna", ""), fieldValue);
@@ -497,21 +494,21 @@ class ImportarFamiliasService {
     }
 
     @Transactional
-    DefinicoesImportacaoFamilias getDefinicoes() {
-        DefinicoesImportacaoFamilias result = DefinicoesImportacaoFamilias.findByServicoSistemaSeguranca(segurancaService.getServicoLogado());
+    DefinicoesImportacaoFamilias getDefinicoes(ServicoSistema servicoSistema) {
+        DefinicoesImportacaoFamilias result = DefinicoesImportacaoFamilias.findByServicoSistemaSeguranca(servicoSistema);
         if (! result)
-            result = inicializaDefinicoes(segurancaService.getUsuarioLogado(), segurancaService.getServicoLogado())
+            result = inicializaDefinicoes(servicoSistema)
         return result
     }
 
     @Transactional
-    private DefinicoesImportacaoFamilias inicializaDefinicoes(UsuarioSistema usuarioSistema, ServicoSistema servicoLogado) {
+    private DefinicoesImportacaoFamilias inicializaDefinicoes(ServicoSistema servicoSistema) {
         DefinicoesImportacaoFamilias definicao = new DefinicoesImportacaoFamilias()
         definicao.linhaDoCabecalho = 1
         definicao.abaDaPlanilha = 1
-        definicao.ultimoAlterador = usuarioSistema
+        definicao.ultimoAlterador = segurancaService.admin
         definicao.lastUpdated = new Date()
-        definicao.servicoSistemaSeguranca = servicoLogado
+        definicao.servicoSistemaSeguranca = servicoSistema
         /*
         if (AmbienteExecucao.isDesenvolvimento()) {
             definicao.linhaDoCabecalho = 2
@@ -708,15 +705,15 @@ class ImportarFamiliasService {
     /**
      * Registra uma nova tentativa de importacao no BD (um registro pai para os filhos do tipo LinhaTentativaImportacao inseridos na sequencia).
      */
-    public TentativaImportacao registraNovaImportacao(int linhaDoCabecalho, int abaDaPlanilha, UsuarioSistema usuarioLogado, ServicoSistema servicoLogado) {
-        DefinicoesImportacaoFamilias definicoes = getDefinicoes();
+    public TentativaImportacao registraNovaImportacao(int linhaDoCabecalho, int abaDaPlanilha, UsuarioSistema usuarioSistema, ServicoSistema servicoSistema) {
+        DefinicoesImportacaoFamilias definicoes = getDefinicoes(servicoSistema);
         definicoes.linhaDoCabecalho = linhaDoCabecalho
         definicoes.abaDaPlanilha = abaDaPlanilha
         definicoes.save()
 
         TentativaImportacao result = new TentativaImportacao()
-        result.criador = usuarioLogado
-        result.servicoSistemaSeguranca = servicoLogado;
+        result.criador = usuarioSistema
+        result.servicoSistemaSeguranca = servicoSistema;
         result.dateCreated = new Date()
         atualizaProgressoImportacao(result, StatusImportacao.ENVIANDO_ARQUIVO)
         result.save(failOnError: true)
@@ -725,12 +722,12 @@ class ImportarFamiliasService {
     }
 
     @Transactional(readOnly = true)
-    public DataUltimaImportacaoDTO getDataUltimaImportacao() {
+    public DataUltimaImportacaoDTO getDataUltimaImportacaoBD(ServicoSistema servicoSistema) {
         DataUltimaImportacaoDTO result = new DataUltimaImportacaoDTO()
         TentativaImportacao ultimaImportacao = TentativaImportacao.find(
                 "from TentativaImportacao a where a.status = :status and a.servicoSistemaSeguranca = :servicoSistema " +
                         "order by a.id desc",
-                [status: StatusImportacao.CONCLUIDA, servicoSistema: segurancaService.servicoLogado]
+                [status: StatusImportacao.CONCLUIDA, servicoSistema: servicoSistema]
         )
         result.valor = ultimaImportacao?.lastUpdated ?: ultimaImportacao?.dateCreated
         result.atrasada = result.valor ? new Date() - result.valor > ALARME_IMPORTACAO_ATRASADA : null

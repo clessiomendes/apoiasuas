@@ -149,7 +149,11 @@ class AmbienteExecucao {
             case 'LOCAL_MYSQL': return LOCAL_MYSQL
             case 'APPFOG_MYSQL': return APPFOG_MYSQL
             case 'CLEARDB_MYSQL': return CLEARDB_MYSQL
-            default: throw new RuntimeException("Definicao de Banco de Dados nao prevista: ${ds}")
+            default:
+                if (isDesenvolvimento())
+                    return LOCAL_POSTGRES
+                else
+                    throw new RuntimeException("Definicao de Banco de Dados nao prevista: ${ds}")
         }
     }
 

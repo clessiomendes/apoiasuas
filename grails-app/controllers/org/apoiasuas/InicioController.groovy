@@ -3,11 +3,9 @@ package org.apoiasuas
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.log4j.Appender
 import org.apache.log4j.AppenderSkeleton
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
-import org.apache.log4j.Priority
 import org.apoiasuas.fileStorage.FileStorageService
 import org.apoiasuas.importacao.ImportacaoFamiliasController
 import org.apoiasuas.importacao.ImportarFamiliasService
@@ -16,8 +14,6 @@ import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.ItemMenuDTO
-import org.apoiasuas.seguranca.SegurancaService
-import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
@@ -73,7 +69,7 @@ class InicioController extends AncestralController {
 
         //armazena na sessao a data e hora da ultima importacao concluida
         if (! ImportacaoFamiliasController.getDataUltimaImportacao(session))
-            ImportacaoFamiliasController.setDataUltimaImportacao(session, importarFamiliasService.getDataUltimaImportacao())
+            ImportacaoFamiliasController.setDataUltimaImportacao(session, importarFamiliasService.getDataUltimaImportacaoBD(segurancaService.servicoLogado))
 
         //Busca um servico aleatorio da rede socio assistencial para usar como anuncio
         render view:'menu', model: [/*opcoes: opcoes,*/ outrasOpcoes: outrasOpcoes, servicoAnuncio: servicoService.getServicoParaAnuncio()]

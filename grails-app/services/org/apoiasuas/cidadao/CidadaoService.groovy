@@ -13,7 +13,7 @@ import java.util.regex.Pattern
 //TODO: separar servico CidadaoService e FamiliaService
 class CidadaoService {
 
-//    public static final String PARENTESCO_REFERENCIA = "REFERENCIA"
+    public static final String PARENTESCO_REFERENCIA = "REFERENCIA"
     def segurancaService
     static transactional = false
 
@@ -32,6 +32,7 @@ class CidadaoService {
         String hql = 'from Cidadao a where 1=1 '
         if (!filtroNome) {
             hql += "and a.referencia = true"
+//            hql += "and a.parentescoReferencia = :parentesco"
 //            filtros << [parentesco: PARENTESCO_REFERENCIA]
         }
 

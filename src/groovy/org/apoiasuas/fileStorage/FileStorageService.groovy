@@ -10,9 +10,11 @@ interface FileStorageService {
     /**
      * Adiciona um novo arquivo no repositorio, retornando a nova chave gerada
      */
-    public String add(String bucket, FileStorageDTO arquivo);
+    public String add(String bucket, FileStorageDTO file);
 
     public FileStorageDTO get(String bucket, String chave);
+
+    public FileStorageDTO[] list(String bucket, String wildcards);
 
     public String getFileName(String bucket, String chave);
 
@@ -22,5 +24,5 @@ interface FileStorageService {
 
     public String showConfig();
 
-
+    public void move(String sourceBucket, String destBucket, FileStorageDTO file)
 }

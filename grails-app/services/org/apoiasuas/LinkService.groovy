@@ -16,7 +16,7 @@ class LinkService {
     SegurancaService segurancaService
     AbrangenciaTerritorialService abrangenciaTerritorialService
 
-    private static final String BUCKET = "link"
+    public static final String BUCKET = "link"
 
     @Transactional
     public Link grava(Link link, FileStorageDTO file) {

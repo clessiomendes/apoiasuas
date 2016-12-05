@@ -11,6 +11,7 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><g:link class="create" action="create"><g:message code="nova.importacao" args="[entityName]" /></g:link></li>
+				<li><g:link class="create" action="fire">Processar arquivos</g:link></li>
 				%{--<li><g:link class="list" action="config">Configurar</g:link></li>--}%
 			</ul>
 		</div>

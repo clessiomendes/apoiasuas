@@ -1,3 +1,4 @@
+import apoiasuas.ImportacaoJob
 import org.apoiasuas.ApoiaSuasService
 import org.apoiasuas.FullTextSearchService
 import org.apoiasuas.fileStorage.FileStorageService
@@ -123,6 +124,7 @@ class BootStrap {
                     else
                         throw t
                 }
+                ImportacaoJob.schedule(ImportacaoJob.CRON_DEFINITION);
 
             } catch (Throwable t) {
                 status.setRollbackOnly()

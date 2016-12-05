@@ -131,16 +131,16 @@ class SegurancaService {
     }
 
     @Transactional(readOnly = true)
-    String getMunicipio() {
+    public String getMunicipio() {
         ServicoSistema servicoLogado = getServicoLogado()
-        servicoLogado.attach();
+        servicoLogado.merge();
         return servicoLogado.endereco.municipio
     }
 
     @Transactional(readOnly = true)
-    String getUF() {
+    public String getUF() {
         ServicoSistema servicoLogado = getServicoLogado()
-        servicoLogado.attach();
+        servicoLogado.merge();
         return servicoLogado.endereco.UF
     }
 

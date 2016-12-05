@@ -1,13 +1,16 @@
 package org.apoiasuas.fileStorage
 
+import apoiasuas.ImportacaoJob
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
+import org.apoiasuas.LinkService
+import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasException
 
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
+import java.nio.file.StandardCopyOption
 
 @Transactional(readOnly = true)
 class LocalFSService implements FileStorageService {
@@ -78,6 +81,7 @@ class LocalFSService implements FileStorageService {
         return new FileStorageDTO(fileStorageIndex.nomeArquivo, Files.readAllBytes(file) )
     }
 
+
     @Override
     String getFileName(String bucket, String chave) {
         //Validacoes
@@ -111,6 +115,9 @@ class LocalFSService implements FileStorageService {
     }
 
     private Path montaCaminho(String bucket, String nomeArquivo = "") {
+        if (AmbienteExecucao.desenvolvimento && ! caminhoRepositorio)
+            caminhoRepositorio = AmbienteExecucao.getCaminhoRepositorioArquivos()
+
         if (! caminhoRepositorio)
             throw new ApoiaSuasException("Nenhum caminho de repositorio definido nas configuracoes");
         return Paths.get(caminhoRepositorio, bucket, nomeArquivo).normalize();
@@ -123,12 +130,49 @@ class LocalFSService implements FileStorageService {
                 "Caminho do repositório: ${caminhoRepositorio}"
     }
 
+    private void inicializaCaminhos(String... caminhos) {
+        caminhos.each {
+            Path caminho = montaCaminho(it);
+            if (Files.notExists(caminho))
+                Files.createDirectory(caminho)
+        }
+    }
+
     @Override
     void init() {
-        Path pastaRaizRepositorio = montaCaminho("");
-        if (Files.notExists(pastaRaizRepositorio))
-            Files.createDirectory(pastaRaizRepositorio)
-        log.info("Usando repositorio de arquivos do tipo LocalFS (sistema de arquivos local) no caminho: "+pastaRaizRepositorio.toString())
+        log.info("Usando repositorio de arquivos do tipo LocalFS (sistema de arquivos local)")
+        inicializaCaminhos("", ImportacaoJob.BUCKET, ImportacaoJob.BUCKET_CONCLUIDA, LinkService.BUCKET)
+    }
+
+    @Override
+    @NotTransactional
+    public void move(String sourceBucket, String destBucket, FileStorageDTO file) {
+        //busca o arquivo armazenado
+        Path origem = montaCaminho(sourceBucket, file.fileName);
+        Path destino = montaCaminho(destBucket, file.fileName);
+        Files.move(origem, destino, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    @NotTransactional
+    public FileStorageDTO[] list(String bucket, String wildcards) {
+        //Validacoes
+        parametrosObrigatorios([bucket: bucket], "listagem")
+
+        Path diretorioRaiz = montaCaminho(bucket);
+
+        //Cria uma instância implementando a interface FilenameFilter
+        File[] files = diretorioRaiz.toFile().listFiles(new FilenameFilter() {
+            public boolean accept(File file, String name) {
+                return name.endsWith(wildcards)
+            }
+        });
+
+        List<FileStorageDTO> result = [] ;
+        for (File aFile : files) {
+            result.add(new FileStorageDTO(aFile.getName(), aFile.bytes));
+        }
+        return result;
     }
 
 }

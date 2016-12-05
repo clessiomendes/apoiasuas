@@ -129,6 +129,7 @@ class AbrangenciaTerritorialService {
         ArrayList<AbrangenciaTerritorial> result = []
         while (abrangenciaTerritorial != null) {
             result << abrangenciaTerritorial;
+            //TODO: usar merge() ao inves de attach() ? Ver http://www.hibernate-training-guide.com/merge.html
             abrangenciaTerritorial.attach()
 //            Hibernate.initialize(abrangenciaTerritorial)
             abrangenciaTerritorial = abrangenciaTerritorial.mae

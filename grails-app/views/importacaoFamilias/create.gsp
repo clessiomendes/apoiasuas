@@ -15,13 +15,14 @@
 
 %{--
 Chamada via ajax para efetuar o upload. Passar:
-action=fluxoImportacao -> a action faz parte da url base, por isso deve ser passada no argumento 'url', em um mapa
+action=upload -> a action faz parte da url base, por isso deve ser passada no argumento 'url', em um mapa
 controler (desnecessario porque a chamada eh interna ao controler ImportarFamiliasController)
 --}%
 
 <uploader:uploader id="idUploadImportacao" sizeLimit="1000000000" debug="true" allowedExtensions="${"[\'xlsx\']"}"
-                   multiple="false" url="${[action: 'upload']}">
+                   multiple="true" url="${[action: 'upload']}">
     <uploader:onSubmit>
+
     %{--Aqui adicionamos o conteúdo do campo "Linha do Cabecalho" nos parametros enviados na querystring, junto com o arquivo--}%
         this.params.linhaDoCabecalho = document.getElementById("inputLinhaDoCabecalho").value;
     %{--Aqui adicionamos o conteúdo do campo "Aba da planilha" nos parametros enviados na querystring, junto com o arquivo--}%
