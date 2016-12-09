@@ -24,8 +24,9 @@ class ImportacaoJob {
     private final static String ID_SERVICO_IMPORTACAO = "id-";
     private final static String FIM_ARQUIVO_IMPORTACAO = ".xlsx";
 
-    public static String CRON_DEFINITION = "0 41 16 ? * *"
-//    private static String CRON_DEFINITION = "0 0 2 ? * MON-FRI" //De segunda a sexta, às 2:00 da manhã
+//    public static String CRON_DEFINITION = "0 41 16 ? * *"
+    //De segunda a sexta, entre 1:00 e 3:00 da manhã. Caso haja algum erro no processamento da importacao, permite que sejam feitas ate 3 tentativas
+    private static String CRON_DEFINITION = "0 0 1,2,3 ? * MON-FRI"
 
     //Serializa a execução da job impedindo que duas importacoes sejam feitas simultaneamente
     def concurrent = false

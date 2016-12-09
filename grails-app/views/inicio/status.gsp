@@ -88,6 +88,7 @@
         <li>Repositorio de arquivos: ${configuracoesRepostiorio}</li>
         <li>Versão: <g:render template="versao"/></li>
         <li>Rodando desde: <g:formatDate format="dd/MM/yyyy HH:mm:ss" date="${org.apoiasuas.util.AmbienteExecucao.inicioAplicacao}"/></li>
+        <li>Estado do SO: ${org.apoiasuas.util.SystemUtils.systemStatistics()}</li>
 %{--
         <g:if test="${System.getenv().VCAP_SERVICES}">
             <li>Serviços AppFog: ${System.getenv().VCAP_SERVICES}</li>

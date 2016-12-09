@@ -19,6 +19,7 @@ import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ApplicationContextHolder
 import org.apoiasuas.util.SafeMap
 import org.apoiasuas.util.StringUtils
+import org.apoiasuas.util.SystemUtils
 import org.codehaus.groovy.grails.support.SoftThreadLocalMap
 import org.springframework.transaction.annotation.Isolation
 
@@ -31,6 +32,8 @@ class ImportarFamiliasService {
     private static final int ALARME_IMPORTACAO_ATRASADA = 7
     public static final String NOME_PLANILHA_IMPORTACAO = "importacao.xlsx"
     public static final String BUCKET = "planilhasImportacao"
+    private static final int LINHAS_POR_TRANSACAO = 50
+    private static final int TEMPO_SUSPIRO = 300 //0.3s
     //dias
 
     SegurancaService segurancaService
@@ -159,6 +162,17 @@ class ImportarFamiliasService {
                 linha = it //a variavel linha teve que ser definida fora do closure para que possa ser acessada pelo bloco try catch
                 resultadoImportacao.linhasProcessadas++
 
+                if ((resultadoImportacao.linhasProcessadas % LINHAS_POR_TRANSACAO) == 0) {
+                        log.info("fase conclusao, ${resultadoImportacao.linhasProcessadas} linhas processadas")
+                        log.info(SystemUtils.systemStatistics());
+                        def session = ApplicationContextHolder.grailsApplication.mainContext.sessionFactory.currentSession
+                        session.flush();
+                        session.clear();
+                        //Limpando informacoes desnecessarias relativas a validacao de dominios do Grails (http://burtbeckwith.com/blog/?p=73)
+                        ((SoftThreadLocalMap) org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP).get().clear()
+                        System.sleep(TEMPO_SUSPIRO)
+                }
+
                 //cria um mapa adequado às nossas necessidades, ou seja, nomeCampoBD -> valorASerAtualizado
                 SafeMap mapaDeCampos = converteListaParaMapa(grails.converters.JSON.parse(linha.JSON), camposPreenchidosInvertido, camposBDDisponiveis);
 
@@ -239,7 +253,7 @@ class ImportarFamiliasService {
         TentativaImportacao tentativaImportacao = TentativaImportacao.get(idImportacao)
         while (StatusImportacao.ARQUIVO_PROCESSADO != tentativaImportacao.status) {
             log.info("esperando conclusao da pre importacao ${idImportacao} ... ");
-            sleep(1000);
+            sleep(TEMPO_SUSPIRO*10);
             tentativaImportacao.discard();
             tentativaImportacao = TentativaImportacao.get(idImportacao);
             log.info("tentativaImportacao atualizado na sessao");
@@ -331,7 +345,7 @@ class ImportarFamiliasService {
         try {
             return Integer.parseInt(s?.toString()?.trim())
         } catch (Throwable t) {
-            log.debug("tentaConverterInt", t)
+            log.warb("tentaConverterInt", t)
             return null
         }
     }
@@ -437,7 +451,7 @@ class ImportarFamiliasService {
             atualizaProgressoImportacao(importacao, StatusImportacao.INCLUINDO_FAMILIAS, null, resumoImportacaoDTO.linhasProcessadas)
         } catch (Throwable t) {
             cidadaoPersistido?.discard() //Nao gravar as alteracoes no cidadao
-            log.debug("importaCidadao dentro " + resumoImportacaoDTO);
+            log.warn("importaCidadao dentro " + resumoImportacaoDTO);
             throw t
         }
 
@@ -481,7 +495,7 @@ class ImportarFamiliasService {
             }
         }
     }
-
+/*
     private void cleanUpGorm() {
         def session = ApplicationContextHolder.grailsApplication.mainContext.sessionFactory.currentSession
 //        TentativaImportacao.withSession { HibernateSession session ->
@@ -492,7 +506,7 @@ class ImportarFamiliasService {
         ((SoftThreadLocalMap) org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP).get().clear()
         log.debug("Limpando caches")
     }
-
+*/
     @Transactional
     DefinicoesImportacaoFamilias getDefinicoes(ServicoSistema servicoSistema) {
         DefinicoesImportacaoFamilias result = DefinicoesImportacaoFamilias.findByServicoSistemaSeguranca(servicoSistema);
@@ -553,7 +567,7 @@ class ImportarFamiliasService {
     public TentativaImportacao preImportacao(InputStream inputStream, TentativaImportacao importacao, int linhaDoCabecalho, int abaDaPlanilha, boolean assincrono) throws Exception {
 
         final ArrayList<LinhaTentativaImportacao> bufferImportacao = new ArrayList<LinhaTentativaImportacao>();
-        final int LINHAS_POR_TRANSACAO = 20
+        long linhasProcessadas = 0;
 
         log.info(["Iniciando preImportacao ", importacao.id])
         //Limpando tabelas temporarias
@@ -591,12 +605,25 @@ class ImportarFamiliasService {
                         //FIXME: Retirar parametro removaMe abaixo - metodo processRow()
                         public void processRow(TentativaImportacao removaMe, int rowNum, Map<String, Object> map) {
 
-                            if (bufferImportacao.size() == LINHAS_POR_TRANSACAO) {
-                                descarregaBufferPreImportacao(bufferImportacao, importacao);
+                            List tempList = new ArrayList();
+                            boolean linhaVazia = true;
+                            for (String key : map.keySet()) {
+                                def value = map.get(key)
+                                Map tempMap = new HashMap();
+                                tempMap.put(key, value);
+                                tempList.add(tempMap);
+                                if (value != null && value.toString() != "")
+                                    linhaVazia = false;
                             }
 
-//                            if (AmbienteExecucao.SABOTAGEM && rowNum == 10)
-//                                throw new RuntimeException("Teste de mensagem na preImportacao")
+                            //ignora linhas completamente vazias
+                            if (linhaVazia)
+                                return;
+
+                            linhasProcessadas++
+                            if (bufferImportacao.size() == 5) {
+                                descarregaBufferPreImportacao(bufferImportacao, importacao, linhasProcessadas);
+                            }
 
                             LinhaTentativaImportacao linhaTentativaImportacao = new LinhaTentativaImportacao();
                             linhaTentativaImportacao.setOrdem(rowNum - linhaDoCabecalho + 1L)
@@ -604,12 +631,6 @@ class ImportarFamiliasService {
                             //Contador persistente de linhas nesta importacao
                             importacao.addLinhasEncontradas();
 
-                            List tempList = new ArrayList();
-                            for (String key : map.keySet()) {
-                                Map tempMap = new HashMap();
-                                tempMap.put(key, map.get(key));
-                                tempList.add(tempMap);
-                            }
                             linhaTentativaImportacao.setJSON(new JSON(tempList).toString());
                             bufferImportacao << linhaTentativaImportacao
                         }
@@ -643,7 +664,7 @@ class ImportarFamiliasService {
             log.info("iniciando pre processamento de importacao em thread separado (id ${importacao?.id}")
             excelReader.process(abaDaPlanilha - 1);
             if (bufferImportacao.size() > 0)
-                descarregaBufferPreImportacao(bufferImportacao, importacao);
+                descarregaBufferPreImportacao(bufferImportacao, importacao, null);
             atualizaProgressoImportacao(importacao, StatusImportacao.ARQUIVO_PROCESSADO)
         } catch (Throwable t) {
             essecaoPreImportacao(t, importacao)
@@ -666,7 +687,7 @@ class ImportarFamiliasService {
     private void atualizaProgressoImportacao(TentativaImportacao importacao, StatusImportacao status, String mensagem = null, Integer cidadaosProcessados = null, Integer errosDetectados = null) {
         importacao.setStatus(status);
         if (mensagem) {
-            log.info("Tamanho informacoes importacao " + mensagem.size())
+//            log.info("Tamanho informacoes importacao " + mensagem.size())
             log.info("Informacoes: " + mensagem)
             System.out.println(mensagem)
             if (mensagem.size() >= TentativaImportacao.MAX_TAMANHO_CAMPO_INFORMACOES - 1)
@@ -681,8 +702,10 @@ class ImportarFamiliasService {
     }
 
     @Transactional
-    private void descarregaBufferPreImportacao(ArrayList<LinhaTentativaImportacao> bufferImportacao, TentativaImportacao importacao) {
-        log.info(['"descarregando" buffer de linhas da preImportacao ', importacao?.id])
+    private void descarregaBufferPreImportacao(ArrayList<LinhaTentativaImportacao> bufferImportacao, TentativaImportacao importacao, Long linhasProcessadas) {
+        System.sleep(TEMPO_SUSPIRO)
+        log.info("descarregando buffer de linhas da preImportacao id ${importacao?.id}, ${linhasProcessadas} linhas processadas ate agora")
+        log.info(SystemUtils.systemStatistics())
 
         atualizaProgressoImportacao(importacao, StatusImportacao.PROCESSANDO_ARQUIVO)
 

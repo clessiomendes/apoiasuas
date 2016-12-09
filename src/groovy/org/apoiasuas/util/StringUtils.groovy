@@ -3,6 +3,7 @@ package org.apoiasuas.util
 import com.google.common.base.CaseFormat
 import org.codehaus.plexus.util.Base64
 
+import java.text.DecimalFormat
 import java.text.Normalizer
 import java.util.regex.Pattern
 
@@ -114,5 +115,12 @@ class StringUtils {
         //Remove linhas em branco http://stackoverflow.com/a/4123485/1916198
 //        s.replaceAll("\n[ \t]*\n", "\n");
         return toHtml(s.replaceAll("(?m)^[ \t]*\r?\n", ""))
+    }
+
+    public static String readableLong(long size) {
+        if(size <= 0) return "0";
+        final String[] units = [ "", "K", "M", "G", "T" ];
+        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }

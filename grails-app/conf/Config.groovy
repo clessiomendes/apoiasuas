@@ -1,10 +1,12 @@
 import org.apache.commons.io.output.ThresholdingOutputStream
+import org.apache.log4j.Level
 import org.apache.log4j.xml.XMLLayout
 import org.apoiasuas.formulario.PreDefinidos
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaController
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
+import org.apache.log4j.RollingFileAppender
 import org.codehaus.groovy.grails.commons.spring.GrailsWebApplicationContext
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent
 
@@ -121,17 +123,30 @@ environments {
     }
 }
 
-// log4j configuration
+//                                              ============   log4j configuration    ===========
+
 log4j.main = {
-//    includeLocation="true"
-//        console name:'stdout', layout:pattern(conversionPattern: '%c{1}.%M() -> %m -> %l %n')
+    def errorAppender = new RollingFileAppender(name: 'errorFile', append: true, maxFileSize: '10000KB',
+            file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/error.log',
+//            filePattern: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/error%d{yyyy-MM-DD hh-mm}.gz',
+            maxBackupIndex: 10, layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: Level.ERROR);
+    def infoAppender = new RollingFileAppender(name: 'infoFile', append: true, maxFileSize: '10000KB',
+            file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/info.log',
+//            filePattern: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/error%d{yyyy-MM-DD hh-mm}.gz',
+            maxBackupIndex: 10, layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: Level.INFO);
         switch (AmbienteExecucao.CURRENT) {
             case AmbienteExecucao.CLEVERCLOUD:
+//                def rollingFile = new RollingFileAppender(name: 'rollingFileAppender',  layout: pattern(conversionPattern: "%d [%t] %-5p %c{2} %x - %m%n"))
+//                // Rolling policy where log filename is logs/app.log.
+//                // Rollover each day, compress and save in logs/backup directory.
+//                def rollingPolicy = new TimeBasedRollingPolicy(fileNamePattern: 'logs/backup/app.%d{yyyy-MM-dd}.gz', activeFileName: 'logs/app.log')
+//                rollingPolicy.activateOptions()
+//                rollingFile.setRollingPolicy rollingPolicy
                 appenders {
-//                    file name: 'file', file: '/home/bas/application.log', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.ERROR
+//                    file name: 'infoFile', file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/info.log', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.INFO
                     console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.ERROR
                 }
-                root { error 'stdout' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
+                root { error 'stdout','errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
                 break
             case AmbienteExecucao.APPFOG:
                 appenders {
@@ -143,9 +158,13 @@ log4j.main = {
                 appenders {
 //                    console name: 'sqlFile', file: 'c:/workspaces/logs/apoiasuassql.log', layout: pattern(conversionPattern: '(loc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.ALL
 //                  file name: 'xml', layout: xml, file: 'c:/workspaces/logs/apoiaSUAS'+new Date().format("yyyy-MM-dd-hh-mm")+'.xml', threshold:org.apache.log4j.Level.DEBUG
-                    console name: 'console', layout: pattern(conversionPattern: '(loc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.ALL
+                    appender errorAppender;
+                    appender infoAppender;
+//                    infoAppender getFileAppender(Level.INFO)
+//                    file name: 'infoFile', file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/info.log', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.INFO
+                    console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.DEBUG
                 }
-                root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
+                root { error 'stdout', 'errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
                 break
             default:
                 println 'warning! ambiente indefinido para configuracao de logs. Usando padrao: console name: \'stdout\', layout: pattern(conversionPattern: \'(def) %d{dd-MMM HH:mm} %p %c{8} -> %m%n\')'
@@ -153,37 +172,35 @@ log4j.main = {
                 root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
         }
 
-    //
-    all     'org.apoiasuas',
-            'com.mysql.jdbc.log.StandardLogger', //mysql (inclui tempos das SQL se parametro profileSQL=true for passado na url de conexao
-            'org.apache.tomcat.jdbc.pool.interceptor',
-            'org.apache.tomcat.jdbc.pool',
-            'grails.app.controllers',
-            'grails.app.services',
-            'grails.app.domain',
+        all 'org.apoiasuas',
+                'com.mysql.jdbc.log.StandardLogger', //mysql (inclui tempos das SQL se parametro profileSQL=true for passado na url de conexao
+                'org.apache.tomcat.jdbc.pool.interceptor',
+                'org.apache.tomcat.jdbc.pool',
+                'grails.app.controllers',
+                'grails.app.services',
+                'grails.app.domain',
 //            'grails.app.taglib',
 //            'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
 //            'org.hibernate',
-            'net.sf.ehcache.hibernate',
-            'grails.app.conf',
-            'grails.app.filters',
-            'org.hibernate.stat',                            // tempo e numero de registros em cada SQL
-            'org.hibernate.type.descriptor.sql',             //mostra os valores passados como parametros para as SQLs
-            'org.hibernate.SQL',
-            'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
-            'org.hibernate.engine.transaction.spi.AbstractTransactionImpl', //inicio e fim das transacoes
-            'org.springframework.transaction.interceptor.TransactionInterceptor', //Mostra inicio e fim das transacoes e a que metodos elas estao associadas
-            'org.springframework.webflow.engine',
-            'org.springframework.webflow',
-            'org.springframework.security',                  //login, seguranca, etc
-            'com.myjeeva.poi', //debug para o extrator excel
-            'org.camunda.bpm.engine.persistence', //BPM Engine
-            'org.camunda.bpm',   //BPM Engine
-            'org.grails.plugins.elasticsearch',  //ElasticSearch
-            'grails.app.jobs' //Quartz
-
+                'net.sf.ehcache.hibernate',
+                'grails.app.conf',
+                'grails.app.filters',
+                'org.hibernate.stat',                            // tempo e numero de registros em cada SQL
+                'org.hibernate.type.descriptor.sql',             //mostra os valores passados como parametros para as SQLs
+                'org.hibernate.SQL',
+                'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
+                'org.hibernate.engine.transaction.spi.AbstractTransactionImpl', //inicio e fim das transacoes
+                'org.springframework.transaction.interceptor.TransactionInterceptor', //Mostra inicio e fim das transacoes e a que metodos elas estao associadas
+                'org.springframework.webflow.engine',
+                'org.springframework.webflow',
+                'org.springframework.security',                  //login, seguranca, etc
+                'com.myjeeva.poi', //debug para o extrator excel
+                'org.camunda.bpm.engine.persistence', //BPM Engine
+                'org.camunda.bpm',   //BPM Engine
+                'org.grails.plugins.elasticsearch',  //ElasticSearch
+                'grails.app.jobs' //Quartz
 //So eh preciso especificar nivel "error" para pacotes internos aos definidos acima nos quais se deseja desligar o log
-    error   'org.camunda.bpm.engine.jobexecutor' //desligar logs de job da Engine BPM
+        error   'org.camunda.bpm.engine.jobexecutor' //desligar logs de job da Engine BPM
 //            'org.codehaus.groovy.grails.web.servlet',        // controllers
 //            'org.codehaus.groovy.grails.web.pages',          // GSP
 //            'org.codehaus.groovy.grails.web.sitemesh',       // layouts
@@ -256,7 +273,8 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
     '/**/*.css':                      ['permitAll'],
     '/**/*.less':                     ['permitAll'],
     '/assets/**':                     ['permitAll'],
-	'/**/js/**':                      ['permitAll'],
+    '/log4j/**':                     ['permitAll'],
+    '/**/js/**':                      ['permitAll'],
     '/searchable/**':                 ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.STR_SUPER_USER}"],
     '/console/**':                    ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.STR_SUPER_USER}"],
 	'/monitoring/**':                 ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.STR_SUPER_USER}"],
