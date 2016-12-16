@@ -151,4 +151,11 @@ class CidadaoService {
             return false
         return true;
     }
+
+    @Transactional
+    public Cidadao grava(Cidadao cidadao) {
+        return cidadao.save()
+    }
+
+
 }

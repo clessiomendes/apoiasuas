@@ -25,8 +25,10 @@
     /**
     * chamada ajax para obter os dados do cadastro do servico
     */
-    function ajaxServico(idServico) {
-        ${remoteFunction(controller: 'servico', action: 'getServico', params: "'idServico='+escape(idServico)", onSuccess: 'preencheEncaminhamentos(data)')}
+    function ajaxServico(idServico, idFamilia, idCidadao) {
+        var paramsEncaminhamento = { "idServico" : escape(idServico), "idFamilia" : escape(idFamilia), "idCidadao" : escape(idCidadao) }
+        <g:remoteFunction controller="servico" action="getServico" onSuccess="preencheEncaminhamentos(data)" params="paramsEncaminhamento"/>
+        %{--${remoteFunction(controller: 'servico', action: 'getServico', params: "'idServico='+escape(idServico)", onSuccess: 'preencheEncaminhamentos(data)')}--}%
     }
 
     /**
@@ -34,7 +36,7 @@
     */
     $(document).ready(function() {
         if (document.getElementById("servico").value != '') {
-            ajaxServico(document.getElementById("servico").value)
+            ajaxServico(document.getElementById("servico").value, document.getElementById("familia.id").value, document.getElementById("cidadao.id").value)
         }
     });
 
@@ -46,7 +48,7 @@
     </label>
     <g:select optionKey='id' optionValue="apelido" name="servico" id="servico" from="${org.apoiasuas.redeSocioAssistencial.Servico.list().sort({it.apelido})}" noSelection="['null': '']"
               value="${idServico ?: ''}" style="max-width:400px;"
-              onchange="ajaxServico(this.value)"/>
+              onchange="ajaxServico(this.value, document.getElementById('familia.id').value, document.getElementById('cidadao.id').value)"/>
 </div>
 
 <g:each in="${localDtoFormulario.getCamposAgrupados(true)}" var="grupo" status="i"> %{-- separa os campos em grupos --}%

@@ -9,7 +9,7 @@ import org.apoiasuas.seguranca.DefinicaoPapeis
 
 import javax.servlet.http.HttpSession
 
-@Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+@Secured([DefinicaoPapeis.STR_USUARIO])
 class FamiliaController extends AncestralController {
 
     def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Familia.class, only: ['show','edit', 'delete', 'update', 'save']]
@@ -23,9 +23,12 @@ class FamiliaController extends AncestralController {
 //        render view: 'list', model: [familiaInstanceList: Familia.list(params), familiaInstanceCount: Familia.count()]
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def show(Familia familiaInstance) {
         if (! familiaInstance)
             return notFound()
+
+        familiaInstance.membros = familiaInstance.membros.sort { it.id }
 
         List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familiaInstance.id)
 
@@ -84,11 +87,13 @@ class FamiliaController extends AncestralController {
     }
 */
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     protected def notFound() {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'Familia.label', default: 'Família'), params.id])
         return redirect(controller: 'cidadao', action: 'procurarCidadao')
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def obtemLogradouros(String term) {
         if (term)
             render familiaService.procurarLogradouros(term) as JSON
@@ -113,6 +118,7 @@ class FamiliaController extends AncestralController {
         return session[SESSION_ULTIMA_FAMILIA]
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def limparNotificacoes() {
         session[SESSION_NOTIFICACAO_FAMILIA] = null;
         render 200;

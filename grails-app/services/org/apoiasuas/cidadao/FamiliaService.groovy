@@ -96,8 +96,8 @@ class FamiliaService {
 
         //testa idades voltadas ao SCFV
         familia.membros.each { Cidadao cidadao ->
-            if (cidadao.idade && cidadao.idade < 4)
-                result << messageSource.getMessage("notificacao.familia.SCFV.0a3", null, locale);
+            if (cidadao.idade && cidadao.idade < 7)
+                result << messageSource.getMessage("notificacao.familia.SCFV.0a6", null, locale);
             if (cidadao.idade && cidadao.idade >= 60)
                 result << messageSource.getMessage("notificacao.familia.SCFV.idosos", null, locale);
         }

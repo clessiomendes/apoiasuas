@@ -20,8 +20,17 @@
         <table style="border-top: 0; margin-bottom: 0;">
             <tr>
                 <td style="width: 14em;">Nome ou cadastro de usuário:</td>
-                <td><g:form action="procurarCidadaoExecuta" controller="cidadao"> <g:textField name="nomeOuCodigoLegado" size="50" autofocus=""/>
-                    <g:submitButton name="procurar" class="search" value="Procurar"/></g:form></td>
+                <td>
+                    %{--<g:form action="procurarCidadaoExecuta" controller="cidadao">--}%
+                    <g:textField name="nomeOuCodigoLegado" id="inputNomeOuCodigoLegado" size="50" autofocus=""
+                                 onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
+                    <g:link onclick="linkProcurarCidadao(this, '${createLink(controller: 'cidadao', action: 'procurarCidadaoExecuta')}',
+                                                            document.getElementById('inputNomeOuCodigoLegado'), null, null);">
+                        <input id="btnProcurarCidadao" type="button" class="search" value="Procurar"/>
+                    </g:link>
+                    %{--<g:submitButton name="procurar" class="search" value="Procurar"/>--}%
+                    %{--</g:form>--}%
+                </td>
             </tr>
             <tr>
                 <td>Procurar no ApoiaCRAS:</td>

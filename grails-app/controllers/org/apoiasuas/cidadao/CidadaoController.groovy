@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession
 
 import static org.springframework.http.HttpStatus.*
 
-@Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+@Secured([DefinicaoPapeis.STR_USUARIO])
 class CidadaoController extends AncestralController {
 
     def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Cidadao.class, only: ['show','edit', 'delete', 'update', 'save']]
@@ -34,10 +34,12 @@ class CidadaoController extends AncestralController {
         return result
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def procurarCidadao() {
         render(view: "procurarCidadao", model: [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:]])
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def procurarCidadaoExecuta(FiltroCidadaoCommand filtro) {
         //Preenchimento de numeros no primeiro campo de busca indica pesquisa por codigo legado
         boolean buscaPorCodigoLegado = filtro.nomeOuCodigoLegado && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCodigoLegado)
@@ -52,20 +54,25 @@ class CidadaoController extends AncestralController {
             render(view:"procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ])
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def selecionarFamilia(Familia familiaInstance) {
         redirect(controller: 'familia', action: 'show', params: params)
 //        forward controller: GrailsNameUtils.getLogicalName(FamiliaController.class, "Controller"), action: "show"
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def show(Cidadao cidadaoInstance) {
         guardaUltimoCidadaoSelecionado(cidadaoInstance)
-        respond cidadaoInstance
+        render view: 'show', model: [cidadaoInstance: cidadaoInstance]
+//        respond cidadaoInstance
     }
 
+/*
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def create() {
         respond new Cidadao(params)
     }
+*/
 
     public static Cidadao getUltimoCidadao(HttpSession session) {
         return session[SESSION_ULTIMO_CIDADAO]
@@ -74,6 +81,31 @@ class CidadaoController extends AncestralController {
     public static void setUltimoCidadao(HttpSession session, Cidadao cidadao) {
         session[SESSION_ULTIMO_CIDADAO] = cidadao
     }
+
+    def edit(Cidadao cidadaoInstance) {
+        render view: 'edit', model: getEditCreateModel(cidadaoInstance);
+    }
+
+    def save(Cidadao cidadaoInstance) {
+        if (! cidadaoInstance)
+            return notFound()
+
+        boolean modoCriacao = cidadaoInstance.id == null
+
+        //Grava
+        if (! cidadaoService.grava(cidadaoInstance)) {
+            //exibe o formulario novamente em caso de problemas na validacao
+            return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(cidadaoInstance))
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'cidadao.label', default: 'Cidadão'), cidadaoInstance.id])
+        return show(cidadaoInstance)
+    }
+
+    private Map getEditCreateModel(Cidadao cidadaoInstance) {
+        return [cidadaoInstance: cidadaoInstance]
+    }
+
 }
 
 @grails.validation.Validateable

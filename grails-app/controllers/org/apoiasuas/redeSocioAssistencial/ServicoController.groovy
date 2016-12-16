@@ -3,6 +3,9 @@ package org.apoiasuas.redeSocioAssistencial
 import grails.converters.JSON
 import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
+import org.apoiasuas.cidadao.Cidadao
+import org.apoiasuas.cidadao.CidadaoService
+import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.formulario.FormularioService
 import org.apoiasuas.formulario.PreDefinidos
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -12,11 +15,12 @@ class ServicoController extends AncestralServicoController {
 
     ServicoService servicoService
     FormularioService formularioService
+    CidadaoService cidadaoService
 
     static defaultAction = "list"
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def getServico(Long idServico) {
+    def getServico(Long idServico, Long idFamilia, Long idCidadao) {
         Servico servico = Servico.get(idServico)
 
         String endereco = ""
@@ -31,6 +35,17 @@ class ServicoController extends AncestralServicoController {
             String telefones = endereco ? ", telefone: " : "telefone: "
             endereco += servico.telefones ? telefones + servico.telefones : ""
         }
+
+        if (servico.encaminhamentoPadrao) {
+            Cidadao cidadao = cidadaoService.obtemCidadao(idCidadao)
+            Familia familia = cidadaoService.obtemFamilia(idFamilia)
+            servico.encaminhamentoPadrao = servico.encaminhamentoPadrao
+                    .replaceAll("(?i)%nome%", cidadao?.getNomeCompleto() ?: "")
+                    .replaceAll("(?i)%endereco%", familia?.endereco?.enderecoCompleto ?: "")
+                    .replaceAll("(?i)%telefone%", familia?.getTelefonesToString() ?: "")
+                    .replaceAll("(?i)%nis%", cidadao?.getNis() ?: "")
+        }
+
         render servico.properties + [enderecoCompleto: endereco] as JSON
     }
 

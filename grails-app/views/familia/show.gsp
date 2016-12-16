@@ -108,9 +108,9 @@
 			
 			</ol>
             <fieldset class="buttons">
-                <g:link class="edit" action="edit" resource="${familiaInstance}">Alterar dados</g:link>
                 <g:link class="add" controller="emissaoFormulario" action="escolherFamilia">Emitir formulário</g:link>
                 <g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosFamilia" params="[idFamilia: familiaInstance.id]" >Formulários emitidos</g:link>
+				<g:link class="edit" action="edit" resource="${familiaInstance}">Alterar dados</g:link>
             </fieldset>
 		</div>
 	</body>

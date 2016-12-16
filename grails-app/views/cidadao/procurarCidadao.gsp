@@ -25,17 +25,26 @@
     <div class="message" role="status">${flash.message}</div>
 </g:if>
 
-<g:form action="procurarCidadaoExecuta">
+%{--<g:form action="procurarCidadaoExecuta">--}%
         <table class="parametrosPesquisa">
             <tr> <td> <div>
-                        Nome ou Cad: <g:textField name="nomeOuCodigoLegado" size="23" autofocus=""/>
-                        Endereço: <g:textField name="logradouro" size="23"/> Nº <g:textField name="numero" size="1"/>
-                </div> </td>
-                <td> <div>
-                        <g:submitButton name="procurar" class="search" value="Procurar"/>
+                Nome ou Cad: <g:textField name="nomeOuCodigoLegado" id="inputNomeOuCodigoLegado" size="23" autofocus=""
+                                          onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
+                Endereço: <g:textField name="logradouro" id="inputLogradouro" size="23"
+                                       onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
+                Nº <g:textField name="numero" id="inputNumero" size="1"
+                             onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
+            </div> </td>
+            <td> <div>
+                <g:link onclick="linkProcurarCidadao(this, '${createLink(action: 'procurarCidadaoExecuta')}',
+                                                            document.getElementById('inputNomeOuCodigoLegado'),
+                                                            document.getElementById('inputNumero'),
+                                                            document.getElementById('inputLogradouro'));">
+                                    <input id="btnProcurarCidadao" type="button" class="search" value="Procurar"/>
+                </g:link>
             </div> </td> </tr>
         </table>
-</g:form>
+%{--</g:form>--}%
 
 <div id="list-cidadao" class="content scaffold-list" role="main">
     <table class="tabelaListagem">
