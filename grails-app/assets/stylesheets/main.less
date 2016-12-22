@@ -3,6 +3,12 @@
 @cor-fonte-links-e-titulos:				#48802c;
 @cor-hover-tabelas: 			#E1F2B6;
 @cor-fundo-paineis-e-botoes:	#efefef;
+@lightnen-fundo:			58%;
+@lightnen-borda:			40%;
+@lightnen-sombra:			50%;
+@cor-base-mensagem-info:	#006dba;
+@cor-base-mensagem-erro:	#cc0000;
+@cor-base-mensagem-erro:	#cc0000;
 
 /* Tamanhos */
 .tamanho-icones() {
@@ -374,77 +380,61 @@ fieldset.embedded legend {
 }
 
 /* MESSAGES AND ERRORS */
-
-.errors,
-.message {
-	font-size: 0.8em;
-	line-height: 2;
-	margin: 1em 2em;
-	padding: 0.25em;
+.caixaTexto(@cor, @imagem) {
+  font-size: 0.8em;
+  line-height: 2;
+  margin: 1em 2em;
+  padding: 0;
+  //  padding: 0.25em;
+  text-indent: 2.2em;
+  background: lighten(@cor, @lightnen-fundo) @imagem 0.5em 50% no-repeat;
+  border: 1px solid lighten(@cor,@lightnen-borda);
+  color: @cor;
+  -moz-box-shadow: 0 0 0.25em lighten(@cor,@lightnen-sombra);
+  -webkit-box-shadow: 0 0 0.25em lighten(@cor,@lightnen-sombra);
+  box-shadow: 0 0 0.25em lighten(@cor,@lightnen-sombra);
 }
 
 .message {
-	background: #f3f3ff;
-	border: 1px solid #b2d1ff;
-	color: #006dba;
-	   -moz-box-shadow: 0 0 0.25em #b2d1ff;
-	-webkit-box-shadow: 0 0 0.25em #b2d1ff;
-	        box-shadow: 0 0 0.25em #b2d1ff;
+  .caixaTexto(@cor-base-mensagem-info, url(../images/skin/information.png));
 }
 
 .errors {
-	background: #fff3f3;
-	border: 1px solid #ffaaaa;
-	color: #cc0000;
-	   -moz-box-shadow: 0 0 0.25em #ff8888;
-	-webkit-box-shadow: 0 0 0.25em #ff8888;
-	        box-shadow: 0 0 0.25em #ff8888;
-}
-
-.errors ul,
-.message {
-	padding: 0;
-}
-
-.errors li {
-	list-style: none;
-	background: transparent url(../images/skin/exclamation.png) 0.5em 50% no-repeat;
-//  .tamanho-icones();
-	text-indent: 2.2em;
-}
-
-.message {
-	background: transparent url(../images/skin/information.png) 0.5em 50% no-repeat;
-//  .tamanho-icones();
-	text-indent: 2.2em;
+  list-style: none;
+  .caixaTexto(@cor-base-mensagem-erro, url(../images/skin/exclamation.png));
 }
 
 /* form fields with errors */
+/*
+@lightnen-fundo:			58%;
+@lightnen-borda:			40%;
+@lightnen-sombra:			50%;
+*/
 
 .error input, .error select, .error textarea {
-	background: #fff3f3;
-	border-color: #ffaaaa;
-	color: #cc0000;
+  background: lightnen(@cor-base-mensagem-erro, @lightnen-fundo);
+  border-color: lightnen(@cor-base-mensagem-erro, @lightnen-borda);
+  color: @cor-base-mensagem-erro;
 }
 
 .error input:focus, .error select:focus, .error textarea:focus {
-	   -moz-box-shadow: 0 0 0.5em #ffaaaa;
-	-webkit-box-shadow: 0 0 0.5em #ffaaaa;
-	        box-shadow: 0 0 0.5em #ffaaaa;
+	   -moz-box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
+	-webkit-box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
+	        box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
 }
 
 /* same effects for browsers that support HTML5 client-side validation (these have to be specified separately or IE will ignore the entire rule) */
 
 input:invalid, select:invalid, textarea:invalid {
-	background: #fff3f3;
-	border-color: #ffaaaa;
-	color: #cc0000;
+  background: lightnen(@cor-base-mensagem-erro, @lightnen-fundo);
+  border-color: lightnen(@cor-base-mensagem-erro, @lightnen-borda);
+  color: @cor-base-mensagem-erro;
 }
 
 input:invalid:focus, select:invalid:focus, textarea:invalid:focus {
-	   -moz-box-shadow: 0 0 0.5em #ffaaaa;
-	-webkit-box-shadow: 0 0 0.5em #ffaaaa;
-	        box-shadow: 0 0 0.5em #ffaaaa;
+  -moz-box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
+  -webkit-box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
+  box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
 }
 
 /* TABLES */
