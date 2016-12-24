@@ -34,7 +34,7 @@
 
 				%{--Exibe PROGRAMAS, AÇÕES, VULNERABILIADES E POTENCIALIDADES--}%
 				<g:if test="${familiaInstance?.programas || familiaInstance?.acoes}">
-				<fieldset id="fieldsetDadosEncaminhamento" class="subgrupo">
+				<fieldset id="fieldsetDadosEncaminhamento" class="embedded">
 					<legend><g:message code="marcadores"/></legend>
 					<g:each in="${familiaInstance.programas}" var="programaFamilia">
 						<span class="marcadores-programa">${programaFamilia?.programa.descricao}</span>

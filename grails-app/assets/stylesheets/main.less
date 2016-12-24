@@ -9,6 +9,8 @@
 @cor-fundo-corpo:	        white;
 @cor-texto-corpo:	        #333333;
 @cor-sombra-corpo:	        #255b17;
+@cor-bordas:	            #CCCCCC;
+
 
 @lightnen-fundo:			58%;
 @lightnen-borda:			40%;
@@ -133,7 +135,7 @@ img {
 }
 
 .content h1 {
-	border-bottom: 1px solid #CCCCCC;
+	border-bottom: 1px solid @cor-bordas;
 	margin: 0.8em 1em 0.3em;
 	padding: 0 0.25em;
 }
@@ -312,7 +314,7 @@ label {
 
 input, select, textarea {
 	background-color: #fcfcfc;
-	border: 1px solid #cccccc;
+	border: 1px solid @cor-bordas;
 	font-size: 1em;
 	padding: 0.2em 0.4em;
 }
@@ -373,25 +375,20 @@ ul.one-to-many li.add {
 
 /* EMBEDDED PROPERTIES */
 
-fieldset.subgrupo {
-  background-color: transparent;
-  border: 1px solid #CCCCCC;
-  padding: 4px;
-}
-
-fieldset.embedded {
+.embedded {
 	background-color: transparent;
-	border: 1px solid #CCCCCC;
+	border: 1px solid @cor-bordas;
 	margin-left: 0;
-	margin-right: 0;
-	padding-left: 0;
-	padding-right: 0;
+	margin-right: 4px;
+	padding-left: 4px;
+	padding-right: 4px;
+    padding-bottom: 4px;
 	   -moz-box-shadow: none;
 	-webkit-box-shadow: none;
 	        box-shadow: none;
 }
 
-fieldset.embedded legend {
+.embedded legend {
 	margin: 0 1em;
 }
 
@@ -599,7 +596,7 @@ th.desc a {
 
 .buttons input {
 	margin: 3px; //efeito de espaçamento entre linhas
-	border: 1px solid #cccccc;
+	border: 1px solid @cor-bordas;
 	font-size: 1em;
 	padding: 0.2em 0.4em;
 	border-radius: 0;

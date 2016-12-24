@@ -22,17 +22,32 @@
     <g:textField name="codigoLegado" value="${localDtoFamilia?.codigoLegado}"/>
 </div>
 
-%{--
-<div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'familiaAcompanhada', 'error')} ">
-    <label for="familiaAcompanhada">
-        <g:message code="familia.familiaAcompanhada.label" default="Acampanhada" />
-    </label>
-    <g:checkBox name="familiaAcompanhada" value="${localDtoFamilia?.familiaAcompanhada}"/>
+<div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'tecnicoReferencia', 'error')} ">
+	<label for="tecnicoReferencia">
+		<g:message code="familia.tecnicoReferencia.label" default="Técnico de referência" />
+	</label>
+	<g:select id="tecnicoReferencia" name="tecnicoReferencia.id" from="${operadores}" optionKey="id" value="${localDtoFamilia?.tecnicoReferencia?.id}" class="many-to-one" noSelection="['': '']"/>
 </div>
---}%
 
-<fieldset id="fieldsetProgramas" class="subgrupo">
-	<legend>Programas <input type="text"></legend>
+<g:javascript>
+/**
+* busca incremental de marcadores (programas, acoes, etc)
+*/
+function filtraMarcadores(textInput, spans) {
+	spans.each(function(){
+		if ($(this).text().toLowerCase().includes(textInput.value.toLowerCase()) )
+			$(this).show();
+		else
+			$(this).hide();
+	});
+}
+</g:javascript>
+
+<fieldset id="fieldsetProgramas" class="embedded">
+	<legend>Programas
+		%{--<img src="../images/skin/search-cinza.png"/>--}%
+		<input type="text" style="transform: scale(0.9);" onkeyup="filtraMarcadores(this, $('.marcadores-programa')) ">
+	</legend>
 	<g:each in="${programasDisponiveis}" var="progdisp" status="countMarcadores">
 		<span class="marcadores-programa">
 			<% Programa programaDisponivel = progdisp; %>
@@ -43,8 +58,11 @@
 	</g:each>
 </fieldset>
 
-<fieldset id="fieldsetProgramas" class="subgrupo">
-	<legend>Acoes <input type="text"></legend>
+<fieldset id="fieldsetAcoes" class="embedded">
+	<legend>Ações
+	%{--<img src="../images/skin/search-cinza.png"/>--}%
+		<input type="text" style="transform: scale(0.9);" onkeyup="filtraMarcadores(this, $('.marcadores-acao')) ">
+	</legend>
 	<g:each in="${acoesDisponiveis}" var="acaodisp" status="countMarcadores">
 		<span class="marcadores-acao">
 			<% Acao acaoDisponivel = acaodisp; %>
@@ -74,14 +92,7 @@
 </fieldset>
 --}%
 
-<div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'tecnicoReferencia', 'error')} ">
-    <label for="tecnicoReferencia">
-        <g:message code="familia.tecnicoReferencia.label" default="Técnico de referência" />
-    </label>
-    <g:select id="tecnicoReferencia" name="tecnicoReferencia.id" from="${operadores}" optionKey="id" value="${localDtoFamilia?.tecnicoReferencia?.id}" class="many-to-one" noSelection="['': '']"/>
-</div>
-
-<fieldset class="embedded"><legend><g:message code="familia.endereco.label" default="Endereco" /></legend>
+<fieldset class="embedded"><legend><g:message code="familia.endereco.label" default="Endereço" /></legend>
 
 	<div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'endereco.tipoLogradouro', 'error')} ">
 		<label for="endereco.tipoLogradouro">
