@@ -3,6 +3,7 @@ package org.apoiasuas.cidadao
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
+import org.apoiasuas.acao.Acao
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -28,7 +29,10 @@ class FamiliaController extends AncestralController {
         if (! familiaInstance)
             return notFound()
 
+        //Garante que as coleções sejam exibidas em uma ordem especifica
         familiaInstance.membros = familiaInstance.membros.sort { it.id }
+        familiaInstance.programas = familiaInstance.programas.sort { it.programa.nome }
+        familiaInstance.acoes = familiaInstance.acoes.sort { it.acao.descricao }
 
         List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familiaInstance.id)
 
@@ -42,14 +46,14 @@ class FamiliaController extends AncestralController {
     }
 */
 
-    def save(Familia familiaInstance, ProgramasCommand programasCommand) {
+    def save(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand) {
         if (! familiaInstance)
             return notFound()
 
         boolean modoCriacao = familiaInstance.id == null
 
         //Grava
-        if (! familiaService.grava(familiaInstance, programasCommand)) {
+        if (! familiaService.grava(familiaInstance, programasCommand, acoesCommand)) {
             //exibe o formulario novamente em caso de problemas na validacao
             return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(familiaInstance))
         }
@@ -59,12 +63,20 @@ class FamiliaController extends AncestralController {
     }
 
     private Map getEditCreateModel(Familia familiaInstance) {
-        List<Programa> programasDisponiveis = Programa.all
-        //Marca dentre os programas disponiveis, aqueles que estão atualmente associados à família
-        programasDisponiveis.each { programaDisponivel ->
-            programaDisponivel.selected = familiaInstance.programas.find { it.programa == programaDisponivel }
+        List<Programa> programasDisponiveis = marcadoresDisponiveis(familiaInstance.programas, Programa.all.sort { it.nome })
+        List<Acao> acoesDisponiveis = marcadoresDisponiveis(familiaInstance.acoes, Acao.all.sort { it.descricao })
+        return [familiaInstance: familiaInstance, operadores: getOperadoresOrdenadosController(true),
+                programasDisponiveis: programasDisponiveis, acoesDisponiveis: acoesDisponiveis]
+    }
+
+    /**
+     * Marca dentre os programas/acoes/etc disponiveis, aqueles que estão atualmente associados à família
+     */
+    private List<Marcador> marcadoresDisponiveis(Set<AssociacaoMarcador> marcadoresSelecionados, List<Marcador> marcadoresDisponiveis) {
+        marcadoresDisponiveis.each { Marcador marcadorDisponivel ->
+            marcadorDisponivel.selected = marcadoresSelecionados.find { it.marcador == marcadorDisponivel }
         }
-        return [familiaInstance: familiaInstance, programasDisponiveis: programasDisponiveis, operadores: getOperadoresOrdenadosController(true)]
+        return marcadoresDisponiveis
     }
 
     def edit(Familia familiaInstance) {
@@ -126,11 +138,17 @@ class FamiliaController extends AncestralController {
 
 }
 
-class ProgramasCommand {
-    List<ProgramaCommand> programasdisponiveis = [].withLazyDefault { new ProgramaCommand() }
+class ProgramasCommand implements MarcadoresCommand {
+    List<MarcadorCommand> programasDisponiveis = [].withLazyDefault { new MarcadorCommand() }
+    List<MarcadorCommand> getMarcadoresDisponiveis() { programasDisponiveis }
 }
 
-class ProgramaCommand {
+class AcoesCommand implements MarcadoresCommand {
+    List<MarcadorCommand> acoesDisponiveis = [].withLazyDefault { new MarcadorCommand() }
+    List<MarcadorCommand> getMarcadoresDisponiveis() { acoesDisponiveis }
+}
+
+class MarcadorCommand {
     String id
     String selected
 }

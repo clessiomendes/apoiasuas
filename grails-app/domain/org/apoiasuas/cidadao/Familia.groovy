@@ -3,6 +3,7 @@ package org.apoiasuas.cidadao
 import org.apache.commons.collections.FactoryUtils
 import org.apache.commons.collections.list.LazyList
 import org.apache.xpath.operations.Bool
+import org.apoiasuas.acao.AcaoFamilia
 import org.apoiasuas.anotacoesDominio.InfoClasseDominio
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
@@ -37,6 +38,7 @@ class Familia implements Serializable {
     Date dateCreated, lastUpdated, dataUltimaImportacao;
     Endereco endereco //importado
     Set<ProgramaFamilia> programas
+    Set<AcaoFamilia> acoes
 
     @InfoPropriedadeDominio(codigo='telefone', descricao = 'Telefone', tipo = CampoFormulario.Tipo.TELEFONE, tamanho = 10)
     String telefone //campo transiente (usado para conter telefones escolhidos/digitados pelo operador em casos de uso como o de preenchimento de formulario
@@ -44,7 +46,7 @@ class Familia implements Serializable {
 
     ServicoSistema servicoSistemaSeguranca
 
-    static hasMany = [membros: Cidadao, telefones: Telefone, programas: ProgramaFamilia]
+    static hasMany = [membros: Cidadao, telefones: Telefone, programas: ProgramaFamilia, acoes: AcaoFamilia]
 
     static embedded = ['endereco']
 

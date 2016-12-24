@@ -32,26 +32,30 @@
                     </ul>
                 </g:if>
 
+				%{--Exibe PROGRAMAS, AÇÕES, VULNERABILIADES E POTENCIALIDADES--}%
+				<g:if test="${familiaInstance?.programas || familiaInstance?.acoes}">
+				<fieldset id="fieldsetDadosEncaminhamento" class="subgrupo">
+					<legend><g:message code="marcadores"/></legend>
+					<g:each in="${familiaInstance.programas}" var="programaFamilia">
+						<span class="marcadores-programa">${programaFamilia?.programa.descricao}</span>
+					</g:each>
+					<g:each in="${familiaInstance.acoes}" var="acaoFamilia">
+						<span class="marcadores-acao">${acaoFamilia?.acao.descricao}</span>
+					</g:each>
+				</fieldset>
+				</g:if>
+
 				<g:if test="${familiaInstance?.codigoLegado}">
-				<li class="fieldcontain">
-					<span id="codigoLegado-label" class="property-label"><g:message code="familia.codigoLegado.label" default="Codigo Legado" /></span>
-					<span class="property-value" aria-labelledby="codigoLegado-label"><g:fieldValue bean="${familiaInstance}" field="codigoLegado"/></span>
-				</li>
+					<li class="fieldcontain">
+						<span id="codigoLegado-label" class="property-label"><g:message code="familia.codigoLegado.label" default="Codigo Legado" /></span>
+						<span class="property-value" aria-labelledby="codigoLegado-label"><g:fieldValue bean="${familiaInstance}" field="codigoLegado"/></span>
+					</li>
 				</g:if>
 
                 <g:if test="${familiaInstance?.tecnicoReferencia}">
                     <li class="fieldcontain">
                         <span id="tecnicoReferencia-label" class="property-label"><g:message code="familia.tecnicoReferencia.label" default="Técnico de referência" /></span>
                         <span style="color: red" class="property-value" aria-labelledby="tecnicoReferencia-label"><g:fieldValue bean="${familiaInstance}" field="tecnicoReferencia"/></span>
-                    </li>
-                </g:if>
-
-                <g:if test="${familiaInstance?.programas}">
-                    <li class="fieldcontain">
-                        <span id="membros-label" class="property-label"><g:message code="familia.programas.label" default="Programas" /></span>
-                        <g:each in="${familiaInstance.programas}" var="programaFamilia">
-                            <span class="property-value" aria-labelledby="programas-label">${programaFamilia?.programa.siglaENome()}</span>
-                        </g:each>
                     </li>
                 </g:if>
 

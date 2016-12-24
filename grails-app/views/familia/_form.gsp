@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.programa.Programa; org.apoiasuas.seguranca.UsuarioSistema; org.apoiasuas.cidadao.Familia" %>
+<%@ page import="org.apoiasuas.acao.Acao; org.apoiasuas.programa.Programa; org.apoiasuas.seguranca.UsuarioSistema; org.apoiasuas.cidadao.Familia" %>
 
 <%
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance
@@ -31,6 +31,31 @@
 </div>
 --}%
 
+<fieldset id="fieldsetProgramas" class="subgrupo">
+	<legend>Programas <input type="text"></legend>
+	<g:each in="${programasDisponiveis}" var="progdisp" status="countMarcadores">
+		<span class="marcadores-programa">
+			<% Programa programaDisponivel = progdisp; %>
+			<g:checkBox class="check-marcadores" name="programasDisponiveis[${countMarcadores}].selected" value="${programaDisponivel.selected}"/>
+			${programaDisponivel.nome}
+			<g:hiddenField name="programasDisponiveis[${countMarcadores}].id" value="${programaDisponivel.id}"/>
+		</span>
+	</g:each>
+</fieldset>
+
+<fieldset id="fieldsetProgramas" class="subgrupo">
+	<legend>Acoes <input type="text"></legend>
+	<g:each in="${acoesDisponiveis}" var="acaodisp" status="countMarcadores">
+		<span class="marcadores-acao">
+			<% Acao acaoDisponivel = acaodisp; %>
+			<g:checkBox class="check-marcadores" name="acoesDisponiveis[${countMarcadores}].selected" value="${acaoDisponivel.selected}"/>
+			${acaoDisponivel.descricao}
+			<g:hiddenField name="acoesDisponiveis[${countMarcadores}].id" value="${acaoDisponivel.id}"/>
+		</span>
+	</g:each>
+</fieldset>
+
+%{--
 <fieldset id="fieldsetProgramas" class="embedded"}>
     <legend>
         <g:message code="familia.programas" default="Programas, benefícios e projetos" />
@@ -47,6 +72,7 @@
         </div>
     </g:each>
 </fieldset>
+--}%
 
 <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'tecnicoReferencia', 'error')} ">
     <label for="tecnicoReferencia">

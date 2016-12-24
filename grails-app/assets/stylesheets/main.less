@@ -1,14 +1,24 @@
 /* Cores */
 @cor-principal:					#abbf78;
-@cor-fonte-links-e-titulos:				#48802c;
-@cor-hover-tabelas: 			#E1F2B6;
+@cor-fonte-links-e-titulos:		#48802c;
+@cor-marcadores: 			    #E1F2B6;
 @cor-fundo-paineis-e-botoes:	#efefef;
+@cor-fundo-principal:	        #dddddd;
+@cor-sombra-principal:	        #aaaaaa;
+
+@cor-fundo-corpo:	        white;
+@cor-texto-corpo:	        #333333;
+@cor-sombra-corpo:	        #255b17;
+
 @lightnen-fundo:			58%;
 @lightnen-borda:			40%;
 @lightnen-sombra:			50%;
 @cor-base-mensagem-info:	#006dba;
 @cor-base-mensagem-erro:	#cc0000;
-@cor-base-mensagem-erro:	#cc0000;
+
+@cor-marcadores-programa:       #E1F2B6;
+@cor-marcadores-acao:		    #CBF2B6;
+
 
 /* Tamanhos */
 .tamanho-icones() {
@@ -28,10 +38,10 @@ h1, h2, h3, h4, h5, h6 {
 /* BASE LAYOUT */
 
 html {
-	background-color: #ddd;
-	background-image: -moz-linear-gradient(center top, #aaa, #ddd);
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #aaa), color-stop(1, #ddd));
-	background-image: linear-gradient(top, #aaa, #ddd);
+	background-color: @cor-fundo-principal;
+	background-image: -moz-linear-gradient(center top, @cor-sombra-principal, @cor-fundo-principal);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, @cor-sombra-principal), color-stop(1, @cor-fundo-principal));
+	background-image: linear-gradient(top, @cor-sombra-principal, @cor-fundo-principal);
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#aaaaaa', EndColorStr = '#dddddd');
 	background-repeat: no-repeat;
 	height: 100%;
@@ -42,7 +52,7 @@ html {
 }
 
 html.no-cssgradients {
-	background-color: #aaa;
+	background-color: @cor-sombra-principal;
 }
 
 .ie6 html {
@@ -54,14 +64,14 @@ html * {
 }
 
 body {
-	background: #ffffff;
-	color: #333333;
+	background: @cor-fundo-corpo;
+	color: @cor-texto-corpo;
 	margin: 0 auto;
 	max-width: 960px;
 	overflow-x: hidden; /* prevents box-shadow causing a horizontal scrollbar in firefox when viewport < 960px wide */
-	   -moz-box-shadow: 0 0 0.3em #255b17;
-	-webkit-box-shadow: 0 0 0.3em #255b17;
-	        box-shadow: 0 0 0.3em #255b17;
+	   -moz-box-shadow: 0 0 0.3em @cor-sombra-corpo;
+	-webkit-box-shadow: 0 0 0.3em @cor-sombra-corpo;
+	        box-shadow: 0 0 0.3em @cor-sombra-corpo;
 }
 
 #grailsLogoProd {
@@ -80,7 +90,7 @@ body {
 .ie6 body,
 .ie7 body,
 .ie8 body {
-	border-color: #255b17;
+	border-color: @cor-sombra-corpo;
 	border-style: solid;
 	border-width: 0 1px;
 }
@@ -363,6 +373,12 @@ ul.one-to-many li.add {
 
 /* EMBEDDED PROPERTIES */
 
+fieldset.subgrupo {
+  background-color: transparent;
+  border: 1px solid #CCCCCC;
+  padding: 4px;
+}
+
 fieldset.embedded {
 	background-color: transparent;
 	border: 1px solid #CCCCCC;
@@ -527,9 +543,9 @@ th.desc a {
 	margin: 0;
 	padding: 0.3em 0.2em;
 	text-align: center;
-	   -moz-box-shadow: 0 0 3px 1px #AAAAAA;
-	-webkit-box-shadow: 0 0 3px 1px #AAAAAA;
-	        box-shadow: 0 0 3px 1px #AAAAAA;
+	   -moz-box-shadow: 0 0 3px 1px @cor-sombra-principal;
+	-webkit-box-shadow: 0 0 3px 1px @cor-sombra-principal;
+	        box-shadow: 0 0 3px 1px @cor-sombra-principal;
 	background-color: @cor-fundo-paineis-e-botoes;
 }
 
@@ -564,9 +580,9 @@ th.desc a {
 
 .painelNavegacaoOuBotoes() {
   background-color: @cor-fundo-paineis-e-botoes;
-  -moz-box-shadow: 0 0 3px 1px #aaaaaa;
-  -webkit-box-shadow: 0 0 3px 1px #aaaaaa;
-  box-shadow: 0 0 3px 1px #aaaaaa;
+  -moz-box-shadow: 0 0 3px 1px @cor-sombra-principal;
+  -webkit-box-shadow: 0 0 3px 1px @cor-sombra-principal;
+  box-shadow: 0 0 3px 1px @cor-sombra-principal;
 }
 
 .buttons {
@@ -738,6 +754,31 @@ table.parametrosPesquisa {
 }
 
 table.tabelaListagem th:hover, .tabelaListagem tr:hover {
-  background: @cor-hover-tabelas;
+  background: @cor-marcadores;
 }
 
+.marcadores {
+  border-radius: 3px;
+  display: inline-table;
+  font-size: 0.9em;
+  margin: 2px;
+  padding: 3px;
+  color: @cor-texto-corpo;
+  float: left; //remove os espacos gerados automaticamente a cada novo marcador
+}
+
+.marcadores-acao {
+  .marcadores();
+  background-color: @cor-marcadores-acao;
+}
+
+.marcadores-programa {
+  .marcadores();
+  background-color: @cor-marcadores-programa;
+}
+
+.check-marcadores {
+  transform: scale(0.9);
+  vertical-align: top;
+  margin-top: 2px; /* change to center it */
+}

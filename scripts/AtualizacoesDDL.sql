@@ -139,3 +139,19 @@ alter table link add constraint unique_descricao  unique (servico_sistema_segura
 
 -- versao ate aqui: current (local:feito, producao:feito
 
+create table acao (id int8 not null, version int8 not null, descricao varchar(255) not null, primary key (id));
+create table acao_cidadao (id int8 not null, version int8 not null, acao_id int8 not null, cidadao_id int8 not null, primary key (id));
+create table acao_familia (id int8 not null, version int8 not null, acao_id int8 not null, familia_id int8 not null, primary key (id));
+
+alter table acao drop constraint UK_e1n7eefvs7nklpop0momaxp6p;
+alter table acao add constraint UK_e1n7eefvs7nklpop0momaxp6p  unique (descricao);
+alter table acao_cidadao add constraint FK_7jj1dtwsjen3f36dfnrwsonsh foreign key (acao_id) references acao;
+alter table acao_cidadao add constraint FK_gb02l7mf1fkblkum0i5int5q4 foreign key (cidadao_id) references cidadao;
+alter table acao_familia add constraint FK_i25ya4068kcl6dcw8jhuow37x foreign key (acao_id) references acao;
+alter table acao_familia add constraint FK_a3kgk0xbncj11urcvxr3o3dwf foreign key (familia_id) references familia;
+
+create sequence sq_acao;
+create sequence sq_acao_familia;
+create sequence sq_acao_cidadao;
+
+-- versao ate aqui: current (local:feito

@@ -1,34 +1,36 @@
-package org.apoiasuas.programa
+package org.apoiasuas.acao
 
+import org.apoiasuas.acao.Acao
 import org.apoiasuas.cidadao.AssociacaoMarcador
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.Marcador
 
 /**
- * Many to Many entre programas e familias
+ * Many to Many entre acoes e familias
  */
-class ProgramaFamilia implements AssociacaoMarcador {
-    Programa programa
+class AcaoFamilia implements AssociacaoMarcador {
+    Acao acao
     Familia familia
 
     static belongsTo = [familia: Familia]
     static transients = ['marcador']
 
     static mapping = {
-        id generator: 'native', params: [sequence: 'sq_programa_familia']
+        id generator: 'native', params: [sequence: 'sq_acao_familia']
     }
+
     static constraints = {
-        programa(nullable: false, unique: ['familia']) //por enquanto, só pode existir uma ligação entre as entidades
+        acao(nullable: false) //por enquanto, só pode existir uma ligação entre as entidades
         familia(nullable: false)
     }
 
     @Override
     Marcador getMarcador() {
-        return programa;
+        return acao;
     }
 
     @Override
     void setMarcador(Marcador marcador) {
-        programa = marcador;
+        acao = marcador;
     }
 }

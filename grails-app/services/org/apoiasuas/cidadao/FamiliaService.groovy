@@ -1,6 +1,8 @@
 package org.apoiasuas.cidadao
 
 import grails.transaction.Transactional
+import org.apoiasuas.acao.Acao
+import org.apoiasuas.acao.AcaoFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.programa.ProgramaFamilia
@@ -13,9 +15,51 @@ class FamiliaService {
     def messageSource
 
     @Transactional
-    public Familia grava(Familia familia, ProgramasCommand programasCommand) {
+    public Familia grava(Familia familia, MarcadoresCommand programasCommand, MarcadoresCommand acoesCommand) {
+
+        gravaMarcadores(programasCommand, familia.programas, familia, Programa.class, ProgramaFamilia.class);
+        gravaMarcadores(acoesCommand, familia.acoes, familia, Acao.class, AcaoFamilia.class);
+
+        return familia.save()
+    }
+
+    @Transactional
+    /**
+     * Método genérico usado para gravar alterações nas coleções de programas, ações, etc
+     */
+    private void gravaMarcadores(MarcadoresCommand marcadoresCommand, Set<AssociacaoMarcador> marcadores,
+                                 Familia familia, Class<Marcador> classeMarcador, Class<AssociacaoMarcador> classeAssociacaoMarcador) {
         //Converte e filtra apenas os programas selecionados
-        List<Programa> programasDepois = programasCommand.programasdisponiveis.collect { cmd ->
+        List<Marcador> marcadoresDepois = marcadoresCommand.marcadoresDisponiveis.collect { MarcadorCommand cmd ->
+            if (cmd.selected)
+                classeMarcador.get(cmd.id)
+        }.grep() //limpa nulos
+        //Atualiza a lista de programas, removendo ou inserindo APENAS QUANDO NECESSÁRIO
+        //Primeiro apaga os excluídos
+        List removidos = []
+        marcadores.each { marcadorFamiliaAntes ->
+            if (!marcadoresDepois.contains(marcadorFamiliaAntes.marcador)) {
+                marcadorFamiliaAntes.delete()
+                removidos << marcadorFamiliaAntes
+            }
+        }
+        marcadores.removeAll(removidos)
+
+        //Depois inclui os novos
+        marcadoresDepois.each { marcadorDepois ->
+            if (!marcadores.find { it.marcador == marcadorDepois }) {
+                AssociacaoMarcador marcadorFamilia = classeAssociacaoMarcador.getConstructor().newInstance();
+                marcadorFamilia.marcador = marcadorDepois
+                marcadorFamilia.familia = familia
+                marcadores.add(marcadorFamilia.save())
+            }
+        }
+    }
+/*
+    @Transactional
+    private void gravaProgramas(MarcadoresCommand programasCommand, Familia familia) {
+        //Converte e filtra apenas os programas selecionados
+        List<Programa> programasDepois = programasCommand.marcadoresDisponiveis.collect { MarcadorCommand cmd ->
             if (cmd.selected)
                 Programa.get(cmd.id)
         }.grep() //limpa nulos
@@ -23,7 +67,7 @@ class FamiliaService {
         //Primeiro apaga os excluídos
         List removidos = []
         familia.programas.each { programaFamiliaAntes ->
-            if (! programasDepois.contains(programaFamiliaAntes.programa)) {
+            if (!programasDepois.contains(programaFamiliaAntes.programa)) {
                 programaFamiliaAntes.delete()
                 removidos << programaFamiliaAntes
             }
@@ -32,16 +76,15 @@ class FamiliaService {
 
         //Depois inclui os novos
         programasDepois.each { programaDepois ->
-            if (! familia.programas.find { it.programa == programaDepois } ) {
+            if (!familia.programas.find { it.programa == programaDepois }) {
                 ProgramaFamilia programaFamilia = new ProgramaFamilia()
                 programaFamilia.programa = programaDepois
                 programaFamilia.familia = familia
                 familia.programas.add(programaFamilia.save())
             }
         }
-
-        return familia.save()
     }
+*/
 
     @Transactional
     public boolean apaga(Familia familia) {

@@ -144,6 +144,8 @@ log4j.main = {
 //                rollingFile.setRollingPolicy rollingPolicy
                 appenders {
 //                    file name: 'infoFile', file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/info.log', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.INFO
+                    appender errorAppender;
+                    appender infoAppender;
                     console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.ERROR
                 }
                 root { error 'stdout','errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"

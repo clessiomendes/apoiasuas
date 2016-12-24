@@ -111,7 +111,8 @@ class BootStrap {
             try {
 //                importarFamiliasService.inicializaDefinicoes(admin)
                 fileStorageService.init()
-                programaService.inicializaProgramas(admin)
+                programaService.inicializaProgramas(admin);
+//                marcadorService.inicializaMarcadores(admin);
 
                 try {
                     //Descarta eventuais alteracoes em formularios e reinicializa tudo

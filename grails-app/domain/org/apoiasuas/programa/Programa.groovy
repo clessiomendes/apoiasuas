@@ -2,15 +2,17 @@ package org.apoiasuas.programa
 
 import org.apoiasuas.ProgramasPreDefinidos
 import org.apoiasuas.cidadao.Familia
+import org.apoiasuas.cidadao.Marcador
 
-class Programa {
+class Programa implements Marcador {
 
     String nome
     String sigla
     ProgramasPreDefinidos programaPreDefinido
-    Boolean selected
 
-    static transients = ['selected']
+    //transiente:
+    Boolean selected
+    static transients = ['selected', 'descricao']
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_programa']
@@ -27,5 +29,10 @@ class Programa {
 
     public String toString() {
         return nome
+    }
+
+    @Override
+    String getDescricao() {
+        return nome;
     }
 }

@@ -27,7 +27,7 @@ class SystemUtils {
                     if (value.toString().isLong())
                         value = StringUtils.readableLong(value.toString().toLong());
                     if (value.toString().isDouble() || value.toString().isFloat())
-                        value = (new Long (Math.round(value*100))).toString()+"%";
+                        value = (new Long (Math.round(value.toString().toDouble()*100))).toString()+"%";
                 } catch (Exception e) {
                     value = e;
                 } // try
