@@ -18,8 +18,9 @@
 @cor-base-mensagem-info:	#006dba;
 @cor-base-mensagem-erro:	#cc0000;
 
-@cor-marcadores-programa:       #E1F2B6;
-@cor-marcadores-acao:		    #CBF2B6;
+@cor-marcadores-programa:       	#E1F2B6;
+@cor-marcadores-acao:		    	#BBF2B6;
+@cor-marcadores-vulnerabilidade:	#7BF2B6;
 
 
 /* Tamanhos */
@@ -27,10 +28,14 @@
   background-size: 20px 20px;
 }
 
+.fontes() {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
 /* FONT STACK */
 body,
 input, select, textarea {
-	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  .fontes;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -179,7 +184,7 @@ img {
 }
 
 .spinner {
-	background: url(../images/spinner.gif) 50% 50% no-repeat transparent;
+	background: url(../../images/spinner.gif) 50% 50% no-repeat transparent;
 	height: 16px;
 	width: 16px;
     padding: 0.5em;
@@ -245,27 +250,27 @@ img {
 }
 
 .nav a.home {
-	background-image: url(../images/skin/house.png);
+	background-image: url(../../images/house.png);
   .tamanho-icones();
 }
 
 .nav a.slidedown {
-	background-image: url(../images/skin/slidedown.png);
+	background-image: url(../../images/slidedown.png);
   .tamanho-icones();
 }
 
 .nav a.search {
-	background-image: url(../images/skin/search.png);
+	background-image: url(../../images/search.png);
   .tamanho-icones();
 }
 
 .nav a.list {
-	background-image: url(../images/skin/database_table.png);
+	background-image: url(../../images/database_table.png);
   .tamanho-icones();
 }
 
 .nav a.create {
-	background-image: url(../images/skin/database_add.png);
+	background-image: url(../../images/database_add.png);
     .tamanho-icones();
 }
 
@@ -409,12 +414,12 @@ ul.one-to-many li.add {
 }
 
 .message {
-  .caixaTexto(@cor-base-mensagem-info, url(../images/skin/information.png));
+  .caixaTexto(@cor-base-mensagem-info, url(../../images/information.png));
 }
 
 .errors {
   list-style: none;
-  .caixaTexto(@cor-base-mensagem-erro, url(../images/skin/exclamation.png));
+  .caixaTexto(@cor-base-mensagem-erro, url(../../images/exclamation.png));
 }
 
 /* form fields with errors */
@@ -514,11 +519,11 @@ th.sortable a {
 }
 
 th.asc a {
-	background-image: url(../images/skin/sorted_asc.gif);
+	background-image: url(../../images/sorted_asc.gif);
 }
 
 th.desc a {
-	background-image: url(../images/skin/sorted_desc.gif);
+	background-image: url(../../images/sorted_desc.gif);
 }
 
 .odd {
@@ -656,27 +661,27 @@ th.desc a {
 }
 
 .buttons .delete {
-	background-image: url(../images/skin/database_delete.png);
+	background-image: url(../../images/database_delete.png);
   .tamanho-icones();
 }
 
 .buttons .edit {
-    background-image: url(../images/skin/database_edit.png);
+    background-image: url(../../images/database_edit.png);
   .tamanho-icones();
 }
 
 .buttons .save {
-	background-image: url(../images/skin/database_save.png);
+	background-image: url(../../images/database_save.png);
   .tamanho-icones();
 }
 
 .buttons .add {
-    background-image: url(../images/skin/database_add.png);
+    background-image: url(../../images/database_add.png);
   	.tamanho-icones();
 }
 
 .buttons .list {
-  background-image: url(../images/skin/database_table.png);
+  background-image: url(../../images/database_table.png);
   .tamanho-icones();
 }
 
@@ -687,11 +692,12 @@ th.desc a {
   &:hover {
 	.hoverBotoes();
   }
+  margin: 0;
 }
 
 .speedButton(@imagem) {
-  .imageButton();
   background: @cor-fundo-paineis-e-botoes @imagem no-repeat center;
+  .imageButton();
 }
 
 .imageTextButton(@imagem) {
@@ -704,7 +710,7 @@ th.desc a {
 }
 
 .buttons .search {
-	background-image: url(../images/skin/search.png);
+	background-image: url(../../images/search.png);
   .tamanho-icones();
 }
 
@@ -718,23 +724,35 @@ a.skip {
 }
 
 input.search {
-  .imageTextButton(url(../images/skin/search.png));
+  .imageTextButton(url(../../images/search.png));
 }
 
 input.create {
-  .imageTextButton(url(../images/skin/database_add.png));
+  .imageTextButton(url(../../images/database_add.png));
 }
 
 input#adicionarArquivo {
-  .speedButton(url(../images/skin/export.png));
+  .speedButton(url(../../images/export.png));
+}
+
+input#adicionar {
+  .speedButton(url(../../images/database_add.png));
+}
+
+.btn-adicionar-marcador {
+  .speedButton(url(../../images/database_add.png));
+}
+
+.btn-expandir-marcador {
+  .speedButton(url(../../images/slidedown.png));
 }
 
 input#slideDown {
-  .speedButton(url(../images/skin/slidedown.png));
+  .speedButton(url(../../images/slidedown.png));
 }
 
 input#limparArquivo {
-  .speedButton(url(../images/skin/database_delete.png));
+  .speedButton(url(../../images/database_delete.png));
 }
 
 /* pesquisas */
@@ -764,9 +782,24 @@ table.tabelaListagem th:hover, .tabelaListagem tr:hover {
   float: left; //remove os espacos gerados automaticamente a cada novo marcador
 }
 
+.ui-widget {
+  .fontes();
+  font-size: 1em;
+}
+
+.marcadores-similares {
+  .marcadores();
+  background-color: @cor-fundo-principal;
+}
+
 .marcadores-acao {
   .marcadores();
   background-color: @cor-marcadores-acao;
+}
+
+.marcadores-vulnerabilidade {
+  .marcadores();
+  background-color: @cor-marcadores-vulnerabilidade;
 }
 
 .marcadores-programa {
@@ -774,8 +807,26 @@ table.tabelaListagem th:hover, .tabelaListagem tr:hover {
   background-color: @cor-marcadores-programa;
 }
 
+.input-search {
+  background-image: url(../../images/search-cinza.png);
+  background-position: 2px center;
+  //margin: auto auto;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  padding: 0 0 0 25px;
+  //height:18px;
+}​
+
 .check-marcadores {
   transform: scale(0.9);
   vertical-align: top;
   margin-top: 2px; /* change to center it */
+}
+
+.fieldsetMarcadores {
+  .embedded();
+  //redimenciona de acordo com o conteudo ate um maximo de 7em:
+  height:auto;
+  max-height: 7em;
+  overflow: auto;
 }

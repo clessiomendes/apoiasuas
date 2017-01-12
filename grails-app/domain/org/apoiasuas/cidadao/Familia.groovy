@@ -2,13 +2,13 @@ package org.apoiasuas.cidadao
 
 import org.apache.commons.collections.FactoryUtils
 import org.apache.commons.collections.list.LazyList
-import org.apache.xpath.operations.Bool
-import org.apoiasuas.acao.AcaoFamilia
+import org.apoiasuas.marcador.AcaoFamilia
 import org.apoiasuas.anotacoesDominio.InfoClasseDominio
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
 import org.apoiasuas.formulario.CampoFormulario
-import org.apoiasuas.programa.Programa
+import org.apoiasuas.marcador.Vulnerabilidade
+import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.programa.ProgramaFamilia
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.util.DateUtils
@@ -39,6 +39,7 @@ class Familia implements Serializable {
     Endereco endereco //importado
     Set<ProgramaFamilia> programas
     Set<AcaoFamilia> acoes
+    Set<VulnerabilidadeFamilia> vulnerabilidades
 
     @InfoPropriedadeDominio(codigo='telefone', descricao = 'Telefone', tipo = CampoFormulario.Tipo.TELEFONE, tamanho = 10)
     String telefone //campo transiente (usado para conter telefones escolhidos/digitados pelo operador em casos de uso como o de preenchimento de formulario
@@ -46,7 +47,7 @@ class Familia implements Serializable {
 
     ServicoSistema servicoSistemaSeguranca
 
-    static hasMany = [membros: Cidadao, telefones: Telefone, programas: ProgramaFamilia, acoes: AcaoFamilia]
+    static hasMany = [membros: Cidadao, telefones: Telefone, programas: ProgramaFamilia, acoes: AcaoFamilia, vulnerabilidades: VulnerabilidadeFamilia]
 
     static embedded = ['endereco']
 

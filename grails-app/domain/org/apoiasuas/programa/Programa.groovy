@@ -3,12 +3,14 @@ package org.apoiasuas.programa
 import org.apoiasuas.ProgramasPreDefinidos
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.Marcador
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 
 class Programa implements Marcador {
 
     String nome
     String sigla
     ProgramasPreDefinidos programaPreDefinido
+    ServicoSistema servicoSistemaSeguranca;
 
     //transiente:
     Boolean selected
@@ -32,7 +34,12 @@ class Programa implements Marcador {
     }
 
     @Override
-    String getDescricao() {
+    public String getDescricao() {
         return nome;
+    }
+
+    @Override
+    public void setDescricao(String descricao) {
+        nome = descricao;
     }
 }

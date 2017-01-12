@@ -1,8 +1,10 @@
 package org.apoiasuas.cidadao
 
 import grails.transaction.Transactional
-import org.apoiasuas.acao.Acao
-import org.apoiasuas.acao.AcaoFamilia
+import org.apoiasuas.marcador.Acao
+import org.apoiasuas.marcador.AcaoFamilia
+import org.apoiasuas.marcador.Vulnerabilidade
+import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.programa.Programa
 import org.apoiasuas.programa.ProgramaFamilia
@@ -13,78 +15,23 @@ class FamiliaService {
     def segurancaService
     def pedidoCertidaoProcessoService
     def messageSource
+    def marcadorService
 
     @Transactional
-    public Familia grava(Familia familia, MarcadoresCommand programasCommand, MarcadoresCommand acoesCommand) {
+    public Familia grava(Familia familia, MarcadoresCommand programasCommand, List<String> novosProgramas,
+                         MarcadoresCommand acoesCommand, List<String> novasAcoes,
+                         MarcadoresCommand vulnerabilidadesCommand, List<String> novasVulnerabilidades) {
 
-        gravaMarcadores(programasCommand, familia.programas, familia, Programa.class, ProgramaFamilia.class);
-        gravaMarcadores(acoesCommand, familia.acoes, familia, Acao.class, AcaoFamilia.class);
+        marcadorService.validaNovosMarcadores(novasAcoes, Acao.class);
+        marcadorService.validaNovosMarcadores(novasVulnerabilidades, Vulnerabilidade.class);
+        //FIXME: validar novos programas (alterar campo nome para descricao no mapeamento do objeto)
+
+        marcadorService.gravaMarcadores(programasCommand, familia.programas, familia, Programa.class, ProgramaFamilia.class, novosProgramas);
+        marcadorService.gravaMarcadores(acoesCommand, familia.acoes, familia, Acao.class, AcaoFamilia.class, novasAcoes);
+        marcadorService.gravaMarcadores(vulnerabilidadesCommand, familia.vulnerabilidades, familia, Vulnerabilidade.class, VulnerabilidadeFamilia.class, novasVulnerabilidades);
 
         return familia.save()
     }
-
-    @Transactional
-    /**
-     * Método genérico usado para gravar alterações nas coleções de programas, ações, etc
-     */
-    private void gravaMarcadores(MarcadoresCommand marcadoresCommand, Set<AssociacaoMarcador> marcadores,
-                                 Familia familia, Class<Marcador> classeMarcador, Class<AssociacaoMarcador> classeAssociacaoMarcador) {
-        //Converte e filtra apenas os programas selecionados
-        List<Marcador> marcadoresDepois = marcadoresCommand.marcadoresDisponiveis.collect { MarcadorCommand cmd ->
-            if (cmd.selected)
-                classeMarcador.get(cmd.id)
-        }.grep() //limpa nulos
-        //Atualiza a lista de programas, removendo ou inserindo APENAS QUANDO NECESSÁRIO
-        //Primeiro apaga os excluídos
-        List removidos = []
-        marcadores.each { marcadorFamiliaAntes ->
-            if (!marcadoresDepois.contains(marcadorFamiliaAntes.marcador)) {
-                marcadorFamiliaAntes.delete()
-                removidos << marcadorFamiliaAntes
-            }
-        }
-        marcadores.removeAll(removidos)
-
-        //Depois inclui os novos
-        marcadoresDepois.each { marcadorDepois ->
-            if (!marcadores.find { it.marcador == marcadorDepois }) {
-                AssociacaoMarcador marcadorFamilia = classeAssociacaoMarcador.getConstructor().newInstance();
-                marcadorFamilia.marcador = marcadorDepois
-                marcadorFamilia.familia = familia
-                marcadores.add(marcadorFamilia.save())
-            }
-        }
-    }
-/*
-    @Transactional
-    private void gravaProgramas(MarcadoresCommand programasCommand, Familia familia) {
-        //Converte e filtra apenas os programas selecionados
-        List<Programa> programasDepois = programasCommand.marcadoresDisponiveis.collect { MarcadorCommand cmd ->
-            if (cmd.selected)
-                Programa.get(cmd.id)
-        }.grep() //limpa nulos
-        //Atualiza a lista de programas, removendo ou inserindo APENAS QUANDO NECESSÁRIO
-        //Primeiro apaga os excluídos
-        List removidos = []
-        familia.programas.each { programaFamiliaAntes ->
-            if (!programasDepois.contains(programaFamiliaAntes.programa)) {
-                programaFamiliaAntes.delete()
-                removidos << programaFamiliaAntes
-            }
-        }
-        familia.programas.removeAll(removidos)
-
-        //Depois inclui os novos
-        programasDepois.each { programaDepois ->
-            if (!familia.programas.find { it.programa == programaDepois }) {
-                ProgramaFamilia programaFamilia = new ProgramaFamilia()
-                programaFamilia.programa = programaDepois
-                programaFamilia.familia = familia
-                familia.programas.add(programaFamilia.save())
-            }
-        }
-    }
-*/
 
     @Transactional
     public boolean apaga(Familia familia) {
@@ -151,4 +98,5 @@ class FamiliaService {
 
         return result
     }
+
 }

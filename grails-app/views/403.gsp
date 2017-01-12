@@ -3,7 +3,7 @@
 	<head>
 		<title>Erro Acesso Negado</title>
 		<meta name="layout" content="main">
-		<g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
+		<g:if env="development"><asset:stylesheet src="especificos/errors.css"/></g:if>
 	</head>
 	<body>
 	<ul class="errors">

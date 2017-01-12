@@ -32,15 +32,18 @@
                     </ul>
                 </g:if>
 
-				%{--Exibe PROGRAMAS, AÇÕES, VULNERABILIADES E POTENCIALIDADES--}%
+				%{--Exibe PROGRAMAS, AÇÕES E VULNERABILIADES--}%
 				<g:if test="${familiaInstance?.programas || familiaInstance?.acoes}">
 				<fieldset id="fieldsetDadosEncaminhamento" class="embedded">
 					<legend><g:message code="marcadores"/></legend>
 					<g:each in="${familiaInstance.programas}" var="programaFamilia">
-						<span class="marcadores-programa">${programaFamilia?.programa.descricao}</span>
+						<span class="marcadores-programa">${programaFamilia?.programa?.descricao}</span>
+					</g:each>
+					<g:each in="${familiaInstance.vulnerabilidades}" var="vulnerabilidadeFamilia">
+						<span class="marcadores-vulnerabilidade">${vulnerabilidadeFamilia?.vulnerabilidade?.descricao}</span>
 					</g:each>
 					<g:each in="${familiaInstance.acoes}" var="acaoFamilia">
-						<span class="marcadores-acao">${acaoFamilia?.acao.descricao}</span>
+						<span class="marcadores-acao">${acaoFamilia?.acao?.descricao}</span>
 					</g:each>
 				</fieldset>
 				</g:if>

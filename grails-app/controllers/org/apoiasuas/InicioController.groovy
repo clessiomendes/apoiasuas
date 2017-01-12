@@ -126,14 +126,14 @@ class InicioController extends AncestralController {
 
     def servicoEscolhido() {
         if (! params.servicoSistema)
-            return render(view: 'escolheServicoSistema', model: [servicosDisponiveis: ServicoSistema.findAllByHabilitado(true).sort{it.nome}])
+            return render(view: '/login/escolheServicoSistema', model: [servicosDisponiveis: ServicoSistema.findAllByHabilitado(true).sort{it.nome}])
 
         segurancaService.setServicoLogado(ServicoSistema.get(params.servicoSistema))
         return redirect(action: "menu")
     }
 
     def escolheServicoSistema() {
-        return render(view: 'escolheServicoSistema', model: [servicosDisponiveis: ServicoSistema.findAllByHabilitado(true).sort{it.nome}])
+        return render(view: '/login/escolheServicoSistema', model: [servicosDisponiveis: ServicoSistema.findAllByHabilitado(true).sort{it.nome}])
     }
 
     @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])

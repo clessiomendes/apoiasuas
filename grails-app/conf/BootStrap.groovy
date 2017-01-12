@@ -1,6 +1,7 @@
 import apoiasuas.ImportacaoJob
 import org.apoiasuas.ApoiaSuasService
 import org.apoiasuas.FullTextSearchService
+import org.apoiasuas.cidadao.MarcadorService
 import org.apoiasuas.fileStorage.FileStorageService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaController
@@ -40,6 +41,7 @@ class BootStrap {
     GrailsApplication grailsApplication
     FullTextSearchService fullTextSearchService
     FileStorageService fileStorageService
+    MarcadorService marcadorService;
 
     public final String VW_REFERENCIAS = "create view vw_referencias as select min(id) as referencia_id, familia_id " +
             " from cidadao where referencia = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+
@@ -110,7 +112,8 @@ class BootStrap {
         UsuarioSistema.withTransaction { status ->
             try {
 //                importarFamiliasService.inicializaDefinicoes(admin)
-                fileStorageService.init()
+                fileStorageService.init();
+//                marcadorService.init();
                 programaService.inicializaProgramas(admin);
 //                marcadorService.inicializaMarcadores(admin);
 
@@ -159,6 +162,7 @@ class BootStrap {
     }
 
     private void validaEsquemaBD() {
+/*
         String[] atualizacoesPendentes = apoiaSuasService.getAtualizacoesPendentes()
         if (atualizacoesPendentes) {
             String erro = "Detectadas atualizacoes pendentes no banco de dados:"
@@ -166,6 +170,7 @@ class BootStrap {
             log.error(erro);
             throw new RuntimeException("Startup interrompido. Banco de dados fora de sincronia com a aplicação: "+erro)
         }
+*/
     }
 
     def destroy = {

@@ -318,3 +318,11 @@ elasticSearch {
 //    elasticSearch.index.name = "apoiasuas"
 //    elasticSearch.path.data = 'c://temp//es';
 }
+
+assets {
+    configOptions = [
+            less: [
+                    compiler: 'standard'
+            ]
+    ]
+}

@@ -1,9 +1,7 @@
 package org.apoiasuas
 
 import grails.transaction.Transactional
-import org.apoiasuas.ProgramasPreDefinidos
-import org.apoiasuas.acao.Acao
-import org.apoiasuas.programa.Programa
+import org.apoiasuas.marcador.Acao
 import org.apoiasuas.seguranca.UsuarioSistema
 
 class AcaoService {

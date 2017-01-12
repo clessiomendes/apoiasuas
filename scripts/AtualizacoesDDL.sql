@@ -139,19 +139,93 @@ alter table link add constraint unique_descricao  unique (servico_sistema_segura
 
 -- versao ate aqui: current (local:feito, producao:feito
 
-create table acao (id int8 not null, version int8 not null, descricao varchar(255) not null, primary key (id));
-create table acao_cidadao (id int8 not null, version int8 not null, acao_id int8 not null, cidadao_id int8 not null, primary key (id));
-create table acao_familia (id int8 not null, version int8 not null, acao_id int8 not null, familia_id int8 not null, primary key (id));
+create table acao (id serial not null, version int8 default 0 not null, descricao varchar(255) not null, servico_sistema_seguranca_id int8, primary key (id));
+create table acao_cidadao (id serial not null, version int8 default 0 not null, acao_id int8 not null, cidadao_id int8 not null, primary key (id));
+create table acao_familia (id serial not null, version int8 default 0 not null, acao_id int8 not null, familia_id int8 not null, primary key (id));
 
-alter table acao drop constraint UK_e1n7eefvs7nklpop0momaxp6p;
-alter table acao add constraint UK_e1n7eefvs7nklpop0momaxp6p  unique (descricao);
-alter table acao_cidadao add constraint FK_7jj1dtwsjen3f36dfnrwsonsh foreign key (acao_id) references acao;
-alter table acao_cidadao add constraint FK_gb02l7mf1fkblkum0i5int5q4 foreign key (cidadao_id) references cidadao;
+alter table acao add constraint FK_evc1r0030i11cfqw9kpghddit foreign key (servico_sistema_seguranca_id) references servico_sistema;
 alter table acao_familia add constraint FK_i25ya4068kcl6dcw8jhuow37x foreign key (acao_id) references acao;
 alter table acao_familia add constraint FK_a3kgk0xbncj11urcvxr3o3dwf foreign key (familia_id) references familia;
 
 create sequence sq_acao;
 create sequence sq_acao_familia;
-create sequence sq_acao_cidadao;
+
+
+alter table programa add column servico_sistema_seguranca_id int8;
+alter table programa add constraint FK_mw3sdi6y7nc3kwd88r8bpaf5y foreign key (servico_sistema_seguranca_id) references servico_sistema;
+
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para o SCFV 0 a 6', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para trabalho protegido/jovem aprendiz', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Intervenções técnica para o fortalecimento da capacidade protetiva da família', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Intervenções no âmbito da vulnerabilidade relacional', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Garantir acesso à documentação civil', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Garantir acesso à educação básica', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para o SCFV Idoso', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para proteção social de alta complexidade', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para o CREAS/PAEFI', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para inclusão/atualização do Cad Único', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para inserção no BPC', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para inserção no mercado de trabalho', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para qualificação profissional', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para rede de proteção à pessoa com deficiência', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para rede especializada em álcool e outras drogas', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para rede especializada em saúde mental', null);
+
+
+create table vulnerabilidade (id serial not null, version int8 default 0 not null, descricao varchar(255) not null, servico_sistema_seguranca_id int8, primary key (id));
+alter table vulnerabilidade add constraint FK_f12nn7qflvxmp9o5ea8g07741 foreign key (servico_sistema_seguranca_id) references servico_sistema;
+create sequence sq_vulnerabilidade;
+create sequence sq_vulnerabilidade_familia;
+
+create table vulnerabilidade_familia (id serial not null, version int8 default 0 not null, familia_id int8 not null, vulnerabilidade_id int8 not null, primary key (id));
+alter table vulnerabilidade_familia add constraint FK_ky2sxpmuij31lkxx4u87bijda foreign key (familia_id) references familia;
+alter table vulnerabilidade_familia add constraint FK_m6nq4mdstbot3murvnfuqbddc foreign key (vulnerabilidade_id) references vulnerabilidade;
+
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membros sem documentação civil completa');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membro(s) sob ameaça ou com restrição de trânsito pelo território');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membro(s) com histórico de situação de rua.');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Mulheres vítimas ou com histórico de violência doméstica');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Crianças ou adolescentes vítimas ou com histórico de violência infantil');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membro sujeito a sobrecarga de cuidado com criança, idoso  ou pessoa com deficiência');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família elegível ao PBF, mas não recebe o benefício');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família elegível ao BPC, mas não recebe o benefício');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família beneficiaria do PBF, em descumprimento de condicionalidades');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Idoso dependente ou semidependente');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Idoso morando sozinho ou como único responsável no domicílio ');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membros adultos analfabetos');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membros adultos sem Ensino Fundamental Completo');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membros adultos sem Ensino Médio Completo');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membros adultos sem inserção no mercado de trabalho');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membros adultos com inserção informal no mercado de trabalho');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Criança/adolescento com histórico ou em situação de trabalho infantil ');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Demanda não atendida de qualificação profissional');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso restrito ao direito ao transporte');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso restrito a alimentação básica');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso, mesmo que momentâneo, ao SCFV');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso, mesmo que momentâneo, ao CREAS/PAEFI');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso, mesmo que momentâneo, a serviços da Proteção Social de Alta Complexidade');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Sem acesso, mesmo que momentâneo, a algum serviço da política de Saúde');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Pessoa com deficiência');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Pessoa com sofrimento mental');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membro com saúde gravemente debilitada (exceto deficiência e sofrimento mental)');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membros adultos que fazem uso abusivo de álcool ou outras drogas');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Crianças ou adolescentes que fazem uso abusivo de álcool ou outras drogas');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Pai ou mãe menor de 18 anos, ou com filhos em gestação');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Membro familiar no sistema prisional ou egresso do sistema');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Adolescente cumprindo medida ou com passagem pelo sistema sócio-educativo (PSC, LA, semi-liberdade ou restrição de liberdade)');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Criança de 0 a 3 anos fora da educação infantil');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Criança/adolescente de 4 a 17 anos fora da escola');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Domicílio em situação de risco geológico ou construtivo');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso restrito à política de Lazer');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso restrito à política de Cultura');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família em extrema pobreza  (renda per cápita até 1/4 do salário mínimo)');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família abaixo da linha da pobreza  (renda per cápita entre 1/4 e 1/2 do salário mínimo)');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família ou membros familiares em situação de Conflito');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família ou membros familiares em situação de Preconceito/Discriminação');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família ou membros familiares em situação de Abandono');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família ou membros familiares em situação de Apartação');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família ou membros familiares em situação de Confinamento');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família ou membros familiares em situação de Isolamento');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família ou membros familiares em situação de Violência');
 
 -- versao ate aqui: current (local:feito

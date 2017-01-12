@@ -1,19 +1,19 @@
-<%@ page import="org.apoiasuas.acao.Acao; org.apoiasuas.programa.Programa; org.apoiasuas.seguranca.UsuarioSistema; org.apoiasuas.cidadao.Familia" %>
+<asset:javascript src="especificos/marcadores.js"/>
+
+<%@ page import="org.apoiasuas.marcador.Acao; org.apoiasuas.programa.Programa; org.apoiasuas.seguranca.UsuarioSistema; org.apoiasuas.cidadao.Familia" %>
 
 <%
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance
     org.apoiasuas.cidadao.Endereco enderecoInstance = localDtoFamilia.endereco
 %>
 
-%{--
-<div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'situacaoFamilia', 'error')} required">
-	<label for="situacaoFamilia">
-		<g:message code="familia.situacaoFamilia.label" default="Situacao Familia" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:select name="situacaoFamilia" from="${org.apoiasuas.cidadao.SituacaoFamilia?.values()}" keys="${org.apoiasuas.cidadao.SituacaoFamilia.values()*.name()}" required="" value="${localDtoFamilia?.situacaoFamilia?.name()}" />
-</div>
---}%
+<g:javascript>
+    $(document).ready(function() {
+        inicializaEventos(fieldsetProgramas, divPrograma);
+        inicializaEventos(fieldsetAcoes, divAcao);
+        inicializaEventos(fieldsetVulnerabilidades, divVulnerabilidade);
+    } );
+</g:javascript>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'codigoLegado', 'error')} ">
     <label for="codigoLegado">
@@ -29,24 +29,14 @@
 	<g:select id="tecnicoReferencia" name="tecnicoReferencia.id" from="${operadores}" optionKey="id" value="${localDtoFamilia?.tecnicoReferencia?.id}" class="many-to-one" noSelection="['': '']"/>
 </div>
 
-<g:javascript>
-/**
-* busca incremental de marcadores (programas, acoes, etc)
-*/
-function filtraMarcadores(textInput, spans) {
-	spans.each(function(){
-		if ($(this).text().toLowerCase().includes(textInput.value.toLowerCase()) )
-			$(this).show();
-		else
-			$(this).hide();
-	});
-}
-</g:javascript>
-
-<fieldset id="fieldsetProgramas" class="embedded">
+<fieldset id="fieldsetProgramas" class="fieldsetMarcadores">
 	<legend>Programas
-		%{--<img src="../images/skin/search-cinza.png"/>--}%
-		<input type="text" style="transform: scale(0.9);" onkeyup="filtraMarcadores(this, $('.marcadores-programa')) ">
+		<input type="text" class="input-search"
+               title="Digite uma palavra chave para buscar um programa específico.">
+        &nbsp;<input type="button" class="btn-adicionar-marcador" style="transform: scale(0.7);"
+                     title="Caso ainda não exista, você pode definir um novo programa em execução no seu território">
+        &nbsp;<input type="button" class="btn-expandir-marcador" style="transform: scale(0.7);"
+                     title="Expandir para ver todos os programas disponíveis">
 	</legend>
 	<g:each in="${programasDisponiveis}" var="progdisp" status="countMarcadores">
 		<span class="marcadores-programa">
@@ -58,39 +48,43 @@ function filtraMarcadores(textInput, spans) {
 	</g:each>
 </fieldset>
 
-<fieldset id="fieldsetAcoes" class="embedded">
-	<legend>Ações
-	%{--<img src="../images/skin/search-cinza.png"/>--}%
-		<input type="text" style="transform: scale(0.9);" onkeyup="filtraMarcadores(this, $('.marcadores-acao')) ">
+<fieldset id="fieldsetVulnerabilidades" class="fieldsetMarcadores">
+    <legend>Vulnerabilidades identificadas
+        <input type="text" class="input-search"
+               title="Digite uma palavra chave para buscar uma vulnerabilidade específica.">
+        &nbsp;<input type="button" class="btn-adicionar-marcador" style="transform: scale(0.7);"
+                     title="Caso ainda não exista, você pode definir uma nova categoria de vulnerabilidades">
+        &nbsp;<input type="button" class="btn-expandir-marcador" style="transform: scale(0.7);"
+                     title="Expandir para ver todas as vulnerabilidades disponíveis">
+    </legend>
+    <g:each in="${vulnerabilidadesDisponiveis}" var="marcadordisp" status="countMarcadores">
+        <span class="marcadores-vulnerabilidade">
+            <% org.apoiasuas.cidadao.Marcador marcadorVulnerabilidade = marcadordisp; %>
+            <g:checkBox class="check-marcadores" name="vulnerabilidadesDisponiveis[${countMarcadores}].selected" value="${marcadorVulnerabilidade.selected}"/>
+            ${marcadorVulnerabilidade.descricao}
+            <g:hiddenField name="vulnerabilidadesDisponiveis[${countMarcadores}].id" value="${marcadorVulnerabilidade.id}"/>
+        </span>
+    </g:each>
+</fieldset>
+
+<fieldset id="fieldsetAcoes" class="fieldsetMarcadores">
+	<legend>Ações previstas
+		<input type="text" class="input-search"
+               title="Digite uma palavra chave para buscar uma ação específica.">
+		&nbsp;<input type="button" class="btn-adicionar-marcador" style="transform: scale(0.7);"
+					 title="Caso ainda não exista, você pode definir uma nova categoria de ações previstas">
+        &nbsp;<input type="button" class="btn-expandir-marcador" style="transform: scale(0.7);"
+                     title="Expandir para ver todas as ações disponíveis">
 	</legend>
-	<g:each in="${acoesDisponiveis}" var="acaodisp" status="countMarcadores">
+	<g:each in="${acoesDisponiveis}" var="marcadordisp" status="countMarcadores">
 		<span class="marcadores-acao">
-			<% Acao acaoDisponivel = acaodisp; %>
-			<g:checkBox class="check-marcadores" name="acoesDisponiveis[${countMarcadores}].selected" value="${acaoDisponivel.selected}"/>
-			${acaoDisponivel.descricao}
-			<g:hiddenField name="acoesDisponiveis[${countMarcadores}].id" value="${acaoDisponivel.id}"/>
+			<% org.apoiasuas.cidadao.Marcador marcadorAcao = marcadordisp; %>
+			<g:checkBox class="check-marcadores" name="acoesDisponiveis[${countMarcadores}].selected" value="${marcadorAcao.selected}"/>
+			${marcadorAcao.descricao}
+			<g:hiddenField name="acoesDisponiveis[${countMarcadores}].id" value="${marcadorAcao.id}"/>
 		</span>
 	</g:each>
 </fieldset>
-
-%{--
-<fieldset id="fieldsetProgramas" class="embedded"}>
-    <legend>
-        <g:message code="familia.programas" default="Programas, benefícios e projetos" />
-    </legend>
-
-    <g:each in="${programasDisponiveis}" var="progdisp" status="i">
-        <% Programa programaDisponivel = progdisp %>
-        <div class="fieldcontain">
-            <label>
-                <g:checkBox name="programasdisponiveis[${i}].selected" value="${programaDisponivel.selected}"/>
-            </label>
-            <g:hiddenField name="programasdisponiveis[${i}].id" value="${programaDisponivel.id}"/>
-            ${programaDisponivel.nome ?: programaDisponivel.sigla}
-        </div>
-    </g:each>
-</fieldset>
---}%
 
 <fieldset class="embedded"><legend><g:message code="familia.endereco.label" default="Endereço" /></legend>
 
@@ -152,24 +146,8 @@ function filtraMarcadores(textInput, spans) {
 
 </fieldset>
 
-%{--
-<div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'membros', 'error')} ">
-	<label for="membros">
-		<g:message code="familia.membros.label" default="Membros" />
-		
-	</label>
-<ul class="one-to-many">
-<g:each in="${localDtoFamilia?.membros?}" var="m">
-    <li><g:link controller="cidadao" action="show" id="${m.id}">${m?.encodeAsHTML()}</g:link></li>
-</g:each>
-<li class="add">
-<g:link controller="cidadao" action="create" params="['familia.id': localDtoFamilia?.id]">${message(code: 'default.add.label', args: [message(code: 'cidadao.label', default: 'Cidadao')])}</g:link>
-</li>
-</ul>
-</div>
---}%
+%{--		TELEFONES
 
-%{--
 <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'telefones', 'error')} ">
 	<label for="telefones">
 		<g:message code="familia.telefones.label" default="Telefones" />
@@ -185,4 +163,3 @@ function filtraMarcadores(textInput, spans) {
 </ul>
 </div>
 --}%
-

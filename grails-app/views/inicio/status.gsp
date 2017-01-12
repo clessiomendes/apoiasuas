@@ -10,37 +10,7 @@
 <head>
     <title>Status</title>
     <meta name="layout" content="main" />
-    <style type="text/css" media="screen">
-
-    #nav {
-        margin-top:20px;
-        margin-left:30px;
-        width:228px;
-        float:left;
-
-    }
-    .homePagePanel * {
-        margin:0px;
-    }
-    .homePagePanel .panelBody ul {
-        list-style-type:none;
-        margin-bottom:10px;
-    }
-    .homePagePanel .panelBody h1 {
-        text-transform:uppercase;
-        font-size:1.1em;
-        margin-bottom:10px;
-    }
-    h2 {
-        margin-top:15px;
-        margin-bottom:15px;
-        font-size:1.2em;
-    }
-    #pageBody {
-        margin-left:280px;
-        margin-right:20px;
-    }
-    </style>
+    <asset:stylesheet src="especificos/status.less"/>
 </head>
 
 <body>

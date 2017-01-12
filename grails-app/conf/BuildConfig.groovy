@@ -61,6 +61,8 @@ grails.project.dependency.resolution = {
         grailsCentral()
         mavenCentral()
         mavenRepo 'http://repo.spring.io/milestone'
+        mavenRepo "http://repo.grails.org/grails/core"
+        mavenRepo "http://repo.grails.org/grails/plugins"
         // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -115,6 +117,7 @@ grails.project.dependency.resolution = {
 
 //        compile ... //Liquibase
         compile "org.apache.velocity:velocity:1.7" //Velocity
+//        compile "com.opencsv:opencsv:3.8"
 
         //		compile "com.myjeeva.poi:excelReader:1.2"
 

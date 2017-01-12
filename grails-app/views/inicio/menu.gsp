@@ -5,7 +5,8 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Apoia SUAS</title>
-    <asset:stylesheet src="metro.css"/>
+    <asset:stylesheet src="especificos/menu.css"/>
+    <asset:javascript src="especificos/procurarCidadao.js"/>
 </head>
 
 <body>

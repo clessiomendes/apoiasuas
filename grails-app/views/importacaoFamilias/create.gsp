@@ -4,6 +4,8 @@
 <head>
     <meta name="layout" content="main">
     <title><g:message code="importar.cadastro.de.familias"/></title>
+    <asset:javascript src="especificos/fileuploader.js"/>
+    <asset:stylesheet src="especificos/fileuploader.css"/>
 </head>
 
 <body>

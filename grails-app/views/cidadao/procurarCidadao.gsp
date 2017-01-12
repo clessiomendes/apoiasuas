@@ -5,6 +5,7 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'cidadao.label', default: 'Cidadao')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
+    <asset:javascript src="especificos/procurarCidadao.js"/>
 </head>
 
 <g:javascript>

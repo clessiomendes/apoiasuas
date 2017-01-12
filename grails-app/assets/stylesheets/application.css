@@ -7,15 +7,8 @@
 * You're free to add application-wide styles to this file and they'll appear at the top of the
 * compiled file, but it's generally better to create a new file per style scope.
 *
-* Faz com que todos os css's sejam carregados como um so:
-*= require_tree .
-*= require main.less
-*= require mobile
-*= require fileuploader
-*= require notificacoes.less
-*= require themes/ui-lightness/jquery-ui-1.10.4.custom
-* Ponto em que css definidos na pagina sao carregados (deixar sempre por ultimo)
-*= require_self
+*= require_tree ./globais
+*= require ./globais/main.less
+*
+* require_self so deve ser usado se formos definir css neste arquivo, o que eh desaconselhado
 */
-
-@import "jstree/default-dark/style.css";

@@ -14,6 +14,7 @@ class Formulario implements Serializable {
     String descricao
     String tipo //para agrupar as opções de formulário apresentadas ao operador
     PreDefinidos formularioPreDefinido
+    Set<CampoFormulario> campos;
     //utilizado eventualmente para designar relatorio com tratamento específico no sistema
     byte[] template
 
@@ -22,7 +23,11 @@ class Formulario implements Serializable {
     UsuarioSistema usuarioSistema //Campo transiente para armazenar um usuarioResponsavel (caso ele exista no formulario)
     boolean atualizarPersistencia
     FormularioEmitido formularioEmitido
-    static transients = ['formularioEmitido', 'cidadao', 'usuarioSistema', 'dataPreenchimento', 'nomeEquipamento', 'enderecoEquipamento', 'telefoneEquipamento', /*'nomeResponsavelPreenchimento', 'camposAvulsos',*/ 'atualizarPersistencia']
+    static transients = ['formularioEmitido', 'cidadao', 'usuarioSistema', 'dataPreenchimento',
+                         'nomeEquipamento', 'enderecoEquipamento', 'telefoneEquipamento',
+                         /*'nomeResponsavelPreenchimento', 'camposAvulsos',*/ 'atualizarPersistencia',
+                        'camposOrdenados', 'campoAvulso', 'conteudoCampo'
+    ]
 
     static searchable = {                           // <-- elasticsearch plugin
         only = ["nome","descricao"]

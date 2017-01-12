@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.cidadao.Familia" %>
+<%@ page import="org.apoiasuas.cidadao.FamiliaController; org.apoiasuas.cidadao.Familia" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -32,10 +32,25 @@
 				<fieldset class="form">
 					<g:render template="form"/>
 				</fieldset>
+
 				<fieldset class="buttons">
                     <g:submitButton name="update" class="save" value="${message(code: 'default.button.update.label', default: 'Gravar')}" />
 				</fieldset>
 			</g:form>
 		</div>
+
+		%{-- Define as janelas modais para incluir novos marcadores (para ações, vulnerabilidades, etc) --}%
+		<g:render template="janelaNovoMarcador" model="[idPrincipal: 'divPrograma', tituloJanela: 'Deseja criar um novo programa do município/estado/união?',
+														marcadoresDisponiveis: programasDisponiveis, fieldsetMarcadores: 'fieldsetProgramas',
+														classeMaracadores: 'marcadores-programa', hiddenNovosMarcadores: FamiliaController.HIDDEN_NOVOS_PROGRAMAS]" />
+
+		<g:render template="janelaNovoMarcador" model="[idPrincipal: 'divAcao', tituloJanela: 'Deseja criar um novo tipo de ação padronizada?',
+														marcadoresDisponiveis: acoesDisponiveis, fieldsetMarcadores: 'fieldsetAcoes',
+														classeMaracadores: 'marcadores-acao', hiddenNovosMarcadores: FamiliaController.HIDDEN_NOVAS_ACOES]" />
+
+		<g:render template="janelaNovoMarcador" model="[idPrincipal: 'divVulnerabilidade', tituloJanela: 'Deseja criar um novo tipo de vulnerabilidade padronizada?',
+														marcadoresDisponiveis: vulnerabilidadesDisponiveis, fieldsetMarcadores: 'fieldsetVulnerabilidades',
+														classeMaracadores: 'marcadores-vulnerabilidade', hiddenNovosMarcadores: FamiliaController.HIDDEN_NOVAS_VULNERABILIDADES]" />
+
 	</body>
 </html>

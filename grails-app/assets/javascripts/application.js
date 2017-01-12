@@ -5,62 +5,14 @@
 // You're free to add application-wide JavaScript to this file, but it's generally better 
 // to create separate JavaScript files as needed.
 //
+// require_tree dir inclui automaticamente todos os javascripts dentro de "dir" em todas as views, MAS SEM UMA ORDEM ESPECIFICA
+// Se uma ordem for necessaria (algo comum por conta de dependencias entre bibliotecas), eles devem ser listados em
+// comandos require explicitos.
+//
 //= require jquery
-//= require jstree/jstree.js
-//= require fileuploader.js
 //= require js/jquery-ui-1.10.4.custom
-//= require notificacoes.js
 //
 //Manter as instruções abaixo sempre como as últimas:
 //
-//= require_tree .
-//= require_self
-
-if (typeof jQuery !== 'undefined') {
-	//huh
-	(function($) {
-		$('#spinner').ajaxStart(function() {
-			$(this).fadeIn();
-		}).ajaxStop(function() {
-			$(this).fadeOut();
-		});
-	})(jQuery);
-}
-
-/**
- * Funcao auxiliar para imprimir numeros grandes de arquivos
- */
-function fileSizeToString(bytes) {
-	if(bytes == 0) return '0 Byte';
-	var decimals = 0; //máximo de casas decimais
-	var k = 1000; // or 1024 for binary
-	var dm = decimals + 1 || 3;
-	var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-	var i = Math.floor(Math.log(bytes) / Math.log(k));
-	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-}
-
-/**
- * Função javascript usada para submeter pesquisas de cidadaos por numero, logradouro ou nome aa partir de um link
- * passando os parametros pela url em uma requisicao GET para o servidor
- */
-function linkProcurarCidadao(link, url, inputNomeOuCodigoLegado, inputNumero, inputLogradouro) {
-	var params = "";
-	if (inputNomeOuCodigoLegado != null && inputNomeOuCodigoLegado.value != "")
-		params += "&nomeOuCodigoLegado="+ encodeURIComponent(inputNomeOuCodigoLegado.value);
-	if (inputNumero != null && inputNumero.value != "")
-		params += "&numero="+encodeURIComponent(inputNumero.value);
-	if (inputLogradouro != null && inputLogradouro.value != "")
-		params += "&logradouro="+encodeURIComponent(inputLogradouro.value);
-	if (params.substring(0,1) == "&")
-		params = "?"+params.substring(1)
-	link.href = url + params
-};
-
-/**
- * Simula um submit ao teclar enter dentro de uma caixa de texto
- */
-function requisicaoProcurarCidadao(event, button) {
-	if (event.keyCode == 13)
-		button.click();
-};
+//= require_tree ./globais
+//require_self não é mais necessária

@@ -24,6 +24,9 @@ class ApoiaSuasService {
                     " WHERE table_schema='public'\n" +
                     "   and column_name='id'   \n" +
                     "   and not table_name = 'servicoSistema'   \n" +
+                    //padrao de nome de sequencias criadas automaticamente para campos do tipo "serial" no postgresql:
+                    "   and table_name || '_id_seq' not IN ( SELECT a.sequence_name FROM information_schema.sequences a )\n" +
+                    //padrao de nome de sequencias criadas explicitamente para o projeto (compatibilidade):
                     "   and 'sq_' || table_name not IN ( SELECT a.sequence_name FROM information_schema.sequences a )"
 
     @Transactional(readOnly = true)
