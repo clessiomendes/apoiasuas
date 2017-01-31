@@ -1,8 +1,9 @@
-package org.apoiasuas.programa
+package org.apoiasuas.marcador
 
 import org.apoiasuas.cidadao.AssociacaoMarcador
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.Marcador
+import org.apoiasuas.marcador.Programa
 
 /**
  * Many to Many entre programas e familias
