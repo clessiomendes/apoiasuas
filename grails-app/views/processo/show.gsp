@@ -12,7 +12,7 @@
     Alguns casos de uso de emissao de formulario terminam redirecionando para a exibicao de um processo criado automaticamente.
     Se for este o caso, o template incluido abaixo permite baixar o arquivo que foi criado na requisicao anterior.
 --}%
-    <g:render template="/emissaoFormulario/baixarArquivo"/>
+    <g:render template="/baixarArquivo"/>
 
     <a href="#show-processo" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">

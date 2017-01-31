@@ -133,7 +133,7 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         if (filtros.idUsuarioSistema)
             result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_OPERADOR_RESPONSAVEL, filtros.idUsuarioSistema.toString())
         if (filtros.numeroAR)
-            result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, filtros.numeroAR.toString().toUpperCase())
+            result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, "%"+filtros.numeroAR.toString().toUpperCase()+"%")
         if (filtros.cartorio)
             result = result.variableValueLike(PedidoCertidaoProcessoDTO.VARIABLE_CARTORIO, "%"+filtros.cartorio.toUpperCase()+"%")
 

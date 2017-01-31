@@ -30,14 +30,15 @@
         <table class="parametrosPesquisa">
             <tr> <td> <div>
                 Nome ou Cad: <g:textField name="nomeOuCodigoLegado" id="inputNomeOuCodigoLegado" size="23" autofocus=""
-                                          onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
+                                          onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"
+                                          value="${defaultNomePesquisa}"/>
                 Endereço: <g:textField name="logradouro" id="inputLogradouro" size="23"
                                        onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
                 Nº <g:textField name="numero" id="inputNumero" size="1"
                              onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
             </div> </td>
             <td> <div>
-                <g:link onclick="linkProcurarCidadao(this, '${createLink(action: 'procurarCidadaoExecuta')}',
+                <g:link onclick="linkProcurarCidadao(this, '${createLink(action: actionButtonProcurar, controller: controllerButtonProcurar)}',
                                                             document.getElementById('inputNomeOuCodigoLegado'),
                                                             document.getElementById('inputNumero'),
                                                             document.getElementById('inputLogradouro'));">
@@ -64,11 +65,16 @@
             %{Cidadao cidadaoInstance = cidadao}%
             <tr class="${cidadaoInstance.familia.tecnicoReferencia ? 'tecnicoReferencia' : (i % 2) == 0 ? 'even' : 'odd'}">
 
-                <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}" action="selecionarFamilia" id="${cidadaoInstance.familia.id}">
+                <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
+                            controller="${controllerLinkFamilia}" action="${actionLinkFamilia}" id="${cidadaoInstance.familia.id}">
+                    %{--url="${urlVerFamilia}">--}%
                     ${fieldValue(bean: cidadaoInstance, field: "familia.codigoLegado")}
                 </g:link></td>
 
-                <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}" controller="cidadao" action="show" id="${cidadaoInstance.id}">
+                <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
+                            controller="${controllerLinkCidadao}" action="${actionLinkCidadao}" id="${cidadaoInstance.id}">
+                    %{--controller="cidadao" action="show" id="${cidadaoInstance.id}">--}%
+                    %{--url="${urlVerCidadao}">--}%
                     ${raw(cidadaoInstance.nomeCompleto)}
                 </g:link></td>
 

@@ -2,7 +2,7 @@ package org.apoiasuas.relatorio
 
 import grails.transaction.Transactional
 import groovy.sql.GroovyRowResult
-import org.apoiasuas.programa.Programa
+import org.apoiasuas.marcador.Programa
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ListaLigada

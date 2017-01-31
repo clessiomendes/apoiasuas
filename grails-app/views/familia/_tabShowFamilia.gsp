@@ -2,12 +2,16 @@
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance;
 %>
 
-<ol class="property-list servico">
+<ol class="property-list servico" style="padding: 0; margin: 0;">
 
 %{--Exibe PROGRAMAS, AÇÕES E VULNERABILIADES--}%
 <g:if test="${localDtoFamilia?.programas || localDtoFamilia?.acoes}">
     <fieldset id="fieldsetDadosEncaminhamento" class="embedded">
-        <legend><g:message code="marcadores"/></legend>
+        <legend>
+            Programas<g:helpTooltip chave="help.marcador.programas"/>,
+            vulnerabilidades<g:helpTooltip chave="help.marcador.vulnerabilidades"/> e
+            ações previstas<g:helpTooltip chave="help.marcador.acoes"/>
+        </legend>
         <g:each in="${localDtoFamilia.programas}" var="programaFamilia">
             <span class="marcadores-programa">${programaFamilia?.programa?.descricao}</span>
         </g:each>

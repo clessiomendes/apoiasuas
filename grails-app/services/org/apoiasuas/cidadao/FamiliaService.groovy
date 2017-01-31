@@ -1,17 +1,24 @@
 package org.apoiasuas.cidadao
 
+import fr.opensagres.xdocreport.document.registry.XDocReportRegistry
+import fr.opensagres.xdocreport.template.TemplateEngineKind
 import grails.transaction.Transactional
+import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.marcador.Acao
 import org.apoiasuas.marcador.AcaoFamilia
 import org.apoiasuas.marcador.Vulnerabilidade
 import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
-import org.apoiasuas.programa.Programa
-import org.apoiasuas.programa.ProgramaFamilia
+import org.apoiasuas.marcador.Programa
+import org.apoiasuas.marcador.ProgramaFamilia
+import org.apoiasuas.seguranca.UsuarioSistema
+import org.apoiasuas.util.CollectionUtils
 
 class FamiliaService {
 
     public static final int MAX_AUTOCOMPLETE_LOGRADOUROS = 10
+    public static final String TEMPLATE_PLANO_ACOMPANHAMENTO = "templatePlanoAcompanhamento.docx";
+
     def segurancaService
     def pedidoCertidaoProcessoService
     def messageSource
@@ -97,6 +104,88 @@ class FamiliaService {
             result << messageSource.getMessage("notificacao.familia.pedidosCertidao", null, locale);
 
         return result
+    }
+
+    @Transactional
+    public Monitoramento gravaMonitoramento(Monitoramento monitoramento) {
+        return monitoramento.save();
+    }
+
+    @Transactional
+     public boolean apagaMonitoramento(Monitoramento monitoramento) {
+        monitoramento.delete();
+        return true;
+    }
+
+    @Transactional(readOnly = true)
+    public ReportDTO emitePlanoAcompanhamento(Familia familia) {
+        ReportDTO result = new ReportDTO();
+        result.nomeArquivo = "PlanoAcompanhamentoCad${familia.codigoLegado}.docx"
+
+// 1) Load doc file and set Velocity template engine and cache it to the registry
+        InputStream stream = this.class.getResourceAsStream(TEMPLATE_PLANO_ACOMPANHAMENTO)
+//        InputStream stream = new ByteArrayInputStream(template2);
+        result.report = XDocReportRegistry.getRegistry().loadReport(stream, TemplateEngineKind.Velocity);
+
+// 2) Create Java model context
+        result.context = result.report.createContext();
+        result.fieldsMetadata = result.report.createFieldsMetadata();
+
+        UsuarioSistema tecnico = familia.tecnicoReferencia;
+        String tecnicoReferencia = "";
+        if (tecnico)
+            tecnicoReferencia = tecnico.nomeCompleto + (tecnico.matricula ? " ($tecnico.matricula)" : "")
+        //define um mapa de pares chave/conteudo cujas CHAVES são buscadas como FIELDS no template do word e substiuídas
+        // pelo conteúdo correspondente. Esse mapa é transferido na sequência para o CONTEXTO do mecanismo de geração do .doc
+        [
+            cras: familia.servicoSistemaSeguranca?.nome,
+            codigo_legado: familia.codigoLegado,
+            referencia_familiar: familia.getReferencia()?.nomeCompleto,
+            tecnico_referencia: tecnicoReferencia,
+            composicao_familiar: membrosToString(familia),
+            endereco: familia.endereco?.enderecoCompleto,
+            ingresso: familia.acompanhamentoFamiliar?.dataInicio?.format("dd/MM/yyyy"),
+            encerramento: familia.acompanhamentoFamiliar?.dataFim?.format("dd/MM/yyyy"),
+            analise_tecnica: familia.acompanhamentoFamiliar?.analiseTecnica,
+            resultados: familia.acompanhamentoFamiliar?.resultados,
+            telefones: familia.telefonesToString,
+            vulnerabilidades: marcadoresToString(familia.vulnerabilidades, "\n", "- "),
+            programas: marcadoresToString(familia.programas, ", "),
+            acoes: marcadoresToString(familia.acoes, "\n", "- "),
+            monitoramentos: monitoramentosToString(familia.monitoramentos)
+        ].each { chave, conteudo ->
+            result.context.put(chave, conteudo);
+        }
+        return result;
+    }
+
+    /**
+     * Devolve uma lista de membros familiares, com o separador de campos e de linhas especificado
+     */
+    private String membrosToString(Familia familia, String separadorCampos = ", ", String separadorLinhas = "\n") {
+        List<String> dadosCidadao = [];
+        familia.membrosOrdemAlfabetica.each { cidadao ->
+            if (cidadao.nomeCompleto)
+                dadosCidadao << CollectionUtils.join(["- " + cidadao.nomeCompleto,
+                                                      cidadao.parentescoReferencia,
+                                                      cidadao.dataNascimento ? "nascimento: "+cidadao.dataNascimento.format("dd/MM/YYYY") : null
+                ], separadorCampos);
+        };
+        return CollectionUtils.join(dadosCidadao, separadorLinhas);
+    }
+
+    private String marcadoresToString(Set<AssociacaoMarcador> associacaoMarcadores, String separador = ", ", String bulletList = "") {
+        return CollectionUtils.join(associacaoMarcadores
+                .sort { it.marcador.descricao?.toLowerCase() }
+                .collect { bulletList + it.marcador.descricao }, separador )
+    }
+
+    private String monitoramentosToString(Set<Monitoramento> monitoramentos) {
+        return CollectionUtils.join(monitoramentos
+                .sort { it.dataCriacao }
+                .collect {
+                    it.memo + "\n-> "+it.situacao
+                }, "\n----------------\n" )
     }
 
 }

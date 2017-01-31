@@ -1,11 +1,11 @@
 <%@ page import="org.apoiasuas.AncestralController" %>
 
 %{--Javascript que baixa automaticamente o arquivo de formulario guardado na sessao--}%
-<g:if test="${AncestralController.getFormularioParaBaixar(session)}">
-    <g:link elementId="formularioParaBaixar" controller="emissaoFormulario" action="baixarArquivo" hidden="" download=""></g:link>
+<g:if test="${AncestralController.getReportParaBaixar(session)}">
+    <g:link elementId="reportParaBaixar" controller="ancestral" action="baixarArquivo" hidden="" download=""></g:link>
     <g:javascript>
 //            document.body.onload =function(){
-                document.getElementById('formularioParaBaixar').click();
+                document.getElementById('reportParaBaixar').click();
 //            };
     </g:javascript>
 </g:if>

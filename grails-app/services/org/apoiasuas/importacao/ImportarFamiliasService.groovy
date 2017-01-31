@@ -11,7 +11,7 @@ import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.util.IOUtils
 import org.apoiasuas.ProgramasPreDefinidos
 import org.apoiasuas.cidadao.*
-import org.apoiasuas.programa.ProgramaFamilia
+import org.apoiasuas.marcador.ProgramaFamilia
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema

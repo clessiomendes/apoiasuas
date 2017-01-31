@@ -191,4 +191,33 @@ class AmbienteExecucao {
             return "(Validação)"
     }
 
+/*
+    public static String getDatabaseDependency() {
+        return 'org.postgresql:postgresql:9.3-1101-jdbc41';
+
+        String ds
+//        if (isProducao())
+//             ds = 'CLEVERCLOUD_POSTGRES_PROD';
+//        else
+        ds = sysProperties('org.apoiasuas.datasource')?.toUpperCase()
+        System.out.println("Definicao de banco de dados: ${ds}")
+        switch (ds) {
+            case 'CLEVERCLOUD_POSTGRES_VALID': return CLEVERCLOUD_POSTGRES_VALID
+            case 'CLEVERCLOUD_POSTGRES_PROD': return CLEVERCLOUD_POSTGRES_PROD
+            case 'APPFOG_POSTGRES_PROD': return APPFOG_POSTGRES_PROD
+            case 'APPFOG_POSTGRES_VALID': return APPFOG_POSTGRES_VALID
+            case 'LOCAL_POSTGRES': return LOCAL_POSTGRES
+            case 'LOCAL_H2': return LOCAL_H2
+            case 'LOCAL_MYSQL': return LOCAL_MYSQL
+            case 'APPFOG_MYSQL': return APPFOG_MYSQL
+            case 'CLEARDB_MYSQL': return CLEARDB_MYSQL
+            default:
+                if (isDesenvolvimento())
+                    return LOCAL_POSTGRES
+                else
+                    throw new RuntimeException("Definicao de Banco de Dados nao prevista: ${ds}")
+        }
+    }
+*/
+
 }

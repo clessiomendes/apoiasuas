@@ -62,9 +62,9 @@ class PedidoCertidaoProcessoController extends ProcessoController {
             pedidoCertidaoProcessoService.gravaAR(id, numeroAR)
         } catch (Exception e) {
             e.printStackTrace()
-            return render(status: 403, text: "Erro gravando AR: "+e.message)
+            return render(status: 200, text: '<div class="errors" role="status">Erro gravando AR: '+e.message+'</div>')
         }
-        render(status: 200/*success*/)
+        render(status: 200/*success*/, text: '<div class="message" role="status">AR gravada com sucesso</div>' )
     }
 
     /**

@@ -7,7 +7,9 @@ import org.codehaus.groovy.runtime.InvokerHelper
  */
 class CollectionUtils {
 
-    //metodo join do Grails usado em colecoes, mas ignorando valores nulos
+    /**
+     * metodo join do Grails usado em colecoes, mas ignorando valores nulos
+     */
     public static String join(Iterable self, String separator) {
         StringBuilder buffer = new StringBuilder();
         boolean first = true;

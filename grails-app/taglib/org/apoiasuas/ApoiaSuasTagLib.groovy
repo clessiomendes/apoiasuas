@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
 import org.codehaus.groovy.grails.plugins.web.taglib.FormTagLib
+import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 
 class ApoiaSuasTagLib {
     static defaultEncodeAs = [taglib: 'raw']
@@ -217,6 +218,28 @@ class ApoiaSuasTagLib {
         //Eh preciso buscar a tag original antes de executa-la, pois ela foi sobrescrita
         FormTagLib original = grailsAttributes.applicationContext.getBean(FormTagLib.name)
         original.submitButton.call(attrs)
+    }
+
+/**
+ * Cria um icone de ajuda com um texto suspenso a ser exibido quando o mouse passar por ele. O texto a ser
+ * exibido pode ser 1) passado como uma chave de internacionalizacao pelo parametro message ou 2) no corpo
+ * da tag e, neste caso, algumas formatações basicas de HTML são suportadas como <br>, <b>, etc. 1) tem
+ * prioridade sobre 2).
+ *
+ * @attr chave chave do arquivo de internacionalização. Se ausente ou não encontrada, utiliza-se o corpo da tag como fonte para o texto de ajuda
+ */
+    def helpTooltip = { attrs, body ->
+        log.debug("Help Tooltip Tag")
+        String mensagem = body();
+        if (attrs.chave && message(code: attrs.chave))
+            mensagem = message(code: attrs.chave)
+
+        out << "<div class='help-tooltip'>";
+        out << asset.image(src: 'help2-16.png');
+        out << "    <div class='help-tooltip-text'>";
+        out << mensagem;
+        out << "    </div>";
+        out << '</div>';
     }
 
 }

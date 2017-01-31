@@ -1,11 +1,16 @@
+//Rotinas gerais 1) a serem executadas em todas as telas 2) ao final do carregamento do HTML e 3) dependentes do JQuery
 if (typeof jQuery !== 'undefined') {
-    //huh
     (function($) {
+        //Máscara para todos os campos de data
+        $(".dateMask").mask("99/99/9999");
+
+        /*
         $('#spinner').ajaxStart(function() {
             $(this).fadeIn();
         }).ajaxStop(function() {
             $(this).fadeOut();
         });
+        */
     })(jQuery);
 }
 
@@ -14,7 +19,7 @@ if (typeof jQuery !== 'undefined') {
  */
 function fileSizeToString(bytes) {
     if(bytes == 0) return '0 Byte';
-    var decimals = 0; //m�ximo de casas decimais
+    var decimals = 0; //máximo de casas decimais
     var k = 1000; // or 1024 for binary
     var dm = decimals + 1 || 3;
     var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];

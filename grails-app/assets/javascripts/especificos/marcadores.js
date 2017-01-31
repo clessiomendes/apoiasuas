@@ -17,7 +17,8 @@ function InterfaceDivMarcador() {
         $(this).dialog({
                 autoOpen: false,
                 resizable: false,
-                width: 650,
+                width: $(window).width() > 700 ? 700 : 'auto',
+                //width: 700,
                 modal: true
             }
         );
@@ -163,9 +164,8 @@ function inicializaEventos(fieldsetMarcadores, divMarcadores) {
     } );
     //onclick - expandir o fieldset de marcadores
     $(fieldsetMarcadores).find(".btn-expandir-marcador").click( function() {
-        //alert(fieldsetMarcadores.id);
-        //$(fieldsetMarcadores).css("background-color","black");
-        $(fieldsetMarcadores).css("max-height","500px");
+        $(this).hide();
+        $(fieldsetMarcadores).find("div.rolagem").css("max-height","500px");
     } );
 }
 

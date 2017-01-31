@@ -7,9 +7,8 @@ import org.apoiasuas.anotacoesDominio.InfoClasseDominio
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
 import org.apoiasuas.formulario.CampoFormulario
-import org.apoiasuas.marcador.Vulnerabilidade
 import org.apoiasuas.marcador.VulnerabilidadeFamilia
-import org.apoiasuas.programa.ProgramaFamilia
+import org.apoiasuas.marcador.ProgramaFamilia
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.util.DateUtils
 import org.apoiasuas.seguranca.UsuarioSistema
@@ -47,7 +46,10 @@ class Familia implements Serializable {
 
     ServicoSistema servicoSistemaSeguranca
 
-    static hasMany = [membros: Cidadao, telefones: Telefone, programas: ProgramaFamilia, acoes: AcaoFamilia, vulnerabilidades: VulnerabilidadeFamilia]
+    static hasOne = [acompanhamentoFamiliar: AcompanhamentoFamiliar]
+
+    static hasMany = [membros: Cidadao, telefones: Telefone, monitoramentos: Monitoramento,
+                      programas: ProgramaFamilia, acoes: AcaoFamilia, vulnerabilidades: VulnerabilidadeFamilia]
 
     static embedded = ['endereco']
 
@@ -101,7 +103,7 @@ class Familia implements Serializable {
         return LazyList.decorate(membros,FactoryUtils.instantiateFactory(Cidadao.class))
     }
 
-    List<Cidadao> getMembrosOrdemAlfabetica() {
+    public List<Cidadao> getMembrosOrdemAlfabetica() {
         membros?.sort{ it.nomeCompleto?.toLowerCase() }
     }
 
@@ -116,6 +118,16 @@ class Familia implements Serializable {
         return 'Técnico de referência: ' + (tecnicoReferencia?.username ?: 'indefinido')
     }
 */
+
+    public String vulnerabilidadesToString(String separador = ", ") {
+        return CollectionUtils.join(vulnerabilidades.collect { it.vulnerabilidade.descricao }, separador )
+    }
+    public String programasToString(String separador = ", ") {
+        return CollectionUtils.join(programas.collect { it.programa.descricao }, separador )
+    }
+    public String acoesToString(String separador = ", ") {
+        return CollectionUtils.join(acoes.collect { it.acao.descricao }, separador )
+    }
 }
 
 class Despesas  implements Serializable {

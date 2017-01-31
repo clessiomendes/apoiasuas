@@ -1,6 +1,7 @@
 package org.apoiasuas.programa
 
 import grails.test.mixin.TestFor
+import org.apoiasuas.marcador.ProgramaFamilia
 import spock.lang.Specification
 
 /**

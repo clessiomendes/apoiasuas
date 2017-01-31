@@ -12,6 +12,12 @@
 	<g:checkBox name="referencia" value="${localDtoCidadao?.referencia}" />
 </div>
 --}%
+<asset:javascript src="especificos/jquery-mask.js"/>
+<g:javascript>
+	$(function() {
+		$(".dateMask").mask("99/99/9999");
+	});
+</g:javascript>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'nomeCompleto', 'error')} ">
 	<label for="nomeCompleto">
@@ -24,7 +30,7 @@
 	<label for="dataNascimento">
 		<g:message code="cidadao.dataNascimento.label" default="Data Nascimento" />
 	</label>
-	<g:textField name="dataNascimento" size="10" maxlength="10" value="${localDtoCidadao?.dataNascimento?.format("dd/MM/yyyy")}"/>
+	<g:textField class="dateMask" name="dataNascimento" size="10" maxlength="10" value="${localDtoCidadao?.dataNascimento?.format("dd/MM/yyyy")}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'nis', 'error')} ">

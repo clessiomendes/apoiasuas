@@ -162,15 +162,19 @@ class BootStrap {
     }
 
     private void validaEsquemaBD() {
-/*
-        String[] atualizacoesPendentes = apoiaSuasService.getAtualizacoesPendentes()
+        String[] atualizacoesPendentes = []
+        try {
+            atualizacoesPendentes = apoiaSuasService.getAtualizacoesPendentes()
+        } catch (Exception e) {
+            log.error("Impossível verificar estrutura do banco de dados");
+            e.printStackTrace();
+        }
         if (atualizacoesPendentes) {
             String erro = "Detectadas atualizacoes pendentes no banco de dados:"
             atualizacoesPendentes.each { erro += "\n" + it + ";" }
             log.error(erro);
             throw new RuntimeException("Startup interrompido. Banco de dados fora de sincronia com a aplicação: "+erro)
         }
-*/
     }
 
     def destroy = {

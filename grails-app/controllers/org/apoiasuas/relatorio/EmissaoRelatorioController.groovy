@@ -2,7 +2,7 @@ package org.apoiasuas.relatorio
 
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
-import org.apoiasuas.programa.Programa
+import org.apoiasuas.marcador.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.UsuarioSistema
 

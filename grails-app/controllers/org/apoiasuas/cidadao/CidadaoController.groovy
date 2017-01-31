@@ -2,22 +2,27 @@ package org.apoiasuas.cidadao
 
 import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
-import grails.transaction.Transactional
-import grails.util.GrailsNameUtils
 import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.util.StringUtils
 
 import javax.servlet.http.HttpSession
 
-import static org.springframework.http.HttpStatus.*
-
 @Secured([DefinicaoPapeis.STR_USUARIO])
 class CidadaoController extends AncestralController {
 
-    def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Cidadao.class, only: ['show','edit', 'delete', 'update', 'save']]
-    static defaultAction = "procurarCidadao"
-    private static final String SESSION_ULTIMO_CIDADAO = "SESSION_ULTIMO_CIDADAO"
+    def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Cidadao.class, only: ['show','edit', 'delete', 'update', 'save']];
+    static defaultAction = "procurarCidadao";
+    private static final String SESSION_ULTIMO_CIDADAO = "SESSION_ULTIMO_CIDADAO";
+    //destinos de navegação usados na busca pura de cidadãos
+    private static final Map modeloProcurarCidadao = [
+            controllerButtonProcurar: "cidadao",
+            actionButtonProcurar: "procurarCidadaoExecuta",
+            controllerLinkFamilia: "familia",
+            actionLinkFamilia: "abrirFamilia",
+            controllerLinkCidadao: "cidadao",
+            actionLinkCidadao: "show"
+    ];
 
     def cidadaoService
 
@@ -36,7 +41,7 @@ class CidadaoController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def procurarCidadao() {
-        render(view: "procurarCidadao", model: [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:]])
+        render(view: "procurarCidadao", model: modeloProcurarCidadao + [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:]] )
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
@@ -51,11 +56,11 @@ class CidadaoController extends AncestralController {
             Cidadao cidadao = cidadaos?.resultList[0]
             redirect(controller: "familia", action: "show", id: cidadao.familia.id)
         } else
-            render(view:"procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ])
+            render(view:"procurarCidadao", model: modeloProcurarCidadao + [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados])
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def selecionarFamilia(Familia familiaInstance) {
+    def abrirFamilia(Familia familiaInstance) {
         redirect(controller: 'familia', action: 'show', params: params)
 //        forward controller: GrailsNameUtils.getLogicalName(FamiliaController.class, "Controller"), action: "show"
     }

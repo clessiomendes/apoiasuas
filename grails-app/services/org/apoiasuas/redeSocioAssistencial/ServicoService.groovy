@@ -11,7 +11,7 @@ import java.util.regex.Pattern
 
 class ServicoService {
 
-    static final int TAMANHO_DESCRICAO_CORTADA = 150
+    private static final int TAMANHO_DESCRICAO_CORTADA = 150
     SegurancaService segurancaService
 
     @Transactional

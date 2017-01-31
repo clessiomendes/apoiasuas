@@ -1,17 +1,32 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: clessio
-  Date: 14/01/2017
-  Time: 11:25
---%>
+<%
+    org.apoiasuas.cidadao.Monitoramento localDtoMonitoramento = monitoramentoInstance
+%>
 
-<%@ page contentType="text/html;charset=UTF-8" %>
-<html>
-<head>
-    <title></title>
-</head>
 
-<body>
+<div id="edit-monitoramento" class="content scaffold-edit" role="main">
+    <g:if test="${flash.message}">
+        <div class="message" role="status">${flash.message}</div>
+    </g:if>
+    <g:hasErrors bean="${localDtoMonitoramento}">
+        <ul class="errors" role="alert">
+            <g:eachError bean="${localDtoMonitoramento}" var="error">
+                <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+            </g:eachError>
+        </ul>
+    </g:hasErrors>
 
-</body>
-</html>
+    <g:formRemote url="[action:'saveMonitoramento', id: localDtoMonitoramento.id]" name="saveMonitoramento"
+                  update="[failure: 'janelaMonitoramento']" onSuccess="fechaJanela();">
+        <g:hiddenField name="version" value="${localDtoMonitoramento?.version}" />
+
+        <fieldset class="form">
+            <g:render template="formMonitoramento"/>
+        </fieldset>
+
+        <fieldset class="buttons">
+            <g:submitButton name="update" class="save" value="Gravar" />
+        </fieldset>
+
+    </g:formRemote>
+</div>
+

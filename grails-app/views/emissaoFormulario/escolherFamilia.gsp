@@ -8,7 +8,7 @@
 
 <body>
 
-<g:render template="baixarArquivo"/>
+<g:render template="/baixarArquivo"/>
 
 <div id="edit-fool" class="content scaffold-edit" role="main">
     <h1><g:message code="emissao.formularios"/></h1>

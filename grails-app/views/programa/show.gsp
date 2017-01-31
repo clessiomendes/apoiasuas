@@ -1,5 +1,5 @@
 
-<%@ page import="org.apoiasuas.programa.Programa" %>
+<%@ page import="org.apoiasuas.marcador.Programa" %>
 <!DOCTYPE html>
 <html>
 	<head>

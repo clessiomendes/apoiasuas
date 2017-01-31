@@ -19,7 +19,7 @@
     <div id="list-servico" class="content scaffold-list" role="main">
 			<h1>Rede sócio-assistencial</h1>
 
-            <g:form style="padding-left: 1em">
+            <g:form style="padding: 0.3em 1em">
                 Palavra chave:<g:textField name="palavraChave" size="20" autofocus="" value="${filtro?.nome}"/>
 				&nbsp;<g:actionSubmit action="list" class="search" value="Procurar"/>
 				&nbsp;<g:actionSubmit action="create" class="create" value="Incluir novo serviço"/>

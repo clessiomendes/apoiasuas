@@ -3,11 +3,11 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<title><g:message code="buscaCentralizado.titulo" /></title>
+		<title><g:message code="buscaCentralizada.titulo" /></title>
 	</head>
 	<body>
     <div id="list-busca" class="content scaffold-list" role="main">
-		<h1><g:message code="buscaCentralizado.titulo" /></h1>
+		<h1><g:message code="buscaCentralizada.titulo" /></h1>
 
         <div class="nav" role="navigation">
             <g:form action="list">

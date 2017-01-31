@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.programa.Programa; org.apoiasuas.util.StringUtils" %>
+<%@ page import="org.apoiasuas.marcador.Programa; org.apoiasuas.programa.Programa; org.apoiasuas.util.StringUtils" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,7 +35,7 @@
             %{--Programas--}%
             <fieldset class="embedded" style="padding: 10px"><legend class="collapsable" style="cursor:pointer;">Restringir aos programas:</legend>
                 <g:each in="${programasDisponiveis}" var="progdisp" status="i">
-                    <% Programa programaDisponivel = progdisp %>
+                    <% org.apoiasuas.marcador.Programa programaDisponivel = progdisp %>
                     <g:checkBox name="programasdisponiveis[${i}].selected" value="${programaDisponivel.selected}"/>
                     <g:hiddenField name="programasdisponiveis[${i}].id" value="${programaDisponivel.id}"/>
                     ${programaDisponivel.nome ?: programaDisponivel.sigla} <br>

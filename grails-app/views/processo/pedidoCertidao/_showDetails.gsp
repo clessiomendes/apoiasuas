@@ -30,11 +30,13 @@
 </li>
 
 %{--String numeroAR--}%
-<g:formRemote name="fool" method="post" url="[action: 'gravaAR', id: processo.id]"
-              onSuccess="alert('AR gravada com sucesso');" onFailure="alert(XMLHttpRequest.responseText)">
+<g:formRemote name="fool" method="post" url="[action: 'gravaAR', id: processo.id]" update="mensagemAR">
+              %{--onSuccess="alert('AR gravada com sucesso');" onFailure="alert(XMLHttpRequest.responseText)">--}%
     <div class="fieldcontain">
         <label for="numeroAR">Número AR</label>
         <g:textField name="numeroAR" value="${processo.numeroAR}"/>
         <g:actionSubmit class="save" action="gravaAR" id="btnGravaAR" value="Alterar"/>
+%{--        <g:submitToRemote class="save" url="[action: 'gravaAR']" id="btnGravaAR" value="Alterar" update="mensagemAR"/>--}%
+        <br><div id="mensagemAR"></div>
     </div>
 </g:formRemote>

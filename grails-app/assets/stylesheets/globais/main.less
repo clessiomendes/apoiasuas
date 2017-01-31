@@ -1,7 +1,7 @@
 /* Cores */
 @cor-principal:					#abbf78;
 @cor-fonte-links-e-titulos:		#48802c;
-@cor-marcadores: 			    #E1F2B6;
+@cor-caption-jquery-ui: 		#E1F2B6;
 @cor-fundo-paineis-e-botoes:	#efefef;
 @cor-fundo-principal:	        #dddddd;
 @cor-sombra-principal:	        #aaaaaa;
@@ -243,43 +243,45 @@ img {
 	text-decoration: underline;
 }
 
-.nav a.search, .nav a.slidedown, .nav a.home, .nav a.list, .nav a.create {
+.linkNavegacao() {
+//.nav a.search, .nav a.list, .nav a.create {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
 	text-indent: 25px;
+    .tamanho-icones();
 }
 
-.nav a.home {
-	background-image: url(../../images/house.png);
-  .tamanho-icones();
-}
+//.nav a.slidedown {
+//  .linkNavegacao();
+//  background-image: url(../../images/slidedown.png);
+//}
 
-.nav a.slidedown {
-	background-image: url(../../images/slidedown.png);
-  .tamanho-icones();
+.nav a.edit {
+  .linkNavegacao();
+  background-image: url(../../images/database_edit.png);
 }
 
 .nav a.search {
-	background-image: url(../../images/search.png);
-  .tamanho-icones();
+  .linkNavegacao();
+  background-image: url(../../images/search.png);
 }
 
 .nav a.list {
-	background-image: url(../../images/database_table.png);
-  .tamanho-icones();
+  .linkNavegacao();
+  background-image: url(../../images/database_table.png);
 }
 
 .nav a.create {
-	background-image: url(../../images/database_add.png);
-    .tamanho-icones();
+  .linkNavegacao();
+  background-image: url(../../images/database_add.png);
 }
 
 /* CREATE/EDIT FORMS AND SHOW PAGES */
 
 fieldset,
 .property-list {
-	margin: 0.6em 1.25em 0 1.25em;
-	padding: 0.3em 1.8em 1.25em;
+	margin: 0.5em 0.5em 0 0.5em;
+	padding: 0.5em 0.5em 0.5em;
 	position: relative;
 	zoom: 1;
 	border: none;
@@ -287,7 +289,7 @@ fieldset,
 
 .property-list .fieldcontain {
 	list-style: none;
-	overflow: hidden;
+	overflow: visible;
 	zoom: 1;
 }
 
@@ -615,7 +617,7 @@ th.desc a {
 	cursor: pointer;
 	display: inline-block;
 	//margin: 0 0.25em 0;
-  	padding: 0.25em 0.7em;
+  	padding: 0.3em 0.7em;
     margin: 0.25em;
     //padding: 0.25em;
 	overflow: visible;
@@ -648,41 +650,48 @@ th.desc a {
 	text-decoration: underline;
 }
 
-.buttons .search, .buttons .slidedown, .buttons .delete, .buttons .edit, .buttons .save, .buttons .add, .buttons .list {
+.buttonsFooter() {
+//.buttons .search, .buttons .delete, .buttons .edit, .buttons .save, .buttons .add, .buttons .list {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
 	text-indent: 25px;
+    .tamanho-icones();
 }
 
-.ie6 .buttons input.search, .ie6 .buttons input.slidedown, .ie6 .buttons input.delete, .ie6 .buttons input.edit, .ie6 .buttons input.save, .ie6 .buttons input.add, .ie6 .buttons input.list,
-.ie7 .buttons input.search, .ie7 .buttons input.slidedown, .ie7 .buttons input.delete, .ie7 .buttons input.edit, .ie7 .buttons input.save, .ie7 .buttons input.add, .ie7 .buttons input.list
+.ie6 .buttons input.search, .ie6 .buttons input.delete, .ie6 .buttons input.edit, .ie6 .buttons input.save, .ie6 .buttons input.add, .ie6 .buttons input.list,
+.ie7 .buttons input.search, .ie7 .buttons input.delete, .ie7 .buttons input.edit, .ie7 .buttons input.save, .ie7 .buttons input.add, .ie7 .buttons input.list
 {
 	padding-left: 36px;
 }
 
+.buttons .search {
+  .buttonsFooter();
+  background-image: url(../../images/search.png);
+}
+
 .buttons .delete {
+    .buttonsFooter();
 	background-image: url(../../images/database_delete.png);
-  .tamanho-icones();
 }
 
 .buttons .edit {
+  .buttonsFooter();
     background-image: url(../../images/database_edit.png);
-  .tamanho-icones();
 }
 
 .buttons .save {
+  .buttonsFooter();
 	background-image: url(../../images/database_save.png);
-  .tamanho-icones();
 }
 
 .buttons .add {
+    .buttonsFooter();
     background-image: url(../../images/database_add.png);
-  	.tamanho-icones();
 }
 
 .buttons .list {
+  .buttonsFooter();
   background-image: url(../../images/database_table.png);
-  .tamanho-icones();
 }
 
 .imageButton() {
@@ -706,12 +715,7 @@ th.desc a {
   background-image: @imagem;
   background-repeat: no-repeat;
   background-position: 5px 5px;
-  padding-left: 25px;
-}
-
-.buttons .search {
-	background-image: url(../../images/search.png);
-  .tamanho-icones();
+  padding-left: 30px;
 }
 
 a.skip {
@@ -729,6 +733,10 @@ input.search {
 
 input.create {
   .imageTextButton(url(../../images/database_add.png));
+}
+
+input.cancel {
+  .imageTextButton(url(../../images/cancel.png));
 }
 
 input#adicionarArquivo {
@@ -769,7 +777,7 @@ table.parametrosPesquisa {
 }
 
 table.tabelaListagem th:hover, .tabelaListagem tr:hover {
-  background: @cor-marcadores;
+  background: @cor-caption-jquery-ui;
 }
 
 .marcadores {
@@ -825,8 +833,59 @@ table.tabelaListagem th:hover, .tabelaListagem tr:hover {
 
 .fieldsetMarcadores {
   .embedded();
-  //redimenciona de acordo com o conteudo ate um maximo de 7em:
-  height:auto;
-  max-height: 7em;
-  overflow: auto;
+  //redimenciona de acordo com o conteudo
+  height: 100%;
+  .rolagem {
+    max-height: 7em;
+    overflow: auto;
+  }
+}
+
+
+/**
+ * CSS para tooltips ou popups. Uso:
+
+<div class="help-tooltip">Hover over me
+  <span class="help-tooltip-text">Tooltip text</span>
+</div>
+
+ */
+
+.help-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.help-tooltip .help-tooltip-text {
+  display: inline-block;
+  visibility: hidden;
+  width: 350px;
+  background-color: @cor-principal;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+  white-space: normal; //permite quebra de linhas no meio do texto
+
+  /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.help-tooltip:hover .help-tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+*:focus {
+  outline: none;
+}
+
+input::-moz-focus-inner {
+  border: 0;
 }

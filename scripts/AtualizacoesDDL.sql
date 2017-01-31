@@ -160,6 +160,7 @@ INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (ne
 INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Intervenções no âmbito da vulnerabilidade relacional', null);
 INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Garantir acesso à documentação civil', null);
 INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Garantir acesso à educação básica', null);
+INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Garantir acesso ao ensino superior', null);
 INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para o SCFV Idoso', null);
 INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para proteção social de alta complexidade', null);
 INSERT INTO public.acao (id, descricao, servico_sistema_seguranca_id) VALUES (nextval('sq_acao'::regclass), 'Encaminhar para o CREAS/PAEFI', null);
@@ -227,5 +228,16 @@ INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'
 INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família ou membros familiares em situação de Confinamento');
 INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família ou membros familiares em situação de Isolamento');
 INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Família ou membros familiares em situação de Violência');
+
+create table monitoramento (id int8 not null, version int8 not null, data_efetivada timestamp, data_prevista timestamp, data_criacao timestamp not null, efetivado boolean default FALSE, familia int8, memo varchar(1000000), responsavel_id int8 not null, primary key (id));
+create index Monitoramento_Familia_Idx on monitoramento (familia);
+alter table monitoramento add constraint FK_jq7q15oahmrh09cf3kjcx2hb7 foreign key (familia) references familia;
+alter table monitoramento add constraint FK_5m5j2qait364q5w49509r7ujr foreign key (responsavel_id) references usuario_sistema;
+create sequence sq_monitoramento;
+
+create table acompanhamento_familiar (id int8 not null, version int8 not null, analise_tecnica varchar(1000000), data_fim timestamp, data_inicio timestamp, familia int8 not null, resultados varchar(1000000), primary key (id));
+create index Acompanhamento_Familia_Idx on acompanhamento_familiar (familia);
+alter table acompanhamento_familiar add constraint FK_lf3tvhjd34cp11xsa52vbsvq foreign key (familia) references familia;
+create sequence sq_acompanhamento_familiar;
 
 -- versao ate aqui: current (local:feito

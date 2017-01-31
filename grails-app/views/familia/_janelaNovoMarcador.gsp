@@ -26,11 +26,11 @@ $(document).ready(function() {
 } );
 </g:javascript>
 
-<div id='${idPrincipal}' title='${tituloJanela}' style="height: auto; width: 650px">
+<div id='${idPrincipal}' title='${tituloJanela}' style="height: auto">
     <g:form onsubmit="return false;">
         <div class="fieldcontain">
             <label for="inputDescricaoMarcador">Descrição</label>
-            <input type="text" id="inputDescricaoMarcador" size="50" maxlength="100">
+            <input type="text" id="inputDescricaoMarcador" size="40" maxlength="100">
         </div>
 
         <div id="marcadoresDisponiveisDialog" style="display: none">
@@ -46,6 +46,6 @@ $(document).ready(function() {
         </fieldset>
 
         <input type="button" id="btnConfirmar" value="Confirmar" class="create" style="margin-top: 20px;" />
-        <input type="button" id="btnCancelar" value="Cancelar" class="create" style="margin-top: 20px;" />
+        &nbsp;&nbsp;<input type="button" id="btnCancelar" value="Cancelar" class="cancel" style="margin-top: 20px;" />
     </g:form>
 </div>

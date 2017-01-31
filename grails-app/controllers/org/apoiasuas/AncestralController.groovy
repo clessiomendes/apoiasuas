@@ -1,21 +1,26 @@
 package org.apoiasuas
 
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.CidadaoController
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.FamiliaController
 import org.apoiasuas.cidadao.FamiliaService
+import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.processo.PedidoCertidaoProcessoController
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorialService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.AcessoNegadoPersistenceException
+import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
 import org.springframework.web.servlet.support.RequestContextUtils
+
+import javax.servlet.http.HttpSession
 
 /**
  * Created by admin on 20/04/2015.
@@ -27,6 +32,7 @@ class AncestralController {
     FamiliaService familiaService
     public static String ENTITY_CLASS_ENTRY = "entity"
     public static String JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL = "JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL"
+    private static final String ULTIMO_REPORT_DTO = "ULTIMO_FORMULARIO_REPORT_DTO"
 
 
     protected void guardaUltimoCidadaoSelecionado(Cidadao cidadao) {
@@ -154,5 +160,29 @@ class AncestralController {
         abrangenciaTerritorialService.JSONAbrangenciasTerritoriaisExibicao(abrangenciaTerritorial)
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def baixarArquivo() {
+        ReportDTO reportDTO = getReportParaBaixar(session)
+        try {
+            response.contentType = 'application/octet-stream'
+            if (reportDTO) {
+                response.setHeader 'Content-disposition', "attachment; filename=\"$reportDTO.nomeArquivo\""
+                reportDTO.report.process(reportDTO.context, response.outputStream);
+            } else {
+                response.setHeader 'Content-disposition', "signal; filename=\"erro-favor-cancelar\""
+            }
+            response.outputStream.flush()
+        } finally {
+            setReportParaBaixar(session, null)
+        }
+    }
+
+    public static ReportDTO getReportParaBaixar(HttpSession session) {
+        return session[ULTIMO_REPORT_DTO]
+    }
+
+    public static void setReportParaBaixar(HttpSession session, ReportDTO reportParaBaixar) {
+        session[ULTIMO_REPORT_DTO] = reportParaBaixar
+    }
 
 }

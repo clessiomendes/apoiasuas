@@ -14,7 +14,6 @@ import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
-import javax.servlet.http.HttpSession
 import java.text.ParseException
 import java.text.SimpleDateFormat
 
@@ -22,7 +21,6 @@ import java.text.SimpleDateFormat
 class EmissaoFormularioController extends AncestralController {
 
     static defaultAction = "escolherFamilia"
-    private static final String ULTIMO_FORMULARIO_REPORT_DTO = "ULTIMO_FORMULARIO_REPORT_DTO"
 //    static scope = "prototype" //garante uma nova instancia deste controller para cada request
 
     CidadaoService cidadaoService
@@ -114,7 +112,7 @@ class EmissaoFormularioController extends AncestralController {
 
             //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
             //javascript que rodara automaticamente na proxima pagina)
-            setFormularioParaBaixar(session, reportDTO)
+            setReportParaBaixar(session, reportDTO)
             if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO) {
                 String idProcesso = pedidoCertidaoProcessoService.getIdProcessoPeloFormularioEmitido(reportDTO.formularioEmitido.id)
                 return redirect(controller: "pedidoCertidaoProcesso", action: "mostraProcesso", id:idProcesso)
@@ -225,31 +223,6 @@ class EmissaoFormularioController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def mostrarFormularioEmitido(FormularioEmitido formularioEmitidoInstance) {
         render view: "mostrarFormularioEmitido", model: [formularioEmitidoInstance: formularioEmitidoInstance ]
-    }
-
-    def baixarArquivo() {
-        ReportDTO reportDTO = getFormularioParaBaixar(session)
-        try {
-            response.contentType = 'application/octet-stream'
-            if (reportDTO) {
-                response.setHeader 'Content-disposition', "attachment; filename=\"$reportDTO.nomeArquivo\""
-                reportDTO.report.process(reportDTO.context, response.outputStream);
-            } else {
-                response.setHeader 'Content-disposition', "signal; filename=\"erro-favor-cancelar\""
-            }
-            response.outputStream.flush()
-        } finally {
-            setFormularioParaBaixar(session, null)
-        }
-    }
-
-
-    public static ReportDTO getFormularioParaBaixar(HttpSession session) {
-        return session[ULTIMO_FORMULARIO_REPORT_DTO]
-    }
-
-    public static void setFormularioParaBaixar(HttpSession session, ReportDTO formularioParaBaixar) {
-        session[ULTIMO_FORMULARIO_REPORT_DTO] = formularioParaBaixar
     }
 
 }

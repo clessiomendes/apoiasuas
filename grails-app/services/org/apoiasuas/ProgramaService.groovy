@@ -1,7 +1,7 @@
 package org.apoiasuas
 
 import grails.transaction.Transactional
-import org.apoiasuas.programa.Programa
+import org.apoiasuas.marcador.Programa
 import org.apoiasuas.seguranca.UsuarioSistema
 
 class ProgramaService {

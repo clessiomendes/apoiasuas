@@ -78,9 +78,23 @@ grails.project.dependency.resolution = {
 //        runtime('com.h2database:h2:1.4.185') {
 //            transitive = false
 //        }
-        runtime 'mysql:mysql-connector-java:5.1.12'
         runtime 'org.liquibase:liquibase-core:3.3.2'
+
+        //                             BANCO DE DADOS
         runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
+
+/*
+        runtime 'org.postgresql:postgresql:9.4.1208-jdbc42-atlassian-hosted'
+        runtime 'mysql:mysql-connector-java:5.1.12'
+        runtime AmbienteExecucao.getDatabaseDependency()
+        if (AmbienteExecucao)
+        if (Environment.current == Environment.DEVELOPMENT)  {
+            runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
+        } else {
+            runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
+        }
+*/
+
 
 //        development {
 //            compile 'xerces:xerces:2.4.0'

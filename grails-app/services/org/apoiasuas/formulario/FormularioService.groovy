@@ -253,7 +253,7 @@ class FormularioService {
         return Formulario.findByFormularioPreDefinido(codigo)
     }
 
-    WordprocessingMLPackage simularTemplate(Formulario formulario) {
+    public WordprocessingMLPackage simularTemplate(Formulario formulario) {
         WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.createPackage()
         MainDocumentPart mainPart = wordMLPackage.getMainDocumentPart()
         mainPart.addParagraphOfText(formulario.nome)

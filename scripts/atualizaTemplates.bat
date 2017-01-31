@@ -1,4 +1,5 @@
 @echo off
-copy C:\workspaces\apoiaSUAS\src\groovy\org\apoiasuas\formulario\template\*.docx C:\workspaces\apoiaSUAS\target\work\resources\org\apoiasuas\bootstrap\template
-copy C:\workspaces\apoiaSUAS\grails-app\assets\images\* C:\workspaces\apoiaSUAS\target\assets
+copy C:\Dropbox\develop\apoiasuas\src\groovy\org\apoiasuas\formulario\template\*.docx C:\Dropbox\develop\apoiasuas\target\work\resources\org\apoiasuas\fomulario\template
+copy C:\Dropbox\develop\apoiasuas\src\groovy\org\apoiasuas\cidadao\*.docx C:\Dropbox\develop\apoiasuas\target\work\resources\org\apoiasuas\cidadao
+copy C:\Dropbox\develop\apoiasuas\grails-app\assets\images\* C:\Dropbox\develop\apoiasuas\target\assets
 pause

@@ -20,7 +20,7 @@
     %{--<fieldset class="buttons">--}%
         <table style="border-top: 0; margin-bottom: 0;">
             <tr>
-                <td style="width: 14em;">Nome ou cadastro de usuário:</td>
+                <td style="width: 15em;">Nome ou cadastro de <nobr>usuário <g:helpTooltip chave="buscaUsuario.help"/></nobr></td>
                 <td>
                     %{--<g:form action="procurarCidadaoExecuta" controller="cidadao">--}%
                     <g:textField name="nomeOuCodigoLegado" id="inputNomeOuCodigoLegado" size="50" autofocus=""
@@ -34,7 +34,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Procurar no ApoiaCRAS:</td>
+                <td>Procurar no <nobr>ApoiaCRAS <g:helpTooltip chave="buscaCentralizada.help"/></nobr></td>
                 <td><g:form action="list" controller="buscaCentralizada">
                     <g:textField name="palavraChave" size="50" onfocus="if(this.value == 'ex: jovem aprendiz') { this.value = ''; }" value="ex: jovem aprendiz"/>
                     <g:submitButton name="list" class="search" value="Procurar"/>
@@ -54,11 +54,12 @@
             <g:link title="Consultar a situação de pedidos de certidão emitidos anteriormente (ou registrar manualmente um pedido feito fora do sistema)" class="marrom" controller="pedidoCertidaoProcesso" action="preList">Gestão de Pedidos de Certidão</g:link>
             <g:link title="Informações técnicas do sistema" class="lilas" controller="inicio" action="status">Status do sistema</g:link>
             <g:link title="Alterar suas informações como nome, matrícula, senha, etc" class="rosa" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
+            <g:link title="Registrar um acompanhamento e emitir o Plano de Acompanhamento Familiar" class="verde_oliva" controller="familia" action="selecionarAcompanhamento">Acompanhamento familiar</g:link>
 
             %{--TODO: Crirar perfil usuario avancado--}%
 
             <sec:ifAnyGranted roles="${DefinicaoPapeis.STR_SUPER_USER}">
-                <g:link class="rosa" controller="formulario" action="list">Configuração de formulários</g:link>
+                <g:link class="azul" controller="formulario" action="list">Configuração de formulários</g:link>
                 <g:link title="Definição das áreas geográficas de atuação dos serviços, programas, para compartilhamento de links, etc" class="beje" controller="abrangenciaTerritorial">Territórios, Regionais e Entes federativos</g:link>
                 <g:link title="Importação de planilhas de banco de dados do cadastro de famílias do seu serviço para uso no sistema" class="verde_oliva" controller="importacaoFamilias" action="list">Importação de famílias</g:link>
                 <g:link title="Criação e modificação dos usuários (operadores) do sistema, respectivos perfis e serviços a que estão vinculados" class="laranja" controller="usuarioSistema" action="list">Operadores do sistema</g:link>

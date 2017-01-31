@@ -28,7 +28,8 @@
     <g:render template="/layouts/notificacoes"></g:render>
 
     %{--   Muda a cor do banner de acordo com o ambiente:   --}%
-    <div role="banner" id= ${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "grailsLogoProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "grailsLogoValid" : "grailsLogoLocal"}>
+    <div role="banner" id= "grailsLogoProd"}>
+    %{--<div role="banner" id= ${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "grailsLogoProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "grailsLogoValid" : "grailsLogoLocal"}>--}%
         <table id="cabecalho"><tr>
             %{--<td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px">${application.configuracao ? application.configuracao.nome : "indefinido" }</span> </td>--}%
             <td>
@@ -58,7 +59,8 @@
 
     <g:layoutBody/>
 
-    <div class=${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "footerProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "footerValid" : "footerLocal"} role="contentinfo">
+    <div class="footerProd">
+    %{--<div class=${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "footerProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "footerValid" : "footerLocal"} role="contentinfo">--}%
         <form name="logout" method="POST" action="${createLink(controller: 'logout')}">
             <sec:ifLoggedIn>
                 <asset:image src="operador.png" alt="Operador" height="20" width="20"/> <sec:loggedInUserInfo field="username"/>
@@ -66,7 +68,7 @@
             </sec:ifLoggedIn>
         </form>
     </div>
-    <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
+    %{--<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>--}%
     <r:layoutResources/>
 </body>
 </html>

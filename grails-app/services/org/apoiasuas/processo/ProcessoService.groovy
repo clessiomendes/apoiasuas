@@ -120,7 +120,14 @@ public class ProcessoService {
         TarefaDTO tarefa = new TarefaDTO()
         tarefa.id = historicTaskInstance.id
         tarefa.descricao = historicTaskInstance.name
-        tarefa.responsavel = historicTaskInstance.assignee ? UsuarioSistema.get(historicTaskInstance.assignee.toLong()) : null
+        //Tenta converter o id e ignora eventuais erros do usuário
+        UsuarioSistema tecnicoResponsavel = null;
+        try {
+            tecnicoResponsavel = historicTaskInstance.assignee ? UsuarioSistema.get(historicTaskInstance.assignee.toLong()) : null
+        } catch (Throwable t) {
+            log.error(t);
+        }
+        tarefa.responsavel = tecnicoResponsavel;
         tarefa.inicio = historicTaskInstance.startTime
         tarefa.fim = historicTaskInstance.endTime
         if (! historicTaskInstance.endTime) {

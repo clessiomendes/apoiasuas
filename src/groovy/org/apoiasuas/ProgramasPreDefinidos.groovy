@@ -1,6 +1,6 @@
 package org.apoiasuas
 
-import org.apoiasuas.programa.Programa
+import org.apoiasuas.marcador.Programa
 
 /**
  * Enum contendo os programas pre-definidos do sistema
