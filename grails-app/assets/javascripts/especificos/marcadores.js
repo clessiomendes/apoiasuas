@@ -158,10 +158,13 @@ function inicializaEventos(fieldsetMarcadores, divMarcadores) {
     $(fieldsetMarcadores).find(".input-search").keyup( function() {
         filtraMarcadores(this, $(fieldsetMarcadores).find('span'))
     } );
+
     //onclick - abrir a janela modal correspondente à partir do botão "Novo Marcador"
-    $(fieldsetMarcadores).find(".btn-adicionar-marcador").click( function() {
-        divMarcadores.janelaNovoMarcador(true);
-    } );
+    if (divMarcadores)
+        $(fieldsetMarcadores).find(".btn-adicionar-marcador").click( function() {
+            divMarcadores.janelaNovoMarcador(true);
+        } );
+
     //onclick - expandir o fieldset de marcadores
     $(fieldsetMarcadores).find(".btn-expandir-marcador").click( function() {
         $(this).hide();

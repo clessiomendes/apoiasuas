@@ -2,7 +2,9 @@ package org.apoiasuas.relatorio
 
 import grails.transaction.Transactional
 import groovy.sql.GroovyRowResult
+import org.apoiasuas.marcador.Acao
 import org.apoiasuas.marcador.Programa
+import org.apoiasuas.marcador.Vulnerabilidade
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ListaLigada
@@ -29,11 +31,67 @@ class RelatorioService {
     public static final String LABEL_SIGLA_PROGRAMA = "sigla"
     def groovySql
 
+    public void geraListagemFinal(OutputStream outputStream, boolean planilhaParaDownload, List<GroovyRowResult> registrosEncontrados) {
+        ListaLigada<GroovyRowResult> resultadoTelefones, resultadoProgramas
+        //Busca a listagem completa de telefones e programas e armazena numa lista ligada com ponteiro de avanço (padrão recordset do JDBC)
+        resultadoTelefones = new ListaLigada<GroovyRowResult>(telefonesTodasFamilias());
+        resultadoTelefones.pula()
+        resultadoProgramas = new ListaLigada<GroovyRowResult>(programasTodasFamilias());
+        resultadoProgramas.pula()
+        log.debug("Encontrados ${resultadoTelefones.size()} telefones e ${resultadoProgramas.size()} programas no cadastro completo")
+//            programas = programasFamilias();
+
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, planilhaParaDownload ? "windows-1250" : "utf-8"));
+        if (registrosEncontrados) {
+            if (planilhaParaDownload) {
+                //Indica o separador de campos no arquivo (tab)
+                writer.append("sep=\t")
+                writer.newLine()
+                //Imprime cabecalhos
+                writer.append(montaAppendCSV(registrosEncontrados[0].collect { it.key } + ["telefones","programas"] ))
+                writer.newLine()
+            } else {
+                writer.append('<table style="width:100%;border: 1px solid black;">')
+                writer.append(montaAppendHTML(registrosEncontrados[0].collect { it.key } + ["telefones","programas"] ))
+            }
+
+            registrosEncontrados.each { row ->
+                String telefones = telefonesFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoTelefones)
+                String programas = programasFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoProgramas)
+                if (planilhaParaDownload) {
+                    writer.append(montaAppendCSV(row.collect { it.value } + [telefones, programas]))
+                    writer.newLine()
+                } else {
+                    writer.append(montaAppendHTML(row.collect { it.value } + [telefones, programas]))
+                }
+            }
+/*
+                //Imprime cabecalhos
+                writer.append('<table style="width:100%;border: 1px solid black;">')
+                writer.append(montaAppendHtml(registrosEncontrados[0].collect { it.key } + ["telefones","programas"] ))
+//                writer.append("<br/>")
+
+                int posTelefones = 0;
+                registrosEncontrados.each { row ->
+                    String telefones = telefonesFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoTelefones)
+                    String programas = programasFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoProgramas)
+                    writer.append(montaAppendHtml(row.collect { it.value } + [telefones, programas]) )
+//                    writer.append("<br/>")
+                }
+                writer.append('</table>')
+*/
+        } else {
+            writer.append("Nenhuma informação encontrada para as opções escolhidas")
+        }
+        writer.flush()
+    }
+
     /**
      * Executa uma consulta SQL (Ansi92) com os parametros escolhidos e disponibiliza uma planilha csv em outputStream
      */
-    public void geraListagem(OutputStream outputStream, LocalDate dataNascimentoInicial, LocalDate dataNascimentoFinal,
-                             String membros, Long idTecnicoReferencia, ArrayList<Programa> programasSelecionados, boolean planilhaParaDownload) {
+    public List<GroovyRowResult> processaConsulta(LocalDate dataNascimentoInicial, LocalDate dataNascimentoFinal,
+                             String membros, Long idTecnicoReferencia, List<Programa> programasSelecionados,
+                             List<Vulnerabilidade> vulnerabilidadesSelecionadas, List<Acao> acoesSelecionadas) {
 
         String sqlPrincipalSelect = "select distinct "
         String sqlPrincipalFrom = "from "
@@ -97,69 +155,28 @@ class RelatorioService {
 
         if (programasSelecionados) {
             sqlPrincipalFrom += '  left join programa_familia pf on pf.familia_id = f.id '
+            String strMarcadores = ""
+            programasSelecionados.eachWithIndex { p, i -> strMarcadores += (i==0 ? "":",") + p.id }
+            sqlPrincipalWhere += " and pf.programa_id in ($strMarcadores)";
+        }
 
-            String strProgramas = ""
-            programasSelecionados.eachWithIndex { p, i -> strProgramas += (i==0 ? "":",") + p.id }
-            sqlPrincipalWhere += " and pf.programa_id in ($strProgramas)";
+        if (vulnerabilidadesSelecionadas) {
+            sqlPrincipalFrom += '  left join vulnerabilidade_familia vf on vf.familia_id = f.id '
+            String strMarcadores = ""
+            vulnerabilidadesSelecionadas.eachWithIndex { p, i -> strMarcadores += (i==0 ? "":",") + p.id }
+            sqlPrincipalWhere += " and vf.vulnerabilidade_id in ($strMarcadores)";
+        }
+
+        if (acoesSelecionadas) {
+            sqlPrincipalFrom += '  left join acao_familia af on af.familia_id = f.id '
+            String strMarcadores = ""
+            acoesSelecionadas.eachWithIndex { p, i -> strMarcadores += (i==0 ? "":",") + p.id }
+            sqlPrincipalWhere += " and af.acao_id in ($strMarcadores)";
         }
 
         try {
-            List<GroovyRowResult> resultadoPrincipal;
-            ListaLigada<GroovyRowResult> resultadoTelefones, resultadoProgramas
             log.debug("SQL listagem (filtros - $filtros):" +"\n" + sqlPrincipalSelect + '\n' + sqlPrincipalFrom + '\n ' + sqlPrincipalWhere + '\n' + sqlPrincipalOrder)
-            resultadoPrincipal = groovySql.rows(sqlPrincipalSelect + ' ' + sqlPrincipalFrom + ' ' + sqlPrincipalWhere + ' ' + sqlPrincipalOrder, filtros)
-
-            //Busca a listagem completa de telefones e programas e armazena numa lista ligada com ponteiro de avanço (padrão recordset do JDBC)
-            resultadoTelefones = new ListaLigada<GroovyRowResult>(telefonesTodasFamilias());
-            resultadoTelefones.pula()
-            resultadoProgramas = new ListaLigada<GroovyRowResult>(programasTodasFamilias());
-            resultadoProgramas.pula()
-            log.debug("Encontrados ${resultadoTelefones.size()} telefones e ${resultadoProgramas.size()} programas no cadastro completo")
-//            programas = programasFamilias();
-
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, planilhaParaDownload ? "windows-1250" : "utf-8"));
-            if (resultadoPrincipal) {
-                if (planilhaParaDownload) {
-                    //Indica o separador de campos no arquivo (tab)
-                    writer.append("sep=\t")
-                    writer.newLine()
-                    //Imprime cabecalhos
-                    writer.append(montaAppendCSV(resultadoPrincipal[0].collect { it.key } + ["telefones","programas"] ))
-                    writer.newLine()
-                } else {
-                    writer.append('<table style="width:100%;border: 1px solid black;">')
-                    writer.append(montaAppendHTML(resultadoPrincipal[0].collect { it.key } + ["telefones","programas"] ))
-                }
-
-                resultadoPrincipal.each { row ->
-                    String telefones = telefonesFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoTelefones)
-                    String programas = programasFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoProgramas)
-                    if (planilhaParaDownload) {
-                        writer.append(montaAppendCSV(row.collect { it.value } + [telefones, programas]))
-                        writer.newLine()
-                    } else {
-                        writer.append(montaAppendHTML(row.collect { it.value } + [telefones, programas]))
-                    }
-                }
-/*
-                //Imprime cabecalhos
-                writer.append('<table style="width:100%;border: 1px solid black;">')
-                writer.append(montaAppendHtml(resultadoPrincipal[0].collect { it.key } + ["telefones","programas"] ))
-//                writer.append("<br/>")
-
-                int posTelefones = 0;
-                resultadoPrincipal.each { row ->
-                    String telefones = telefonesFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoTelefones)
-                    String programas = programasFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoProgramas)
-                    writer.append(montaAppendHtml(row.collect { it.value } + [telefones, programas]) )
-//                    writer.append("<br/>")
-                }
-                writer.append('</table>')
-*/
-            } else {
-                writer.append("Nenhuma informação encontrada para as opções escolhidas")
-            }
-            writer.flush()
+            return groovySql.rows(sqlPrincipalSelect + ' ' + sqlPrincipalFrom + ' ' + sqlPrincipalWhere + ' ' + sqlPrincipalOrder, filtros)
         } finally {
             groovySql.close()
         }
@@ -190,6 +207,10 @@ class RelatorioService {
         return result
     }
 
+    /**
+     * Aglutina todos os telefones para cada família individualmente, para fins de exibição de múltiplos valores
+     * como um único campo no resultado final
+     */
     private List<GroovyRowResult> telefonesTodasFamilias() {
         String sql = "select distinct t.ddd, t.numero, " +
                 AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado") + ' as "' + LABEL_CODIGOLEGADO + '" \n' +
@@ -201,8 +222,12 @@ class RelatorioService {
         return groovySql.rows(sql, [])
     }
 
+    /**
+     * Aglutina todos os programas para cada família individualmente, para fins de exibição de múltiplos valores
+     * como um único campo no resultado final
+     */
     private List<GroovyRowResult> programasTodasFamilias() {
-        String sql = "select distinct p.sigla, " +
+        String sql = "select distinct "+ AmbienteExecucao.SqlProprietaria.valorNaoNulo("p.sigla","p.nome")+" as sigla, " +
                 AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado") + ' as "' + LABEL_CODIGOLEGADO + '" \n' +
                 " from familia f join programa_familia pf on f.id = pf.familia_id join programa p on pf.programa_id = p.id " +
                 " where 1=1 and " + AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado") + " is not null \n" +

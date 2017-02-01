@@ -1,21 +1,7 @@
-<g:javascript>
-	$(document).ready(function() {
-		$("#tabs").tabs();
-	} );
-</g:javascript>
-
-<div id="tabs" style="margin: 5px;">
-    <ul>
-        <li><a href="#tabEditFamilia">família</a> </li>
-        <li><a href="#tabMarcador">programas, ações...</a> </li>
-    </ul>
-	<div id="tabEditFamilia">
-		<g:render template="tabEditFamilia"/>
-	</div>
-	<div id="tabMarcador">
-		<g:render template="tabMarcadores"/>
-	</div>
-</div>
+<g:tabs id="tabs" style="margin: 5px;">
+	<g:tab id="tabEditFamilia" titulo="família" template="tabEditFamilia"/>
+	<g:tab id="tabMarcadores" titulo="programas, ações..." template="tabMarcadores" model="[permiteInclusao: 'true']"/>
+</g:tabs>
 
 %{--		TELEFONES
 

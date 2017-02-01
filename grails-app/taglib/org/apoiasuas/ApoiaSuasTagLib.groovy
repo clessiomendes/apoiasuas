@@ -1,11 +1,13 @@
 package org.apoiasuas
 
+import grails.converters.JSON
 import org.apoiasuas.anotacoesDominio.InfoDominioUtils
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.Formulario
 import org.apoiasuas.seguranca.UsuarioSistema
+import org.apoiasuas.util.ApoiaSuasException
 import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
@@ -14,6 +16,9 @@ import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 
 class ApoiaSuasTagLib {
     static defaultEncodeAs = [taglib: 'raw']
+    public static final String TABS_O_QUE_MONTAR = "TABS_O_QUE_MONTAR"
+    public static final String TABS_MONTAR_MENU = "TABS_MONTAR_MENU"
+    public static final String TABS_MONTAR_DIVS = "TABS_MONTAR_DIVS"
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
 
     /**
@@ -240,6 +245,70 @@ class ApoiaSuasTagLib {
         out << mensagem;
         out << "    </div>";
         out << '</div>';
+    }
+
+/**
+ * Tag que monta um componente JQuery UI tabs. Depende da existência de tags <i>tab</i> em seu corpo, tantas vezes
+ * quantos forem o número de tabs presentes no componente.
+ * Na implementação, é necessário se processar duas vezes o corpo da tag. Em cada processamento, usamos um flag no request indicando
+ * o que deverá ser renderizado: 1o) os menus <li> esperados pelo componente de tabs e 2o) os conteudos dos <div>s
+ * @attr id REQUESTED id unico para o componente de tabs
+ * @attr style estilos css para personalizar o componente
+ */
+    def tabs = { attrs, body ->
+        //MarkupBuilder para geração de HTML por meio de uma DSL groovy
+        def html = new groovy.xml.MarkupBuilder(out)
+
+        //Javascript JQuery para adicionar o comportamento do componente no div sendo criado
+        g.javascript{
+            'jQuery(document).ready(function() {\n' +
+            '   jQuery("#'+attrs.id+'").tabs();\n' +
+            '} );'
+        }
+
+        //No primeiro processamento das tags <g:tab>, usamos a flag para sinalizar a montagem do menu por <ul>
+        request.setAttribute(TABS_O_QUE_MONTAR, TABS_MONTAR_MENU);
+        html.div id: attrs.id, style: attrs.style, {
+            ul {
+               mkp.yieldUnescaped(body());
+            }
+            //No segundo processamento das tags <g:tab>, usamos a flag para sinalizar a montagem dos <div>s
+            request.setAttribute(TABS_O_QUE_MONTAR, TABS_MONTAR_DIVS);
+            mkp.yieldUnescaped(body());
+        }
+
+        //fim dos processamentos: remover a flag do request
+        request.removeAttribute(TABS_O_QUE_MONTAR);
+    }
+
+/**
+ * tag a ser usada dentro do corpo da tag <g:tabs>, uma para cada aba do componente
+ * @attr id REQUESTED id único de cada tab dentro do componente
+ * @attr titulo REQUESTED titulos presente nas orelhas de cada tab
+ * @attr template se presente, renderiza o conteúdo da tab aa partir de um template _.gsp. caso contrário, o corpo da tag é que é renderizado
+ * @attr model parâmetros a serem passados para o template como modelo
+ */
+    def tab = { attrs, body ->
+        //MarkupBuilder para geração de HTML por meio de uma DSL groovy
+        def html = new groovy.xml.MarkupBuilder(out)
+
+        //primeiro processamento, a flag TABS_MONTAR_MENU sinaliza a montagem da lista <lu> esperada pelo componente
+        if (request.getAttribute(TABS_O_QUE_MONTAR) == TABS_MONTAR_MENU) {
+            html.li { // <li>
+                a href: "#"+attrs.id, { // <a href="">
+                    mkp.yieldUnescaped(attrs.titulo);
+                } // </a>
+            } // </li>
+        //segundo processamento, a flag TABS_MONTAR_DIVS sinaliza a montagem do corpo da tab
+        } else if (request.getAttribute(TABS_O_QUE_MONTAR) == TABS_MONTAR_DIVS) {
+            //verifica se foi passado um template como parâmetro e, caso contrário, gera o conteúdo aa partir do corpo da tag
+            def tabConteudo = (attrs.template ? g.render(template: attrs.template, model: attrs.model) : body());
+            html.div id: attrs.id, { // <div id="">
+                mkp.yieldUnescaped(tabConteudo)
+            } // </div>
+        } else {
+//            throw new ApoiaSuasException("Necessário definir flag $TABS_O_QUE_MONTAR no request antes de usar a tag <g:tab>")
+        }
     }
 
 }

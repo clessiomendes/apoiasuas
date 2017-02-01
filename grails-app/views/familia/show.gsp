@@ -32,25 +32,10 @@
 			</ul>
 		</g:if>
 
-		<g:javascript>
-			$(document).ready(function() {
-				$("#tabs").tabs();
-			} );
-		</g:javascript>
-
-		<div id="tabs" style="margin: 5px;">
-			<ul>
-				<li><a href="#tabFamilia">família</a> </li>
-	%{--			<li><a href="#tabMarcador">programas, ações...</a> </li>--}%
-				<li><a href="#tabMonitoramento">monitoramentos</a> </li>
-			</ul>
-			<div id="tabFamilia">
-				<g:render template="tabShowFamilia"/>
-			</div>
-			<div id="tabMonitoramento">
-				<g:render template="tabMonitoramento"/>
-			</div>
-		</div>
+		<g:tabs id="tabs" style="margin: 5px;">
+			<g:tab id="tabShowFamilia" titulo="família" template="tabShowFamilia"/>
+			<g:tab id="tabMonitoramento" titulo="monitoramentos" template="tabMonitoramento"/>
+		</g:tabs>
 
 		<fieldset class="buttons">
 			<g:link class="add" controller="emissaoFormulario" action="escolherFamilia">Emitir formulário</g:link>

@@ -88,6 +88,13 @@ class AmbienteExecucao {
 //                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
             }
         }
+        public static String valorNaoNulo(String possivelNulo, String naoNulo) {
+            switch (AmbienteExecucao.CURRENT) {
+                case AmbienteExecucao.POSTGRES: return "coalesce($possivelNulo, $naoNulo)";
+                default: throw new RuntimeException("recurso valorNaoNulo() não implementado para engine " +
+                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
+            }
+        }
     }
 
     /**
