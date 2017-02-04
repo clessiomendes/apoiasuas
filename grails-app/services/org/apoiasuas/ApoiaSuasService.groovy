@@ -13,7 +13,6 @@ import org.hibernate.transform.AliasToEntityMapResultTransformer
 class ApoiaSuasService {
 
     def grailsApplication
-    def groovySql
     def dataSource
     SessionFactory sessionFactory
 

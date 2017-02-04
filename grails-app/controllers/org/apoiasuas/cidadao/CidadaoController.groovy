@@ -19,7 +19,7 @@ class CidadaoController extends AncestralController {
             controllerButtonProcurar: "cidadao",
             actionButtonProcurar: "procurarCidadaoExecuta",
             controllerLinkFamilia: "familia",
-            actionLinkFamilia: "abrirFamilia",
+            actionLinkFamilia: "show",
             controllerLinkCidadao: "cidadao",
             actionLinkCidadao: "show"
     ];

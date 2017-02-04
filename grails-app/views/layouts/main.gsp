@@ -18,6 +18,9 @@
     <asset:javascript src="especificos/notify.js"/>
     <asset:stylesheet src="especificos/notificacoes.less"/>
     <asset:stylesheet src="especificos/header.less"/>
+    <g:if env="development">
+        <asset:stylesheet src="globais/development-utils.less"/>
+    </g:if>
 
     <g:layoutHead/>
     <r:layoutResources/>

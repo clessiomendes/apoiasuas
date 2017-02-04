@@ -9,7 +9,7 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'link.label', default: 'Link')}" />
 		<title>Atalhos Externos</title>
-        <asset:stylesheet src="especificos/exibeLinks.less"/>
+        <asset:stylesheet src="especificos/exibe-links.less"/>
 	</head>
 	<body>
 

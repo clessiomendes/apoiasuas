@@ -1,4 +1,3 @@
-
 <%@ page import="org.apoiasuas.cidadao.Familia" %>
 <!DOCTYPE html>
 <html>

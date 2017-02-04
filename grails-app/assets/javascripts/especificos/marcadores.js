@@ -2,13 +2,20 @@ var timerKeyUp = 0; //variavel global que detem a identificacao de determinado t
 const TEMPO_DELAY_KEYUP = 500; //0.5 segundos
 const TAMANHO_MINIMO_PESQUISA = 3; //aguardar digitar 3 letras antes de pesquisar uma palavra
 
-function newInterfaceDivMarcador(divPrincipal) {
-    var interfaceDivMarcador = new InterfaceDivMarcador();
+/**
+ * Método para simular a "aplicação", ao objeto divPrincipal passado como parâmetro, dos métodos herdados da interface
+ * InterfaceDivNovoMarcador (na verdade, uma função javascript contendo as definições e implementações desta interface)
+ */
+function newInterfaceDivNovoMarcador(divPrincipal) {
+    var interfaceDivMarcador = new InterfaceDivNovoMarcador();
     for(var k in interfaceDivMarcador) divPrincipal[k]=interfaceDivMarcador[k];
     return divPrincipal;
 }
 
-function InterfaceDivMarcador() {
+/**
+ * ver newInterfaceDivNovoMarcador
+ */
+function InterfaceDivNovoMarcador() {
 
     /**
      * Customizacao da janela a ser aberta
@@ -25,7 +32,7 @@ function InterfaceDivMarcador() {
     }
 
     /**
-     * Abre ou fecha a janela modal de nova ação
+     * Abre ou fecha a janela modal de novo marcador
      * @param exibir
      */
     this.janelaNovoMarcador = function(exibir) {
@@ -133,7 +140,7 @@ function InterfaceDivMarcador() {
 }
 
 
-/**
+    /**
  * busca incremental de marcadores. Mostra marcador cujo texto contenha QUALQUER UMA DAS PALAVRAS PESQUISADAS (operador ou)
  */
 function filtraMarcadores(textInput, spans) {

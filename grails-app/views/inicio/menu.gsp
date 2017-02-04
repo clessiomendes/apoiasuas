@@ -55,6 +55,7 @@
             <g:link title="Informações técnicas do sistema" class="lilas" controller="inicio" action="status">Status do sistema</g:link>
             <g:link title="Alterar suas informações como nome, matrícula, senha, etc" class="rosa" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
             <g:link title="Registrar um acompanhamento e emitir o Plano de Acompanhamento Familiar" class="verde_oliva" controller="familia" action="selecionarAcompanhamento">Acompanhamento familiar</g:link>
+            <g:link title="Permite ao técnico gerenciar as famílias de quem é referência, monitoramentos das intervenções com as famílias (acompanhadas ou não), pedidos de certidão, etc" class="laranja" controller="gestaoTecnica" action="inicial">Gestão técnica</g:link>
 
             %{--TODO: Crirar perfil usuario avancado--}%
 

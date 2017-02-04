@@ -3,6 +3,7 @@ package org.apoiasuas.cidadao
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry
 import fr.opensagres.xdocreport.template.TemplateEngineKind
 import grails.transaction.Transactional
+import groovy.sql.GroovyRowResult
 import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.marcador.Acao
 import org.apoiasuas.marcador.AcaoFamilia
@@ -23,6 +24,7 @@ class FamiliaService {
     def pedidoCertidaoProcessoService
     def messageSource
     def marcadorService
+    def groovySql
 
     @Transactional
     public Familia grava(Familia familia, MarcadoresCommand programasCommand, List<String> novosProgramas,
@@ -48,15 +50,15 @@ class FamiliaService {
 
     @Transactional(readOnly = true)
     List procurarLogradouros(String logradouro) {
-        if (! logradouro)
+        if (!logradouro)
             return []
         //HQL Busca todos os logradouros, primeiro os mais usados
         String hql = 'select a.endereco.nomeLogradouro from Familia a ' +
                 'where lower(remove_acento(a.endereco.nomeLogradouro)) like remove_acento(:logradouro) ' +
                 'group by a.endereco.nomeLogradouro ' +
                 'order by count(*) desc ';
-        String logradouroInicia = logradouro.toLowerCase()+'%'
-        String logradouroContem = '%'+logradouro.toLowerCase()+'%'
+        String logradouroInicia = logradouro.toLowerCase() + '%'
+        String logradouroContem = '%' + logradouro.toLowerCase() + '%'
 
         //Procura logradouros INICIANDO com o texto digitado
         //Usar um LinkedHashSet garante que os resultados nao se repitam
@@ -82,7 +84,7 @@ class FamiliaService {
     }
 
     public Set<String> getNotificacoes(Long idFamilia, Locale locale) {
-        if (! idFamilia)
+        if (!idFamilia)
             return []
         Set<String> result = []
         Familia familia = Familia.get(idFamilia);
@@ -112,7 +114,7 @@ class FamiliaService {
     }
 
     @Transactional
-     public boolean apagaMonitoramento(Monitoramento monitoramento) {
+    public boolean apagaMonitoramento(Monitoramento monitoramento) {
         monitoramento.delete();
         return true;
     }
@@ -138,21 +140,21 @@ class FamiliaService {
         //define um mapa de pares chave/conteudo cujas CHAVES são buscadas como FIELDS no template do word e substiuídas
         // pelo conteúdo correspondente. Esse mapa é transferido na sequência para o CONTEXTO do mecanismo de geração do .doc
         [
-            cras: familia.servicoSistemaSeguranca?.nome,
-            codigo_legado: familia.codigoLegado,
-            referencia_familiar: familia.getReferencia()?.nomeCompleto,
-            tecnico_referencia: tecnicoReferencia,
-            composicao_familiar: membrosToString(familia),
-            endereco: familia.endereco?.enderecoCompleto,
-            ingresso: familia.acompanhamentoFamiliar?.dataInicio?.format("dd/MM/yyyy"),
-            encerramento: familia.acompanhamentoFamiliar?.dataFim?.format("dd/MM/yyyy"),
-            analise_tecnica: familia.acompanhamentoFamiliar?.analiseTecnica,
-            resultados: familia.acompanhamentoFamiliar?.resultados,
-            telefones: familia.telefonesToString,
-            vulnerabilidades: marcadoresToString(familia.vulnerabilidades, "\n", "- "),
-            programas: marcadoresToString(familia.programas, ", "),
-            acoes: marcadoresToString(familia.acoes, "\n", "- "),
-            monitoramentos: monitoramentosToString(familia.monitoramentos)
+                cras               : familia.servicoSistemaSeguranca?.nome,
+                codigo_legado      : familia.codigoLegado,
+                referencia_familiar: familia.getReferencia()?.nomeCompleto,
+                tecnico_referencia : tecnicoReferencia,
+                composicao_familiar: membrosToString(familia),
+                endereco           : familia.endereco?.enderecoCompleto,
+                ingresso           : familia.acompanhamentoFamiliar?.dataInicio?.format("dd/MM/yyyy"),
+                encerramento       : familia.acompanhamentoFamiliar?.dataFim?.format("dd/MM/yyyy"),
+                analise_tecnica    : familia.acompanhamentoFamiliar?.analiseTecnica,
+                resultados         : familia.acompanhamentoFamiliar?.resultados,
+                telefones          : familia.telefonesToString,
+                vulnerabilidades   : marcadoresToString(familia.vulnerabilidades, "\n", "- "),
+                programas          : marcadoresToString(familia.programas, ", "),
+                acoes              : marcadoresToString(familia.acoes, "\n", "- "),
+                monitoramentos     : monitoramentosToString(familia.monitoramentos)
         ].each { chave, conteudo ->
             result.context.put(chave, conteudo);
         }
@@ -168,7 +170,7 @@ class FamiliaService {
             if (cidadao.nomeCompleto)
                 dadosCidadao << CollectionUtils.join(["- " + cidadao.nomeCompleto,
                                                       cidadao.parentescoReferencia,
-                                                      cidadao.dataNascimento ? "nascimento: "+cidadao.dataNascimento.format("dd/MM/YYYY") : null
+                                                      cidadao.dataNascimento ? "nascimento: " + cidadao.dataNascimento.format("dd/MM/YYYY") : null
                 ], separadorCampos);
         };
         return CollectionUtils.join(dadosCidadao, separadorLinhas);
@@ -177,15 +179,54 @@ class FamiliaService {
     private String marcadoresToString(Set<AssociacaoMarcador> associacaoMarcadores, String separador = ", ", String bulletList = "") {
         return CollectionUtils.join(associacaoMarcadores
                 .sort { it.marcador.descricao?.toLowerCase() }
-                .collect { bulletList + it.marcador.descricao }, separador )
+                .collect { bulletList + it.marcador.descricao }, separador)
     }
 
     private String monitoramentosToString(Set<Monitoramento> monitoramentos) {
         return CollectionUtils.join(monitoramentos
                 .sort { it.dataCriacao }
                 .collect {
-                    it.memo + "\n-> "+it.situacao
-                }, "\n----------------\n" )
+            it.memo + "\n-> " + it.situacao
+        }, "\n----------------\n")
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Long> qntFamiliasTecnicoAgruparPrograma(Long idTecnico) {
+        List<GroovyRowResult> resultado = qntFamiliasProgramaTecnico(idTecnico, true);
+        Map result = [:]
+        resultado.each {
+            result.put(it['programa'], it['qntFamilias']);
+        }
+        return result;
+    }
+
+    @Transactional(readOnly = true)
+    public Long qntFamiliasTecnicoProgramaTotal(Long idTecnico) {
+        List<GroovyRowResult> resultado = qntFamiliasProgramaTecnico(idTecnico, false);
+        return resultado ? resultado[0]['qntFamilias'] : 0;
+    }
+
+    private List<GroovyRowResult> qntFamiliasProgramaTecnico(Long idTecnico, boolean agruparPorPrograma) {
+        def filtros = [:]
+
+        String sql = 'select ' +
+                (agruparPorPrograma ? ' p.nome as programa,' : '') +
+                '  count(DISTINCT f.id) as qntFamilias\n' +
+                'from programa_familia pf\n' +
+                '  join familia f on f.id = pf.familia_id\n' +
+                '  join programa p on p.id = pf.programa_id\n' +
+                'where (1=1)\n' +
+                '      and f.servico_sistema_seguranca_id = :id_servico_seguranca \n';
+        filtros << [id_servico_seguranca: segurancaService.servicoLogado.id];
+        if (idTecnico) {
+            sql += '  and f.tecnico_referencia_id = :id_tecnico \n';
+            filtros << [id_tecnico: idTecnico]
+        }
+        if (agruparPorPrograma)
+            sql += ' group by p.nome order by p.nome';
+
+        log.debug("SQL qntFamiliasProgramaTecnico:" +"\n" + sql)
+        return groovySql.rows(sql, filtros);
     }
 
 }
