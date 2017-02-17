@@ -1,9 +1,7 @@
 package org.apoiasuas.marcador
 
-import org.apoiasuas.cidadao.AssociacaoMarcador
 import org.apoiasuas.cidadao.Familia
-import org.apoiasuas.cidadao.Marcador
-import org.apoiasuas.marcador.Programa
+import org.apoiasuas.seguranca.UsuarioSistema
 
 /**
  * Many to Many entre programas e familias
@@ -11,6 +9,10 @@ import org.apoiasuas.marcador.Programa
 class ProgramaFamilia implements AssociacaoMarcador {
     Programa programa
     Familia familia
+    Date data;
+    UsuarioSistema tecnico;
+    Boolean habilitado;
+    String observacao;
 
     static belongsTo = [familia: Familia]
     static transients = ['marcador']
@@ -21,6 +23,7 @@ class ProgramaFamilia implements AssociacaoMarcador {
     static constraints = {
         programa(nullable: false, unique: ['familia']) //por enquanto, só pode existir uma ligação entre as entidades
         familia(nullable: false)
+        tecnico(nullable: false)
     }
 
     @Override

@@ -26,7 +26,7 @@
 
         <g:tabs id="tabs" style="margin: 5px;">
             <g:tab id="tabPrincipal" titulo="principal" template="tabPrincipal"/>
-            <g:tab id="tabMarcadores" titulo="programas, ações..." template="/familia/tabMarcadores" />
+            <g:tab id="tabMarcadores" titulo="programas, ações..." template="/familia/marcador/tabMarcadores" />
         </g:tabs>
 
         <fieldset class="buttons">

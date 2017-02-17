@@ -17,7 +17,7 @@ class ProgramaService {
                 if (programa)
                     enumPrograma.instanciaPersistida = programa
                 else //Criar novos quando necessario
-                    enumPrograma.instanciaPersistida = new Programa(nome: enumPrograma.nome, sigla: enumPrograma.sigla, programaPreDefinido: enumPrograma).save()
+                    enumPrograma.instanciaPersistida = new Programa(descricao: enumPrograma.nome, sigla: enumPrograma.sigla, programaPreDefinido: enumPrograma).save()
             } catch (Throwable t) {
                 throw new RuntimeException("Erro inicializando programa ${enumPrograma}. Abortando", t)
             }

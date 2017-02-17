@@ -214,7 +214,7 @@ class ApoiaSuasTagLib {
     }
 
     /**
-     * Overriding FormTagLib.submitButton to check for condicions before rendering
+     * Overriding FormTagLib.submitButton to check for conditions before rendering
      */
     Closure submitButton = { attrs ->
         if (attrs.showif != null && attrs.showif == false)
@@ -238,6 +238,8 @@ class ApoiaSuasTagLib {
         String mensagem = body();
         if (attrs.chave && message(code: attrs.chave))
             mensagem = message(code: attrs.chave)
+        if (! mensagem?.trim())
+            return;
 
         out << "<div class='help-tooltip'>";
         out << asset.image(src: 'help2-16.png');
@@ -308,6 +310,25 @@ class ApoiaSuasTagLib {
             } // </div>
         } else {
 //            throw new ApoiaSuasException("Necessário definir flag $TABS_O_QUE_MONTAR no request antes de usar a tag <g:tab>")
+        }
+    }
+
+
+/**
+ * Tag simples que gera um span com o corpo em seu interior mediante um teste
+ * @attr showif REQUIRED teste usado com a tag if
+ * @attr id id para o spam
+ * @attr style estilos css para personalizar o componente
+ */
+    def spamCondicional = { attrs, body ->
+        def showif = attrs.remove('showif')
+        if (showif == null || showif == false)
+            return;
+
+        //MarkupBuilder para geração de HTML por meio de uma DSL groovy
+        def html = new groovy.xml.MarkupBuilder(out)
+        html.spam attrs, {
+            mkp.yieldUnescaped(body());
         }
     }
 

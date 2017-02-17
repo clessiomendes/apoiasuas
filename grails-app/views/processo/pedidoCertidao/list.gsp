@@ -11,7 +11,7 @@
 <g:javascript>
     function expandePesquisa() {
         $("#expansivel").slideDown(1000);
-        $("#slideDown").hide();
+        $(".speed-button-expandir").hide();
         return false;
     };
 </g:javascript>
@@ -37,7 +37,7 @@
                     <td>
                         <div>
                             %{--<input type="button" id="adicionarArquivo" name="adicionarArquivo" class="botaoIndependente" onclick="adicionarArquivoClick();" title="escolher um arquivo em seu computador"/>--}%
-                            <input type="button" id="slideDown" title="mais opções" onclick="expandePesquisa();"/>
+                            <input type="button" class="speed-button-expandir" title="mais opções" onclick="expandePesquisa();"/>
                             <g:submitButton formaction="list" name="list" id="search" class="search" value="Procurar"/>
                         </div>
                     </td>
@@ -70,8 +70,10 @@
 				</tbody>
 			</table>
             <g:if test="${processos.size() >= org.apoiasuas.processo.ProcessoDTO.MAX_PAGINACAO}">
-                - Atenção! Apenas os ${org.apoiasuas.processo.ProcessoDTO.MAX_PAGINACAO} primeiros pedidos foram exibidos.
-                Restrinja mais a sua pesquisa para ver os demais.
+                <ul class="errors" role="alert"> <li>
+                        - Atenção! Apenas os ${org.apoiasuas.processo.ProcessoDTO.MAX_PAGINACAO} primeiros pedidos foram exibidos.
+                        Restrinja mais a sua pesquisa para ver os demais.
+                </li> </ul>
             </g:if>
 		</div>
         <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.STR_USUARIO}">

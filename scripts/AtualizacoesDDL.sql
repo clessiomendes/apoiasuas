@@ -202,9 +202,9 @@ INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'
 INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Demanda não atendida de qualificação profissional');
 INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso restrito ao direito ao transporte');
 INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso restrito a alimentação básica');
-INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso, mesmo que momentâneo, ao SCFV');
-INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso, mesmo que momentâneo, ao CREAS/PAEFI');
-INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Acesso, mesmo que momentâneo, a serviços da Proteção Social de Alta Complexidade');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Sem acesso, mesmo que momentâneo, ao SCFV');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Sem acesso, mesmo que momentâneo, ao CREAS/PAEFI');
+INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Sem acesso, mesmo que momentâneo, a serviços da Proteção Social de Alta Complexidade');
 INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Sem acesso, mesmo que momentâneo, a algum serviço da política de Saúde');
 INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Pessoa com deficiência');
 INSERT INTO vulnerabilidade (id, descricao) VALUES (nextval('sq_vulnerabilidade'::regclass), 'Pessoa com sofrimento mental');
@@ -239,5 +239,34 @@ create table acompanhamento_familiar (id int8 not null, version int8 not null, a
 create index Acompanhamento_Familia_Idx on acompanhamento_familiar (familia);
 alter table acompanhamento_familiar add constraint FK_lf3tvhjd34cp11xsa52vbsvq foreign key (familia) references familia;
 create sequence sq_acompanhamento_familiar;
+
+alter table acao_familia add column data timestamp;
+alter table acao_familia add column habilitado boolean;
+alter table acao_familia add column observacao varchar(255);
+alter table acao_familia add column tecnico_id int8;
+alter table programa add column descricao varchar(255);
+alter table programa_familia add column data timestamp;
+alter table programa_familia add column habilitado boolean;
+alter table programa_familia add column observacao varchar(255);
+alter table programa_familia add column tecnico_id int8;
+alter table vulnerabilidade_familia add column data timestamp;
+alter table vulnerabilidade_familia add column habilitado boolean;
+alter table vulnerabilidade_familia add column observacao varchar(255);
+alter table vulnerabilidade_familia add column tecnico_id int8;
+alter table acao_familia add constraint FK_7au1wpbkne9e5rk03pjuw1t4y foreign key (tecnico_id) references usuario_sistema;
+alter table programa_familia add constraint FK_qwr3q6rkm3m36gdse09oidl3j foreign key (tecnico_id) references usuario_sistema;
+alter table vulnerabilidade_familia add constraint FK_3eqf3ydyopp2cyuh1hg1vstqk foreign key (tecnico_id) references usuario_sistema;
+
+ALTER TABLE public.programa drop COLUMN descricao;
+ALTER TABLE public.programa RENAME COLUMN nome TO descricao;
+
+create table outro_marcador (id int8 not null, version int8 default 0 not null, descricao varchar(255) not null, servico_sistema_seguranca_id int8, primary key (id));
+create table outro_marcador_familia (id int8 not null, version int8 default 0 not null, data timestamp, familia_id int8 not null, habilitado boolean, observacao varchar(255), outro_marcador_id int8 not null, tecnico_id int8 not null, primary key (id));
+alter table outro_marcador add constraint FK_fsc92pus2rni17wrdiknj9lv6 foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table outro_marcador_familia add constraint FK_7g2b8gmrdvkcr9sng88pr8pta foreign key (familia_id) references familia;
+alter table outro_marcador_familia add constraint FK_nyr2r05ykc6da4v1vx7ojt0x4 foreign key (outro_marcador_id) references outro_marcador;
+alter table outro_marcador_familia add constraint FK_rau0oeaqqqgyep4chlhy4c3yg foreign key (tecnico_id) references usuario_sistema;
+create sequence sq_outro_marcador;
+create sequence sq_outro_marcador_familia;
 
 -- versao ate aqui: current (local:feito

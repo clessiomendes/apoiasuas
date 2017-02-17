@@ -128,81 +128,95 @@ environments {
 log4j.main = {
     def errorAppender = new RollingFileAppender(name: 'errorFile', append: true, maxFileSize: '10000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/error.log',
-//            filePattern: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/error%d{yyyy-MM-DD hh-mm}.gz',
             maxBackupIndex: 10, layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: Level.ERROR);
     def infoAppender = new RollingFileAppender(name: 'infoFile', append: true, maxFileSize: '10000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/info.log',
-//            filePattern: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/error%d{yyyy-MM-DD hh-mm}.gz',
             maxBackupIndex: 10, layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: Level.INFO);
-        switch (AmbienteExecucao.CURRENT) {
-            case AmbienteExecucao.CLEVERCLOUD:
-//                def rollingFile = new RollingFileAppender(name: 'rollingFileAppender',  layout: pattern(conversionPattern: "%d [%t] %-5p %c{2} %x - %m%n"))
-//                // Rolling policy where log filename is logs/app.log.
-//                // Rollover each day, compress and save in logs/backup directory.
-//                def rollingPolicy = new TimeBasedRollingPolicy(fileNamePattern: 'logs/backup/app.%d{yyyy-MM-dd}.gz', activeFileName: 'logs/app.log')
-//                rollingPolicy.activateOptions()
-//                rollingFile.setRollingPolicy rollingPolicy
-                appenders {
-//                    file name: 'infoFile', file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/info.log', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.INFO
-                    appender errorAppender;
-                    appender infoAppender;
-                    console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.ERROR
-                }
-                root { error 'stdout','errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
-                break
-            case AmbienteExecucao.APPFOG:
-                appenders {
-                    console name: 'console', layout: pattern(conversionPattern: '(af) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.ERROR
-                }
-                root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
-                break
-            case AmbienteExecucao.LOCAL:
-                appenders {
+//    log, em arquivo separado, das estatísticas de uso de recursos do sistema
+    def memAppender = new RollingFileAppender(name: 'memFile', append: true, maxFileSize: '30000KB',
+            file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/mem.log',
+            maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm};%m%n'));
+    def sqlAppender = new RollingFileAppender(name: 'sqlFile', append: true, maxFileSize: '30000KB',
+            file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/sql.log',
+            maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm:ss};%p;%c{8};%m%n'));
+
+    switch (AmbienteExecucao.CURRENT) {
+    case AmbienteExecucao.CLEVERCLOUD:
+        appenders {
+            appender errorAppender;
+            appender infoAppender;
+            appender memAppender;
+            appender sqlAppender;
+            console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.ERROR
+        }
+        root { error 'stdout','errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
+        break
+    case AmbienteExecucao.APPFOG:
+        appenders {
+            console name: 'console', layout: pattern(conversionPattern: '(af) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.ERROR
+        }
+        root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
+        break
+    case AmbienteExecucao.LOCAL:
+        appenders {
 //                    console name: 'sqlFile', file: 'c:/workspaces/logs/apoiasuassql.log', layout: pattern(conversionPattern: '(loc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.ALL
 //                  file name: 'xml', layout: xml, file: 'c:/workspaces/logs/apoiaSUAS'+new Date().format("yyyy-MM-dd-hh-mm")+'.xml', threshold:org.apache.log4j.Level.DEBUG
-                    appender errorAppender;
-                    appender infoAppender;
-//                    infoAppender getFileAppender(Level.INFO)
-//                    file name: 'infoFile', file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/info.log', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.INFO
-                    console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.DEBUG
-                }
-                root { error 'stdout', 'errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
-                break
-            default:
-                println 'warning! ambiente indefinido para configuracao de logs. Usando padrao: console name: \'stdout\', layout: pattern(conversionPattern: \'(def) %d{dd-MMM HH:mm} %p %c{8} -> %m%n\')'
-                console name: 'console', layout: pattern(conversionPattern: '(def) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n')
-                root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
+            appender errorAppender;
+            appender infoAppender;
+            appender memAppender;
+            appender sqlAppender;
+            console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.DEBUG
         }
+        root { error 'stdout', 'errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
 
-        all 'org.apoiasuas',
-                'com.mysql.jdbc.log.StandardLogger', //mysql (inclui tempos das SQL se parametro profileSQL=true for passado na url de conexao
-                'org.apache.tomcat.jdbc.pool.interceptor',
-                'org.apache.tomcat.jdbc.pool',
-                'grails.app.controllers',
-                'grails.app.services',
-                'grails.app.domain',
+        //Liga o appender sqlFile (sql.log) ao trace do hibernate
+        debug additivity: true, sqlFile: [
+                'org.hibernate.engine.transaction.spi', //begin, commit
+                'org.hibernate.stat.internal', //tempo de execucao de cada HQL
+//            'org.hibernate.type.descriptor.sql.BasicBinder', //parametros PASSADOS para as SQLs
+//            'org.hibernate.type.descriptor.sql.BasicExtractor', //parametros RETORNADOS pelas SQLs
+                'org.hibernate.SQL' //comandos SQL (e a tradução HQL - SQL, quando for executado um HQL)
+        ]
+
+        break
+    default:
+        println 'warning! ambiente indefinido para configuracao de logs. Usando padrao: console name: \'stdout\', layout: pattern(conversionPattern: \'(def) %d{dd-MMM HH:mm} %p %c{8} -> %m%n\')'
+        console name: 'console', layout: pattern(conversionPattern: '(def) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n')
+        root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
+    }
+
+    //Liga o appender memFile (mem.log) à Job que gera as estatísticas de recursos do sistema
+    all additivity: false, memFile: ['grails.app.jobs.apoiasuas.MemLoggingJob']
+
+    all 'org.apoiasuas',
+            'com.mysql.jdbc.log.StandardLogger', //mysql (inclui tempos das SQL se parametro profileSQL=true for passado na url de conexao
+            'org.apache.tomcat.jdbc.pool.interceptor',
+            'org.apache.tomcat.jdbc.pool',
+            'grails.app.controllers',
+            'grails.app.services',
+            'grails.app.domain',
 //            'grails.app.taglib',
 //            'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
 //            'org.hibernate',
-                'net.sf.ehcache.hibernate',
-                'grails.app.conf',
-                'grails.app.filters',
-                'org.hibernate.stat',                            // tempo e numero de registros em cada SQL
-                'org.hibernate.type.descriptor.sql',             //mostra os valores passados como parametros para as SQLs
-                'org.hibernate.SQL',
-                'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
-                'org.hibernate.engine.transaction.spi.AbstractTransactionImpl', //inicio e fim das transacoes
-                'org.springframework.transaction.interceptor.TransactionInterceptor', //Mostra inicio e fim das transacoes e a que metodos elas estao associadas
-                'org.springframework.webflow.engine',
-                'org.springframework.webflow',
-                'org.springframework.security',                  //login, seguranca, etc
-                'com.myjeeva.poi', //debug para o extrator excel
-                'org.camunda.bpm.engine.persistence', //BPM Engine
-                'org.camunda.bpm',   //BPM Engine
-                'org.grails.plugins.elasticsearch',  //ElasticSearch
-                'grails.app.jobs' //Quartz
+            'net.sf.ehcache.hibernate',
+            'grails.app.conf',
+            'grails.app.filters',
+            'org.hibernate.stat',                            // tempo e numero de registros em cada SQL
+            'org.hibernate.type.descriptor.sql',             //mostra os valores passados como parametros para as SQLs
+            'org.hibernate.SQL',
+            'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
+            'org.hibernate.engine.transaction.spi.AbstractTransactionImpl', //inicio e fim das transacoes
+            'org.springframework.transaction.interceptor.TransactionInterceptor', //Mostra inicio e fim das transacoes e a que metodos elas estao associadas
+            'org.springframework.webflow.engine',
+            'org.springframework.webflow',
+            'org.springframework.security',                  //login, seguranca, etc
+            'com.myjeeva.poi', //debug para o extrator excel
+            'org.camunda.bpm.engine.persistence', //BPM Engine
+            'org.camunda.bpm',   //BPM Engine
+            'org.grails.plugins.elasticsearch',  //ElasticSearch
+            'grails.app.jobs' //Quartz
 //So eh preciso especificar nivel "error" para pacotes internos aos definidos acima nos quais se deseja desligar o log
-        error   'org.camunda.bpm.engine.jobexecutor' //desligar logs de job da Engine BPM
+    error   'org.camunda.bpm.engine.jobexecutor' //desligar logs de job da Engine BPM
 //            'org.codehaus.groovy.grails.web.servlet',        // controllers
 //            'org.codehaus.groovy.grails.web.pages',          // GSP
 //            'org.codehaus.groovy.grails.web.sitemesh',       // layouts

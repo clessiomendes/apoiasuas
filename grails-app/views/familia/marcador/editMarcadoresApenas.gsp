@@ -12,8 +12,6 @@
 		<div class="nav" role="navigation">
 			<ul>
                 <li><g:link class="list" controller="cidadao" action="procurarCidadao"><g:message message="Procurar"/></g:link></li>
-				%{--<li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>--}%
-				%{--<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>--}%
 			</ul>
 		</div>
 		<div id="edit-familia" class="content scaffold-edit" role="main">
@@ -30,10 +28,15 @@
 			</g:hasErrors>
 			<g:form url="[resource:familiaInstance, action:'save']">
 				<g:hiddenField name="version" value="${familiaInstance?.version}" />
-				<fieldset class="form">
-					<g:render template="form"/>
-				</fieldset>
 
+				<div class="fieldcontain">
+					<label>Família:</label>
+					cad: ${familiaInstance?.getReferencia()?.nomeCompleto}, referência: ${familiaInstance?.getReferencia()?.nomeCompleto}
+				</div>
+
+				<fieldset class="form">
+					<g:render template="marcador/tabMarcadores" model="[permiteInclusao: 'true']"/>
+				</fieldset>
 				<fieldset class="buttons">
                     <g:submitButton name="update" class="save" value="${message(code: 'default.button.update.label', default: 'Gravar')}" />
 				</fieldset>

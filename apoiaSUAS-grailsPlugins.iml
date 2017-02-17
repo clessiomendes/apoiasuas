@@ -5,8 +5,6 @@
       <configuration>
         <webroots>
           <root url="file://$MODULE_DIR$/target/work/plugins/excel-export-0.2.1/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/web-app" relative="/" />
-          <root url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/grails-app/views" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/jquery-ui-1.10.4/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/jquery-1.11.1/web-app" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/joda-time-1.5/grails-app/views" relative="/" />
@@ -42,11 +40,6 @@
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0/grails-app/controllers" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0/grails-app/services" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6">
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/grails-app/controllers" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/console-1.5.6/grails-app/services" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/elasticsearch-0.1.0">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/elasticsearch-0.1.0/src/groovy" isTestSource="false" />

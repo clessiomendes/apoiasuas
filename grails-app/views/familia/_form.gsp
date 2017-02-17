@@ -1,6 +1,6 @@
 <g:tabs id="tabs" style="margin: 5px;">
 	<g:tab id="tabEditFamilia" titulo="família" template="tabEditFamilia"/>
-	<g:tab id="tabMarcadores" titulo="programas, ações..." template="tabMarcadores" model="[permiteInclusao: 'true']"/>
+	<g:tab id="tabMarcadores" titulo="programas, ações..." template="marcador/tabMarcadores" model="[permiteInclusao: 'true']"/>
 </g:tabs>
 
 %{--		TELEFONES

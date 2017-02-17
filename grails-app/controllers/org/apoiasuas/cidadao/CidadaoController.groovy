@@ -15,7 +15,7 @@ class CidadaoController extends AncestralController {
     static defaultAction = "procurarCidadao";
     private static final String SESSION_ULTIMO_CIDADAO = "SESSION_ULTIMO_CIDADAO";
     //destinos de navegação usados na busca pura de cidadãos
-    private static final Map modeloProcurarCidadao = [
+    public static final Map modeloProcurarCidadao = [
             controllerButtonProcurar: "cidadao",
             actionButtonProcurar: "procurarCidadaoExecuta",
             controllerLinkFamilia: "familia",

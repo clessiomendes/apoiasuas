@@ -12,20 +12,21 @@
 @cor-bordas:	            #CCCCCC;
 
 
-@lightnen-fundo:			58%;
-@lightnen-borda:			40%;
-@lightnen-sombra:			50%;
+@lighten-fundo:			58%;
+@lighten-borda:			40%;
+@lighten-sombra:			50%;
 @cor-base-mensagem-info:	#006dba;
 @cor-base-mensagem-erro:	#cc0000;
 
 @cor-marcadores-programa:       	#E1F2B6;
 @cor-marcadores-acao:		    	#BBF2B6;
 @cor-marcadores-vulnerabilidade:	#7BF2B6;
+@cor-marcadores-outros-marcadores:	#7BFB90;
 
 
 /* Tamanhos */
 .tamanho-icones() {
-  background-size: 20px 20px;
+  background-size: 16px 16px;
 }
 
 .fontes() {
@@ -407,12 +408,12 @@ ul.one-to-many li.add {
   padding: 0;
   //  padding: 0.25em;
   text-indent: 2.2em;
-  background: lighten(@cor, @lightnen-fundo) @imagem 0.5em 50% no-repeat;
-  border: 1px solid lighten(@cor,@lightnen-borda);
+  background: lighten(@cor, @lighten-fundo) @imagem 0.5em 50% no-repeat;
+  border: 1px solid lighten(@cor,@lighten-borda);
   color: @cor;
-  -moz-box-shadow: 0 0 0.25em lighten(@cor,@lightnen-sombra);
-  -webkit-box-shadow: 0 0 0.25em lighten(@cor,@lightnen-sombra);
-  box-shadow: 0 0 0.25em lighten(@cor,@lightnen-sombra);
+  -moz-box-shadow: 0 0 0.25em lighten(@cor,@lighten-sombra);
+  -webkit-box-shadow: 0 0 0.25em lighten(@cor,@lighten-sombra);
+  box-shadow: 0 0 0.25em lighten(@cor,@lighten-sombra);
 }
 
 .message {
@@ -425,36 +426,31 @@ ul.one-to-many li.add {
 }
 
 /* form fields with errors */
-/*
-@lightnen-fundo:			58%;
-@lightnen-borda:			40%;
-@lightnen-sombra:			50%;
-*/
 
 .error input, .error select, .error textarea {
-  background: lightnen(@cor-base-mensagem-erro, @lightnen-fundo);
-  border-color: lightnen(@cor-base-mensagem-erro, @lightnen-borda);
+  background: lighten(@cor-base-mensagem-erro, @lighten-fundo);
+  border-color: lighten(@cor-base-mensagem-erro, @lighten-borda);
   color: @cor-base-mensagem-erro;
 }
 
 .error input:focus, .error select:focus, .error textarea:focus {
-	   -moz-box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
-	-webkit-box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
-	        box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
+	   -moz-box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
+	-webkit-box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
+	        box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
 }
 
 /* same effects for browsers that support HTML5 client-side validation (these have to be specified separately or IE will ignore the entire rule) */
 
 input:invalid, select:invalid, textarea:invalid {
-  background: lightnen(@cor-base-mensagem-erro, @lightnen-fundo);
-  border-color: lightnen(@cor-base-mensagem-erro, @lightnen-borda);
+  background: lighten(@cor-base-mensagem-erro, @lighten-fundo);
+  border-color: lighten(@cor-base-mensagem-erro, @lighten-borda);
   color: @cor-base-mensagem-erro;
 }
 
 input:invalid:focus, select:invalid:focus, textarea:invalid:focus {
-  -moz-box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
-  -webkit-box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
-  box-shadow: 0 0 0.5em lightnen(@cor-base-mensagem-erro, @lightnen-sombra);
+  -moz-box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
+  -webkit-box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
+  box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
 }
 
 /* TABLES */
@@ -676,12 +672,22 @@ th.desc a {
 
 .buttons .edit {
   .buttonsFooter();
-    background-image: url(../../images/database_edit.png);
+  background-image: url(../../images/database_edit.png);
+}
+
+.buttons .check {
+  .buttonsFooter();
+  background-image: url(../../images/checked.png);
 }
 
 .buttons .save {
   .buttonsFooter();
-	background-image: url(../../images/database_save.png);
+  background-image: url(../../images/database_save.png);
+}
+
+.buttons .cancel {
+  .buttonsFooter();
+  background-image: url(../../images/cancel.png);
 }
 
 .buttons .add {
@@ -706,6 +712,8 @@ th.desc a {
 
 .speedButton(@imagem) {
   background: @cor-fundo-paineis-e-botoes @imagem no-repeat center;
+  width: 25px;
+  height: 25px;
   .imageButton();
 }
 
@@ -735,6 +743,10 @@ input.create {
   .imageTextButton(url(../../images/database_add.png));
 }
 
+input.save {
+  .imageTextButton(url(../../images/database_save.png));
+}
+
 input.cancel {
   .imageTextButton(url(../../images/cancel.png));
 }
@@ -751,7 +763,11 @@ input#adicionar {
   .speedButton(url(../../images/database_add.png));
 }
 
-.btn-expandir-marcador {
+.btn-editar-marcadores {
+  .speedButton(url(../../images/database_edit.png));
+}
+
+.speed-button-expandir {
   .speedButton(url(../../images/slidedown.png));
 }
 
@@ -805,6 +821,11 @@ table.tabelaListagem th:hover, .tabelaListagem tr:hover {
   background-color: @cor-marcadores-acao;
 }
 
+.marcadores-outro-marcador {
+  .marcadores();
+  background-color: @cor-marcadores-outros-marcadores;
+}
+
 .marcadores-vulnerabilidade {
   .marcadores();
   background-color: @cor-marcadores-vulnerabilidade;
@@ -836,7 +857,7 @@ table.tabelaListagem th:hover, .tabelaListagem tr:hover {
   //redimenciona de acordo com o conteudo
   height: 100%;
   .rolagem {
-    max-height: 7em;
+    max-height: 5.5em;
     overflow: auto;
   }
 }
@@ -854,6 +875,12 @@ table.tabelaListagem th:hover, .tabelaListagem tr:hover {
 .help-tooltip {
   position: relative;
   display: inline-block;
+}
+
+.help-tooltip img {
+  width: 13px;
+  height: 13px;
+  vertical-align: top;
 }
 
 .help-tooltip .help-tooltip-text {
@@ -880,6 +907,8 @@ table.tabelaListagem th:hover, .tabelaListagem tr:hover {
 .help-tooltip:hover .help-tooltip-text {
   visibility: visible;
   opacity: 1;
+  font-size: medium;
+  font-weight: normal;
 }
 
 *:focus {

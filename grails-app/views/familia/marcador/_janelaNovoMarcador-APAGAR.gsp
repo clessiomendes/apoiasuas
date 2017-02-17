@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.cidadao.Marcador" %>
+<%@ page import="org.apoiasuas.marcador.Marcador" %>
 <asset:javascript src="especificos/marcadores.js"/>
 
 <g:javascript>
@@ -6,9 +6,9 @@
  * Customizacao da janela a ser aberta
  */
 $(document).ready(function() {
-    var divPrincipal = newInterfaceDivNovoMarcador(${idPrincipal});
+//    var divPrincipal = newInterfaceDivNovoMarcador(${idPrincipal});
 
-    divPrincipal.initDialog();
+//    divPrincipal.initDialog();
 
 //Inicialização dos eventos (onclick, onkeyup, etc)
     $(divPrincipal).find("#btnConfirmar").click( function() {

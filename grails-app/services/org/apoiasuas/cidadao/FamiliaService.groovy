@@ -7,6 +7,9 @@ import groovy.sql.GroovyRowResult
 import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.marcador.Acao
 import org.apoiasuas.marcador.AcaoFamilia
+import org.apoiasuas.marcador.AssociacaoMarcador
+import org.apoiasuas.marcador.OutroMarcador
+import org.apoiasuas.marcador.OutroMarcadorFamilia
 import org.apoiasuas.marcador.Vulnerabilidade
 import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
@@ -24,20 +27,15 @@ class FamiliaService {
     def pedidoCertidaoProcessoService
     def messageSource
     def marcadorService
-    def groovySql
 
     @Transactional
-    public Familia grava(Familia familia, MarcadoresCommand programasCommand, List<String> novosProgramas,
-                         MarcadoresCommand acoesCommand, List<String> novasAcoes,
-                         MarcadoresCommand vulnerabilidadesCommand, List<String> novasVulnerabilidades) {
-
-        marcadorService.validaNovosMarcadores(novasAcoes, Acao.class);
-        marcadorService.validaNovosMarcadores(novasVulnerabilidades, Vulnerabilidade.class);
-        //FIXME: validar novos programas (alterar campo nome para descricao no mapeamento do objeto)
-
-        marcadorService.gravaMarcadores(programasCommand, familia.programas, familia, Programa.class, ProgramaFamilia.class, novosProgramas);
-        marcadorService.gravaMarcadores(acoesCommand, familia.acoes, familia, Acao.class, AcaoFamilia.class, novasAcoes);
-        marcadorService.gravaMarcadores(vulnerabilidadesCommand, familia.vulnerabilidades, familia, Vulnerabilidade.class, VulnerabilidadeFamilia.class, novasVulnerabilidades);
+    public Familia grava(Familia familia, MarcadoresCommand programasCommand, MarcadoresCommand acoesCommand,
+                         MarcadoresCommand vulnerabilidadesCommand, MarcadoresCommand outrosMarcadoresCommand)
+    {
+        marcadorService.gravaMarcadoresFamilia(programasCommand, familia.programas, familia, Programa.class, ProgramaFamilia.class);
+        marcadorService.gravaMarcadoresFamilia(vulnerabilidadesCommand, familia.vulnerabilidades, familia, Vulnerabilidade.class, VulnerabilidadeFamilia.class);
+        marcadorService.gravaMarcadoresFamilia(acoesCommand, familia.acoes, familia, Acao.class, AcaoFamilia.class);
+        marcadorService.gravaMarcadoresFamilia(outrosMarcadoresCommand, familia.outrosMarcadores, familia, OutroMarcador.class, OutroMarcadorFamilia.class);
 
         return familia.save()
     }
@@ -108,17 +106,6 @@ class FamiliaService {
         return result
     }
 
-    @Transactional
-    public Monitoramento gravaMonitoramento(Monitoramento monitoramento) {
-        return monitoramento.save();
-    }
-
-    @Transactional
-    public boolean apagaMonitoramento(Monitoramento monitoramento) {
-        monitoramento.delete();
-        return true;
-    }
-
     @Transactional(readOnly = true)
     public ReportDTO emitePlanoAcompanhamento(Familia familia) {
         ReportDTO result = new ReportDTO();
@@ -143,6 +130,7 @@ class FamiliaService {
                 cras               : familia.servicoSistemaSeguranca?.nome,
                 codigo_legado      : familia.codigoLegado,
                 referencia_familiar: familia.getReferencia()?.nomeCompleto,
+                nis_referencia     : familia.getReferencia()?.nis,
                 tecnico_referencia : tecnicoReferencia,
                 composicao_familiar: membrosToString(familia),
                 endereco           : familia.endereco?.enderecoCompleto,
@@ -151,9 +139,9 @@ class FamiliaService {
                 analise_tecnica    : familia.acompanhamentoFamiliar?.analiseTecnica,
                 resultados         : familia.acompanhamentoFamiliar?.resultados,
                 telefones          : familia.telefonesToString,
-                vulnerabilidades   : marcadoresToString(familia.vulnerabilidades, "\n", "- "),
-                programas          : marcadoresToString(familia.programas, ", "),
-                acoes              : marcadoresToString(familia.acoes, "\n", "- "),
+                vulnerabilidades   : marcadoresToString(familia.vulnerabilidadesHabilitadas, "\n", "- "),
+                programas          : marcadoresToString(familia.programasHabilitados, "\n", "- "),
+                acoes              : marcadoresToString(familia.acoesHabilitadas, "\n", "- "),
                 monitoramentos     : monitoramentosToString(familia.monitoramentos)
         ].each { chave, conteudo ->
             result.context.put(chave, conteudo);
@@ -179,7 +167,9 @@ class FamiliaService {
     private String marcadoresToString(Set<AssociacaoMarcador> associacaoMarcadores, String separador = ", ", String bulletList = "") {
         return CollectionUtils.join(associacaoMarcadores
                 .sort { it.marcador.descricao?.toLowerCase() }
-                .collect { bulletList + it.marcador.descricao }, separador)
+                .collect {
+                    bulletList + it.marcador.descricao + (it.observacao ? ' - obs: '+it.observacao : '')
+                }, separador)
     }
 
     private String monitoramentosToString(Set<Monitoramento> monitoramentos) {
@@ -188,45 +178,6 @@ class FamiliaService {
                 .collect {
             it.memo + "\n-> " + it.situacao
         }, "\n----------------\n")
-    }
-
-    @Transactional(readOnly = true)
-    public Map<String, Long> qntFamiliasTecnicoAgruparPrograma(Long idTecnico) {
-        List<GroovyRowResult> resultado = qntFamiliasProgramaTecnico(idTecnico, true);
-        Map result = [:]
-        resultado.each {
-            result.put(it['programa'], it['qntFamilias']);
-        }
-        return result;
-    }
-
-    @Transactional(readOnly = true)
-    public Long qntFamiliasTecnicoProgramaTotal(Long idTecnico) {
-        List<GroovyRowResult> resultado = qntFamiliasProgramaTecnico(idTecnico, false);
-        return resultado ? resultado[0]['qntFamilias'] : 0;
-    }
-
-    private List<GroovyRowResult> qntFamiliasProgramaTecnico(Long idTecnico, boolean agruparPorPrograma) {
-        def filtros = [:]
-
-        String sql = 'select ' +
-                (agruparPorPrograma ? ' p.nome as programa,' : '') +
-                '  count(DISTINCT f.id) as qntFamilias\n' +
-                'from programa_familia pf\n' +
-                '  join familia f on f.id = pf.familia_id\n' +
-                '  join programa p on p.id = pf.programa_id\n' +
-                'where (1=1)\n' +
-                '      and f.servico_sistema_seguranca_id = :id_servico_seguranca \n';
-        filtros << [id_servico_seguranca: segurancaService.servicoLogado.id];
-        if (idTecnico) {
-            sql += '  and f.tecnico_referencia_id = :id_tecnico \n';
-            filtros << [id_tecnico: idTecnico]
-        }
-        if (agruparPorPrograma)
-            sql += ' group by p.nome order by p.nome';
-
-        log.debug("SQL qntFamiliasProgramaTecnico:" +"\n" + sql)
-        return groovySql.rows(sql, filtros);
     }
 
 }

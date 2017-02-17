@@ -21,6 +21,7 @@ class LinkController extends AncestralController {
     def beforeInterceptor = [action: this.&interceptaSeguranca/*("ola")*/, (ENTITY_CLASS_ENTRY):Link.class, only: ['show','edit', 'delete', 'update', 'save']]
 
     def exibeLinks() {
+        log.info('Listando links');
         respond Link.findAllByServicoSistemaSeguranca(getServicoCorrente(), params).sort { it.id }
 //        respond Link.list(params).sort { it.id }
     }

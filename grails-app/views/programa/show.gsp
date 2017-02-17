@@ -22,11 +22,11 @@
 			</g:if>
 			<ol class="property-list programa">
 			
-				<g:if test="${programaInstance?.nome}">
+				<g:if test="${programaInstance?.descricao}">
 				<li class="fieldcontain">
 					<span id="nome-label" class="property-label"><g:message code="programa.nome.label" default="Nome" /></span>
 					
-						<span class="property-value" aria-labelledby="nome-label"><g:fieldValue bean="${programaInstance}" field="nome"/></span>
+						<span class="property-value" aria-labelledby="nome-label"><g:fieldValue bean="${programaInstance}" field="descricao"/></span>
 					
 				</li>
 				</g:if>

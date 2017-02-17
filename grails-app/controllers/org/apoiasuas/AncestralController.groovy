@@ -27,9 +27,9 @@ import javax.servlet.http.HttpSession
  */
 class AncestralController {
 
-    SegurancaService segurancaService
+    def segurancaService
     AbrangenciaTerritorialService abrangenciaTerritorialService
-    FamiliaService familiaService
+    def familiaService
     public static String ENTITY_CLASS_ENTRY = "entity"
     public static String JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL = "JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL"
     private static final String ULTIMO_REPORT_DTO = "ULTIMO_FORMULARIO_REPORT_DTO"

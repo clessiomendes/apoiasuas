@@ -5,9 +5,15 @@ import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
 import org.apoiasuas.marcador.Acao
+import org.apoiasuas.marcador.AcaoFamilia
+import org.apoiasuas.marcador.AssociacaoMarcador
+import org.apoiasuas.marcador.Marcador
+import org.apoiasuas.marcador.OutroMarcador
+import org.apoiasuas.marcador.OutroMarcadorFamilia
+import org.apoiasuas.marcador.ProgramaFamilia
 import org.apoiasuas.marcador.Vulnerabilidade
+import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
-import org.apoiasuas.processo.PedidoCertidaoProcessoService
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.util.StringUtils
@@ -16,9 +22,6 @@ import javax.servlet.http.HttpSession
 
 class FamiliaController extends AncestralController {
 
-    public static final String HIDDEN_NOVAS_ACOES = "hiddenNovasAcoes"
-    public static final String HIDDEN_NOVAS_VULNERABILIDADES = "hiddenNovasVulnerabilidades"
-    public static final String HIDDEN_NOVOS_PROGRAMAS = "hiddenNovosProgramas"
     def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Familia.class, only: ['show','edit', 'delete', 'update', 'save']]
     private static final String SESSION_ULTIMA_FAMILIA = "SESSION_ULTIMA_FAMILIA"
     private static final String SESSION_NOTIFICACAO_FAMILIA = "SESSION_NOTIFICACAO_FAMILIA"
@@ -32,10 +35,16 @@ class FamiliaController extends AncestralController {
             controllerLinkCidadao: "familia",
             actionLinkCidadao: "editAcompanhamentoCidadao"
     ]
+/*
+    public static final String HIDDEN_NOVAS_ACOES = "hiddenNovasAcoes"
+    public static final String HIDDEN_NOVAS_VULNERABILIDADES = "hiddenNovasVulnerabilidades"
+    public static final String HIDDEN_NOVOS_PROGRAMAS = "hiddenNovosProgramas"
+*/
 
-    MarcadorService marcadorService;
-    PedidoCertidaoProcessoService pedidoCertidaoProcessoService;
-    CidadaoService cidadaoService;
+    def marcadorService;
+    def pedidoCertidaoProcessoService;
+    def cidadaoService;
+    def monitoramentoService;
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def index(Integer max) {
@@ -46,16 +55,16 @@ class FamiliaController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def show(Familia familiaInstance) {
 
-        //FIXME: apenas para testes
-        marcadorService.init();
-
         if (! familiaInstance)
             return notFound()
 
         //Garante que as coleções sejam exibidas em uma ordem especifica
         familiaInstance.membros = familiaInstance.membros.sort { it.id }
+/*
         familiaInstance.programas = familiaInstance.programas.sort { it.programa.nome }
         familiaInstance.acoes = familiaInstance.acoes.sort { it.acao.descricao }
+        familiaInstance.vulnerabilidades = familiaInstance.vulnerabilidades.sort { it.vulnerabilidade.descricao }
+*/
 
         List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familiaInstance.id)
 
@@ -70,33 +79,33 @@ class FamiliaController extends AncestralController {
 */
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
-    def save(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand, VulnerabilidadesCommand vulnerabilidadesCommand) {
+    def save(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand,
+             VulnerabilidadesCommand vulnerabilidadesCommand, OutrosMarcadoresCommand outrosMarcadoresCommand) {
         if (! familiaInstance)
             return notFound()
 
         boolean modoCriacao = familiaInstance.id == null;
-        List<String> novasAcoes = request.getParameterValues(HIDDEN_NOVAS_ACOES);
-        List<String> novasVulnerabilidades = request.getParameterValues(HIDDEN_NOVAS_VULNERABILIDADES);
-        List<String> novosProgramas = request.getParameterValues(HIDDEN_NOVOS_PROGRAMAS);
+        log.debug(outrosMarcadoresCommand);
 
         //Grava
         if (familiaInstance.validate()) {
-            familiaService.grava(familiaInstance, programasCommand, novosProgramas,
-                    acoesCommand, novasAcoes, vulnerabilidadesCommand, novasVulnerabilidades)
+            familiaInstance = familiaService.grava(familiaInstance, programasCommand, acoesCommand,
+                    vulnerabilidadesCommand, outrosMarcadoresCommand)
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'familia.label', default: 'Família'), familiaInstance.id])
+            return show(familiaInstance)
         } else {
             //exibe o formulario novamente em caso de problemas na validacao
             return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(familiaInstance))
         }
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'familia.label', default: 'Família'), familiaInstance.id])
-        return show(familiaInstance)
     }
 
     private Map getEditCreateModel(Familia familiaInstance) {
         List<Programa> programasDisponiveis = marcadoresDisponiveis(familiaInstance.programas, marcadorService.getProgramasDisponiveis() )
         List<Acao> acoesDisponiveis = marcadoresDisponiveis(familiaInstance.acoes, marcadorService.getAcoesDisponiveis() )
         List<Vulnerabilidade> vulnerabilidadesDisponiveis = marcadoresDisponiveis(familiaInstance.vulnerabilidades, marcadorService.getVulnerabilidadesDisponiveis() )
-        return [familiaInstance: familiaInstance, operadores: getOperadoresOrdenadosController(true),
+        List<Vulnerabilidade> outrosMarcadoresDisponiveis = marcadoresDisponiveis(familiaInstance.outrosMarcadores, marcadorService.getOutrosMarcadoresDisponiveis() )
+        return [familiaInstance: familiaInstance, operadores: getOperadoresOrdenadosController(true), outrosMarcadoresDisponiveis: outrosMarcadoresDisponiveis,
                 programasDisponiveis: programasDisponiveis, acoesDisponiveis: acoesDisponiveis, vulnerabilidadesDisponiveis: vulnerabilidadesDisponiveis]
     }
 
@@ -109,12 +118,21 @@ class FamiliaController extends AncestralController {
      */
     private List<Marcador> marcadoresDisponiveis(Set<AssociacaoMarcador> marcadoresSelecionados, List<Marcador> marcadoresDisponiveis) {
         marcadoresDisponiveis.each { Marcador marcadorDisponivel ->
-            marcadorDisponivel.selected = marcadoresSelecionados.find { it.marcador == marcadorDisponivel }
+            marcadorDisponivel.habilitado = false;//assume como não selecionado inicialmente
+            marcadorDisponivel.tecnico = segurancaService.usuarioLogado //utilizar usuario logado como opção default
+            marcadoresSelecionados.each { marcadorSelecionado ->
+                if (marcadorSelecionado.marcador == marcadorDisponivel) {
+                    marcadorDisponivel.habilitado = marcadorSelecionado.habilitado;
+                    marcadorDisponivel.observacao = marcadorSelecionado.observacao;
+                    marcadorDisponivel.tecnico = marcadorSelecionado.tecnico;
+                }
+            }
+//            marcadorDisponivel.selected = marcadoresSelecionados.find { it.marcador == marcadorDisponivel }
         }
         marcadoresDisponiveis.sort { Marcador p1, Marcador p2 ->
-            if (p1.selected && ! p2.selected)
+            if (p1.habilitado && ! p2.habilitado)
                 return -1;
-            if (p2.selected && ! p1.selected)
+            if (p2.habilitado && ! p1.habilitado)
                 return 1;
             return p1.descricao.compareToIgnoreCase(p2.descricao)
         }
@@ -124,6 +142,11 @@ class FamiliaController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def edit(Familia familiaInstance) {
         render view: 'edit', model: getEditCreateModel(familiaInstance)
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def editMarcadoresApenas(Familia familiaInstance) {
+        render view: 'marcador/editMarcadoresApenas', model: getEditCreateModel(familiaInstance)
     }
 
 /*
@@ -184,18 +207,32 @@ class FamiliaController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def listMonitoramento(Long id) {
-        List monitoramentos = Familia.get(id).monitoramentos.sort{ it.dataCriacao }
-        render view: 'listMonitoramento', model: [monitoramentoInstanceList: monitoramentos]
+        List monitoramentos = Familia.get(id).monitoramentos.sort();
+        render view: 'monitoramento/listMonitoramento', model: [monitoramentoInstanceList: monitoramentos]
     }
+
+    protected Monitoramento buscaMonitoramento(Long id) {
+        Monitoramento result = Monitoramento.get(id);
+        if (result)
+            return result;
+        render(status: 500, text: "Erro: Monitoramento com id $id não encontrado");
+        return null;
+    }
+
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def showMonitoramento(Long id) {
-        render view: 'showMonitoramento', model: [monitoramentoInstance: Monitoramento.get(id)];
+        Monitoramento monitoramento = buscaMonitoramento(id);
+        if (monitoramento)
+            render view: 'monitoramento/showMonitoramento', model: [monitoramentoInstance: monitoramento]
+
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def editMonitoramento(Long id) {
-        render view: 'editMonitoramento', model: getEditCreateModelMonitoramento(Monitoramento.get(id));
+        Monitoramento monitoramento = buscaMonitoramento(id);
+        if (monitoramento)
+            render view: 'monitoramento/editMonitoramento', model: getEditCreateModelMonitoramento(monitoramento);
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -208,36 +245,53 @@ class FamiliaController extends AncestralController {
             novoMonitoramento.responsavel = familia.tecnicoReferencia;
         novoMonitoramento.familia = familia;
         novoMonitoramento.dataCriacao = new Date();
-        render view: 'createMonitoramento', model: getEditCreateModelMonitoramento(novoMonitoramento);
+        render view: 'monitoramento/createMonitoramento', model: getEditCreateModelMonitoramento(novoMonitoramento);
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def saveMonitoramento(Monitoramento monitoramentoInstance) {
         if (! monitoramentoInstance)
-            return notFound()
+            return buscaMonitoramento(-1);
 
         boolean modoCriacao = monitoramentoInstance.id == null;
         if (monitoramentoInstance.validate()) {
-            familiaService.gravaMonitoramento(monitoramentoInstance);
-            flash.message = "monitoramento gravado com sucesso"
+            monitoramentoService.gravaMonitoramento(monitoramentoInstance);
+            flash.message = "Monitoramento gravado com sucesso"
             //retornando mensagem de sucesso sem exibir nada na tela (a janela modal sera simplemente fechada)
             return render(contentType:'text/json', text: ['success': true] as JSON);
         } else {
             //exibe o formulario novamente em caso de problemas na validacao
-            return render(status: 503 /*apontar que houve erro*/,
-                    view: modoCriacao ? "createMonitoramento" : "editMonitoramento",
+            return render(status: 500 /*apontar que houve erro*/,
+                    view: modoCriacao ? "monitoramento/createMonitoramento" : "monitoramento/editMonitoramento",
                     model: getEditCreateModelMonitoramento(monitoramentoInstance));
+        }
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def efetivaMonitoramento(Monitoramento monitoramento) {
+        if (! monitoramento)
+            return buscaMonitoramento(-1);
+
+        if (monitoramento.validate()) {
+            monitoramentoService.efetivaMonitoramento(monitoramento)
+            flash.message = "Ação monitorada efetivada"
+            //retornando mensagem de sucesso sem exibir nada na tela (a janela modal sera simplemente fechada)
+            return render(contentType:'text/json', text: ['success': true] as JSON);
+        } else {
+            //exibe o formulario novamente em caso de problemas na validacao
+            return render(status: 500 /*apontar que houve erro*/,
+                    view: "monitoramento/showMonitoramento",
+                    model: [monitoramentoInstance: monitoramento]);
         }
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def deleteMonitoramento(Monitoramento monitoramento) {
         if (! monitoramento)
-            return notFound()
+            return buscaMonitoramento(-1);
 
-//        throw new RuntimeException("Erro aqui");
-        familiaService.apagaMonitoramento(monitoramento)
-//        flash.message = message(code: 'default.deleted.message', args: [message(code: 'servico.label', default: 'Servico'), servicoInstance.apelido])
+        monitoramentoService.apagaMonitoramento(monitoramento)
+        flash.message = "Monitoramento removido"
         return render(contentType:'text/json', text: ['success': true] as JSON);
     }
 
@@ -257,7 +311,7 @@ class FamiliaController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def editAcompanhamentoFamilia(Familia familiaInstance) {
         guardaUltimaFamiliaSelecionada(familiaInstance)
-        render view: "editAcompanhamento", model: modeloSelecionarAcompanhamento +
+        render view: "acompanhamento/editAcompanhamento", model: modeloSelecionarAcompanhamento +
                 getEditCreateModel(familiaInstance)
     }
 
@@ -267,25 +321,23 @@ class FamiliaController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
-    def gravaAcompanhamento(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand, VulnerabilidadesCommand vulnerabilidadesCommand) {
+    def saveAcompanhamento(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand, VulnerabilidadesCommand vulnerabilidadesCommand, OutrosMarcadoresCommand outrosMarcadoresCommand) {
+        familiaInstance.acompanhamentoFamiliar.familia = familiaInstance;
         if (! familiaInstance)
             return notFound()
 
-        List<String> novasAcoes = request.getParameterValues(HIDDEN_NOVAS_ACOES);
-        List<String> novasVulnerabilidades = request.getParameterValues(HIDDEN_NOVAS_VULNERABILIDADES);
-        List<String> novosProgramas = request.getParameterValues(HIDDEN_NOVOS_PROGRAMAS);
-
-        //Grava
-        if (familiaInstance.validate()) {
+        //Valida antes de gravar
+        if (familiaInstance.validate() && familiaInstance.acompanhamentoFamiliar.validate()) {
             flash.message = "As informações da família e do acompanhamento foram atualizados"
-            familiaInstance = familiaService.grava(familiaInstance, programasCommand, novosProgramas,
-                    acoesCommand, novasAcoes, vulnerabilidadesCommand, novasVulnerabilidades)
+            familiaInstance = familiaService.grava(familiaInstance, programasCommand,
+                    acoesCommand, vulnerabilidadesCommand, outrosMarcadoresCommand)
+            //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
+            //javascript que rodara automaticamente na proxima pagina)
+            setReportParaBaixar(session, familiaService.emitePlanoAcompanhamento(familiaInstance))
         }
 
-        //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
-        //javascript que rodara automaticamente na proxima pagina)
-        setReportParaBaixar(session, familiaService.emitePlanoAcompanhamento(familiaInstance))
-        return editAcompanhamentoFamilia(familiaInstance)
+        //sempre retorna para a tela de edicao, quer a gravacao tenha sido feita com sucesso ou tenha erros de validacao
+        render view: "acompanhamento/editAcompanhamento", model: modeloSelecionarAcompanhamento + getEditCreateModel(familiaInstance);
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
@@ -313,6 +365,173 @@ class FamiliaController extends AncestralController {
             render(view:"/cidadao/procurarCidadao", model: modelo)
         }
     }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def listProgramasDisponiveis(String id) {
+        List<Marcador> marcadoresDisponiveis = marcadoresDisponiveis(Familia.get(id).programas, marcadorService.getProgramasDisponiveis() )
+        return render(view:"marcador/_divMarcadoresDisponiveis", model: [marcadoresDisponiveis: marcadoresDisponiveis,
+                                                                         label: 'programasDisponiveis',
+                                                                         nomeDiv: 'divEditPrograma',
+                                                                         classeMarcador: 'marcadores-programa'])
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def listAcoesDisponiveis(String id) {
+        List<Marcador> marcadoresDisponiveis = marcadoresDisponiveis(Familia.get(id).acoes, marcadorService.getAcoesDisponiveis() )
+        return render(view:"marcador/_divMarcadoresDisponiveis", model: [marcadoresDisponiveis: marcadoresDisponiveis,
+                                                                         label: 'acoesDisponiveis',
+                                                                         nomeDiv: 'divEditAcoes',
+                                                                         classeMarcador: 'marcadores-acao'])
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def listVulnerabilidadesDisponiveis(String id) {
+        List<Marcador> marcadoresDisponiveis = marcadoresDisponiveis(Familia.get(id).vulnerabilidades, marcadorService.getVulnerabilidadesDisponiveis() )
+        return render(view:"marcador/_divMarcadoresDisponiveis", model: [marcadoresDisponiveis: marcadoresDisponiveis,
+                                                                         label: 'vulnerabilidadesDisponiveis',
+                                                                         nomeDiv: 'divEditVulnerabilidade',
+                                                                         classeMarcador: 'marcadores-vulnerabilidade'])
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def listProgramasAcoes(String id) {
+        List<Marcador> marcadoresDisponiveis = marcadoresDisponiveis(Familia.get(id).acoes, marcadorService.getAcoesDisponiveis() )
+        return render(view:"marcador/_divMarcadoresDisponiveis", model: [marcadoresDisponiveis: marcadoresDisponiveis,
+                                                                         label: 'acoesDisponiveis',
+                                                                         nomeDiv: 'divEditAcao',
+                                                                         classeMarcador: 'marcadores-acao'])
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def listOutrosMarcadoresDisponiveis(String id) {
+        List<Marcador> marcadoresDisponiveis = marcadoresDisponiveis(Familia.get(id).outrosMarcadores, marcadorService.getOutrosMarcadoresDisponiveis() )
+        return render(view:"marcador/_divMarcadoresDisponiveis", model: [marcadoresDisponiveis: marcadoresDisponiveis,
+                                                                         label: 'outrosMarcadoresDisponiveis',
+                                                                         nomeDiv: 'divEditOutroMarcador',
+                                                                         classeMarcador: 'marcadores-outro-marcador'])
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def createPrograma(Long idFamiliaDestino) {
+        return createMarcador(idFamiliaDestino, new Programa(), marcadorService.programasDisponiveis, "#fieldsetProgramas", "savePrograma", "Programa", 200/*sem erro*/);
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def createAcao(Long idFamiliaDestino) {
+        return createMarcador(idFamiliaDestino, new Acao(), marcadorService.acoesDisponiveis, "#fieldsetAcoes", "saveAcao", "Ação", 200/*sem erro*/);
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def createVulnerabilidade(Long idFamiliaDestino) {
+        return createMarcador(idFamiliaDestino, new Vulnerabilidade(), marcadorService.vulnerabilidadesDisponiveis, "#fieldsetVulnerabilidades", "saveVulnerabilidade", "Vulnerabilidade", 200/*sem erro*/);
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def createOutroMarcador(Long idFamiliaDestino) {
+        return createMarcador(idFamiliaDestino, new OutroMarcador(), marcadorService.outrosMarcadoresDisponiveis, "#fieldsetOutrosMarcadores", "saveOutroMarcador", "Sinalização", 200/*sem erro*/);
+    }
+
+    private def createMarcador(Long idFamiliaDestino, Marcador marcador, List<Marcador> marcadoresDisponiveis,
+                               String fieldsetMarcador, String actionSaveMarcador, String tipoMarcador, Long errorCode) {
+        Familia familia = Familia.get(idFamiliaDestino);
+        if (! familia)
+            throw new RuntimeException("Impossível acessar familia. id "+idFamiliaDestino);
+
+        render status: errorCode, view: 'marcador/createMarcador', model: [familiaInstance: familia,
+                marcadorInstance: marcador, marcadoresDisponiveis: marcadoresDisponiveis,
+                fieldsetMarcador: fieldsetMarcador, actionSaveMarcador: actionSaveMarcador,
+                tipoMarcador: tipoMarcador, operadores: getOperadoresOrdenadosController(true)];
+        ;
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def savePrograma(Programa programaInstance, ProgramasCommand programasCommand, Long idFamilia) {
+        Familia familia = Familia.get(idFamilia);
+        if (! saveMarcador(programaInstance, programasCommand, familia, familia.programas, Programa.class, ProgramaFamilia.class))
+        //exibe o formulario novamente em caso de problemas na validacao
+            return createMarcador(idFamilia, programaInstance, marcadorService.programasDisponiveis, "#fieldsetProgramas", "savePrograma", "Programa", 500/*erro*/);
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def saveOutroMarcador(OutroMarcador outroMarcadorInstance, OutrosMarcadoresCommand outrosMarcadoresCommand, Long idFamilia) {
+        Familia familia = Familia.get(idFamilia);
+        if (! saveMarcador(outroMarcadorInstance, outrosMarcadoresCommand, familia, familia.outrosMarcadores, OutroMarcador.class, OutroMarcadorFamilia.class))
+        //exibe o formulario novamente em caso de problemas na validacao
+            return createMarcador(idFamilia, outroMarcadorInstance, marcadorService.outrosMarcadoresDisponiveis, "#fieldsetOutrosMarcadores", "saveOutroMarcador", "Sinalização", 500/*erro*/);
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def saveAcao(Acao acaoInstance, AcoesCommand acoesCommand, Long idFamilia) {
+        Familia familia = Familia.get(idFamilia);
+        if (! saveMarcador(acaoInstance, acoesCommand, familia, familia.acoes, Acao.class, AcaoFamilia.class))
+        //exibe o formulario novamente em caso de problemas na validacao
+            return createMarcador(idFamilia, acaoInstance, marcadorService.acoesDisponiveis, "#fieldsetAcoes", "saveAcao", "Ação", 500/*erro*/);
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def saveVulnerabilidade(Vulnerabilidade vulnerabilidadeInstance, VulnerabilidadesCommand vulnerabilidadesCommand, Long idFamilia) {
+        Familia familia = Familia.get(idFamilia);
+        if (! saveMarcador(vulnerabilidadeInstance, vulnerabilidadesCommand, familia, familia.vulnerabilidades, Vulnerabilidade.class, VulnerabilidadeFamilia.class))
+        //exibe o formulario novamente em caso de problemas na validacao
+            return createMarcador(idFamilia, vulnerabilidadeInstance, marcadorService.vulnerabilidadesDisponiveis, "#fieldsetVulnerabilidade", "saveVulnerabilidade", "Vulnerabilidade", 500/*erro*/);
+    }
+
+    /**
+     * Grava um novo marcador
+     * Alternativamente, grava alteracoes nos marcadores associados a uma família se eles forem passados no request. Esta funcionalidade
+     * é necessária no cdu de edição de famíla, pois existe a possibilidade de se criar um novo marcador aa partir da tela de edição e,
+     * para que não sejam perdidas eventuais informações fornecidas pelo usuário, optou-se por ravar os marcadores correspondentes ao tipo
+     * de marcador que se deseja incluir.
+     */
+    private def saveMarcador(Marcador marcadorInstance, MarcadoresCommand marcadoresCommand, Familia familia, Set<AssociacaoMarcador> marcadoresFamilia,
+                             Class<Marcador> classeMarcador, Class<AssociacaoMarcador> classeAssociacaoMarcador) {
+        //noinspection GrUnresolvedAccess
+        if (marcadorInstance.validate()) {
+            marcadorService.gravaMarcador(marcadorInstance);
+            if (marcadoresCommand && marcadoresCommand.marcadoresDisponiveis && familia) {
+                marcadorService.gravaMarcadoresFamilia(marcadoresCommand, marcadoresFamilia, familia, classeMarcador, classeAssociacaoMarcador);
+            }
+            flash.message = "marcador gravado com sucesso"
+            //retornando mensagem de sucesso sem exibir nada na tela (a janela modal sera simplemente fechada)
+            render(contentType:'text/json', text: ['success': true] as JSON);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    public def showPrograma(ProgramaFamilia marcador) {
+        if (marcador)
+            render(view: "marcador/showMarcador", model: [marcador: marcador])
+        else
+            render(status: 500, text: "programa não encontrado");
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    public def showVulnerabilidade(VulnerabilidadeFamilia marcador) {
+        if (marcador)
+            render(view: "marcador/showMarcador", model: [marcador: marcador])
+        else
+            render(status: 500, text: "vulnerabilidade não encontrada");
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    public def showAcao(AcaoFamilia marcador) {
+        if (marcador)
+            render(view: "marcador/showMarcador", model: [marcador: marcador])
+        else
+            render(status: 500, text: "ação não encontrada");
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    public def showOutroMarcador(OutroMarcadorFamilia marcador) {
+        if (marcador)
+            render(view: "marcador/showMarcador", model: [marcador: marcador])
+        else
+            render(status: 500, text: "sinalização não encontrada");
+    }
+
 }
 
 class ProgramasCommand implements MarcadoresCommand {
@@ -330,8 +549,14 @@ class VulnerabilidadesCommand implements MarcadoresCommand {
     List<MarcadorCommand> getMarcadoresDisponiveis() { vulnerabilidadesDisponiveis }
 }
 
+class OutrosMarcadoresCommand implements MarcadoresCommand {
+    List<MarcadorCommand> outrosMarcadoresDisponiveis = [].withLazyDefault { new MarcadorCommand() }
+    List<MarcadorCommand> getMarcadoresDisponiveis() { outrosMarcadoresDisponiveis }
+}
+
 class MarcadorCommand {
     String id
-    String selected
-//    String historico
+    Boolean habilitado
+    String observacao
+    String tecnico
 }

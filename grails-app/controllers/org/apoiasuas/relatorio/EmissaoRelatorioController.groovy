@@ -1,10 +1,9 @@
 package org.apoiasuas.relatorio
 
-import grails.plugin.springsecurity.annotation.Secured
 import groovy.sql.GroovyRowResult
 import org.apoiasuas.AncestralController
 import org.apoiasuas.cidadao.AcoesCommand
-import org.apoiasuas.cidadao.Marcador
+import org.apoiasuas.marcador.Marcador
 import org.apoiasuas.cidadao.MarcadorService
 import org.apoiasuas.cidadao.MarcadoresCommand
 import org.apoiasuas.cidadao.ProgramasCommand

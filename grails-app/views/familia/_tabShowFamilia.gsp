@@ -1,28 +1,63 @@
 <%
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance;
 %>
+<asset:javascript src="especificos/apoiasuas-modal.js"/>
+
+<g:javascript>
+    var janelaModalMarcador = new JanelaModalAjax();
+
+    /**
+     * Navega para nova tela de edição de marcadores (inclusão, remoção, alteração)
+     */
+    function editMarcadores() {
+        location.href = "${createLink(action: 'editMarcadoresApenas', id: localDtoFamilia.id)}";
+    }
+</g:javascript>
 
 <ol class="property-list servico" style="padding: 0; margin: 0;">
 
 %{--Exibe PROGRAMAS, AÇÕES E VULNERABILIADES--}%
-<g:if test="${localDtoFamilia?.programas || localDtoFamilia?.acoes}">
+%{--<g:if test="${localDtoFamilia?.programasHabilitados || localDtoFamilia?.acoesHabilitadas  || localDtoFamilia?.vulnerabilidadesHabilitadas  || localDtoFamilia?.outrosMarcadoresHabilitados}">--}%
     <fieldset id="fieldsetDadosEncaminhamento" class="embedded">
         <legend>
             Programas<g:helpTooltip chave="help.marcador.programas"/>,
-            vulnerabilidades<g:helpTooltip chave="help.marcador.vulnerabilidades"/> e
+            vulnerabilidades<g:helpTooltip chave="help.marcador.vulnerabilidades"/>,
             ações previstas<g:helpTooltip chave="help.marcador.acoes"/>
+            e outras sinalizações<g:helpTooltip chave="help.marcador.outros.marcadores"/>
+
+            <input type="button" class="btn-editar-marcadores" style="transform: scale(0.8);"
+                   title="Clique para alterar estas definições (incluir, remover, etc)" onclick="editMarcadores();">
         </legend>
-        <g:each in="${localDtoFamilia.programas}" var="programaFamilia">
-            <span class="marcadores-programa">${programaFamilia?.programa?.descricao}</span>
+        <g:each in="${localDtoFamilia.programasHabilitados}" var="marcadorFamilia">
+            <span class="marcadores-programa">
+                <a href="javascript:void(0)" onclick='janelaModalMarcador.abreJanela("detalhes...","${createLink(action:'showPrograma', id: marcadorFamilia.id)}");'>
+                    ${marcadorFamilia?.programa?.descricao}
+                </a>
+            </span>
         </g:each>
-        <g:each in="${localDtoFamilia.vulnerabilidades}" var="vulnerabilidadeFamilia">
-            <span class="marcadores-vulnerabilidade">${vulnerabilidadeFamilia?.vulnerabilidade?.descricao}</span>
+        <g:each in="${localDtoFamilia.vulnerabilidadesHabilitadas}" var="marcadorFamilia">
+            <span class="marcadores-vulnerabilidade">
+                <a href="javascript:void(0)" onclick='janelaModalMarcador.abreJanela("detalhes...","${createLink(action:'showVulnerabilidade', id: marcadorFamilia.id)}");'>
+                    ${marcadorFamilia?.vulnerabilidade?.descricao}
+                </a>
+            </span>
         </g:each>
-        <g:each in="${localDtoFamilia.acoes}" var="acaoFamilia">
-            <span class="marcadores-acao">${acaoFamilia?.acao?.descricao}</span>
+        <g:each in="${localDtoFamilia.acoesHabilitadas}" var="marcadorFamilia">
+            <span class="marcadores-acao">
+                <a href="javascript:void(0)" onclick='janelaModalMarcador.abreJanela("detalhes...","${createLink(action:'showAcao', id: marcadorFamilia.id)}");'>
+                    ${marcadorFamilia?.acao?.descricao}
+                </a>
+            </span>
+        </g:each>
+        <g:each in="${localDtoFamilia.outrosMarcadoresHabilitados}" var="marcadorFamilia">
+            <span class="marcadores-outro-marcador">
+                <a href="javascript:void(0)" onclick='janelaModalMarcador.abreJanela("detalhes...","${createLink(action:'showOutroMarcador', id: marcadorFamilia.id)}");'>
+                    ${marcadorFamilia?.outroMarcador?.descricao}
+                </a>
+            </span>
         </g:each>
     </fieldset>
-</g:if>
+%{--</g:if>--}%
 
 <g:if test="${localDtoFamilia?.codigoLegado}">
     <li class="fieldcontain">

@@ -33,7 +33,7 @@
 
 		<g:tabs id="tabs" style="margin: 5px;">
 			<g:tab id="tabShowFamilia" titulo="família" template="tabShowFamilia"/>
-			<g:tab id="tabMonitoramento" titulo="monitoramentos" template="tabMonitoramento"/>
+			<g:tab id="tabMonitoramento" titulo="monitoramentos" template="monitoramento/tabMonitoramento"/>
 		</g:tabs>
 
 		<fieldset class="buttons">

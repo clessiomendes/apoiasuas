@@ -27,10 +27,12 @@
             }//ui
         });//jstree
 
-        //Registra a seleção inicial do componente no campo hidden do formulário
-        var selecionados = $('#div_jstree_abrangenciaTerritorial').jstree(true).get_selected();
-        if (selecionados.length == 1)
-            document.getElementById("${org.apoiasuas.AncestralController.JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL}").value = selecionados[0];
+        $('#div_jstree_abrangenciaTerritorial').bind('ready.jstree', function(e, data) {
+            //Registra a seleção inicial do componente no campo hidden do formulário
+            var selecionados = $('#div_jstree_abrangenciaTerritorial').jstree(true).get_selected();
+            if (selecionados.length == 1)
+                document.getElementById("${org.apoiasuas.AncestralController.JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL}").value = selecionados[0];
+        })
     });
 
     $('#div_jstree_abrangenciaTerritorial').on("changed.jstree", function (e, data) {

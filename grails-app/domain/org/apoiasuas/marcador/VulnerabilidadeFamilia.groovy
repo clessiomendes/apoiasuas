@@ -1,8 +1,7 @@
 package org.apoiasuas.marcador
 
-import org.apoiasuas.cidadao.AssociacaoMarcador
 import org.apoiasuas.cidadao.Familia
-import org.apoiasuas.cidadao.Marcador
+import org.apoiasuas.seguranca.UsuarioSistema
 
 /**
  * Many to Many entre acoes e familias
@@ -10,6 +9,10 @@ import org.apoiasuas.cidadao.Marcador
 class VulnerabilidadeFamilia implements AssociacaoMarcador {
     Vulnerabilidade vulnerabilidade
     Familia familia
+    Date data;
+    UsuarioSistema tecnico;
+    Boolean habilitado;
+    String observacao;
 
     static belongsTo = [familia: Familia]
     static transients = ['marcador']
@@ -22,6 +25,7 @@ class VulnerabilidadeFamilia implements AssociacaoMarcador {
     static constraints = {
         vulnerabilidade(nullable: false) //por enquanto, só pode existir uma ligação entre as entidades
         familia(nullable: false)
+        tecnico(nullable: false)
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.apoiasuas.cidadao
+package org.apoiasuas.marcador
 
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
@@ -13,10 +13,10 @@ interface Marcador {
     public String getDescricao();
     public void setDescricao(String descricao);
     public Long getId();
-    public Boolean getSelected();
-    public void setSelected(Boolean selected);
+//    public Boolean getSelected();
+//    public void setSelected(Boolean selected);
 
-/*
+    //transientes:
     public String getObservacao()
     public void setObservacao(String observacao)
     public Date getData();
@@ -27,5 +27,4 @@ interface Marcador {
     public void setHabilitado(Boolean habilitado);
 //    public Cidadao getCidadao();
 //    public void setCidadao(Cidadao cidadao);
-*/
 }
