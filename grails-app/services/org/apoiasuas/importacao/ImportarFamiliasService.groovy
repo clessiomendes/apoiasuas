@@ -6,6 +6,7 @@ import com.myjeeva.poi.ExcelWorkSheetRowCallbackHandler
 import grails.async.Promise
 import grails.async.Promises
 import grails.converters.JSON
+import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.util.IOUtils
@@ -25,7 +26,7 @@ import org.springframework.transaction.annotation.Isolation
 
 import java.sql.SQLException
 
-//TODO Transformar processamento em uma JOB com processamento síncrono.
+@Transactional(readOnly = true)
 class ImportarFamiliasService {
 
     static transactional = false
@@ -117,7 +118,7 @@ class ImportarFamiliasService {
         return result
     }
 
-    //NÃO TRANSACIONAL
+    @NotTransactional
     public void concluiImportacao(Map camposPreenchidos, long idImportacao, UsuarioSistema usuarioSistema, ServicoSistema servicoSistema) {
 
         log.info(["Concluindo importacao id ", idImportacao])
@@ -508,7 +509,7 @@ class ImportarFamiliasService {
     }
 */
     @Transactional
-    DefinicoesImportacaoFamilias getDefinicoes(ServicoSistema servicoSistema) {
+    public DefinicoesImportacaoFamilias getDefinicoes(ServicoSistema servicoSistema) {
         DefinicoesImportacaoFamilias result = DefinicoesImportacaoFamilias.findByServicoSistemaSeguranca(servicoSistema);
         if (! result)
             result = inicializaDefinicoes(servicoSistema)

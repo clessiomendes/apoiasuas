@@ -3,6 +3,7 @@ package org.apoiasuas.seguranca
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.Transactional
 
+@Transactional(readOnly = true)
 class UsuarioSistemaService {
 
     def segurancaService
@@ -83,16 +84,6 @@ class UsuarioSistemaService {
 
     }
 
-/*
-    @Transactional
-    void atualizaUsuario(UsuarioSistema usuarioSistema) {
-        usuarioSistema.ultimoAlterador = getUsuarioLogado()
-        usuarioSistema.save()
-
-        gravaPapel(usuarioSistema)
-    }
-*/
-
     /**
      * Retorna um resultado PAGINADO filtrado por login/nome ou servicoSistema e ordenado por nomeCompleto
      * O mesmo parametro loginOuNome e usado para uma busca do tipo like em ambos os campos username e nomeCompleto
@@ -130,6 +121,5 @@ class UsuarioSistemaService {
         if (!papelExistente) //cria novo papel (quando ainda nao existir)
             new UsuarioSistemaPapel(usuarioSistema: usuarioSistemaInstance, papel: papel).save()
     }
-
 
 }

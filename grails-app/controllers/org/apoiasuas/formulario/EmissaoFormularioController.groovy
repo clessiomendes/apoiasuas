@@ -51,7 +51,7 @@ class EmissaoFormularioController extends AncestralController {
                 model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
                         dtoFormulario: formulario,
                         idServico: idServico,
-                        usuarios: getOperadoresOrdenadosController(true) ])
+                        tecnicos: getTecnicosOrdenadosController(true) ])
 //        } catch (Exception e) {
 //            e.printStackTrace()
 //            throw e
@@ -97,13 +97,13 @@ class EmissaoFormularioController extends AncestralController {
         } catch (ParseException e) {
             //TODO: Identificar exatamente o(s) campo(s) com erro de conversão e informar ao operador com precisão (vai dar trabalho. teremos que abrir mão do bind automático do Grails)
             formulario.errors.reject(null, "Erro de conversão. Conteúdo fornecido inválido em algum dos campos")
-            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, usuarios: getOperadoresOrdenadosController(true) ])
+            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, tecnicos: getTecnicosOrdenadosController(true) ])
         }
 
         boolean validacaoPreenchimento = servico(formulario).validarPreenchimento(formulario)
         boolean validacaoDatas = validaFormatoDatas(formulario, params)
         if (! validacaoPreenchimento || ! validacaoDatas) //exibe o formulario novamente em caso de problemas na validacao
-            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, usuarios: getOperadoresOrdenadosController(true) ])
+            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, tecnicos: getTecnicosOrdenadosController(true) ])
 
         geraFormularioPreenchidoEgrava: {
             ReportDTO reportDTO = servico(formulario).prepararImpressao(formulario)

@@ -3,6 +3,7 @@ package org.apoiasuas.relatorio
 import grails.transaction.Transactional
 import groovy.sql.GroovyRowResult
 import org.apoiasuas.marcador.Acao
+import org.apoiasuas.marcador.OutroMarcador
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.marcador.Vulnerabilidade
 import org.apoiasuas.seguranca.UsuarioSistema
@@ -12,9 +13,6 @@ import org.joda.time.LocalDate
 
 @Transactional(readOnly = true)
 class RelatorioService {
-
-//    static final List CABECALHOS_CIDADAO = ["nome completo", "parentesco referência", "data de nascimento", "NIS"]
-//    static final List CABECALHOS_FAMILIA = ["cad CRAS", "telefones", "tecnico de referência", "endereço", "CEP"] //TODO: adicionar siglas dos programas (maior cuidado, pbf, etc)
 
     public static final String LABEL_CODIGOLEGADO = 'cad CRAS'
     public static final String LABEL_PARENTESCO = 'parentesco'
@@ -65,21 +63,6 @@ class RelatorioService {
                     writer.append(montaAppendHTML(row.collect { it.value } + [telefones, programas]))
                 }
             }
-/*
-                //Imprime cabecalhos
-                writer.append('<table style="width:100%;border: 1px solid black;">')
-                writer.append(montaAppendHtml(registrosEncontrados[0].collect { it.key } + ["telefones","programas"] ))
-//                writer.append("<br/>")
-
-                int posTelefones = 0;
-                registrosEncontrados.each { row ->
-                    String telefones = telefonesFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoTelefones)
-                    String programas = programasFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoProgramas)
-                    writer.append(montaAppendHtml(row.collect { it.value } + [telefones, programas]) )
-//                    writer.append("<br/>")
-                }
-                writer.append('</table>')
-*/
         } else {
             writer.append("Nenhuma informação encontrada para as opções escolhidas")
         }
@@ -91,7 +74,8 @@ class RelatorioService {
      */
     public List<GroovyRowResult> processaConsulta(LocalDate dataNascimentoInicial, LocalDate dataNascimentoFinal,
                              String membros, Long idTecnicoReferencia, List<Programa> programasSelecionados,
-                             List<Vulnerabilidade> vulnerabilidadesSelecionadas, List<Acao> acoesSelecionadas) {
+                             List<Vulnerabilidade> vulnerabilidadesSelecionadas, List<Acao> acoesSelecionadas,
+                             List<OutroMarcador> outrosMarcadoresSelecionados) {
 
         String sqlPrincipalSelect = "select distinct "
         String sqlPrincipalFrom = "from "
@@ -174,6 +158,13 @@ class RelatorioService {
             sqlPrincipalWhere += " and af.acao_id in ($strMarcadores)";
         }
 
+        if (outrosMarcadoresSelecionados) {
+            sqlPrincipalFrom += '  left join outro_marcador_familia of on of.familia_id = f.id '
+            String strMarcadores = ""
+            outrosMarcadoresSelecionados.eachWithIndex { p, i -> strMarcadores += (i==0 ? "":",") + p.id }
+            sqlPrincipalWhere += " and of.outro_marcador_id in ($strMarcadores)";
+        }
+
         try {
             log.debug("SQL listagem (filtros - $filtros):" +"\n" + sqlPrincipalSelect + '\n' + sqlPrincipalFrom + '\n ' + sqlPrincipalWhere + '\n' + sqlPrincipalOrder)
             return groovySql.rows(sqlPrincipalSelect + ' ' + sqlPrincipalFrom + ' ' + sqlPrincipalWhere + ' ' + sqlPrincipalOrder, filtros)
@@ -227,7 +218,7 @@ class RelatorioService {
      * como um único campo no resultado final
      */
     private List<GroovyRowResult> programasTodasFamilias() {
-        String sql = "select distinct "+ AmbienteExecucao.SqlProprietaria.valorNaoNulo("p.sigla","p.nome")+" as sigla, " +
+        String sql = "select distinct "+ AmbienteExecucao.SqlProprietaria.valorNaoNulo("p.sigla","p.descricao")+" as sigla, " +
                 AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado") + ' as "' + LABEL_CODIGOLEGADO + '" \n' +
                 " from familia f join programa_familia pf on f.id = pf.familia_id join programa p on pf.programa_id = p.id " +
                 " where 1=1 and " + AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado") + " is not null \n" +

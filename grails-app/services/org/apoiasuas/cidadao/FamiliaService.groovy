@@ -18,6 +18,7 @@ import org.apoiasuas.marcador.ProgramaFamilia
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.CollectionUtils
 
+@Transactional(readOnly = true)
 class FamiliaService {
 
     public static final int MAX_AUTOCOMPLETE_LOGRADOUROS = 10
@@ -73,6 +74,7 @@ class FamiliaService {
 
     }
 
+    @Transactional(readOnly = true)
     public boolean testaAcessoDominio(Familia familia) {
         //Restringir acesso apenas ao servicoSistema que criou a familia
         if (familia.servicoSistemaSeguranca && segurancaService.getServicoLogado() &&

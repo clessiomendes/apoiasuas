@@ -28,7 +28,7 @@ import javax.servlet.http.HttpSession
 class AncestralController {
 
     def segurancaService
-    AbrangenciaTerritorialService abrangenciaTerritorialService
+    def abrangenciaTerritorialService
     def familiaService
     public static String ENTITY_CLASS_ENTRY = "entity"
     public static String JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL = "JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL"
@@ -117,8 +117,12 @@ class AncestralController {
         }
     }
 
-    protected ArrayList<UsuarioSistema> getOperadoresOrdenadosController(boolean somenteHabilitados) {
-            return segurancaService.getOperadoresOrdenados(somenteHabilitados)
+    protected ArrayList<UsuarioSistema> getOperadoresOrdenadosController(boolean somenteHabilitados, UsuarioSistema sempreMostrar = null) {
+        return segurancaService.getOperadoresOrdenados(somenteHabilitados, sempreMostrar)
+    }
+
+    protected ArrayList<UsuarioSistema> getTecnicosOrdenadosController(boolean somenteHabilitados, UsuarioSistema sempreMostrar = null) {
+        return segurancaService.getTecnicosOrdenados(somenteHabilitados, sempreMostrar)
     }
 
     /**

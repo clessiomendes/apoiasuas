@@ -39,7 +39,8 @@ if (evt.persisted) {
                 <g:radio name="familiaCadastrada" value="true" checked="true"/> Família cadastrada:
             </label>
             <g:textField autofocus="true" name="codigoLegado" id="codigoLegado" size="2" value="${FamiliaController.getUltimaFamilia(session)?.codigoLegado}"/>
-            <g:actionSubmit class="save" action="familiaParaSelecao" id="btnSelecionarFamilia" value="ok"/>
+%{--TODO: Formatar botão ok--}%
+            <g:actionSubmit action="familiaParaSelecao" id="btnSelecionarFamilia" value="ok"/>
         </div>
     </g:formRemote>
 

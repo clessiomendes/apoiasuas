@@ -10,7 +10,7 @@ import org.hibernate.Hibernate
 
 import java.util.regex.Pattern
 
-//TODO: separar servico CidadaoService e FamiliaService
+@Transactional(readOnly = true)
 class CidadaoService {
 
     public static final String PARENTESCO_REFERENCIA = "REFERENCIA"
@@ -144,6 +144,7 @@ class CidadaoService {
         return Cidadao.get(idCidadao)?.familia?.telefones
     }
 
+    @Transactional(readOnly = true)
     public boolean testaAcessoDominio(Cidadao cidadao) {
         //Restringir acesso apenas ao servicoSistema que criou a familia
         if (cidadao.servicoSistemaSeguranca && segurancaService.getServicoLogado() &&

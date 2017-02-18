@@ -3,6 +3,7 @@ package org.apoiasuas.redeSocioAssistencial
 import grails.converters.JSON
 import grails.transaction.Transactional
 
+@Transactional(readOnly = true)
 class AbrangenciaTerritorialService {
 
     public static final String ID_TERRITORIOS_ATUACAO = "id_territoriosAtuacao_"

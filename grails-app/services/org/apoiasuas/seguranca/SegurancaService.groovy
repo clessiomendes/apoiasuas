@@ -15,11 +15,11 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 
+@Transactional(readOnly = true)
 class SegurancaService {
 
     public static final String LOGIN_AMD = "admin"
     public static final int MIN_TAMANHO_SENHA = 4
-    public static final String ATRIBUTO_SERVICO_SISTEMA = 'servicoSistemaSeguranca'
     public static final boolean HABILITAR_RESTRICAO_DE_ACESSO_AO_DOMINIO = true; //FIXME: manter habilitado em produção, se ainda não estiver
 
     def springSecurityService
@@ -144,13 +144,6 @@ class SegurancaService {
         return servicoLogado.endereco.UF
     }
 
-/*
-    @Transactional(readOnly = true)
-    String getDDDpadrao() {
-        return "31"
-    }
-*/
-
     @Transactional(readOnly = true)
     public List<Papel> getPapeisUsuario(UsuarioSistema usuarioSistema = null) {
         if (! usuarioSistema)
@@ -172,32 +165,47 @@ class SegurancaService {
      * com -. Mostra primeiro os operadores habilitados e, por ultimo, os desabilitados
      */
     @Transactional(readOnly = true)
-    public ArrayList<UsuarioSistema> getOperadoresOrdenados(boolean somenteHabilitados) {
-        //adiciona o usuario logado no topo da lista, marcando com *
-        getUsuarioLogado().discard() //desconecta dos objetos na cache da sessao hibernate
+    public ArrayList<UsuarioSistema> getOperadoresOrdenados(boolean somenteHabilitados, UsuarioSistema sempreMostrar = null) {
         UsuarioSistema logado = getUsuarioLogado()
-        logado.username = "*"+logado.username
-        ArrayList<UsuarioSistema> result = [logado]
+        logado.discard() //desconecta dos objetos na cache da sessao hibernate
+        logado.username = logado.username+" (logado)"
 
-        //Busa lista de usuarios ativos
-        ArrayList<UsuarioSistema> usuarios = UsuarioSistema.findAllByServicoSistemaSegurancaAndEnabled(getServicoLogado(), true).sort {it.username}
-
-        if (! somenteHabilitados) {
-            //Busa lista de usuarios NAO ativos, marcados com -
-            ArrayList<UsuarioSistema> usuariosNaoHabilitados = UsuarioSistema.findAllByServicoSistemaSegurancaAndEnabled(getServicoLogado(), false).sort {it.username}
-            usuariosNaoHabilitados.each {
-                it.discard() //desconecta dos objetos na cache da sessao hibernate
-                UsuarioSistema usuario = UsuarioSistema.get(it.id)
-                usuario.username = "-"+usuario.username
-                usuarios << usuario
+        ArrayList<UsuarioSistema> habilitados = [];
+        ArrayList<UsuarioSistema> desabilitados = [];
+        UsuarioSistema.findAllByServicoSistemaSeguranca(getServicoLogado()).sort {it.username?.toLowerCase()}.each { operador ->
+            operador.discard(); //desconecta os objetos da sessao hibernate para nao gravar as alteracoes
+            if (operador.id != logado.id) { //usuario logado ja incluido na resposta
+                if (operador.enabled )
+                    habilitados << operador
+                else {
+                    if (! somenteHabilitados) {
+                        operador.username = operador.username + " (excl.)"
+                        desabilitados << operador
+                    } else if (operador.id == sempreMostrar?.id) {
+                        operador.username = operador.username + " (excl.)"
+                        desabilitados << operador
+                    }
+                }
             }
         }
 
-        //Remove usuario logado (duplicado) da lista ao montar o resultado
-        usuarios.each {
-            if (it.id != usuarioLogado.id)
-                result << it
+        return [logado] + habilitados + desabilitados;
+    }
+
+    /**
+     * Apenas operadores com o perfil STR_TECNICO. Ver mais detalhes em getOperadoresOrdenados()
+     */
+    @Transactional(readOnly = true)
+    public ArrayList<UsuarioSistema> getTecnicosOrdenados(boolean somenteHabilitados, UsuarioSistema sempreMostrar = null) {
+        Papel papelTecnico = Papel.findByAuthority(DefinicaoPapeis.STR_TECNICO);
+        ArrayList<UsuarioSistema> result = getOperadoresOrdenados(somenteHabilitados, sempreMostrar).findAll { operador ->
+            //sempre mostrar o operador passado por parametro
+            (sempreMostrar?.id == operador.id
+            ||
+            //ou se o operador tiver o papel de tecnico
+            ! UsuarioSistemaPapel.findAllByUsuarioSistemaAndPapel(operador, papelTecnico).isEmpty())
         }
+
         return result
     }
 
@@ -237,7 +245,6 @@ class SegurancaService {
      */
     @Transactional(readOnly = true)
     public void testaAcessoDominio(def entityObject) {
-//        if (entityObject && temPropriedadeSeguranca(entityObject)) {
 
         if (    isSuperUser() //Administrador tem acesso restrito
                 || (! HABILITAR_RESTRICAO_DE_ACESSO_AO_DOMINIO) //flag de teste para desabilitar checagem de seguranca
@@ -251,23 +258,13 @@ class SegurancaService {
             temAcesso = familiaService.testaAcessoDominio(entityObject)
         else if (entityObject instanceof Cidadao)
             temAcesso = cidadaoService.testaAcessoDominio(entityObject)
-/*
-        //Despresar classe de usuarios (porque usuarios aparecem como "criador/ultimoAlterador" de entidades que podem ser
-        //vistas de servicos diferentes do que criou a entidade
-        else if (entityObject instanceof UsuarioSistema)
-            temAcesso = usuarioSistemaService.testaAcessoDominio(entityObject)
-*/
+
         if (! temAcesso) {
             def e = new AcessoNegadoPersistenceException(getUsuarioLogado().username, entityObject.class.simpleName, entityObject.toString())
             log.error(e.getMessage())
             throw e;
         }
 
-//        ServicoSistema servicoLogado = segurancaService.servicoLogado
-//        ServicoSistema propriedadeServicoSistema = entityObject.metaClass.getMetaProperty(ATRIBUTO_SERVICO_SISTEMA)?.getProperty(entityObject)
-//        if (propriedadeServicoSistema && servicoLogado && propriedadeServicoSistema.id != servicoLogado.id) {
-//            return false
-//        }
     }
 
 }

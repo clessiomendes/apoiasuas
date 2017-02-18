@@ -9,7 +9,7 @@ import org.hibernate.dialect.PostgreSQL81Dialect
 import org.hibernate.tool.hbm2ddl.DatabaseMetadata
 import org.hibernate.transform.AliasToEntityMapResultTransformer
 
-@Transactional
+@Transactional(readOnly = true)
 class ApoiaSuasService {
 
     def grailsApplication
@@ -45,7 +45,7 @@ class ApoiaSuasService {
         return result
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     long ocupacaoBD() {
 //        def result = groovySql.firstRow("select 0").get(0)
 //        def result = groovySql.firstRow("select pg_database_size('bcck9gsbpzsnf7y')").getAt(0)

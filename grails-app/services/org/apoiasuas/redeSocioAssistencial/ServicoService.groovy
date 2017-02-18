@@ -9,6 +9,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import java.util.regex.Pattern
 
+@Transactional(readOnly = true)
 class ServicoService {
 
     private static final int TAMANHO_DESCRICAO_CORTADA = 150
@@ -30,8 +31,7 @@ class ServicoService {
         return Servico.get(idServico)
     }
 
-    @Transactional(readOnly = true)
-    grails.gorm.PagedResultList procurarServico(String palavraChave, GrailsParameterMap params) {
+    public grails.gorm.PagedResultList procurarServico(String palavraChave, GrailsParameterMap params) {
         String[] palavrasChaves = null
         //remove espacos indesejados, converte para lowercase e divide as palavras
         if (palavraChave) {

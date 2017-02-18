@@ -4,6 +4,7 @@ import grails.transaction.Transactional
 import org.apoiasuas.seguranca.SegurancaService
 import org.hibernate.Hibernate
 
+@Transactional(readOnly = true)
 class ServicoSistemaService {
 
     public static final String NOME_SERVICO_ADM_SISTEMA = "Administração do Sistema"
@@ -38,12 +39,5 @@ class ServicoSistemaService {
         Hibernate.initialize(result.abrangenciaTerritorial)
         return result
     }
-
-//    @Transactional(readOnly = true)
-//    public ServicoSistema getServicoSistemaReadOnly() {
-//        ServicoSistema servicoSistema = segurancaService.getUsuarioLogado()?.servicoSistemaSeguranca
-//        servicoSistema?.discard()
-//        return servicoSistema
-//    }
 
 }

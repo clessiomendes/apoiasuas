@@ -3,12 +3,14 @@ package org.apoiasuas.relatorio
 import groovy.sql.GroovyRowResult
 import org.apoiasuas.AncestralController
 import org.apoiasuas.cidadao.AcoesCommand
+import org.apoiasuas.cidadao.OutrosMarcadoresCommand
 import org.apoiasuas.marcador.Marcador
 import org.apoiasuas.cidadao.MarcadorService
 import org.apoiasuas.cidadao.MarcadoresCommand
 import org.apoiasuas.cidadao.ProgramasCommand
 import org.apoiasuas.cidadao.VulnerabilidadesCommand
 import org.apoiasuas.marcador.Acao
+import org.apoiasuas.marcador.OutroMarcador
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.marcador.Vulnerabilidade
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -30,6 +32,7 @@ class EmissaoRelatorioController extends AncestralController {
                 programasDisponiveis       : marcadorService.programasDisponiveis,
                 vulnerabilidadesDisponiveis: marcadorService.vulnerabilidadesDisponiveis,
                 acoesDisponiveis           : marcadorService.acoesDisponiveis,
+                outrosMarcadoresDisponiveis           : marcadorService.outrosMarcadoresDisponiveis,
                 operadores                 : getOperadores()
         ];
         if (definicao)
@@ -52,8 +55,10 @@ class EmissaoRelatorioController extends AncestralController {
      */
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def exibeListagem(DefinicaoListagemCommand definicao, ProgramasCommand programasCommand,
-                      VulnerabilidadesCommand vulnerabilidadesCommand, AcoesCommand acoesCommand) {
-        List<GroovyRowResult> registrosEncontrados = listagem(definicao, programasCommand, vulnerabilidadesCommand, acoesCommand);
+                      VulnerabilidadesCommand vulnerabilidadesCommand, AcoesCommand acoesCommand,
+                      OutrosMarcadoresCommand outrosMarcadoresCommand) {
+        List<GroovyRowResult> registrosEncontrados = listagem(definicao, programasCommand, vulnerabilidadesCommand,
+                acoesCommand, outrosMarcadoresCommand);
         response.contentType = 'text/html; charset=UTF-8'
         relatorioService.geraListagemFinal(response.outputStream, false, registrosEncontrados);
     }
@@ -63,10 +68,12 @@ class EmissaoRelatorioController extends AncestralController {
      */
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def downloadListagem(DefinicaoListagemCommand definicao, ProgramasCommand programasCommand,
-                         VulnerabilidadesCommand vulnerabilidadesCommand, AcoesCommand acoesCommand) {
+                         VulnerabilidadesCommand vulnerabilidadesCommand, AcoesCommand acoesCommand,
+                         OutrosMarcadoresCommand outrosMarcadoresCommand) {
 //        definicao.planilhaParaDownload = true
 //        return listagem(definicao, programasCommand, vulnerabilidadesCommand, acoesCommand)
-        List<GroovyRowResult> registrosEncontrados = listagem(definicao, programasCommand, vulnerabilidadesCommand, acoesCommand);
+        List<GroovyRowResult> registrosEncontrados = listagem(definicao, programasCommand, vulnerabilidadesCommand,
+                acoesCommand, outrosMarcadoresCommand);
         response.contentType = 'application/octet-stream'
         response.setHeader 'Content-disposition', "attachment; filename=\"listagem-apoiasuas.csv\""
         relatorioService.geraListagemFinal(response.outputStream, true, registrosEncontrados);
@@ -74,13 +81,15 @@ class EmissaoRelatorioController extends AncestralController {
 
     private List<Marcador> filtraSelecionados(MarcadoresCommand marcadores, Class<Marcador> classeMarcador) {
         return marcadores.marcadoresDisponiveis.collect { marcador ->
-            if (marcador.selected)
+            if (marcador.habilitado)
+            //noinspection GrUnresolvedAccess
                 classeMarcador.get(marcador.id)
         }.grep() //limpa nulos
     }
 
     private List<GroovyRowResult> listagem(DefinicaoListagemCommand definicao, ProgramasCommand programasCommand,
-                     VulnerabilidadesCommand vulnerabilidadesCommand, AcoesCommand acoesCommand) {
+                     VulnerabilidadesCommand vulnerabilidadesCommand, AcoesCommand acoesCommand,
+                     OutrosMarcadoresCommand outrosMarcadoresCommand) {
         if(! definicao.validate())
             return render(view: 'definirListagem', model: getModel(definicao))
 
@@ -97,9 +106,11 @@ class EmissaoRelatorioController extends AncestralController {
         List<Programa> programasSelecionados = filtraSelecionados(programasCommand, Programa.class);
         List<Vulnerabilidade> vulnerabilidadesSelecionadas = filtraSelecionados(vulnerabilidadesCommand, Vulnerabilidade.class);
         List<Acao> acoesSelecionadas = filtraSelecionados(acoesCommand, Acao.class);
+        List<OutroMarcador> outrosMarcadoresSelecionados = filtraSelecionados(outrosMarcadoresCommand, OutroMarcador.class);
 
         return relatorioService.processaConsulta(dataNascimentoInicial, dataNascimentoFinal,
-                definicao.membros, definicao.tecnicoReferencia, programasSelecionados, vulnerabilidadesSelecionadas, acoesSelecionadas);
+                definicao.membros, definicao.tecnicoReferencia, programasSelecionados, vulnerabilidadesSelecionadas,
+                acoesSelecionadas, outrosMarcadoresSelecionados);
     }
 }
 

@@ -26,39 +26,11 @@ class ApoiaSuasPersistenceListener extends AbstractPersistenceEventListener {
 
     @Override
     protected void onPersistenceEvent(AbstractPersistenceEvent event) {
-
         segurancaService.testaAcessoDominio(event.entityObject)
-
-/*
-        def entityObject = event.entityObject
-
-        if (entityObject && temPropriedadeSeguranca(entityObject)) {
-            if (entityObject.id)
-                testaAcessoDominio(entityObject)
-            else
-                setServicoSistema(entityObject)
-        }
-*/
     }
-
-/*
-    private boolean temPropriedadeSeguranca(def entityObject) {
-        return entityObject.metaClass.hasProperty(entityObject, ATRIBUTO_SERVICO_SISTEMA)
-    }
-
-    private void setServicoSistema(def entityObject)  {
-        if (! segurancaService.getUsuarioLogado())
-            return
-        ServicoSistema servicoSistema = segurancaService.servicoLogado
-        def propriedadeServicoSistema = entityObject.metaClass.getMetaProperty(ATRIBUTO_SERVICO_SISTEMA)
-        if (propriedadeServicoSistema)
-            propriedadeServicoSistema.setProperty(entityObject, servicoSistema)
-    }
-*/
 
     @Override
     boolean supportsEventType(Class eventType) {
-//        return true
         return eventType.isAssignableFrom(PreInsertEvent) ||
                 eventType.isAssignableFrom(PreUpdateEvent) ||
                 eventType.isAssignableFrom(PreDeleteEvent) ||
@@ -67,8 +39,6 @@ class ApoiaSuasPersistenceListener extends AbstractPersistenceEventListener {
                 eventType.isAssignableFrom(PreUpdateEvent) ||
                 eventType.isAssignableFrom(SaveOrUpdateEvent) ||
                 eventType.isAssignableFrom(PostLoadEvent)
-
-//      exclude: PostDeleteEvent, PreLoadEvent
     }
 
 }

@@ -68,6 +68,7 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return super._novoProcesso(responsavelProximaTarefa, variables);
     }
 
+    @Transactional(readOnly = true)
     public List<PedidoCertidaoProcessoDTO> getProcessos(Map params) {
         HistoricProcessInstanceQuery query = getQuery(params)
         List<HistoricProcessInstance> processInstances = query.orderByProcessInstanceStartTime().asc().listPage(0, ProcessoDTO.MAX_PAGINACAO)
@@ -81,10 +82,12 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return result
     }
 
+    @Transactional
     public void gravaAR(String idProcesso, String numeroAR) {
         runtimeService.setVariable(idProcesso, PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, numeroAR)
     }
 
+    @Transactional(readOnly = true)
     public List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes(long idFamilia) {
         if (! idFamilia)
             return []
@@ -104,6 +107,7 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return result
     }
 
+    @Transactional(readOnly = true)
     public String getIdProcessoPeloFormularioEmitido(Long idFormularioEmitido) {
         List<HistoricProcessInstance> processos = getQuery(idFormularioEmitido: idFormularioEmitido).list()
         if (processos.size() == 0)

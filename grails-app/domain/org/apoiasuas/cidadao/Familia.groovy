@@ -7,6 +7,7 @@ import org.apoiasuas.anotacoesDominio.InfoClasseDominio
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
 import org.apoiasuas.formulario.CampoFormulario
+import org.apoiasuas.marcador.AssociacaoMarcador
 import org.apoiasuas.marcador.OutroMarcador
 import org.apoiasuas.marcador.OutroMarcadorFamilia
 import org.apoiasuas.marcador.VulnerabilidadeFamilia
@@ -45,7 +46,8 @@ class Familia implements Serializable {
 
     @InfoPropriedadeDominio(codigo='telefone', descricao = 'Telefone', tipo = CampoFormulario.Tipo.TELEFONE, tamanho = 10)
     String telefone //campo transiente (usado para conter telefones escolhidos/digitados pelo operador em casos de uso como o de preenchimento de formulario
-    static transients = ['telefone', 'programasHabilitados', 'vulnerabilidadesHabilitadas', 'acoesHabilitadas', 'outrosMarcadoresHabilitados']
+    static transients = ['telefone', 'programasHabilitados', 'vulnerabilidadesHabilitadas', 'acoesHabilitadas',
+                         'outrosMarcadoresHabilitados', 'todosOsMarcadores']
 
     ServicoSistema servicoSistemaSeguranca
 
@@ -154,6 +156,9 @@ class Familia implements Serializable {
         return outrosMarcadores.findAll{ it.habilitado }.sort { it.marcador?.descricao?.toLowerCase() }
     }
 
+    public Set<AssociacaoMarcador> getTodosOsMarcadores() {
+        return programas + acoes + vulnerabilidades + outrosMarcadores;
+    }
 }
 
 class Despesas  implements Serializable {

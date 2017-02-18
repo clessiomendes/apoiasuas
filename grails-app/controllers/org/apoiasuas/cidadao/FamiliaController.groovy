@@ -105,12 +105,14 @@ class FamiliaController extends AncestralController {
         List<Acao> acoesDisponiveis = marcadoresDisponiveis(familiaInstance.acoes, marcadorService.getAcoesDisponiveis() )
         List<Vulnerabilidade> vulnerabilidadesDisponiveis = marcadoresDisponiveis(familiaInstance.vulnerabilidades, marcadorService.getVulnerabilidadesDisponiveis() )
         List<Vulnerabilidade> outrosMarcadoresDisponiveis = marcadoresDisponiveis(familiaInstance.outrosMarcadores, marcadorService.getOutrosMarcadoresDisponiveis() )
-        return [familiaInstance: familiaInstance, operadores: getOperadoresOrdenadosController(true), outrosMarcadoresDisponiveis: outrosMarcadoresDisponiveis,
-                programasDisponiveis: programasDisponiveis, acoesDisponiveis: acoesDisponiveis, vulnerabilidadesDisponiveis: vulnerabilidadesDisponiveis]
+        return [familiaInstance: familiaInstance,
+                operadores: marcadorService.getTecnicosIncluiMarcadores(familiaInstance),
+                outrosMarcadoresDisponiveis: outrosMarcadoresDisponiveis, programasDisponiveis: programasDisponiveis,
+                acoesDisponiveis: acoesDisponiveis, vulnerabilidadesDisponiveis: vulnerabilidadesDisponiveis]
     }
 
     private Map getEditCreateModelMonitoramento(Monitoramento monitoramentoInstance) {
-        return [monitoramentoInstance: monitoramentoInstance, operadores: getOperadoresOrdenadosController(true)];
+        return [monitoramentoInstance: monitoramentoInstance, operadores: getTecnicosOrdenadosController(true, monitoramentoInstance?.responsavel)];
     }
 
     /**

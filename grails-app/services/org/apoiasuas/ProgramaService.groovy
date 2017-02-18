@@ -4,6 +4,7 @@ import grails.transaction.Transactional
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.seguranca.UsuarioSistema
 
+@Transactional(readOnly = true)
 class ProgramaService {
 
     @Transactional
@@ -25,7 +26,6 @@ class ProgramaService {
 
     }
 
-    @Transactional(readOnly = true)
     public Programa getProgramaPreDefinido(ProgramasPreDefinidos enumPrograma) {
         return Programa.findByProgramaPreDefinido(enumPrograma)
     }

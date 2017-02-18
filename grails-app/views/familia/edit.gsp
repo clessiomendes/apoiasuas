@@ -36,6 +36,7 @@
 
 				<fieldset class="buttons">
                     <g:submitButton name="update" class="save" value="${message(code: 'default.button.update.label', default: 'Gravar')}" />
+					<g:actionSubmit action="show" class="cancel" value="Cancelar"/>
 				</fieldset>
 			</g:form>
 		</div>

@@ -12,6 +12,7 @@ import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
 import org.codehaus.groovy.grails.plugins.web.taglib.FormTagLib
+import org.codehaus.groovy.grails.plugins.web.taglib.JavascriptTagLib
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 
 class ApoiaSuasTagLib {
@@ -146,7 +147,7 @@ class ApoiaSuasTagLib {
                     optionValue: 'username',
                     optionKey: 'id', //fixme: idUsuario
                     noSelection: ['': ''],
-                    from: request.usuarios
+                    from: request.tecnicos
             )
 
         switch (campoFormulario.tipo) {
@@ -225,6 +226,27 @@ class ApoiaSuasTagLib {
         original.submitButton.call(attrs)
     }
 
+    /**
+     * Overriding JavascriptTagLib.javascript to check for conditions before rendering
+     * @attr showif teste para saber se o javascript sera incluido ou nao na pagina
+     * @attr src The name of the javascript file to import. Will look in web-app/js dir
+     * @attr library The name of the library to include. e.g. "jquery", "prototype", "scriptaculous", "yahoo" or "dojo"
+     * @attr plugin The plugin to look for the javascript in
+     * @attr contextPath the context path to use (relative to the application context path). Defaults to "" or path to the plugin for a plugin view or template.
+     * @attr base specifies the full base url to prepend to the library name
+     *
+     */
+    Closure javascript = { attrs, body ->
+        //Uma vez que o parametro showif esta presente, testar se ele eh falso ou nulo e, neste caso, ignorar o javascript
+        if (attrs.containsKey("showif") && (! attrs.showif))
+            return;
+
+        //Eh preciso buscar a tag original antes de executa-la, pois ela foi sobrescrita
+        JavascriptTagLib original = grailsAttributes.applicationContext.getBean(JavascriptTagLib.name)
+        original.javascript.call(attrs, body)
+    }
+
+
 /**
  * Cria um icone de ajuda com um texto suspenso a ser exibido quando o mouse passar por ele. O texto a ser
  * exibido pode ser 1) passado como uma chave de internacionalizacao pelo parametro message ou 2) no corpo
@@ -242,7 +264,7 @@ class ApoiaSuasTagLib {
             return;
 
         out << "<div class='help-tooltip'>";
-        out << asset.image(src: 'help2-16.png');
+        out << asset.image(src: 'help.png');
         out << "    <div class='help-tooltip-text'>";
         out << mensagem;
         out << "    </div>";

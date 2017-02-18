@@ -29,7 +29,7 @@ class ProcessoController extends AncestralController {
 
 //        List<TarefaDTO> tarefas = processoService.getTarefasPendentes(getServicoCorrente().id, idDefinicaoProcesso, idUsuarioSistema)
 
-        render(view: "/processo/list", model: [tarefas: [], definicoesProcessoDisponiveis: processoService.getDefinicoesProcessos(), ususariosDisponiveis: getOperadoresOrdenadosController(true)])
+        render(view: "/processo/list", model: [tarefas: [], definicoesProcessoDisponiveis: processoService.getDefinicoesProcessos(), ususariosDisponiveis: getOperadoresOrdenadosController(false)])
     }
 
     def mostraProcesso(ProcessoDTO processoDTO) {
