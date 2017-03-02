@@ -269,4 +269,13 @@ alter table outro_marcador_familia add constraint FK_rau0oeaqqqgyep4chlhy4c3yg f
 create sequence sq_outro_marcador;
 create sequence sq_outro_marcador_familia;
 
--- versao ate aqui: current (local:feito
+-- versao ate aqui: current (local:feito, producao: feito)
+
+alter table monitoramento add column prioritario boolean;
+alter table cidadao add column habilitado boolean not null DEFAULT true;
+alter table cidadao alter column habilitado DROP DEFAULT;
+ALTER TABLE public.cidadao ALTER COLUMN familia_id SET NOT NULL;
+
+alter table servico_sistema add column acesso_seguranca_cadastro_detalhado boolean DEFAULT false;
+alter table servico_sistema add column acesso_seguranca_inclusao_familia boolean DEFAULT false;
+alter table servico_sistema add column acesso_seguranca_inclusao_membro_familiar boolean DEFAULT false;

@@ -6,9 +6,9 @@ import grails.test.mixin.*
 import org.apoiasuas.marcador.Programa
 import spock.lang.*
 
-@TestFor(ProgramaController)
+@TestFor(ProgramaAPAGARController)
 @Mock(Programa)
-class ProgramaControllerSpec extends Specification {
+class ProgramaAPAGARControllerSpec extends Specification {
 
     def populateValidParams(params) {
         assert params != null

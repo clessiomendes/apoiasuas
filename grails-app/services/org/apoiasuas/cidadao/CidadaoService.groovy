@@ -32,8 +32,6 @@ class CidadaoService {
         String hql = 'from Cidadao a where 1=1 '
         if (!filtroNome) {
             hql += "and a.referencia = true"
-//            hql += "and a.parentescoReferencia = :parentesco"
-//            filtros << [parentesco: PARENTESCO_REFERENCIA]
         }
 
 
@@ -158,5 +156,20 @@ class CidadaoService {
         return cidadao.save()
     }
 
+    @Transactional(readOnly = true)
+    public boolean podeExcluir(Cidadao cidadao) {
+        //cidadao ja excluido
+        if (! cidadao.habilitado)
+            return false;
+        Familia familia = cidadao.familia
+        //se for o ultimo cidadão habilitado, não permite excluir
+        if (familia.getMembrosHabilitados().size() == 1)
+            return false;
+        //se for uma referencia familiar, so pode excluir se houver outra referencia
+        if (cidadao.referencia)
+            return (familia.getMembrosHabilitados().count { it.referencia } > 1 )
+        else
+            return true;
+    }
 
 }

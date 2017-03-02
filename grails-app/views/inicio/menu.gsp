@@ -11,26 +11,52 @@
 
 <body>
 
-<div id="page-body" role="main">
+<div id="page-body" style="padding: 0 10px" role="main">
 
     <g:if test="${flash.message}">
         <div class="message" role="status">${flash.message}</div>
     </g:if>
 
+    <div>
+        <label for="nomeOuCodigoLegado" class="label-menu-procurar">
+            Nome ou cadastro de <nobr>usuário <g:helpTooltip chave="buscaUsuario.help"/></nobr>
+        </label>
+        <nobr>
+            <g:textField name="nomeOuCodigoLegado" id="inputNomeOuCodigoLegado" autofocus="" size="50" class="input-menu-procurar"
+                         onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
+            <g:link class="input-menu-procurar" onclick="linkProcurarCidadao(this, '${createLink(controller: 'cidadao', action: 'procurarCidadaoExecuta')}',
+                                                                document.getElementById('inputNomeOuCodigoLegado'), null, null);">
+                <input id="btnProcurarCidadao" type="button" class="speed-button-procurar"/>
+            </g:link>
+        </nobr>
+        <div style="clear: both"></div>
+    </div>
+
+    <div style="margin-top: 10px">
+        <label for="palavraChave" class="label-menu-procurar">
+            Procurar no <nobr>ApoiaCRAS <g:helpTooltip chave="buscaCentralizada.help"/></nobr>
+        </label>
+        <nobr><g:form action="list" controller="buscaCentralizada">
+            <g:textField name="palavraChave" size="50" class="input-menu-procurar" onfocus="if(this.value == 'ex: jovem aprendiz') { this.value = ''; }" value="ex: jovem aprendiz"/>
+            <g:submitButton name="list" class="input-menu-procurar speed-button-procurar    " value=""/>
+        </g:form></nobr>
+        <div style="clear: both"></div>
+    </div>
+
     %{--<fieldset class="buttons">--}%
+%{--
         <table style="border-top: 0; margin-bottom: 0;">
             <tr>
                 <td style="width: 15em;">Nome ou cadastro de <nobr>usuário <g:helpTooltip chave="buscaUsuario.help"/></nobr></td>
                 <td>
-                    %{--<g:form action="procurarCidadaoExecuta" controller="cidadao">--}%
+                    <nobr>
                     <g:textField name="nomeOuCodigoLegado" id="inputNomeOuCodigoLegado" size="50" autofocus=""
                                  onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
                     <g:link onclick="linkProcurarCidadao(this, '${createLink(controller: 'cidadao', action: 'procurarCidadaoExecuta')}',
                                                             document.getElementById('inputNomeOuCodigoLegado'), null, null);">
                         <input id="btnProcurarCidadao" type="button" class="search" value="Procurar"/>
                     </g:link>
-                    %{--<g:submitButton name="procurar" class="search" value="Procurar"/>--}%
-                    %{--</g:form>--}%
+                    </nobr>
                 </td>
             </tr>
             <tr>
@@ -41,10 +67,10 @@
                 </g:form></td>
             </tr>
         </table>
+--}%
     %{--</fieldset>--}%
     <g:render template="anuncioRedeSocioAssistencial"/>
 
-    <div class="wrap">
     <div id="menu">
             <g:link title="Formulários emitidos on-line com preenchimento automático à partir do banco de dados de cidadãos (quando disponíveis)" class="verde_oliva" controller="emissaoFormulario" action="escolherFamilia">Emissão de Formulários</g:link>
             <g:link title="Banco de dados de famílias cadastradas em ${sec.loggedInUserInfo(field:'servicoSistemaSessaoCorrente.nome')}" class="laranja" controller="cidadao" action="procurarCidadao">Pesquisa de Usuários</g:link>
@@ -74,7 +100,6 @@
 
             <br style="clear: both"/>
             <br style="clear: both"/>
-        </div>
     </div>
 
     <div style="font-weight: bold; text-align: center; ${ImportacaoFamiliasController.getDataUltimaImportacao(session)?.atrasada ? 'color:red;' : ''}">

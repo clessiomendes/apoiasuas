@@ -1,4 +1,5 @@
 /* Styles for mobile devices */
+@import (reference) "main";
 
 @media screen and (max-width: 480px) {
 	.nav {
@@ -47,10 +48,12 @@
 	}
 
 	/* hide all but the first column of list tables */
+    /*
 	.scaffold-list td:not(:first-child),
 	.scaffold-list th:not(:first-child) {
 		display: none;
 	}
+    */
 
 	.scaffold-list thead th {
 		text-align: center;
@@ -79,4 +82,12 @@
 	.error ul {
 		margin-left: 0;
 	}
+
+    /*
+	input.search {
+		.speedButton(url(../../images/search.png));
+	  	display: block;
+	  	text-indent: -9999em;
+  	}
+    */
 }

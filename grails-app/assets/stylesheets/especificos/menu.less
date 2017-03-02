@@ -1,9 +1,11 @@
-@import "../globais/main";
+@import (reference) "../globais/main";
 
+/*
 .wrap{
     width:95%;
     margin: 10px auto ;
 }
+*/
 
 #menu {
     margin-bottom: 0px;
@@ -26,8 +28,8 @@
 {
     margin: 2px;
     padding: 20px;
-    width: 137px;
-    height: 137px;
+    width: 144px;
+    height: 144px;
 }
 
 #menu a.verde_oliva {
@@ -135,7 +137,7 @@
     box-shadow: 0 0 1em lighten(@cor-base-mensagem-info,@lighten-sombra);
     font-size: 0.75em;
     line-height: 1.5;
-    margin: 0.7em 2em;
+    margin: 0.7em 0;
     height: 5.3em; /*fixa o tambanho do anuncio*/
     overflow:hidden /*Corta o conte�do que n�o couber no anuncio*/
 }
@@ -143,4 +145,15 @@
 .anuncio-rede-socio-assistencial a:link, .anuncio-rede-socio-assistencial a:visited, .anuncio-rede-socio-assistencial a:hover {
     color: @cor-base-mensagem-info;
     text-decoration: none;
+}
+
+.label-menu-procurar {
+    float: left;
+    width: 250px;
+    /*margin-left: 20px;*/
+    text-align: left;
+}
+
+.input-menu-procurar {
+    float: left;
 }

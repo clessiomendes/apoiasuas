@@ -20,6 +20,7 @@ import org.apoiasuas.util.StringUtils
 
 import javax.servlet.http.HttpSession
 
+@Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class FamiliaController extends AncestralController {
 
     def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Familia.class, only: ['show','edit', 'delete', 'update', 'save']]
@@ -46,25 +47,18 @@ class FamiliaController extends AncestralController {
     def cidadaoService;
     def monitoramentoService;
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def index(Integer max) {
         redirect(controller: 'cidadao', action: 'procurarCidadao')
 //        render view: 'list', model: [familiaInstanceList: Familia.list(params), familiaInstanceCount: Familia.count()]
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def show(Familia familiaInstance) {
 
         if (! familiaInstance)
             return notFound()
 
         //Garante que as coleções sejam exibidas em uma ordem especifica
-        familiaInstance.membros = familiaInstance.membros.sort { it.id }
-/*
-        familiaInstance.programas = familiaInstance.programas.sort { it.programa.nome }
-        familiaInstance.acoes = familiaInstance.acoes.sort { it.acao.descricao }
-        familiaInstance.vulnerabilidades = familiaInstance.vulnerabilidades.sort { it.vulnerabilidade.descricao }
-*/
+//        familiaInstance.membros = familiaInstance.membros.sort { it.id }
 
         List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familiaInstance.id)
 
@@ -167,13 +161,11 @@ class FamiliaController extends AncestralController {
     }
 */
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     protected def notFound() {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'Familia.label', default: 'Família'), params.id])
         return redirect(controller: 'cidadao', action: 'procurarCidadao')
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def obtemLogradouros(String term) {
         if (term)
             render familiaService.procurarLogradouros(term) as JSON
@@ -183,17 +175,14 @@ class FamiliaController extends AncestralController {
         }
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     public static Long getNumeroExibicoesNotificacao(HttpSession session) {
         return session[SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES]
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     public static String getNotificacao(HttpSession session) {
         return session[SESSION_NOTIFICACAO_FAMILIA]
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     public static Familia getUltimaFamilia(HttpSession session) {
         Long numeroExibicoes = getNumeroExibicoesNotificacao(session) ?: 0L;
         numeroExibicoes++
@@ -201,13 +190,11 @@ class FamiliaController extends AncestralController {
         return session[SESSION_ULTIMA_FAMILIA]
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def limparNotificacoes() {
         session[SESSION_NOTIFICACAO_FAMILIA] = null;
         render 200;
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def listMonitoramento(Long id) {
         List monitoramentos = Familia.get(id).monitoramentos.sort();
         render view: 'monitoramento/listMonitoramento', model: [monitoramentoInstanceList: monitoramentos]
@@ -222,7 +209,6 @@ class FamiliaController extends AncestralController {
     }
 
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def showMonitoramento(Long id) {
         Monitoramento monitoramento = buscaMonitoramento(id);
         if (monitoramento)
@@ -297,19 +283,6 @@ class FamiliaController extends AncestralController {
         return render(contentType:'text/json', text: ['success': true] as JSON);
     }
 
-/*
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def emitirPlanoAcompanhamento(Familia familiaInstance) {
-        ReportDTO reportDTO = familiaService.emitePlanoAcompanhamento(familiaInstance);
-
-        //Montando a saída (somente após passar pelo processamento completo na camada de serviço)
-        response.contentType = 'application/octet-stream'
-        response.setHeader 'Content-disposition', "attachment; filename=\"${reportDTO.nomeArquivo}\"";
-        reportDTO.report.process(reportDTO.context, response.outputStream);
-        response.outputStream.flush()
-    }
-*/
-
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def editAcompanhamentoFamilia(Familia familiaInstance) {
         guardaUltimaFamiliaSelecionada(familiaInstance)
@@ -323,7 +296,8 @@ class FamiliaController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
-    def saveAcompanhamento(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand, VulnerabilidadesCommand vulnerabilidadesCommand, OutrosMarcadoresCommand outrosMarcadoresCommand) {
+    def saveAcompanhamento(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand,
+                           VulnerabilidadesCommand vulnerabilidadesCommand, OutrosMarcadoresCommand outrosMarcadoresCommand) {
         familiaInstance.acompanhamentoFamiliar.familia = familiaInstance;
         if (! familiaInstance)
             return notFound()
@@ -333,16 +307,21 @@ class FamiliaController extends AncestralController {
             flash.message = "As informações da família e do acompanhamento foram atualizados"
             familiaInstance = familiaService.grava(familiaInstance, programasCommand,
                     acoesCommand, vulnerabilidadesCommand, outrosMarcadoresCommand)
-            //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
-            //javascript que rodara automaticamente na proxima pagina)
-            setReportParaBaixar(session, familiaService.emitePlanoAcompanhamento(familiaInstance))
         }
 
         //sempre retorna para a tela de edicao, quer a gravacao tenha sido feita com sucesso ou tenha erros de validacao
         render view: "acompanhamento/editAcompanhamento", model: modeloSelecionarAcompanhamento + getEditCreateModel(familiaInstance);
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def saveAndDownloadAcompanhamento(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand,
+                                      VulnerabilidadesCommand vulnerabilidadesCommand, OutrosMarcadoresCommand outrosMarcadoresCommand) {
+        saveAcompanhamento(familiaInstance, programasCommand, acoesCommand, vulnerabilidadesCommand, outrosMarcadoresCommand);
+        //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
+        //javascript que rodara automaticamente na proxima pagina)
+        setReportParaBaixar(session, familiaService.emitePlanoAcompanhamento(familiaInstance))
+    }
+
     def selecionarAcompanhamento() {
         Map modelo = FamiliaController.modeloSelecionarAcompanhamento + [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:]];
         if (FamiliaController.getUltimaFamilia(session))
@@ -350,8 +329,6 @@ class FamiliaController extends AncestralController {
         render(view: "/cidadao/procurarCidadao", model: modelo )
     }
 
-
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def selecionarAcompanhamentoExecuta(FiltroCidadaoCommand filtro) {
         //Preenchimento de numeros no primeiro campo de busca indica pesquisa por codigo legado
         boolean buscaPorCodigoLegado = filtro.nomeOuCodigoLegado && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCodigoLegado)
@@ -368,7 +345,6 @@ class FamiliaController extends AncestralController {
         }
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def listProgramasDisponiveis(String id) {
         List<Marcador> marcadoresDisponiveis = marcadoresDisponiveis(Familia.get(id).programas, marcadorService.getProgramasDisponiveis() )
         return render(view:"marcador/_divMarcadoresDisponiveis", model: [marcadoresDisponiveis: marcadoresDisponiveis,
@@ -377,7 +353,6 @@ class FamiliaController extends AncestralController {
                                                                          classeMarcador: 'marcadores-programa'])
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def listAcoesDisponiveis(String id) {
         List<Marcador> marcadoresDisponiveis = marcadoresDisponiveis(Familia.get(id).acoes, marcadorService.getAcoesDisponiveis() )
         return render(view:"marcador/_divMarcadoresDisponiveis", model: [marcadoresDisponiveis: marcadoresDisponiveis,
@@ -386,7 +361,6 @@ class FamiliaController extends AncestralController {
                                                                          classeMarcador: 'marcadores-acao'])
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def listVulnerabilidadesDisponiveis(String id) {
         List<Marcador> marcadoresDisponiveis = marcadoresDisponiveis(Familia.get(id).vulnerabilidades, marcadorService.getVulnerabilidadesDisponiveis() )
         return render(view:"marcador/_divMarcadoresDisponiveis", model: [marcadoresDisponiveis: marcadoresDisponiveis,
@@ -395,7 +369,6 @@ class FamiliaController extends AncestralController {
                                                                          classeMarcador: 'marcadores-vulnerabilidade'])
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def listProgramasAcoes(String id) {
         List<Marcador> marcadoresDisponiveis = marcadoresDisponiveis(Familia.get(id).acoes, marcadorService.getAcoesDisponiveis() )
         return render(view:"marcador/_divMarcadoresDisponiveis", model: [marcadoresDisponiveis: marcadoresDisponiveis,
@@ -404,7 +377,6 @@ class FamiliaController extends AncestralController {
                                                                          classeMarcador: 'marcadores-acao'])
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def listOutrosMarcadoresDisponiveis(String id) {
         List<Marcador> marcadoresDisponiveis = marcadoresDisponiveis(Familia.get(id).outrosMarcadores, marcadorService.getOutrosMarcadoresDisponiveis() )
         return render(view:"marcador/_divMarcadoresDisponiveis", model: [marcadoresDisponiveis: marcadoresDisponiveis,
@@ -489,6 +461,8 @@ class FamiliaController extends AncestralController {
                              Class<Marcador> classeMarcador, Class<AssociacaoMarcador> classeAssociacaoMarcador) {
         //noinspection GrUnresolvedAccess
         if (marcadorInstance.validate()) {
+            //força o marcador a ser gravado exclusivamente para o servico logado
+            marcadorInstance.servicoSistemaSeguranca = segurancaService.servicoLogado;
             marcadorService.gravaMarcador(marcadorInstance);
             if (marcadoresCommand && marcadoresCommand.marcadoresDisponiveis && familia) {
                 marcadorService.gravaMarcadoresFamilia(marcadoresCommand, marcadoresFamilia, familia, classeMarcador, classeAssociacaoMarcador);
@@ -502,7 +476,6 @@ class FamiliaController extends AncestralController {
         }
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     public def showPrograma(ProgramaFamilia marcador) {
         if (marcador)
             render(view: "marcador/showMarcador", model: [marcador: marcador])
@@ -510,7 +483,6 @@ class FamiliaController extends AncestralController {
             render(status: 500, text: "programa não encontrado");
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     public def showVulnerabilidade(VulnerabilidadeFamilia marcador) {
         if (marcador)
             render(view: "marcador/showMarcador", model: [marcador: marcador])
@@ -518,7 +490,6 @@ class FamiliaController extends AncestralController {
             render(status: 500, text: "vulnerabilidade não encontrada");
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     public def showAcao(AcaoFamilia marcador) {
         if (marcador)
             render(view: "marcador/showMarcador", model: [marcador: marcador])
@@ -526,7 +497,6 @@ class FamiliaController extends AncestralController {
             render(status: 500, text: "ação não encontrada");
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     public def showOutroMarcador(OutroMarcadorFamilia marcador) {
         if (marcador)
             render(view: "marcador/showMarcador", model: [marcador: marcador])

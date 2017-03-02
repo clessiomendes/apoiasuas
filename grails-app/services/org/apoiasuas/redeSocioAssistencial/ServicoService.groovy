@@ -140,6 +140,7 @@ class ServicoService {
 
     public Servico getServicoParaAnuncio() {
         String idsAbrangenciaTerritorial = segurancaService.getAbrangenciasTerritoriaisAcessiveis().collect {it.id}.join(",")
+        //filtrando apenas serviços que tenham um mínimo de informação a ser exibida (mais de 10 caracteres na descrição)
         String hql = "from Servico where length(descricao) > 10 and " +
                 "((abrangenciaTerritorial is null) or abrangenciaTerritorial in(${idsAbrangenciaTerritorial}))"
         int count = Servico.executeQuery("select count(*) " + hql)[0]

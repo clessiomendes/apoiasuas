@@ -42,6 +42,8 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return pedidoCertidaoProcessoDTO
     }
 
+    //Erro nullpointer do framework caso se defina @Transactional explicitamente nos metodos desta classe (que foi especializada de outra classe que
+    // implementa um serviço). Bug do grails, nao consegui identificar o porque ???
     public ProcessInstance novoProcesso(UsuarioSistema responsavelProximaTarefa, Long idFamilia,
                                         Long idOperadorResponsavel, String dadosCertidao,
                                         Long idFormularioEmitido, String cartorio, String numeroAR) {
@@ -68,7 +70,8 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return super._novoProcesso(responsavelProximaTarefa, variables);
     }
 
-    @Transactional(readOnly = true)
+    //Erro nullpointer do framework caso se defina @Transactional explicitamente nos metodos desta classe (que foi especializada de outra classe que
+    // implementa um serviço). Bug do grails, nao consegui identificar o porque ???
     public List<PedidoCertidaoProcessoDTO> getProcessos(Map params) {
         HistoricProcessInstanceQuery query = getQuery(params)
         List<HistoricProcessInstance> processInstances = query.orderByProcessInstanceStartTime().asc().listPage(0, ProcessoDTO.MAX_PAGINACAO)
@@ -82,12 +85,14 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return result
     }
 
-    @Transactional
+    //Erro nullpointer do framework caso se defina @Transactional explicitamente nos metodos desta classe (que foi especializada de outra classe que
+    // implementa um serviço). Bug do grails, nao consegui identificar o porque ???
     public void gravaAR(String idProcesso, String numeroAR) {
         runtimeService.setVariable(idProcesso, PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, numeroAR)
     }
 
-    @Transactional(readOnly = true)
+    //Erro nullpointer do framework caso se defina @Transactional explicitamente nos metodos desta classe (que foi especializada de outra classe que
+    // implementa um serviço). Bug do grails, nao consegui identificar o porque ???
     public List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes(long idFamilia) {
         if (! idFamilia)
             return []
@@ -107,7 +112,8 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return result
     }
 
-    @Transactional(readOnly = true)
+    //Erro nullpointer do framework caso se defina @Transactional explicitamente nos metodos desta classe (que foi especializada de outra classe que
+    // implementa um serviço). Bug do grails, nao consegui identificar o porque ???
     public String getIdProcessoPeloFormularioEmitido(Long idFormularioEmitido) {
         List<HistoricProcessInstance> processos = getQuery(idFormularioEmitido: idFormularioEmitido).list()
         if (processos.size() == 0)

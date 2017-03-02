@@ -5,7 +5,7 @@ import org.apoiasuas.marcador.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
 
 @Secured([DefinicaoPapeis.STR_USUARIO])
-class ProgramaController extends AncestralController {
+class ProgramaAPAGARController extends AncestralController {
 
     static defaultAction = "list"
     ProgramaService programaService

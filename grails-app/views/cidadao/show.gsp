@@ -28,12 +28,16 @@
                     </li>
                 </g:if>
 
-                <g:if test="${cidadaoInstance?.parentescoReferencia}">
                     <li class="fieldcontain">
-                        <span id="parentescoReferencia-label" class="property-label"><g:message code="cidadao.parentescoReferencia.label" default="Parentesco Referencia" /></span>
-                        <span class="property-value" aria-labelledby="parentescoReferencia-label"><g:fieldValue bean="${cidadaoInstance}" field="parentescoReferencia"/></span>
+                        <g:if test="${cidadaoInstance?.referencia}">
+                            <span class="property-label"></span>
+                            <span class="property-value">Referência familiar</span>
+                        </g:if>
+                        <g:else>
+                            <span id="parentescoReferencia-label" class="property-label"><g:message code="cidadao.parentescoReferencia.label" default="Parentesco Referencia" /></span>
+                            <span class="property-value" aria-labelledby="parentescoReferencia-label"><g:fieldValue bean="${cidadaoInstance}" field="parentescoReferencia"/></span>
+                        </g:else>
                     </li>
-                </g:if>
 
                 <g:if test="${cidadaoInstance?.dataNascimento}">
                     <li class="fieldcontain">
@@ -94,6 +98,15 @@
                 <g:link class="add" controller="emissaoFormulario" action="escolherFamilia">Emitir formulário</g:link>
                 <g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosCidadao" params="[idCidadao: cidadaoInstance.id]" >Formulários emitidos</g:link>
                 <g:link class="edit" action="edit" resource="${cidadaoInstance}">Alterar dados</g:link>
+                %{--Só permite remover se não for a ÚNICA referência--}%
+                <g:if test="${podeExcluir}">
+                    <g:link class="export" action="desabilitar" resource="${cidadaoInstance}"
+                            title="Remover este membro do grupo familiar de ${cidadaoInstance.familia.referencia?.nomeCompleto}"
+                            onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Deseja remover este membro da família? (obs: se necessario, ele poderá ser reintegrado no futuro)')}');">Remover</g:link>
+                </g:if>
+                <g:if test="${! cidadaoInstance.habilitado}">
+                    <g:link class="import" action="reabilitar" title="Reintegrar este cidadão ao grupo familiar de ${cidadaoInstance.familia.referencia.nomeCompleto}" resource="${cidadaoInstance}">Reintegrar</g:link>
+                </g:if>
             </fieldset>
 		</div>
 	</body>

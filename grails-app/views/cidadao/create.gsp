@@ -26,6 +26,7 @@
 			</g:hasErrors>
 			<g:form url="[resource:cidadaoInstance, action:'save']" >
 				<fieldset class="form">
+					<g:hiddenField name="familia" value="${cidadaoInstance.familia.id}"/>
 					<g:render template="form"/>
 				</fieldset>
 				<fieldset class="buttons">

@@ -43,6 +43,8 @@ class Familia implements Serializable {
     Set<AcaoFamilia> acoes
     Set<VulnerabilidadeFamilia> vulnerabilidades
     Set<OutroMarcadorFamilia> outrosMarcadores
+    Set<Cidadao> membros
+    AcompanhamentoFamiliar acompanhamentoFamiliar
 
     @InfoPropriedadeDominio(codigo='telefone', descricao = 'Telefone', tipo = CampoFormulario.Tipo.TELEFONE, tamanho = 10)
     String telefone //campo transiente (usado para conter telefones escolhidos/digitados pelo operador em casos de uso como o de preenchimento de formulario
@@ -76,11 +78,7 @@ class Familia implements Serializable {
 
     Cidadao getReferencia() {
         Cidadao result = null
-        membros?.each {
-            if (it?.referencia)
-                result = it
-        }
-        return result
+        return membros?.findAll{ it.referencia && it.habilitado }?.min{ it.dataNascimento }
     }
 
     String toString() {
@@ -111,20 +109,12 @@ class Familia implements Serializable {
     }
 
     public List<Cidadao> getMembrosOrdemAlfabetica() {
-        membros?.sort{ it.nomeCompleto?.toLowerCase() }
+        getMembrosHabilitados()?.sort{ it.nomeCompleto?.toLowerCase() }
     }
 
     public boolean alteradoAposImportacao() {
         return dataUltimaImportacao == null || ! DateUtils.momentosProximos(dataUltimaImportacao, lastUpdated)
     }
-
-/*
-    String mostraTecnicoReferencia() {
-        if (!familiaAcompanhada)
-            return null
-        return 'Técnico de referência: ' + (tecnicoReferencia?.username ?: 'indefinido')
-    }
-*/
 
     public String vulnerabilidadesToString(String separador = ", ") {
         return CollectionUtils.join(vulnerabilidadesHabilitadas.collect { it.vulnerabilidade.descricao }, separador )
@@ -155,18 +145,26 @@ class Familia implements Serializable {
         //retorna apenas as habilitadas e em ordem alfabetica
         return outrosMarcadores.findAll{ it.habilitado }.sort { it.marcador?.descricao?.toLowerCase() }
     }
-
     public Set<AssociacaoMarcador> getTodosOsMarcadores() {
         return programas + acoes + vulnerabilidades + outrosMarcadores;
     }
+    public List<Cidadao> getMembrosHabilitados(boolean habilitados = true) {
+        return membros.sort{ it.id }.findAll{ it.habilitado == habilitados }
+    }
+    public Set<Cidadao> getMembros() {
+        LinkedHashSet<Cidadao> result = new LinkedHashSet<Cidadao>(membros.sort{ a,b ->
+            if (a.referencia && ! b.referencia)
+                return -1;
+            if (b.referencia && ! a.referencia)
+                return 1;
+            if (a.dataNascimento && ! b.dataNascimento)
+                return -1;
+            if (b.dataNascimento && ! a.dataNascimento)
+                return 1;
+            if (a.dataNascimento.equals(b.dataNascimento))
+                return a.id.compareTo(b.id)
+            else
+                return a.dataNascimento.compareTo(b.dataNascimento)
+        });
+    }
 }
-
-class Despesas  implements Serializable {
-    Float aluguel
-    Float energiaEletrica
-    Float agua
-    Float supermercado
-    Float remedios
-    Float outros
-}
-//  CAMPOS COMPOSTOS     <<<===================

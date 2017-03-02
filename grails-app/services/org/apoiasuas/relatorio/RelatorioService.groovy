@@ -6,6 +6,7 @@ import org.apoiasuas.marcador.Acao
 import org.apoiasuas.marcador.OutroMarcador
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.marcador.Vulnerabilidade
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ListaLigada
@@ -75,7 +76,7 @@ class RelatorioService {
     public List<GroovyRowResult> processaConsulta(LocalDate dataNascimentoInicial, LocalDate dataNascimentoFinal,
                              String membros, Long idTecnicoReferencia, List<Programa> programasSelecionados,
                              List<Vulnerabilidade> vulnerabilidadesSelecionadas, List<Acao> acoesSelecionadas,
-                             List<OutroMarcador> outrosMarcadoresSelecionados) {
+                             List<OutroMarcador> outrosMarcadoresSelecionados, ServicoSistema servicoSistema) {
 
         String sqlPrincipalSelect = "select distinct "
         String sqlPrincipalFrom = "from "
@@ -94,7 +95,7 @@ class RelatorioService {
 
         if (membros) {
             sqlPrincipalSelect += ', c.nome_completo as "'+LABEL_NOME+'", c.parentesco_referencia as "'+ LABEL_PARENTESCO+'"';
-            sqlPrincipalFrom += ' left join cidadao c on f.id = c.familia_id ';
+            sqlPrincipalFrom += " left join cidadao c on f.id = c.familia_id and c.habilitado = ${AmbienteExecucao.SqlProprietaria.getBoolean(true)} ";
             sqlPrincipalOrder += ', c.nome_completo';
         } else {
             sqlPrincipalSelect += ', c.nome_completo as "'+LABEL_REFERENCIA+'"';
@@ -112,6 +113,11 @@ class RelatorioService {
                 ' u.username as "' + LABEL_TECNICO + '"';
 
         def filtros = []
+
+        if (servicoSistema) {
+            sqlPrincipalWhere += ' and f.servico_sistema_seguranca_id = ? '
+            filtros << servicoSistema.id
+        }
 
         if (dataNascimentoInicial) {
             sqlPrincipalWhere += ' and c.data_nascimento >= ? '

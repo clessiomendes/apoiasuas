@@ -187,5 +187,7 @@ grails.project.dependency.resolution = {
         compile ':elasticsearch:0.1.0'
 //        compile "org.grails.plugins:hibernate-filter:0.3.2" //Hibernate filters
         compile ':quartz:1.0.1'
+
+        compile "org.grails.plugins:fields:1.5.1"
     }
 }

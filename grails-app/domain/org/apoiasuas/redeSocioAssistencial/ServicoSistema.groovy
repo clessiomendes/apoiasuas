@@ -12,11 +12,12 @@ class ServicoSistema {
     Endereco endereco
     AbrangenciaTerritorial abrangenciaTerritorial
     Boolean habilitado
+    AcessoSeguranca acessoSeguranca
 
 //    AbrangenciaTerritorial abrangenciaTerritorial
 
     static transients = ['urlSite']
-    static embedded = ['endereco']
+    static embedded = ['endereco', 'acessoSeguranca']
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_servico_sistema']
         nome length: 80
@@ -36,3 +37,8 @@ class ServicoSistema {
 
 }
 
+class AcessoSeguranca {
+    boolean inclusaoMembroFamiliar
+    boolean inclusaoFamilia
+    boolean cadastroDetalhado
+}

@@ -8,7 +8,7 @@ import org.apoiasuas.util.StringUtils
 
 import javax.servlet.http.HttpSession
 
-@Secured([DefinicaoPapeis.STR_USUARIO])
+@Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class CidadaoController extends AncestralController {
 
     def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Cidadao.class, only: ['show','edit', 'delete', 'update', 'save']];
@@ -39,12 +39,10 @@ class CidadaoController extends AncestralController {
         return result
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def procurarCidadao() {
         render(view: "procurarCidadao", model: modeloProcurarCidadao + [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:]] )
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def procurarCidadaoExecuta(FiltroCidadaoCommand filtro) {
         //Preenchimento de numeros no primeiro campo de busca indica pesquisa por codigo legado
         boolean buscaPorCodigoLegado = filtro.nomeOuCodigoLegado && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCodigoLegado)
@@ -59,25 +57,34 @@ class CidadaoController extends AncestralController {
             render(view:"procurarCidadao", model: modeloProcurarCidadao + [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados])
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def abrirFamilia(Familia familiaInstance) {
         redirect(controller: 'familia', action: 'show', params: params)
 //        forward controller: GrailsNameUtils.getLogicalName(FamiliaController.class, "Controller"), action: "show"
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def show(Cidadao cidadaoInstance) {
         guardaUltimoCidadaoSelecionado(cidadaoInstance)
-        render view: 'show', model: [cidadaoInstance: cidadaoInstance]
+        render view: 'show', model: [cidadaoInstance: cidadaoInstance, podeExcluir: cidadaoService.podeExcluir(cidadaoInstance)];
 //        respond cidadaoInstance
     }
 
-/*
     @Secured([DefinicaoPapeis.STR_USUARIO])
-    def create() {
-        respond new Cidadao(params)
+    def create(Long idFamilia) {
+        if (! idFamilia) {
+            Familia familiaErro = new Familia();
+            familiaErro.errors.reject("erro.escolher.familia");
+            render(view: "procurarCidadao", model: modeloProcurarCidadao +
+                    [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:], familiaErro: familiaErro] )
+        }
+        Cidadao cidadaoInstance = new Cidadao();
+        cidadaoInstance.familia = Familia.get(idFamilia);
+        //Verifica se é o primeiro membro e força a ser a referencia
+        if (cidadaoInstance.familia.getMembrosHabilitados(true).count { it.referencia == true } == 0) {
+            cidadaoInstance.referencia = true;
+            cidadaoInstance.parentescoReferencia = cidadaoService.PARENTESCO_REFERENCIA;
+        }
+        render view: "create", model: [cidadaoInstance: cidadaoInstance]
     }
-*/
 
     public static Cidadao getUltimoCidadao(HttpSession session) {
         return session[SESSION_ULTIMO_CIDADAO]
@@ -87,28 +94,70 @@ class CidadaoController extends AncestralController {
         session[SESSION_ULTIMO_CIDADAO] = cidadao
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     def edit(Cidadao cidadaoInstance) {
         render view: 'edit', model: getEditCreateModel(cidadaoInstance);
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     def save(Cidadao cidadaoInstance) {
         if (! cidadaoInstance)
             return notFound()
 
-        boolean modoCriacao = cidadaoInstance.id == null
+        boolean modoCriacao = cidadaoInstance.id == null;
+
+        if (modoCriacao) {
+            cidadaoInstance.servicoSistemaSeguranca = segurancaService.servicoLogado;
+            cidadaoInstance.criador = segurancaService.usuarioLogado;
+            cidadaoInstance.habilitado = true;
+        }
+        cidadaoInstance.ultimoAlterador = segurancaService.usuarioLogado;
 
         //Grava
-        if (! cidadaoService.grava(cidadaoInstance)) {
+        if (cidadaoInstance.validate()) {
+            cidadaoService.grava(cidadaoInstance)
+        } else {
             //exibe o formulario novamente em caso de problemas na validacao
             return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(cidadaoInstance))
         }
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'cidadao.label', default: 'Cidadão'), cidadaoInstance.id])
-        return show(cidadaoInstance)
+        flash.message = "Membro familiar ${cidadaoInstance.nomeCompleto} gravado com sucesso";
+        guardaUltimoCidadaoSelecionado(cidadaoInstance)
+        if (modoCriacao) //volta para a tela da familia que chamou a tela atual
+            forward(controller: 'familia', action: 'show', id: cidadaoInstance.familia.id)
+        else
+            render view: 'show', model: [cidadaoInstance: cidadaoInstance, podeExcluir: cidadaoService.podeExcluir(cidadaoInstance)];
     }
 
     private Map getEditCreateModel(Cidadao cidadaoInstance) {
         return [cidadaoInstance: cidadaoInstance]
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def desabilitar(Cidadao cidadaoInstance) {
+        if (! cidadaoInstance)
+            return notFound()
+
+        cidadaoInstance.habilitado = false;
+        cidadaoService.grava(cidadaoInstance)
+        flash.message = "${cidadaoInstance.nomeCompleto} removido do grupo familiar";
+        redirect controller: "familia", action: "show", id: cidadaoInstance.familia.id
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def reabilitar(Cidadao cidadaoInstance) {
+        if (! cidadaoInstance)
+            return notFound()
+
+        cidadaoInstance.habilitado = true;
+        cidadaoService.grava(cidadaoInstance)
+        flash.message = "${cidadaoInstance.nomeCompleto} reintegrado ao grupo familiar";
+        redirect controller: "familia", action: "show", id: cidadaoInstance.familia.id
+    }
+
+    protected def notFound() {
+        flash.message = message(code: 'default.not.found.message', args: [message(code: 'cidadao.label', default: 'Cidadão'), params.id])
+        return redirect(action: "list")
     }
 
 }

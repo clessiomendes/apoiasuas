@@ -10,8 +10,8 @@ e manter o arquivo intacto (pois ele nao vai ser reenviado no request como se po
 --}%
 <%@ page import="org.apoiasuas.fileStorage.FileStorageDTO" %>
 
-<input type="button" id="adicionarArquivo" name="adicionarArquivo" onclick="adicionarArquivoClick();" title="escolher um arquivo em seu computador"/>
-&nbsp;<input type="button" id="limparArquivo" name="limparArquivo" onclick="limparArquivoClick(); return false;" title="limpar"/>
+<input type="button" id="adicionarArquivo" name="adicionarArquivo" class="speed-button-exportar" onclick="adicionarArquivoClick();" title="escolher um arquivo em seu computador"/>
+&nbsp;<input type="button" id="limparArquivo" name="limparArquivo" class="speed-button-adicionar" onclick="limparArquivoClick(); return false;" title="limpar"/>
 &nbsp;&nbsp;<span id="nomeArquivo">${fileName == null ? "(nenhum arquivo selecionado)" : fileName}</span>
 
 %{--this is your file input tag, so i hide it! i used the onchange event to update the choosen file name-->--}%

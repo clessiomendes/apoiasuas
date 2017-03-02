@@ -44,7 +44,7 @@ class BootStrap {
     MarcadorService marcadorService;
 
     public final String VW_REFERENCIAS = "create view vw_referencias as select min(id) as referencia_id, familia_id " +
-            " from cidadao where referencia = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+
+            " from cidadao where habilitado = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+" and referencia = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+
             " group by familia_id"
 
     def init = { servletContext ->

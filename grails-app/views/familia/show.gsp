@@ -40,7 +40,7 @@
 			<g:link class="add" controller="emissaoFormulario" action="escolherFamilia">Emitir formulário</g:link>
 			<g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosFamilia" params="[idFamilia: familiaInstance.id]" >Formulários emitidos</g:link>
             <g:link class="edit" action="edit" resource="${familiaInstance}">Alterar dados</g:link>
-			<g:link class="edit" controller="familia" action="editAcompanhamentoFamilia" id="${familiaInstance.id}">Acompanhamento</g:link>
+			<g:link class="acompanhamento" controller="familia" action="editAcompanhamentoFamilia" id="${familiaInstance.id}">Acompanhamento</g:link>
 		</fieldset>
 	</div>
 	</body>

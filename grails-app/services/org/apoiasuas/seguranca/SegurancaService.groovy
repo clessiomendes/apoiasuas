@@ -267,4 +267,11 @@ class SegurancaService {
 
     }
 
+    public boolean acessoTagLib(String acessoServico) {
+        if (acessoServico && ! acessoServico.trim().isEmpty()) {
+            def temp = servicoLogado.acessoSeguranca.getProperty(acessoServico)
+            return temp.asBoolean();
+        }
+        return true;
+    }
 }

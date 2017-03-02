@@ -4,8 +4,8 @@
 %>
 
 <div class="fieldcontain">
-    <label>Família:</label>
-    cad: ${localDtoFamilia?.getReferencia()?.nomeCompleto}, referência: ${localDtoFamilia?.getReferencia()?.nomeCompleto}
+    <label>Referência familiar</label>
+    ${localDtoFamilia?.getReferencia()?.nomeCompleto}
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'codigoLegado', 'error')} ">

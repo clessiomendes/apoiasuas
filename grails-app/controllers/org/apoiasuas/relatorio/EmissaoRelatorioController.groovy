@@ -110,7 +110,7 @@ class EmissaoRelatorioController extends AncestralController {
 
         return relatorioService.processaConsulta(dataNascimentoInicial, dataNascimentoFinal,
                 definicao.membros, definicao.tecnicoReferencia, programasSelecionados, vulnerabilidadesSelecionadas,
-                acoesSelecionadas, outrosMarcadoresSelecionados);
+                acoesSelecionadas, outrosMarcadoresSelecionados, servicoCorrente);
     }
 }
 

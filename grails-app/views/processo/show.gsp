@@ -45,7 +45,7 @@
                             <g:form action="reabreTarefa" id="${tarefa.id}">
                             <li class="fieldcontain">
                                 <span class="property-label">${tarefa.descricao}</span>
-                                <span class="property-value" aria-labelledby="membros-label">
+                                <span class="property-value">
                                     <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CONCLUIDA}">
                                         Concluída por ${tarefa.responsavel?.username} em <g:formatDate date="${tarefa.fim}"/>
                                         <g:submitButton showif="${processo.fim == null}" name="reabreTarefa" class="save" value="voltar" />
@@ -71,7 +71,7 @@
                                 <g:if test="${! tarefa.ultimaPendente}">
                                 <li class="fieldcontain">
                                     <span class="property-label">Próximo responsável</span>
-                                    <span class="property-value" aria-labelledby="membros-label">
+                                    <span class="property-value">
                                         <g:select required="" name="proximoResponsavel" noSelection="${['':'']}" from="${ususariosDisponiveis.collect{it.username}}" keys="${ususariosDisponiveis.collect{it.id}}"/>
                                     </span>
                                 </li>
@@ -79,7 +79,7 @@
 
                                 <li class="fieldcontain">
                                     <span class="property-label"></span>
-                                    <span class="property-value" aria-labelledby="membros-label">
+                                    <span class="property-value">
                                         <g:submitButton name="${tarefa.proximosPassos[0]}" class="save" value="${tarefa.proximosPassos[0]}" />
                                         %{--Caso exista mais de uma proxima tarefa, exibir ao lado de cada botão a tarefa atual correspondente--}%
                                         ${processo.tarefasPendentes.size() > 1 ? "("+tarefa.descricao+")" : ""}

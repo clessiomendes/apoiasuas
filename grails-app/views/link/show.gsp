@@ -70,8 +70,8 @@
             </ol>
 			<g:form url="[resource:linkInstance, action:'delete']">
 				<fieldset class="buttons">
-					<g:link class="edit" action="edit" resource="${linkInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+					<g:link class="edit" action="edit" resource="${linkInstance}"><g:message code="default.button.edit.label" default="Editar" /></g:link>
+					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Apagar')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Confirma remoção?')}');" />
 				</fieldset>
 			</g:form>
 		</div>

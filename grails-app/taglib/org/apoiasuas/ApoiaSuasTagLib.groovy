@@ -1,6 +1,7 @@
 package org.apoiasuas
 
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apoiasuas.anotacoesDominio.InfoDominioUtils
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
@@ -169,6 +170,7 @@ class ApoiaSuasTagLib {
             case CampoFormulario.Tipo.DATA:
                 return textField(
                         name: campoFormulario.caminhoCampo,
+                        class: "dateMask",
                         size: 10,
                         autofocus: focoInicial,
                         value: ((Date)campoFormulario.valorArmazenado)?.format("dd/MM/yyyy"))
@@ -254,12 +256,13 @@ class ApoiaSuasTagLib {
  * prioridade sobre 2).
  *
  * @attr chave chave do arquivo de internacionalização. Se ausente ou não encontrada, utiliza-se o corpo da tag como fonte para o texto de ajuda
+ * @attr args A list of argument values to apply to the message, when chave is used.
  */
     def helpTooltip = { attrs, body ->
         log.debug("Help Tooltip Tag")
         String mensagem = body();
-        if (attrs.chave && message(code: attrs.chave))
-            mensagem = message(code: attrs.chave)
+        if (attrs.chave && message(code: attrs.chave, args: attrs.args))
+            mensagem = message(code: attrs.chave, args: attrs.args)
         if (! mensagem?.trim())
             return;
 
@@ -311,8 +314,17 @@ class ApoiaSuasTagLib {
  * @attr titulo REQUESTED titulos presente nas orelhas de cada tab
  * @attr template se presente, renderiza o conteúdo da tab aa partir de um template _.gsp. caso contrário, o corpo da tag é que é renderizado
  * @attr model parâmetros a serem passados para o template como modelo
+ * @attr roles se estiver presente, condiciona a renderizacao do conteudo aa permissao de acesso exigida
+ * @attr showif teste para determinar se o tab será exibido ou não, também pode ser passado um atributo de ServicoSistema.acessoSeguranca para que seja feito o teste
  */
     def tab = { attrs, body ->
+        //Uma vez que o parametro showif esta presente, testar se ele eh falso ou nulo e, neste caso, ignorar o conteúdo
+        if (attrs.containsKey("showif") && (! attrs.showif))
+            return;
+
+        if (attrs.containsKey('roles') && ! SpringSecurityUtils.ifAnyGranted(attrs.roles))
+            return;
+
         //MarkupBuilder para geração de HTML por meio de uma DSL groovy
         def html = new groovy.xml.MarkupBuilder(out)
 
@@ -334,7 +346,6 @@ class ApoiaSuasTagLib {
 //            throw new ApoiaSuasException("Necessário definir flag $TABS_O_QUE_MONTAR no request antes de usar a tag <g:tab>")
         }
     }
-
 
 /**
  * Tag simples que gera um span com o corpo em seu interior mediante um teste

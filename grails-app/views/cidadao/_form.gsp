@@ -4,27 +4,62 @@
 	org.apoiasuas.cidadao.Cidadao localDtoCidadao = cidadaoInstance
 %>
 
-%{--
-<div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'referencia', 'error')} ">
-	<label for="referencia">
-		<g:message code="cidadao.referencia.label" default="Referencia" />
-	</label>
-	<g:checkBox name="referencia" value="${localDtoCidadao?.referencia}" />
-</div>
---}%
 <asset:javascript src="especificos/jquery-mask.js"/>
 <g:javascript>
 	$(function() {
 		$(".dateMask").mask("99/99/9999");
 	});
+
+/*
+	//evento onCheck para o checkbox "efetivado"
+	$("#checkReferencia").change(function() {
+		//var $dataEfetivada = $("#dataEfetivada");
+		if (this.checked) {
+			$("#divParentescoReferencia").hide()
+		} else {
+			$("#divParentescoReferencia").show();
+		}
+	});
+	$("#checkReferencia").change();
+*/
+
 </g:javascript>
 
+%{--
 <div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'nomeCompleto', 'error')} ">
 	<label for="nomeCompleto">
 		<g:message code="cidadao.nomeCompleto.label" default="Nome Completo" />
 	</label>
 	<g:textField name="nomeCompleto" size="60" maxlength="60" value="${localDtoCidadao?.nomeCompleto}"/>
 </div>
+--}%
+
+<f:with bean="${localDtoCidadao}">
+	<f:field property="nomeCompleto" label="Nome completo" widget-size="60" required="true"/>
+
+%{--
+<div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'referencia', 'error')} ">
+	<label for="referencia"></label>
+	<g:checkBox name="referencia" id="checkReferencia" value="${localDtoCidadao?.referencia}" /> Referencia
+</div>
+--}%
+
+%{--Só permite alterar se não for a referência--}%
+	<div id="divParentescoReferencia" class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'parentescoReferencia', 'error')} ">
+		<g:hiddenField name="referencia" value="${localDtoCidadao.referencia}"/>
+		<g:if test="${localDtoCidadao.referencia}">
+			<label></label>Referência Familiar
+			<g:hiddenField name="parentescoReferencia" value="${localDtoCidadao.parentescoReferencia}"/>
+		</g:if>
+		<g:else>
+			<label for="parentescoReferencia">
+				<nobr>
+					Parentesco <g:helpTooltip chave="cidadao.parentesco.referencia" args="[localDtoCidadao.familia.referencia.nomeCompleto]"/>
+				</nobr>
+			</label>
+			<g:textField name="parentescoReferencia" value="${localDtoCidadao?.parentescoReferencia}"/>
+		</g:else>
+	</div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'dataNascimento', 'error')} ">
 	<label for="dataNascimento">
@@ -83,12 +118,4 @@
 	<g:textField name="nomePai" size="60" maxlength="60" value="${localDtoCidadao?.nomePai}"/>
 </div>
 
-%{--
-<div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'parentescoReferencia', 'error')} ">
-	<label for="parentescoReferencia">
-		<g:message code="cidadao.parentescoReferencia.label" default="Parentesco Referencia" />
-	</label>
-	<g:textField name="parentescoReferencia" value="${localDtoCidadao?.parentescoReferencia}"/>
-</div>
---}%
-
+</f:with>

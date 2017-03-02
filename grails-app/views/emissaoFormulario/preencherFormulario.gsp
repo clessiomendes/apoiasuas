@@ -10,15 +10,15 @@
 <body>
 
 <g:javascript>
-            /**
-            * Preenche automaticamente logradouros à partir do que já está na base de dados
-            */
-            $(document).ready(function() {
-               $('.listaLogradouros').autocomplete({
-                    delay: 700, minLength: 2, source: '<g:createLink controller='familia' action='obtemLogradouros'/>'
-               });
+    /**
+    * Preenche automaticamente logradouros à partir do que já está na base de dados
+    */
+    $(document).ready(function() {
+       $('.listaLogradouros').autocomplete({
+            delay: 700, minLength: 2, source: '<g:createLink controller='familia' action='obtemLogradouros'/>'
+       });
 
-            });
+    });
 </g:javascript>
 
 <div class="nav" role="navigation">

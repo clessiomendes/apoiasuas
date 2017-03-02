@@ -32,7 +32,7 @@
 					<g:render template="form"/>
 				</fieldset>
 				<fieldset class="buttons">
-                    <g:submitButton name="update" class="save" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+                    <g:submitButton name="update" class="save" value="${message(code: 'default.button.update.label', default: 'Gravar')}" />
 				</fieldset>
 			</g:form>
 		</div>

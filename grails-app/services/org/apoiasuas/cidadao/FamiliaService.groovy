@@ -94,7 +94,7 @@ class FamiliaService {
             result << messageSource.getMessage("notificacao.familia.acompanhada", [familia.tecnicoReferencia.username].toArray(), locale);
 
         //testa idades voltadas ao SCFV
-        familia.membros.each { Cidadao cidadao ->
+        familia.getMembrosHabilitados().each { Cidadao cidadao ->
             if (cidadao.idade && cidadao.idade < 7)
                 result << messageSource.getMessage("notificacao.familia.SCFV.0a6", null, locale);
             if (cidadao.idade && cidadao.idade >= 60)
@@ -180,6 +180,15 @@ class FamiliaService {
                 .collect {
             it.memo + "\n-> " + it.situacao
         }, "\n----------------\n")
+    }
+
+    @Transactional
+    public Familia gravaFamiliaEMembros(Familia familia)
+    {
+        familia.getMembros().each {
+            it.save()
+        }
+        return familia.save()
     }
 
 }

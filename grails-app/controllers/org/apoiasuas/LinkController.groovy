@@ -18,7 +18,7 @@ class LinkController extends AncestralController {
     static defaultAction = "list"
     public static String CHECKBOX_COMPARTILHAR = "compartilhar"
 
-    def beforeInterceptor = [action: this.&interceptaSeguranca/*("ola")*/, (ENTITY_CLASS_ENTRY):Link.class, only: ['show','edit', 'delete', 'update', 'save']]
+    def beforeInterceptor = [action: this.&interceptaSeguranca, (ENTITY_CLASS_ENTRY):Link.class, only: ['show','edit', 'delete', 'update', 'save']]
 
     def exibeLinks() {
         log.info('Listando links');
@@ -27,8 +27,9 @@ class LinkController extends AncestralController {
     }
 
     def list(Integer max) {
-        params.max = Math.min(max ?: 50, 100)
-        respond Link.findAllByServicoSistemaSeguranca(getServicoCorrente(), params).sort { it.id }, model:[linkInstanceCount: Link.count()]
+        params.max = max ?: 200
+        ArrayList<Link> linkList = Link.findAllByServicoSistemaSeguranca(getServicoCorrente(), params).sort { it.id }
+        respond linkList, model:[linkInstanceCount: linkList.size()]
     }
 
     def show(Link linkInstance) {
@@ -39,7 +40,7 @@ class LinkController extends AncestralController {
         render view: 'show', model: getModelExibicao(linkInstance)
     }
 
-    @Transactional
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     def save(Link linkInstance) {
         if (! linkInstance)
             return notFound()
@@ -101,7 +102,6 @@ class LinkController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
-    @Transactional
     def delete(Link linkInstance) {
         if (! linkInstance)
             return notFound()
@@ -116,7 +116,6 @@ class LinkController extends AncestralController {
         return redirect(action: "list");
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def downloadFile(Link linkInstance) {
         if (! linkInstance)
             return notFound()
@@ -129,7 +128,7 @@ class LinkController extends AncestralController {
         response.outputStream.flush()
     }
 
-    private LinkedHashMap<String, Object> getModelEdicao(Link linkInstance) {
+    private Map<String, Object> getModelEdicao(Link linkInstance) {
         //recarrega objeto para preencher campos transientes
         if (linkInstance?.id)
             linkInstance = linkService.getLink(linkInstance?.id)

@@ -28,15 +28,15 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
-			<g:form url="[resource:familiaInstance, action:'save']">
+			<g:form controller="familia" id="${familiaInstance.id}">
 				<g:hiddenField name="version" value="${familiaInstance?.version}" />
 				<fieldset class="form">
 					<g:render template="form"/>
 				</fieldset>
 
 				<fieldset class="buttons">
-                    <g:submitButton name="update" class="save" value="${message(code: 'default.button.update.label', default: 'Gravar')}" />
-					<g:actionSubmit action="show" class="cancel" value="Cancelar"/>
+					<g:actionSubmit action="save" id="${familiaInstance.id}" class="save" value="${message(code: 'default.button.update.label', default: 'Gravar')}"/>
+					<g:actionSubmit action="show" id="${familiaInstance.id}" class="cancel" value="Cancelar"/>
 				</fieldset>
 			</g:form>
 		</div>

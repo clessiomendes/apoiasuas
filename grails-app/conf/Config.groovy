@@ -126,19 +126,21 @@ environments {
 //                                              ============   log4j configuration    ===========
 
 log4j.main = {
+//logs, em arquivos separados:
     def errorAppender = new RollingFileAppender(name: 'errorFile', append: true, maxFileSize: '10000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/error.log',
-            maxBackupIndex: 10, layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: Level.ERROR);
+            maxBackupIndex: 10, layout: pattern(conversionPattern: '%d{dd/MM/yy HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: Level.ERROR);
     def infoAppender = new RollingFileAppender(name: 'infoFile', append: true, maxFileSize: '10000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/info.log',
-            maxBackupIndex: 10, layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: Level.INFO);
-//    log, em arquivo separado, das estatísticas de uso de recursos do sistema
+            maxBackupIndex: 10, layout: pattern(conversionPattern: '%d{dd-MMM HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: Level.INFO);
+//estatísticas de uso de recursos do sistema
     def memAppender = new RollingFileAppender(name: 'memFile', append: true, maxFileSize: '30000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/mem.log',
             maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm};%m%n'));
+//sqls
     def sqlAppender = new RollingFileAppender(name: 'sqlFile', append: true, maxFileSize: '30000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/sql.log',
-            maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm:ss};%p;%c{8};%m%n'));
+            maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm:ss};%X{username};%X{requestedSessionId};%m%n'));
 
     switch (AmbienteExecucao.CURRENT) {
     case AmbienteExecucao.CLEVERCLOUD:
@@ -147,13 +149,13 @@ log4j.main = {
             appender infoAppender;
             appender memAppender;
             appender sqlAppender;
-            console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.ERROR
+            console name: 'stdout', layout: pattern(conversionPattern: '(as) %d{dd-MMM HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: org.apache.log4j.Level.ERROR
         }
         root { error 'stdout','errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
         break
     case AmbienteExecucao.APPFOG:
         appenders {
-            console name: 'console', layout: pattern(conversionPattern: '(af) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.ERROR
+            console name: 'console', layout: pattern(conversionPattern: '(af) %d{dd-MMM HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold:org.apache.log4j.Level.ERROR
         }
         root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
         break
@@ -165,18 +167,9 @@ log4j.main = {
             appender infoAppender;
             appender memAppender;
             appender sqlAppender;
-            console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold: org.apache.log4j.Level.DEBUG
+            console name: 'stdout', layout: pattern(conversionPattern: '(cc) %d{dd-MMM HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: org.apache.log4j.Level.DEBUG
         }
         root { error 'stdout', 'errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
-
-        //Liga o appender sqlFile (sql.log) ao trace do hibernate
-        debug additivity: true, sqlFile: [
-                'org.hibernate.engine.transaction.spi', //begin, commit
-                'org.hibernate.stat.internal', //tempo de execucao de cada HQL
-//            'org.hibernate.type.descriptor.sql.BasicBinder', //parametros PASSADOS para as SQLs
-//            'org.hibernate.type.descriptor.sql.BasicExtractor', //parametros RETORNADOS pelas SQLs
-                'org.hibernate.SQL' //comandos SQL (e a tradução HQL - SQL, quando for executado um HQL)
-        ]
 
         break
     default:
@@ -184,6 +177,15 @@ log4j.main = {
         console name: 'console', layout: pattern(conversionPattern: '(def) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n')
         root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
     }
+
+    //Liga o appender sqlFile (sql.log) ao trace do hibernate
+    debug additivity: true, sqlFile: [
+//            'org.hibernate.engine.transaction.spi', //begin, commit
+//            'org.hibernate.stat.internal', //tempo de execucao de cada HQL
+//            'org.hibernate.type.descriptor.sql.BasicBinder', //parametros PASSADOS para as SQLs
+//            'org.hibernate.type.descriptor.sql.BasicExtractor', //parametros RETORNADOS pelas SQLs
+            'org.hibernate.SQL' //comandos SQL (e a tradução HQL - SQL, quando for executado um HQL)
+    ]
 
     //Liga o appender memFile (mem.log) à Job que gera as estatísticas de recursos do sistema
     all additivity: false, memFile: ['grails.app.jobs.apoiasuas.MemLoggingJob']

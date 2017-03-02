@@ -62,9 +62,7 @@ class Cidadao implements Serializable {
     ServicoSistema servicoSistemaSeguranca
 
     Date dateCreated, lastUpdated, dataUltimaImportacao;
-//    boolean origemImportacaoAutomatica //importado
-//    Parentesco parentescoReferencia
-
+    boolean habilitado;
 
     static belongsTo = [familia: Familia] //importado
 
@@ -73,7 +71,7 @@ class Cidadao implements Serializable {
         referencia(nullable: false)
         criador(nullable: false)
         ultimoAlterador(nullable: false)
-        familia unique: 'nomeCompleto' //Cria um índice composto e único contendo os campos familia(id) e nomeCompleto
+        familia(nullable: false, unique: 'nomeCompleto') //Cria um índice composto e único contendo os campos familia(id) e nomeCompleto
         servicoSistemaSeguranca(nullable: false)
     }
 

@@ -12,6 +12,20 @@
     function editMarcadores() {
         location.href = "${createLink(action: 'editMarcadoresApenas', id: localDtoFamilia.id)}";
     }
+
+    /**
+     * Navega para nova tela de edição de referencia e parentescos
+     */
+    function trocaReferencia() {
+        location.href = "${createLink(controller: 'referenciaFamiliar', action: 'edit', id: localDtoFamilia.id)}";
+    }
+
+    /**
+     * Navega para nova tela de inclusão de membros
+     */
+    function novoMembro() {
+        location.href = "${createLink(controller: 'cidadao', action: 'create', params: [idFamilia: localDtoFamilia.id])}";
+    }
 </g:javascript>
 
 <ol class="property-list servico" style="padding: 0; margin: 0;">
@@ -25,7 +39,7 @@
             ações previstas<g:helpTooltip chave="help.marcador.acoes"/>
             e outras sinalizações<g:helpTooltip chave="help.marcador.outros.marcadores"/>
 
-            <input type="button" class="btn-editar-marcadores" style="transform: scale(0.8);"
+            <input id="editarMarcadores" type="button" class="btn-editar-marcadores" style="transform: scale(0.8);"
                    title="Clique para alterar estas definições (incluir, remover, etc)" onclick="editMarcadores();">
         </legend>
         <g:each in="${localDtoFamilia.programasHabilitados}" var="marcadorFamilia">
@@ -91,18 +105,40 @@
     </li>
 </g:if>
 
-<g:if test="${localDtoFamilia?.membros}">
+    %{--Lista membros habilitados--}%
     <li class="fieldcontain">
         <span id="membros-label" class="property-label"><g:message code="familia.membros.label" default="Membros" /></span>
-        <g:each in="${localDtoFamilia.membros}" var="m">
+        <g:each in="${localDtoFamilia.getMembrosHabilitados(true)}" var="m">
             <span class="property-value" aria-labelledby="membros-label">
                 <g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link>
                 ${m.parentescoReferencia ? ", "+m.parentescoReferencia : ""}
                 ${m.idade ? ", "+m.idade + " anos" : ""}
             </span>
         </g:each>
+        <span class="property-value" aria-labelledby="membros-label">
+            <sec:access acessoServico="inclusaoMembroFamiliar">
+                <input id="novoMembro" type="button" class="create" style="margin: 5px 5px 5px 0"
+                       title="Incluir um novo cidadão como membro desta família" value="Novo membro" onclick="novoMembro();">
+            </sec:access>
+            <input id="trocarReferencia" type="button" class="edit" style="margin: 5px 5px 5px 0"
+                   title="Alterar a referência familiar e o parentesco entre os membros" value="Trocar referência" onclick="trocaReferencia();">
+        </span>
     </li>
-</g:if>
+
+    %{--Lista membros removidos do grupo familiar--}%
+    <g:if test="${localDtoFamilia?.getMembrosHabilitados(false)}">
+        <li class="fieldcontain">
+            <span id="membros-removidos-label" class="property-label">Membros removidos</span>
+            <g:each in="${localDtoFamilia.getMembrosHabilitados(false)}" var="m">
+                <span class="property-value" aria-labelledby="membros-removidos-label">
+                    <g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link>
+                    ${m.parentescoReferencia ? ", "+m.parentescoReferencia : ""}
+                    ${m.idade ? ", "+m.idade + " anos" : ""}
+                </span>
+            </g:each>
+        </li>
+    </g:if>
+
 <g:if test="${localDtoFamilia?.telefones}">
     <li class="fieldcontain">
         <span id="telefones-label" class="property-label"><g:message code="familia.telefones.label" default="Telefones" /></span>

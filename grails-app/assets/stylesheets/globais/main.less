@@ -281,7 +281,7 @@ img {
 
 fieldset,
 .property-list {
-	margin: 0.5em 0.5em 0 0.5em;
+	margin: 0.5em 0.5em 0.5em 0.5em;
 	padding: 0.5em 0.5em 0.5em;
 	position: relative;
 	zoom: 1;
@@ -290,7 +290,7 @@ fieldset,
 
 .property-list .fieldcontain {
 	list-style: none;
-	overflow: visible;
+	overflow: hidden;
 	zoom: 1;
 }
 
@@ -348,7 +348,7 @@ input[type=checkbox], input[type=radio] {
 	padding: 0;
 }
 
-input:focus, select:focus, textarea:focus {
+input[type='text']:focus, select:focus, textarea:focus {
 	background-color: #ffffff;
 	border: 1px solid #eeeeee;
 	outline: 0;
@@ -536,6 +536,89 @@ th.desc a {
     background: #ffe6e5;
 }
 
+/*
+table.tabelaListagem {
+	border-top: 1px solid #DFDFDF;
+	border-collapse: collapse;
+	width: 100%;
+	margin-bottom: 1em;
+}
+
+table.tabelaListagem tr {
+	border: 0;
+}
+
+table.tabelaListagem tr>td:first-child, table.tabelaListagem tr>th:first-child {
+	padding-left: 1.25em;
+}
+
+table.tabelaListagem tr>td:last-child, table.tabelaListagem tr>th:last-child {
+	padding-right: 1.25em;
+}
+
+table.tabelaListagem td, table.tabelaListagem th {
+	line-height: 1.5em;
+	padding: 0.5em 0.6em;
+	text-align: left;
+	vertical-align: top;
+}
+
+table.tabelaListagem th {
+	background-color: @cor-fundo-paineis-e-botoes;
+	background-image: -moz-linear-gradient(top, #ffffff, #eaeaea);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #eaeaea));
+	    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#ffffff', EndColorStr = '#eaeaea');
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#eaeaea')";
+	color: #666666;
+	font-weight: bold;
+	line-height: 1.7em;
+	padding: 0.2em 0.6em;
+}
+
+table.tabelaListagem thead th {
+	white-space: nowrap;
+}
+
+table.tabelaListagem th a {
+	display: block;
+	text-decoration: none;
+}
+
+table.tabelaListagem th a:link, table.tabelaListagem th a:visited {
+	color: #666666;
+}
+
+table.tabelaListagem th a:hover, table.tabelaListagem th a:focus {
+	color: #333333;
+}
+
+table.tabelaListagem th.sortable a {
+	background-position: right;
+	background-repeat: no-repeat;
+	padding-right: 1.1em;
+}
+
+table.tabelaListagem th.asc a {
+	background-image: url(../../images/sorted_asc.gif);
+}
+
+table.tabelaListagem th.desc a {
+	background-image: url(../../images/sorted_desc.gif);
+}
+
+table.tabelaListagem .odd {
+	background: #f7f7f7;
+}
+
+table.tabelaListagem .even {
+    background: #ffffff;
+}
+
+.tecnicoReferencia {
+    background: #ffe6e5;
+}
+*/
+
 /* PAGINATION */
 
 .pagination {
@@ -670,6 +753,16 @@ th.desc a {
 	background-image: url(../../images/database_delete.png);
 }
 
+.buttons .import {
+  .buttonsFooter();
+  background-image: url(../../images/import.png);
+}
+
+.buttons .export {
+  .buttonsFooter();
+  background-image: url(../../images/export.png);
+}
+
 .buttons .edit {
   .buttonsFooter();
   background-image: url(../../images/database_edit.png);
@@ -691,8 +784,13 @@ th.desc a {
 }
 
 .buttons .add {
-    .buttonsFooter();
-    background-image: url(../../images/database_add.png);
+  .buttonsFooter();
+  background-image: url(../../images/database_add.png);
+}
+
+.buttons .acompanhamento {
+  .buttonsFooter();
+  background-image: url(../../images/acompanhamento.png);
 }
 
 .buttons .list {
@@ -711,10 +809,11 @@ th.desc a {
 }
 
 .speedButton(@imagem) {
-  background: @cor-fundo-paineis-e-botoes @imagem no-repeat center;
+  background: @imagem no-repeat center;
+  .imageButton();
+  background-color: @cor-fundo-paineis-e-botoes;
   width: 25px;
   height: 25px;
-  .imageButton();
 }
 
 .imageTextButton(@imagem) {
@@ -747,6 +846,10 @@ input.save {
   .imageTextButton(url(../../images/database_save.png));
 }
 
+input.edit {
+  .imageTextButton(url(../../images/database_edit.png));
+}
+
 input.cancel {
   .imageTextButton(url(../../images/cancel.png));
 }
@@ -755,9 +858,16 @@ input.ok {
   .imageTextButton(url(../../images/database_add.png));
 }
 
-
-input#adicionarArquivo {
+.speed-button-exportar {
   .speedButton(url(../../images/export.png));
+}
+
+.speed-button-procurar {
+  .speedButton(url(../../images/search.png));
+}
+
+.speed-button-adicionar {
+  .speedButton(url(../../images/search.png));
 }
 
 input#adicionar {
@@ -923,4 +1033,8 @@ table.tabelaListagem th:hover, .tabelaListagem tr:hover {
 
 input::-moz-focus-inner {
   border: 0;
+}
+
+nobr {
+  display: inline-block;
 }
