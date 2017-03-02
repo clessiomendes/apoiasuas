@@ -21,7 +21,7 @@
         <g:textField name="username" required="" value="${localDtoUsuarioSistema?.username}"/>
     </div>
     <div class="fieldcontain ${hasErrors(bean: localDtoUsuarioSistema, field: 'servicoSistemaSeguranca', 'error')} required">
-        <label for="servico">
+        <label for="servicoSistemaSeguranca">
             <g:message code="usuarioSistema.servico.label"/>
             <span class="required-indicator">*</span>
         </label>

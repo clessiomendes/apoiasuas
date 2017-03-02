@@ -10,13 +10,14 @@ class Programa implements Marcador {
     String sigla
     ProgramasPreDefinidos programaPreDefinido
     ServicoSistema servicoSistemaSeguranca;
+    Boolean habilitado;
 
     //transientes:
     Date data;
     UsuarioSistema tecnico;
-    Boolean habilitado;
+    Boolean selecionado;
     String observacao;
-    static transients = ['data', 'tecnico', 'habilitado', 'observacao']
+    static transients = ['data', 'tecnico', 'selecionado', 'observacao']
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_programa']

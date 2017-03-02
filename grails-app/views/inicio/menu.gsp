@@ -91,6 +91,7 @@
                 <g:link title="Importação de planilhas de banco de dados do cadastro de famílias do seu serviço para uso no sistema" class="verde_oliva" controller="importacaoFamilias" action="list">Importação de famílias</g:link>
                 <g:link title="Criação e modificação dos usuários (operadores) do sistema, respectivos perfis e serviços a que estão vinculados" class="laranja" controller="usuarioSistema" action="list">Operadores do sistema</g:link>
                 <g:link title="Criação e modificação dos serviços habilitados a usarem o sistema" class="verde_agua" controller="servicoSistema" action="list">Serviços utilizando o sistema</g:link>
+                <g:link title="Criação e modificação de programas, vulnerabilidades, ações e outros marcadores disponíveis para serem aplicados às famílias" class="rosa" controller="marcador" action="list">Programas, Vulnerabilidades, etc</g:link>
             </sec:ifAnyGranted>
             <sec:ifAnyGranted roles="${DefinicaoPapeis.STR_USUARIO}">
                 <sec:ifNotGranted roles="${DefinicaoPapeis.STR_SUPER_USER}">

@@ -8,7 +8,7 @@
 	<body>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+				<li><g:link class="list" action="list">Listar</g:link></li>
 			</ul>
 		</div>
 		<div id="create-link" class="content scaffold-create" role="main">
@@ -23,10 +23,9 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
-			<g:form controller="marcador" action="save" id="${marcadorInstance.id}">
+			<g:form controller="marcador" action="save${entityName}" id="${marcadorInstance.id}">
 				<fieldset class="form">
 					<g:render template="form"/>
-					<f:field label="Disponível para" bean="${marcadorInstance}" property="servicoSistemaSeguranca" widget-from="${servicosDisponiveis.collect{it.nome}}" widget-keys="${servicosDisponiveis.collect{it.id}}"/>
 				</fieldset>
 				<fieldset class="buttons">
 					<g:submitButton name="create" class="save" value="${message(code: 'default.button.update.label', default: 'Gravar')}" />

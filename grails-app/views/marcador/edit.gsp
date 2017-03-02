@@ -9,8 +9,8 @@
 	<body>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+				<li><g:link class="list" action="list">Listar</g:link></li>
+				%{--<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>--}%
 			</ul>
 		</div>
 		<div id="edit-servico" class="content scaffold-edit" role="main">
@@ -25,7 +25,7 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
-			<g:form controller="marcador" action="save" id="${marcadorInstance.id}">
+			<g:form controller="marcador" action="save${entityName}" id="${marcadorInstance.id}">
 				<g:hiddenField name="version" value="${marcadorInstance?.version}" />
 				<fieldset class="form">
 					<g:render template="form"/>

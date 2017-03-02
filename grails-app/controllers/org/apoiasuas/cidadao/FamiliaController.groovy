@@ -95,10 +95,10 @@ class FamiliaController extends AncestralController {
     }
 
     private Map getEditCreateModel(Familia familiaInstance) {
-        List<Programa> programasDisponiveis = marcadoresDisponiveis(familiaInstance.programas, marcadorService.getProgramasDisponiveis() )
-        List<Acao> acoesDisponiveis = marcadoresDisponiveis(familiaInstance.acoes, marcadorService.getAcoesDisponiveis() )
-        List<Vulnerabilidade> vulnerabilidadesDisponiveis = marcadoresDisponiveis(familiaInstance.vulnerabilidades, marcadorService.getVulnerabilidadesDisponiveis() )
-        List<Vulnerabilidade> outrosMarcadoresDisponiveis = marcadoresDisponiveis(familiaInstance.outrosMarcadores, marcadorService.getOutrosMarcadoresDisponiveis() )
+        List<Programa> programasDisponiveis = marcadoresDisponiveis(familiaInstance.programas, marcadorService.getMarcadoresDisponiveis(Programa.class) )
+        List<Acao> acoesDisponiveis = marcadoresDisponiveis(familiaInstance.acoes, marcadorService.getMarcadoresDisponiveis(Acao.class) )
+        List<Vulnerabilidade> vulnerabilidadesDisponiveis = marcadoresDisponiveis(familiaInstance.vulnerabilidades, marcadorService.getMarcadoresDisponiveis(Vulnerabilidade.class) )
+        List<OutroMarcador> outrosMarcadoresDisponiveis = marcadoresDisponiveis(familiaInstance.outrosMarcadores, marcadorService.getMarcadoresDisponiveis(OutroMarcador.class) )
         return [familiaInstance: familiaInstance,
                 operadores: marcadorService.getTecnicosIncluiMarcadores(familiaInstance),
                 outrosMarcadoresDisponiveis: outrosMarcadoresDisponiveis, programasDisponiveis: programasDisponiveis,
@@ -114,11 +114,11 @@ class FamiliaController extends AncestralController {
      */
     private List<Marcador> marcadoresDisponiveis(Set<AssociacaoMarcador> marcadoresSelecionados, List<Marcador> marcadoresDisponiveis) {
         marcadoresDisponiveis.each { Marcador marcadorDisponivel ->
-            marcadorDisponivel.habilitado = false;//assume como não selecionado inicialmente
+            marcadorDisponivel.selecionado = false;//assume como não selecionado inicialmente
             marcadorDisponivel.tecnico = segurancaService.usuarioLogado //utilizar usuario logado como opção default
             marcadoresSelecionados.each { marcadorSelecionado ->
                 if (marcadorSelecionado.marcador == marcadorDisponivel) {
-                    marcadorDisponivel.habilitado = marcadorSelecionado.habilitado;
+                    marcadorDisponivel.selecionado = marcadorSelecionado.habilitado;
                     marcadorDisponivel.observacao = marcadorSelecionado.observacao;
                     marcadorDisponivel.tecnico = marcadorSelecionado.tecnico;
                 }
@@ -126,9 +126,9 @@ class FamiliaController extends AncestralController {
 //            marcadorDisponivel.selected = marcadoresSelecionados.find { it.marcador == marcadorDisponivel }
         }
         marcadoresDisponiveis.sort { Marcador p1, Marcador p2 ->
-            if (p1.habilitado && ! p2.habilitado)
+            if (p1.selecionado && ! p2.selecionado)
                 return -1;
-            if (p2.habilitado && ! p1.habilitado)
+            if (p2.selecionado && ! p1.selecionado)
                 return 1;
             return p1.descricao.compareToIgnoreCase(p2.descricao)
         }

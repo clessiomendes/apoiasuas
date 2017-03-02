@@ -86,7 +86,7 @@
 							<g:hiddenField name="idMembro" value="${m.id}"/>
 							<td style="white-space: nowrap">
 								<g:textField name="parentescoMembro" class="parentesco-membro" size="7" title="Grau de parentesco deste membro em relação à referência selecionada"/>
-								<g:helpTooltip>Grau de parentesco deste membro (${m.nomeCompleto}) em relação à referência (${novaReferencia?.nomeCompleto}</g:helpTooltip>
+								<g:helpTooltip>Grau de parentesco deste membro (${m.nomeCompleto}) em relação à referência (${novaReferencia?.nomeCompleto})</g:helpTooltip>
 							</td>
 							<td>${m.nomeCompleto }</td>
 							<td>${m.idade ? m.idade + " anos" : ""}</td>

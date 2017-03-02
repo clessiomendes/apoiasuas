@@ -279,3 +279,10 @@ ALTER TABLE public.cidadao ALTER COLUMN familia_id SET NOT NULL;
 alter table servico_sistema add column acesso_seguranca_cadastro_detalhado boolean DEFAULT false;
 alter table servico_sistema add column acesso_seguranca_inclusao_familia boolean DEFAULT false;
 alter table servico_sistema add column acesso_seguranca_inclusao_membro_familiar boolean DEFAULT false;
+
+-- versao ate aqui: current (local:feito, producao: feito)
+
+alter table acao add column habilitado boolean DEFAULT true;
+alter table outro_marcador add column habilitado boolean DEFAULT true;
+alter table programa add column habilitado boolean DEFAULT true;
+alter table vulnerabilidade add column habilitado boolean DEFAULT true;

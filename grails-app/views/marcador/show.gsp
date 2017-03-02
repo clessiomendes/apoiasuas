@@ -15,8 +15,8 @@
 
 		<div class="nav" role="navigation">
 			<ul>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-				<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+				<li><g:link class="list" action="list">Listar</g:link></li>
+				<li><g:link class="create" action="create${entityName}">Novo</g:link></li>
 			</ul>
 		</div>
 		<div id="show-link" class="content scaffold-show" role="main">
@@ -29,19 +29,22 @@
 					<span id="descricao-label" class="property-label"><g:message code="link.descricao.label" default="Descricao" /></span>
 					<span class="property-value" aria-labelledby="descricao-label"><f:display bean="marcadorInstance" property="descricao"/></span>
 				</li>
-				<li class="fieldcontain">
-					<span id="servico-label" class="property-label">Disponível para</span>
-					<span class="property-value" aria-labelledby="servico-label">${marcadorDTO.servicoSistemaSeguranca?.nome ?: "todos os serviços do sistema"}</span>
-				</li>
         --}%
-        <f:display label="Descrição" bean="${marcadorDTO}" property="descricao"/>
-        <f:display label="Disponível para" bean="${marcadorDTO}" property="servicoSistemaSeguranca">conteudo</f:display>
+				<f:display label="Descrição" bean="${marcadorDTO}" property="descricao"/>
+				<li class="fieldcontain">
+					<span class="property-label">Disponível para</span>
+					<span class="property-value">${marcadorDTO.servicoSistemaSeguranca?.nome ?: "todos os serviços do sistema"}</span>
+				</li>
+				<li class="fieldcontain">
+					<span class="property-label"></span>
+					<span class="property-value">${marcadorDTO.habilitado ? "habilitado" : "desabilitado"}</span>
+				</li>
             </ol>
 			<g:form controller="marcador" action="delete" id="${marcadorDTO.id}">
 				<fieldset class="buttons">
 					<g:if test="${podeAlterar == true}">
-						<g:link class="edit" action="edit" id="${marcadorDTO.id}"><g:message code="default.button.edit.label" default="Editar" /></g:link>
-						<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Apagar')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Confirma remoção?')}');" />
+						<g:link class="edit" action="edit${entityName}" id="${marcadorDTO.id}"><g:message code="default.button.edit.label" default="Editar" /></g:link>
+						%{--<g:actionSubmit class="delete" action="delete${entityName}" value="${message(code: 'default.button.delete.label', default: 'Apagar')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Confirma remoção?')}');" />--}%
 					</g:if>
 				</fieldset>
 			</g:form>

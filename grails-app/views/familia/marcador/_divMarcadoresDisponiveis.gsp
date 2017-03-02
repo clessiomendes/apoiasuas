@@ -13,7 +13,7 @@ Passar como parametros do modelo:
         <% org.apoiasuas.marcador.Marcador marcador = marcadordisp; %>
         <g:checkBox onchange="if (this.checked) document.getElementById('link${label}[${countMarcadores}]').click();"
                     class="check-marcadores" name="${label}[${countMarcadores}].habilitado"
-                    value="${marcador.habilitado}"/>
+                    value="${marcador.selecionado}"/>
         %{--onclick - abrir a janela modal de edição correspondente à partir do click no nome do marcador--}%
         &nbsp;<a class="descricao-marcadores" id="link${label}[${countMarcadores}]" href="javascript:void(0);"
            onclick="${nomeDiv}.janelaEditMarcador(this.parentElement);">${marcador.descricao}</a>

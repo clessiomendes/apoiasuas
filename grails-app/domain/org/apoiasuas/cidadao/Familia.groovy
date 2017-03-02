@@ -131,7 +131,7 @@ class Familia implements Serializable {
 
     public Set<VulnerabilidadeFamilia> getVulnerabilidadesHabilitadas() {
         //retorna apenas as habilitadas e em ordem alfabetica
-        return vulnerabilidades.findAll{ it.habilitado }.sort { it.marcador?.descricao?.toLowerCase() }
+        return vulnerabilidades.findAll{ it.habilitado && it.marcador.habilitado }.sort { it.marcador?.descricao?.toLowerCase() }
     }
     public Set<AcaoFamilia> getAcoesHabilitadas() {
         //retorna apenas as habilitadas e em ordem alfabetica
@@ -139,7 +139,7 @@ class Familia implements Serializable {
     }
     public Set<ProgramaFamilia> getProgramasHabilitados() {
         //retorna apenas as habilitadas e em ordem alfabetica
-        return programas.findAll{ it.habilitado }.sort { it.marcador?.descricao?.toLowerCase() }
+        return programas.findAll{ it.habilitado && it.marcador.habilitado }.sort { it.marcador?.descricao?.toLowerCase() }
     }
     public Set<OutroMarcadorFamilia> getOutrosMarcadoresHabilitados() {
         //retorna apenas as habilitadas e em ordem alfabetica

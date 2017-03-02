@@ -13,8 +13,8 @@ interface Marcador {
     public String getDescricao();
     public void setDescricao(String descricao);
     public Long getId();
-//    public Boolean getSelected();
-//    public void setSelected(Boolean selected);
+    public Boolean getHabilitado();
+    public void setHabilitado(Boolean habilitado);
 
     //transientes:
     public String getObservacao()
@@ -23,8 +23,6 @@ interface Marcador {
     public void setData(Date data);
     public UsuarioSistema getTecnico();
     public void setTecnico(UsuarioSistema tecnico);
-    public Boolean getHabilitado();
-    public void setHabilitado(Boolean habilitado);
-//    public Cidadao getCidadao();
-//    public void setCidadao(Cidadao cidadao);
+    public Boolean getSelecionado();
+    public void setSelecionado(Boolean selecionado);
 }
