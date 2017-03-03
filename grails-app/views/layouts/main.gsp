@@ -70,7 +70,7 @@
                 <g:link controller="logout" style="color: black">(sair)</g:link>
             </sec:ifLoggedIn>
             <span style="color: black; float: right" >
-                Turbinado por:
+                Créditos:
                 <a style="color: black" target="_blank" href="http://icons8.com">Icons8</a>
                 <a style="color: black" target="_blank" href="http://grails.org">Grails</a>
             </span>

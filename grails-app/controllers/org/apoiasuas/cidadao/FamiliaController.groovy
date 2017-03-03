@@ -95,10 +95,10 @@ class FamiliaController extends AncestralController {
     }
 
     private Map getEditCreateModel(Familia familiaInstance) {
-        List<Programa> programasDisponiveis = marcadoresDisponiveis(familiaInstance.programas, marcadorService.getMarcadoresDisponiveis(Programa.class) )
-        List<Acao> acoesDisponiveis = marcadoresDisponiveis(familiaInstance.acoes, marcadorService.getMarcadoresDisponiveis(Acao.class) )
-        List<Vulnerabilidade> vulnerabilidadesDisponiveis = marcadoresDisponiveis(familiaInstance.vulnerabilidades, marcadorService.getMarcadoresDisponiveis(Vulnerabilidade.class) )
-        List<OutroMarcador> outrosMarcadoresDisponiveis = marcadoresDisponiveis(familiaInstance.outrosMarcadores, marcadorService.getMarcadoresDisponiveis(OutroMarcador.class) )
+        List<Programa> programasDisponiveis = marcadoresDisponiveis(familiaInstance.programas, marcadorService.getProgramasDisponiveis() )
+        List<Acao> acoesDisponiveis = marcadoresDisponiveis(familiaInstance.acoes, marcadorService.getAcoesDisponiveis() )
+        List<Vulnerabilidade> vulnerabilidadesDisponiveis = marcadoresDisponiveis(familiaInstance.vulnerabilidades, marcadorService.getVulnerabilidadesDisponiveis() )
+        List<OutroMarcador> outrosMarcadoresDisponiveis = marcadoresDisponiveis(familiaInstance.outrosMarcadores, marcadorService.getOutrosMarcadoresDisponiveis() )
         return [familiaInstance: familiaInstance,
                 operadores: marcadorService.getTecnicosIncluiMarcadores(familiaInstance),
                 outrosMarcadoresDisponiveis: outrosMarcadoresDisponiveis, programasDisponiveis: programasDisponiveis,
@@ -273,12 +273,23 @@ class FamiliaController extends AncestralController {
         }
     }
 
-    @Secured([DefinicaoPapeis.STR_USUARIO])
+    @Secured([DefinicaoPapeis.STR_SUPER_USER])
     def deleteMonitoramento(Monitoramento monitoramento) {
         if (! monitoramento)
             return buscaMonitoramento(-1);
 
         monitoramentoService.apagaMonitoramento(monitoramento)
+        flash.message = "Monitoramento removido"
+        return render(contentType:'text/json', text: ['success': true] as JSON);
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def suspendeMonitoramento(Monitoramento monitoramento) {
+        if (! monitoramento)
+            return buscaMonitoramento(-1);
+
+        monitoramento.suspenso = true;
+        monitoramentoService.gravaMonitoramento(monitoramento)
         flash.message = "Monitoramento removido"
         return render(contentType:'text/json', text: ['success': true] as JSON);
     }

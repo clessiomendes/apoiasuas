@@ -286,3 +286,5 @@ alter table acao add column habilitado boolean DEFAULT true;
 alter table outro_marcador add column habilitado boolean DEFAULT true;
 alter table programa add column habilitado boolean DEFAULT true;
 alter table vulnerabilidade add column habilitado boolean DEFAULT true;
+
+alter table monitoramento add column suspenso boolean DEFAULT false;

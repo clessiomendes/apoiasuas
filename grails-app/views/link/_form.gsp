@@ -4,6 +4,37 @@
     Link linkDTO = linkInstance
 %>
 
+%{--Javascript para a selecao do tipo de link--}%
+<g:javascript>
+    //Inicialização da página
+    jQuery(document).ready(function () {
+        $("input[name='tipo']").change(eventoSelecaoTipo);
+        $("input[name='compartilhar']").change(eventoCompartilhar);
+    });
+
+    function eventoSelecaoTipo() {
+        radioValue = $(this).val();
+        if (radioValue == "${Link.Tipo.FILE.toString()}") {
+            $('#tipoFile').slideDown(500);
+            $('#tipoUrl').hide();
+        } else {
+            $('#tipoFile').hide();
+            $('#tipoUrl').slideDown(500);
+        }
+    }
+
+    function eventoCompartilhar() {
+        checked = $(this).prop('checked')
+        console.log(checked);
+        if (checked == true) {
+            $('#compartilhadoCom').slideDown(500);
+        } else {
+            $('#compartilhadoCom').slideUp(500);
+            //$('#compartilhadoCom').hide();
+        }
+    }
+</g:javascript>
+
 <div class="fieldcontain">
 	<label for="tipo">
 		<g:message code="link.tipo.label"/>
@@ -11,40 +42,6 @@
     <g:radioGroup name="tipo" values="${Link.Tipo.values()}" labels="${Link.Tipo.values()}" value="${linkDTO.tipo.toString()}" >
         ${it.radio} <g:message code="link.${it.label}.label"/>
     </g:radioGroup>
-
-    %{--Javascript para a selecao do tipo de link--}%
-    <g:javascript>
-
-        //Inicialização da página
-        jQuery(document).ready(function () {
-            $("input[name='tipo']").change(eventoSelecaoTipo);
-            $("input[name='compartilhar']").change(eventoCompartilhar);
-        });
-
-        function eventoSelecaoTipo() {
-            radioValue = $(this).val();
-            if (radioValue == "${Link.Tipo.FILE.toString()}") {
-                $('#tipoFile').slideDown(500);
-                $('#tipoUrl').hide();
-            } else {
-                $('#tipoFile').hide();
-                $('#tipoUrl').slideDown(500);
-            }
-        }
-
-        function eventoCompartilhar() {
-            checked = $(this).prop('checked')
-            console.log(checked);
-            if (checked == true) {
-                $('#compartilhadoCom').slideDown(500);
-            } else {
-                $('#compartilhadoCom').slideUp(500);
-                //$('#compartilhadoCom').hide();
-            }
-        }
-
-    </g:javascript>
-
 </div>
 
 <div id="tipoUrl" class="fieldcontain ${linkDTO.tipo?.isUrl() ? '' : 'hidden'} ${hasErrors(bean: linkDTO, field: 'url', 'error')} ">

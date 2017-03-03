@@ -38,7 +38,7 @@
         </label>
         <nobr><g:form action="list" controller="buscaCentralizada">
             <g:textField name="palavraChave" size="50" class="input-menu-procurar" onfocus="if(this.value == 'ex: jovem aprendiz') { this.value = ''; }" value="ex: jovem aprendiz"/>
-            <g:submitButton name="list" class="input-menu-procurar speed-button-procurar    " value=""/>
+            <g:submitButton name="list" class="input-menu-procurar speed-button-procurar" value=""/>
         </g:form></nobr>
         <div style="clear: both"></div>
     </div>
@@ -78,10 +78,10 @@
             <g:link title="Links para sites externos ou documentos, formulários, planilhas, etc salvos no sistema para consulta posterior" class="azul" controller="link" action="exibeLinks">Links e documentos</g:link>
             <g:link title="Geração de planilhas com a relação de famílias ou membros de acordo com diferentes critérios (idade, técnico de referência, programa de que participa, etc)" class="magenta" controller="emissaoRelatorio" action="definirListagem">Listagens</g:link>
             <g:link title="Consultar a situação de pedidos de certidão emitidos anteriormente (ou registrar manualmente um pedido feito fora do sistema)" class="marrom" controller="pedidoCertidaoProcesso" action="preList">Gestão de Pedidos de Certidão</g:link>
-            <g:link title="Informações técnicas do sistema" class="lilas" controller="inicio" action="status">Status do sistema</g:link>
-            <g:link title="Alterar suas informações como nome, matrícula, senha, etc" class="rosa" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
-            <g:link title="Registrar um acompanhamento e emitir o Plano de Acompanhamento Familiar" class="verde_oliva" controller="familia" action="selecionarAcompanhamento">Acompanhamento familiar</g:link>
-            <g:link title="Permite ao técnico gerenciar as famílias de quem é referência, monitoramentos das intervenções com as famílias (acompanhadas ou não), pedidos de certidão, etc" class="laranja" controller="gestaoTecnica" action="inicial">Gestão técnica</g:link>
+            <g:link title="Registrar um acompanhamento e emitir o Plano de Acompanhamento Familiar" class="lilas" controller="familia" action="selecionarAcompanhamento">Acompanhamento familiar</g:link>
+            <g:link title="Permite ao técnico gerenciar as famílias de quem é referência, monitoramentos das intervenções com as famílias (acompanhadas ou não), pedidos de certidão, etc" class="rosa" controller="gestaoTecnica" action="inicial">Gestão técnica</g:link>
+            <g:link title="Informações técnicas do sistema" class="verde_oliva" controller="inicio" action="status">Status do sistema</g:link>
+            <g:link title="Alterar suas informações como nome, matrícula, senha, etc" class="laranja" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
 
             %{--TODO: Crirar perfil usuario avancado--}%
 

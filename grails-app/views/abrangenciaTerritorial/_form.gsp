@@ -20,6 +20,9 @@
     <g:checkBox name="habilitado" value="${abrangenciaTerritorial?.habilitado}" />
 </div>
 
+<f:field property="testeMaxSize" bean="${abrangenciaTerritorial}"/>
+<f:field property="testeLength" bean="${abrangenciaTerritorial}"/>
+
 <div class="fieldcontain">
     <span id="uf-label" class="property-label"><g:message code="abrangenciaTerritorial.pai.label" default="Subordinado a" /></span>
     <span class="property-value" style="margin-left:25%" aria-labelledby="uf-label">

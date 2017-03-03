@@ -11,7 +11,6 @@
 @cor-sombra-corpo:	        #255b17;
 @cor-bordas:	            #CCCCCC;
 
-
 @lighten-fundo:			58%;
 @lighten-borda:			40%;
 @lighten-sombra:			50%;
@@ -23,6 +22,8 @@
 @cor-marcadores-vulnerabilidade:	#7BF2B6;
 @cor-marcadores-outros-marcadores:	#7BFB90;
 
+/* Espaçamentos */
+@espacamento-linhas-formulario: 	0.7em;
 
 /* Tamanhos */
 .tamanho-icones() {
@@ -279,7 +280,7 @@ img {
 
 /* CREATE/EDIT FORMS AND SHOW PAGES */
 
-fieldset,
+fieldset.form,
 .property-list {
 	margin: 0.5em 0.5em 0.5em 0.5em;
 	padding: 0.5em 0.5em 0.5em;
@@ -288,15 +289,32 @@ fieldset,
 	border: none;
 }
 
+//evita margens extras em formulários contidos em janelas modais do jqueryUI (classe .ui-dialog-content)
+.ui-dialog-content fieldset.form {
+	margin: 0;
+  	padding: 0;
+}
+
 .property-list .fieldcontain {
 	list-style: none;
 	overflow: hidden;
 	zoom: 1;
 }
 
-.fieldcontain {
-	margin-top: 1em;
+//adiciona espacamento apenas aa partir do segundo elemento da classe .fieldcontain
+.fieldcontain ~ .fieldcontain {
+  margin-top: @espacamento-linhas-formulario;
 }
+
+//adiciona espacamento apenas aa partir do segundo elemento da classe .property-list
+.property-list ~ .property-list {
+  margin-top: @espacamento-linhas-formulario;
+}
+
+//Como a classe fieldcontain só preve margens no topo, o ultimo elemento selecionado deve ter tambem uma margem inferior
+//.property-list li:last-of-type {
+//	margin-bottom: @espacamento-linhas-formularios;
+//}
 
 .fieldcontain label,
 .fieldcontain .property-label {
@@ -672,7 +690,7 @@ table.tabelaListagem .even {
   .painelNavegacaoOuBotoes();
   overflow: hidden;
   padding: 0.3em;
-  margin: 0.1em 0 0 0;
+  margin: @espacamento-linhas-formulario 0 0 0;
   border: none;
 }
 
@@ -796,6 +814,11 @@ table.tabelaListagem .even {
 .buttons .list {
   .buttonsFooter();
   background-image: url(../../images/database_table.png);
+}
+
+.buttons .close {
+  .buttonsFooter();
+  background-image: url(../../images/close.png);
 }
 
 .imageButton() {
@@ -969,6 +992,8 @@ table.tabelaListagem th:hover, .tabelaListagem tr:hover {
 
 .fieldsetMarcadores {
   .embedded();
+  margin: 0.5em 0.5em 0.5em 0.5em;
+  padding: 0.5em 0.5em 0.5em;
   //redimenciona de acordo com o conteudo
   height: 100%;
   .rolagem {

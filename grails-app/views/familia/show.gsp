@@ -36,12 +36,6 @@
 			<g:tab id="tabMonitoramento" titulo="monitoramentos" template="monitoramento/tabMonitoramento"/>
 		</g:tabs>
 
-		<fieldset class="buttons">
-			<g:link class="add" controller="emissaoFormulario" action="escolherFamilia">Emitir formulário</g:link>
-			<g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosFamilia" params="[idFamilia: familiaInstance.id]" >Formulários emitidos</g:link>
-            <g:link class="edit" action="edit" resource="${familiaInstance}">Alterar dados</g:link>
-			<g:link class="acompanhamento" controller="familia" action="editAcompanhamentoFamilia" id="${familiaInstance.id}">Acompanhamento</g:link>
-		</fieldset>
 	</div>
 	</body>
 </html>
