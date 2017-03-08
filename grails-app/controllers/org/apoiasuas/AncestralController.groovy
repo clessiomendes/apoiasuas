@@ -75,7 +75,7 @@ class AncestralController {
             notificacoes.each { strNotificacao ->
                 if (strNotificacao == g.message(code: "notificacao.familia.pedidosCertidao"))
                     strNotificacao = g.link(controller:"pedidoCertidaoProcesso", action:"list", title: "Ver pedidos pendentes",
-                            params: [situacao: PedidoCertidaoProcessoController.SITUACAO_PENDENTE, codigoLegado: familia.codigoLegado]){
+                            params: [situacao: PedidoCertidaoProcessoController.SITUACAO_PENDENTE, codigoLegado: familia.cad]){
                         g.message(code: "notificacao.familia.pedidosCertidao")
                     }
 
@@ -98,6 +98,10 @@ class AncestralController {
         return segurancaService.getServicoLogado();
     }
 
+    protected UsuarioSistema getUsuarioLogado() {
+        return segurancaService.getUsuarioLogado();
+    }
+
     /**
      * Tenta acessar o objeto a ser utilizado na action e, caso o acesso seja negado, captura a excessao e exibe uma
      * mensagem de erro para o usuário. obs: A excessao é levantada nos eventos de persistência em ApoiaSuasPersistenceListener
@@ -107,8 +111,9 @@ class AncestralController {
     protected interceptaSeguranca(/*Class domainClass*/) {
         try {
             if (params?.getIdentifier()) {
-                Class domainClass = getProperty(GrailsControllerClass.BEFORE_INTERCEPTOR)[ENTITY_CLASS_ENTRY]
-                domainClass?.get(params.getIdentifier())
+            //Desabilitando o interceptaSeguranca por questoes de performance
+//                Class domainClass = getProperty(GrailsControllerClass.BEFORE_INTERCEPTOR)[ENTITY_CLASS_ENTRY]
+//                domainClass?.get(params.getIdentifier())
             }
         } catch  (AcessoNegadoPersistenceException e) {
             flash.message = e.getMessage()

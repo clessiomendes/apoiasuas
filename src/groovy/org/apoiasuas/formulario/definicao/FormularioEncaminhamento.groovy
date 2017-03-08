@@ -20,7 +20,7 @@ class FormularioEncaminhamento extends FormularioBase {
             }
             campoBancoDeDados {
                 origem CampoFormulario.Origem.FAMILIA
-                codigo 'codigo_legado'
+                codigo 'cad'
             }
             campoAvulso {
                 codigo 'destino'

@@ -14,7 +14,7 @@ class Formulario implements Serializable {
     String descricao
     String tipo //para agrupar as opções de formulário apresentadas ao operador
     PreDefinidos formularioPreDefinido
-    Set<CampoFormulario> campos;
+    Set<CampoFormulario> campos = []
     //utilizado eventualmente para designar relatorio com tratamento específico no sistema
     byte[] template
 

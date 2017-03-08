@@ -33,7 +33,7 @@
 
 %{--<g:form action="procurarCidadaoExecuta">--}%
             <div class="buttons">
-                Nome ou Cad: <g:textField name="nomeOuCodigoLegado" id="inputNomeOuCodigoLegado" size="23" autofocus=""
+                Nome ou Cad: <g:textField name="nomeOuCad" id="inputNomeOuCad" size="23" autofocus=""
                                           onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"
                                           value="${defaultNomePesquisa}"/>
                 Endereço: <g:textField name="logradouro" id="inputLogradouro" size="23"
@@ -41,7 +41,7 @@
                 Nº <g:textField name="numero" id="inputNumero" size="1"
                              onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
                 <g:link onclick="linkProcurarCidadao(this, '${createLink(action: actionButtonProcurar, controller: controllerButtonProcurar)}',
-                                                            document.getElementById('inputNomeOuCodigoLegado'),
+                                                            document.getElementById('inputNomeOuCad'),
                                                             document.getElementById('inputNumero'),
                                                             document.getElementById('inputLogradouro'));">
                     <input id="btnProcurarCidadao" type="button" class="speed-button-procurar"/>
@@ -51,7 +51,7 @@
 
 <div id="list-cidadao" class="content scaffold-list" role="main">
 
-    <g:render template="tabelaListagem"/>
+    <g:render template="/cidadao/tabelaListagem"/>
 
     <div class="pagination">
         <g:paginate params="${pageScope.filtro}" total="${cidadaoInstanceCount ?: 0}"/>

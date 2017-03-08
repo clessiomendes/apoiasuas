@@ -20,6 +20,7 @@ class AcaoFamilia implements AssociacaoMarcador {
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_acao_familia'];
         version defaultValue: "0";
+        acao fetch: 'join'
     }
 
     static constraints = {

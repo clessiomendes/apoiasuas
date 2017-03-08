@@ -420,6 +420,7 @@ class ImportarFamiliasService {
                 cidadaoPersistido.familia = familiaPersistida
                 cidadaoPersistido.criador = usuarioSistema
                 cidadaoPersistido.servicoSistemaSeguranca = servicoSistema
+                cidadaoPersistido.habilitado = true
             }
 
             if (novoCidadao || !cidadaoPersistido.alteradoAposImportacao()) {

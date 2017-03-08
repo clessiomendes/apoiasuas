@@ -59,10 +59,6 @@ class FormularioBase {
             }
             campoBancoDeDados {
                 origem CampoFormulario.Origem.FAMILIA
-                codigo 'codigo_legado'
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.FAMILIA
                 codigo 'telefone'
             }
             campoBancoDeDados {

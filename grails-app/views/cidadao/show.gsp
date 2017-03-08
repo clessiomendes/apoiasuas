@@ -49,7 +49,7 @@
                 <g:if test="${cidadaoInstance?.familia}">
 				<li class="fieldcontain">
 					<span id="familia-label" class="property-label"><g:message code="cidadao.familia.label" default="Familia" /></span>
-						<span class="property-value" aria-labelledby="familia-label"><g:link controller="familia" action="show" id="${cidadaoInstance?.familia?.id}">${cidadaoInstance?.familia?.encodeAsHTML()}</g:link></span>
+						<span class="property-value" aria-labelledby="familia-label"><g:link controller="familia" action="show" id="${cidadaoInstance?.familia?.id}">${cidadaoInstance?.familia?.montaDescricao().encodeAsHTML()}</g:link></span>
 				</li>
 				</g:if>
 

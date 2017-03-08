@@ -31,7 +31,7 @@
 
 				<div class="fieldcontain">
 					<label>Família:</label>
-					cad ${familiaInstance?.codigoLegado}, referência ${familiaInstance?.referencia?.nomeCompleto}
+					${familiaInstance?.montaDescricao()}
 				</div>
 
 				<fieldset class="form">

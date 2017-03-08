@@ -6,6 +6,7 @@ import org.apoiasuas.marcador.Acao
 import org.apoiasuas.marcador.OutroMarcador
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.marcador.Vulnerabilidade
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
@@ -15,7 +16,7 @@ import org.joda.time.LocalDate
 @Transactional(readOnly = true)
 class RelatorioService {
 
-    public static final String LABEL_CODIGOLEGADO = 'cad CRAS'
+    public static final String LABEL_CAD = 'cad CRAS'
     public static final String LABEL_PARENTESCO = 'parentesco'
     public static final String LABEL_NOME = 'nome'
     public static final String LABEL_REFERENCIA = 'referencia'
@@ -28,7 +29,9 @@ class RelatorioService {
     public static final String LABEL_DDD_TELEFONE = "ddd"
     public static final String LABEL_NUMERO_TELEFONE = "numero"
     public static final String LABEL_SIGLA_PROGRAMA = "sigla"
+
     def groovySql
+    def segurancaService
 
     public void geraListagemFinal(OutputStream outputStream, boolean planilhaParaDownload, List<GroovyRowResult> registrosEncontrados) {
         ListaLigada<GroovyRowResult> resultadoTelefones, resultadoProgramas
@@ -55,8 +58,8 @@ class RelatorioService {
             }
 
             registrosEncontrados.each { row ->
-                String telefones = telefonesFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoTelefones)
-                String programas = programasFamilia(getInt(row.get(LABEL_CODIGOLEGADO)), resultadoProgramas)
+                String telefones = telefonesFamilia(getInt(row.get(LABEL_CAD)), resultadoTelefones)
+                String programas = programasFamilia(getInt(row.get(LABEL_CAD)), resultadoProgramas)
                 if (planilhaParaDownload) {
                     writer.append(montaAppendCSV(row.collect { it.value } + [telefones, programas]))
                     writer.newLine()
@@ -86,12 +89,16 @@ class RelatorioService {
         String sqlTelefonesSelect = "select "
         String sqlTelefonesFrom = "from familia f join telefone t "
 
-        sqlPrincipalSelect += AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado')+' as "'+ LABEL_CODIGOLEGADO+'"';
+        if (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO)) {
+            sqlPrincipalSelect += AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado') + ' as "' + LABEL_CAD + '"'
+            sqlPrincipalOrder +=  AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado');
+        } else {
+            sqlPrincipalSelect += 'f.id as "' + LABEL_CAD + '"';
+            sqlPrincipalOrder +=  'f.id';
+        }
 
         sqlPrincipalFrom += 'familia f ' +
                 ' left join usuario_sistema u on f.tecnico_referencia_id = u.id '
-
-        sqlPrincipalOrder +=  AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado');
 
         if (membros) {
             sqlPrincipalSelect += ', c.nome_completo as "'+LABEL_NOME+'", c.parentesco_referencia as "'+ LABEL_PARENTESCO+'"';
@@ -184,17 +191,17 @@ class RelatorioService {
     }
 
     /**
-     * Pressuposto: que ambas as queries (familias e telefones) estao ordenadas por codigo_legado.
-     * Avança na query de telefones em busca do telefone correspondente ao codigoLegado.
-     * Caso não seja encontrado nenhum telefone para este codigoLegado, mantém o cursor da lista resultadoTelefones no
-     * codigoLegado seguinte.
+     * Pressuposto: que ambas as queries (familias e telefones) estao ordenadas por cad.
+     * Avança na query de telefones em busca do telefone correspondente ao cad.
+     * Caso não seja encontrado nenhum telefone para este cad, mantém o cursor da lista resultadoTelefones no
+     * cad seguinte.
      */
-    private static String telefonesFamilia(int codigoLegado, ListaLigada<GroovyRowResult> resultadoTelefones) {
+    private static String telefonesFamilia(int cad, ListaLigada<GroovyRowResult> resultadoTelefones) {
         String result = null, ddd = null
 
-        //Avança até o próximo códigoLegado da lista (ou até o seu fim)
-        while (! resultadoTelefones.fim() && getInt(resultadoTelefones.atual().get(LABEL_CODIGOLEGADO)) <= codigoLegado) {
-            if (getInt(resultadoTelefones.atual().get(LABEL_CODIGOLEGADO)) == codigoLegado) {
+        //Avança até o próximo cad da lista (ou até o seu fim)
+        while (! resultadoTelefones.fim() && getInt(resultadoTelefones.atual().get(LABEL_CAD)) <= cad) {
+            if (getInt(resultadoTelefones.atual().get(LABEL_CAD)) == cad) {
                 result = result ? result+"," : "" //inicializa quando necessario
                 ddd = resultadoTelefones.atual().get(LABEL_DDD_TELEFONE)
                 result += (ddd ? "($ddd)" : "") + resultadoTelefones.atual().get(LABEL_NUMERO_TELEFONE)
@@ -209,13 +216,13 @@ class RelatorioService {
      * como um único campo no resultado final
      */
     private List<GroovyRowResult> telefonesTodasFamilias() {
-        String sql = "select distinct t.ddd, t.numero, " +
-                AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado") + ' as "' + LABEL_CODIGOLEGADO + '" \n' +
+        final String campoCad = (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO)) ?
+                AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado')
+                : "f.id";
+        String sql = "select distinct t.ddd, t.numero, " + campoCad + ' as "' + LABEL_CAD + '" \n' +
                 " from familia f join telefone t on f.id = t.familia " +
-                " where 1=1 and t.numero is not null " +
-                " and " + AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado") + " is not null \n" +
-                " order by " + AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado");
-        log.debug("SQL telefones:" +"\n" + sql)
+                " where 1=1 and t.numero is not null and " + campoCad + " is not null \n" +
+                " order by " + campoCad;
         return groovySql.rows(sql, [])
     }
 
@@ -224,27 +231,29 @@ class RelatorioService {
      * como um único campo no resultado final
      */
     private List<GroovyRowResult> programasTodasFamilias() {
+        final String campoCad = (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO)) ?
+                AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado')
+                : "f.id";
         String sql = "select distinct "+ AmbienteExecucao.SqlProprietaria.valorNaoNulo("p.sigla","p.descricao")+" as sigla, " +
-                AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado") + ' as "' + LABEL_CODIGOLEGADO + '" \n' +
+                campoCad + ' as "' + LABEL_CAD + '" \n' +
                 " from familia f join programa_familia pf on f.id = pf.familia_id join programa p on pf.programa_id = p.id " +
-                " where 1=1 and " + AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado") + " is not null \n" +
-                " order by " + AmbienteExecucao.SqlProprietaria.StringToNumber("f.codigo_legado");
-        log.debug("SQL programas:" +"\n" + sql)
+                " where 1=1 and " + campoCad + " is not null \n" +
+                " order by " + campoCad;
         return groovySql.rows(sql, [])
     }
 
     /**
-     * Pressuposto: que ambas as queries (familias e telefones) estao ordenadas por codigo_legado.
-     * Avança na query de telefones em busca do telefone correspondente ao codigoLegado.
-     * Caso não seja encontrado nenhum telefone para este codigoLegado, mantém o cursor da lista resultadoTelefones no
-     * codigoLegado seguinte.
+     * Pressuposto: que ambas as queries (familias e telefones) estao ordenadas por cad.
+     * Avança na query programas em busca do programa correspondente ao cad.
+     * Caso não seja encontrado nenhum programa para este cad, mantém o cursor da lista resultadoProgramas no
+     * cad seguinte.
      */
-    private String programasFamilia(int codigoLegado, ListaLigada<GroovyRowResult> resultadoProgramas) {
+    private String programasFamilia(int cad, ListaLigada<GroovyRowResult> resultadoProgramas) {
         String result, ddd
 
-        //Avança até o próximo códigoLegado da lista (ou até o seu fim)
-        while (! resultadoProgramas.fim() && getInt(resultadoProgramas.atual().get(LABEL_CODIGOLEGADO)) <= codigoLegado) {
-            if (getInt(resultadoProgramas.atual().get(LABEL_CODIGOLEGADO)) == codigoLegado) {
+        //Avança até o próximo cad da lista (ou até o seu fim)
+        while (! resultadoProgramas.fim() && getInt(resultadoProgramas.atual().get(LABEL_CAD)) <= cad) {
+            if (getInt(resultadoProgramas.atual().get(LABEL_CAD)) == cad) {
                 result = result ? result+"," : "" //inicializa quando necessario
                 result += resultadoProgramas.atual().get(LABEL_SIGLA_PROGRAMA)
             }

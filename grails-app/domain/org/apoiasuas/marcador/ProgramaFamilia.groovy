@@ -19,6 +19,7 @@ class ProgramaFamilia implements AssociacaoMarcador {
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_programa_familia']
+        programa fetch: 'join'
     }
     static constraints = {
         programa(nullable: false, unique: ['familia']) //por enquanto, só pode existir uma ligação entre as entidades

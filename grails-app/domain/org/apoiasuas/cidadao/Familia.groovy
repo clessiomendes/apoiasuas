@@ -2,6 +2,7 @@ package org.apoiasuas.cidadao
 
 import org.apache.commons.collections.FactoryUtils
 import org.apache.commons.collections.list.LazyList
+import org.apoiasuas.marcador.Acao
 import org.apoiasuas.marcador.AcaoFamilia
 import org.apoiasuas.anotacoesDominio.InfoClasseDominio
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
@@ -20,40 +21,32 @@ import org.apoiasuas.util.CollectionUtils;
 @InfoClasseDominio(codigo=CampoFormulario.Origem.FAMILIA)
 class Familia implements Serializable {
 
-    @InfoPropriedadeDominio(codigo='codigo_legado', descricao = 'Cad', tamanho = 10, atualizavel = false)
-    String codigoLegado  //importado
-    Set<Telefone> telefones
+    @InfoPropriedadeDominio(codigo='cad', descricao = 'Cad', tamanho = 10, atualizavel = false)
+    String cad //transiente
 
-//	Integer numeroComodos
-//	Integer numeroQuartos
-//	Boolean coletaLixo
-//	String codigoFamiliarCadUnico
-//	DestinoEsgoto destinoEsgoto
-//	FornecimentoAgua fornecimentoAgua
-//	FornecimentoEnergia fornecimentoEnergia
-//	PropriedadeDomicilio propriedadeDomicilio
-//	RiscoDomicilio riscoDomicilio
+    String codigoLegado  //importado
+    Set<Telefone> telefones = []
+
     SituacaoFamilia situacaoFamilia
-//    Boolean familiaAcompanhada
     UsuarioSistema tecnicoReferencia
     UsuarioSistema criador, ultimoAlterador;
     Date dateCreated, lastUpdated, dataUltimaImportacao;
-    Endereco endereco //importado
-    Set<ProgramaFamilia> programas
-    Set<AcaoFamilia> acoes
-    Set<VulnerabilidadeFamilia> vulnerabilidades
-    Set<OutroMarcadorFamilia> outrosMarcadores
-    Set<Cidadao> membros
-    AcompanhamentoFamiliar acompanhamentoFamiliar
+    Endereco endereco = new Endereco(); //importado
+    Set<ProgramaFamilia> programas = []
+    Set<AcaoFamilia> acoes = []
+    Set<VulnerabilidadeFamilia> vulnerabilidades = []
+    Set<OutroMarcadorFamilia> outrosMarcadores = []
+    Set<Cidadao> membros = []
+    AcompanhamentoFamiliar acompanhamentoFamiliar //deeria ser hasOne, mas essa funcionalidade não está estável no Grails/Hibernate
 
     @InfoPropriedadeDominio(codigo='telefone', descricao = 'Telefone', tipo = CampoFormulario.Tipo.TELEFONE, tamanho = 10)
     String telefone //campo transiente (usado para conter telefones escolhidos/digitados pelo operador em casos de uso como o de preenchimento de formulario
     static transients = ['telefone', 'programasHabilitados', 'vulnerabilidadesHabilitadas', 'acoesHabilitadas',
-                         'outrosMarcadoresHabilitados', 'todosOsMarcadores']
+                         'outrosMarcadoresHabilitados', 'todosOsMarcadores', 'cad']
 
     ServicoSistema servicoSistemaSeguranca
 
-    static hasOne = [acompanhamentoFamiliar: AcompanhamentoFamiliar]
+//    static hasOne = [acompanhamentoFamiliar: AcompanhamentoFamiliar]
 
     static hasMany = [membros: Cidadao, telefones: Telefone, monitoramentos: Monitoramento,
                       programas: ProgramaFamilia, acoes: AcaoFamilia,
@@ -61,15 +54,23 @@ class Familia implements Serializable {
                       vulnerabilidades: VulnerabilidadeFamilia]
 
     static embedded = ['endereco']
-
+/*
+    Familia() {
+        log.debug("create Familia()");
+    }
+*/
     static constraints = {
         id(bindable: true)
-        telefone(bindable: true) //permite que uma propriedade transiente seja alimentada autmaticamente pelo construtor
+        telefone(bindable: true) //permite que uma propriedade transiente seja alimentada automaticamente pelo construtor
         situacaoFamilia(nullable: false)
         criador(nullable: false)
         ultimoAlterador(nullable: false)
-//        codigoLegado(unique: true)
         servicoSistemaSeguranca(nullable: false)
+    }
+
+    static mapping = {
+        id generator: 'native', params: [sequence: 'sq_familia']
+        servicoSistemaSeguranca fetch: 'join' //por questoes de seguranca, sempre que uma familia eh obtida do banco de dados, o servicoSistema precisara ser consultado
     }
 
     String getTelefonesToString() {
@@ -77,21 +78,25 @@ class Familia implements Serializable {
     }
 
     Cidadao getReferencia() {
-        Cidadao result = null
         return membros?.findAll{ it.referencia && it.habilitado }?.min{ it.dataNascimento }
     }
 
-    String toString() {
-
+    public String montaDescricao() {
         return CollectionUtils.join([
-                codigoLegado ? "Cad " + codigoLegado : null,
-                getReferencia() ? "Referência " + getReferencia().toString() : null], ", ")
+                toString(),
+                getReferencia() ? "referência " + getReferencia().toString() : null
+        ], ", ")
     }
 
-    static mapping = {
-        id generator: 'native', params: [sequence: 'sq_familia']
-//        endLogradouro formula: 'endereco_nome_logradouro'
-//        codigoLegado column:'codigoLegado', index:'Familia_Cod_Legado_Idx'
+    public String toString() {
+        return "cad " + getCad();
+    }
+
+    /**
+     * Exibe o identificador principal desta familia (o codigo legado ou o id)
+     */
+    public String getCad() {
+        return codigoLegado ?: id?.toString();
     }
 
     static Familia novaInstacia() {
@@ -108,8 +113,31 @@ class Familia implements Serializable {
         return LazyList.decorate(membros,FactoryUtils.instantiateFactory(Cidadao.class))
     }
 
-    public List<Cidadao> getMembrosOrdemAlfabetica() {
-        getMembrosHabilitados()?.sort{ it.nomeCompleto?.toLowerCase() }
+    public List<Cidadao> getMembrosOrdemAlfabetica(boolean habilitados = true) {
+        return membros.findAll{ it.habilitado == habilitados }.sort{ it.nomeCompleto?.toLowerCase() }
+    }
+
+    /**
+     * Devolve todos os membros em uma ordem padrão: 1º a referencia, depois do mais velho para o mais novo.
+     * obs: a lista retornada não mantem a ligação com a sessão de persistência
+     * @param habilitados filtra somente os membros habilitados (default true)
+     * @return
+     */
+    public List<Cidadao> getMembrosOrdemPadrao(boolean habilitados = true) {
+        return membros.findAll{ it.habilitado == habilitados }.sort{ a,b ->
+                if (a.referencia && ! b.referencia)
+                    return -1;
+                if (b.referencia && ! a.referencia)
+                    return 1;
+                if (a.dataNascimento && ! b.dataNascimento)
+                    return -1;
+                if (b.dataNascimento && ! a.dataNascimento)
+                    return 1;
+                if (a.dataNascimento.equals(b.dataNascimento))
+                    return a.id.compareTo(b.id)
+                else
+                    return a.dataNascimento.compareTo(b.dataNascimento)
+        };
     }
 
     public boolean alteradoAposImportacao() {
@@ -146,25 +174,9 @@ class Familia implements Serializable {
         return outrosMarcadores.findAll{ it.habilitado }.sort { it.marcador?.descricao?.toLowerCase() }
     }
     public Set<AssociacaoMarcador> getTodosOsMarcadores() {
-        return programas + acoes + vulnerabilidades + outrosMarcadores;
-    }
-    public List<Cidadao> getMembrosHabilitados(boolean habilitados = true) {
-        return membros.sort{ it.id }.findAll{ it.habilitado == habilitados }
-    }
-    public Set<Cidadao> getMembros() {
-        LinkedHashSet<Cidadao> result = new LinkedHashSet<Cidadao>(membros.sort{ a,b ->
-            if (a.referencia && ! b.referencia)
-                return -1;
-            if (b.referencia && ! a.referencia)
-                return 1;
-            if (a.dataNascimento && ! b.dataNascimento)
-                return -1;
-            if (b.dataNascimento && ! a.dataNascimento)
-                return 1;
-            if (a.dataNascimento.equals(b.dataNascimento))
-                return a.id.compareTo(b.id)
-            else
-                return a.dataNascimento.compareTo(b.dataNascimento)
-        });
+        return (programas ?: [])
+                + (acoes ?: [])
+                + (vulnerabilidades ?: [])
+                + (outrosMarcadores ?: []);
     }
 }

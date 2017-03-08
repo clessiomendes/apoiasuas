@@ -124,7 +124,7 @@ environments {
 }
 
 //                                              ============   log4j configuration    ===========
-
+grails.logging.jul.usebridge = true //permite logar também bibliotecas que usam java.util.logging.Logger (JUL)
 log4j.main = {
 //logs, em arquivos separados:
     def errorAppender = new RollingFileAppender(name: 'errorFile', append: true, maxFileSize: '10000KB',
@@ -185,6 +185,7 @@ log4j.main = {
 //            'org.hibernate.type.descriptor.sql.BasicBinder', //parametros PASSADOS para as SQLs
 //            'org.hibernate.type.descriptor.sql.BasicExtractor', //parametros RETORNADOS pelas SQLs
             'org.hibernate.SQL' //comandos SQL (e a tradução HQL - SQL, quando for executado um HQL)
+            ,'groovy.sql.Sql' //sql executado diretamente, sem o hibernate
     ]
 
     //Liga o appender memFile (mem.log) à Job que gera as estatísticas de recursos do sistema
@@ -329,7 +330,12 @@ elasticSearch {
     index.store.type = 'simplefs';
     index.analysis.analyzer.default.type = 'brazilian'
     bulkIndexOnStartup = false
-    disableAutoIndex = false
+    development {
+        disableAutoIndex = false
+    }
+    production {
+        disableAutoIndex = false
+    }
 
 //    elasticSearch.index.name = "apoiasuas"
 //    elasticSearch.path.data = 'c://temp//es';
@@ -342,3 +348,4 @@ assets {
             ]
     ]
 }
+

@@ -4,6 +4,8 @@ import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
 import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
+import org.apoiasuas.util.ApoiaSuasException
 import org.apoiasuas.util.StringUtils
 
 import javax.servlet.http.HttpSession
@@ -11,7 +13,8 @@ import javax.servlet.http.HttpSession
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class CidadaoController extends AncestralController {
 
-    def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Cidadao.class, only: ['show','edit', 'delete', 'update', 'save']];
+//    def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Cidadao.class, only: ['show','edit', 'delete', 'update', 'save']];
+    def beforeInterceptor = [action: this.&fetchShow, only: ['show']];
     static defaultAction = "procurarCidadao";
     private static final String SESSION_ULTIMO_CIDADAO = "SESSION_ULTIMO_CIDADAO";
     //destinos de navegação usados na busca pura de cidadãos
@@ -25,6 +28,16 @@ class CidadaoController extends AncestralController {
     ];
 
     def cidadaoService
+
+    /**
+     * Interceptor configurado para a action show. Inicializa todas as informacoes necessarias em uma unica consulta ao banco de dados
+     * @return
+     */
+    private boolean fetchShow(/*Class domainClass*/) {
+        if (params?.id)
+            cidadaoService.obtemCidadao(params.long('id'), true, true)
+    }
+
 
     static List<String> getDocumentos(Cidadao cidadao) {
         List<String> result = []
@@ -44,13 +57,13 @@ class CidadaoController extends AncestralController {
     }
 
     def procurarCidadaoExecuta(FiltroCidadaoCommand filtro) {
-        //Preenchimento de numeros no primeiro campo de busca indica pesquisa por codigo legado
-        boolean buscaPorCodigoLegado = filtro.nomeOuCodigoLegado && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCodigoLegado)
+        //Preenchimento de numeros no primeiro campo de busca indica pesquisa pelo cad
+        boolean buscaPorCad = filtro.nomeOuCad && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCad)
         params.max = params.max ?: 20
         PagedResultList cidadaos = cidadaoService.procurarCidadao(params, filtro)
         Map filtrosUsados = params.findAll { it.value }
 
-        if (buscaPorCodigoLegado && cidadaos?.resultList?.size() > 0) {
+        if (buscaPorCad && cidadaos?.resultList?.size() > 0) {
             Cidadao cidadao = cidadaos?.resultList[0]
             redirect(controller: "familia", action: "show", id: cidadao.familia.id)
         } else
@@ -63,6 +76,8 @@ class CidadaoController extends AncestralController {
     }
 
     def show(Cidadao cidadaoInstance) {
+        if (! cidadaoInstance)
+            return notFound()
         guardaUltimoCidadaoSelecionado(cidadaoInstance)
         render view: 'show', model: [cidadaoInstance: cidadaoInstance, podeExcluir: cidadaoService.podeExcluir(cidadaoInstance)];
 //        respond cidadaoInstance
@@ -70,16 +85,18 @@ class CidadaoController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def create(Long idFamilia) {
+        if (! segurancaService.acessoRecursoServico(RecursosServico.INCLUSAO_MEMBRO_FAMILIAR))
+            throw new ApoiaSuasException("O recurso de inclusão de membro familiar não está habilitado para este serviço")
         if (! idFamilia) {
             Familia familiaErro = new Familia();
             familiaErro.errors.reject("erro.escolher.familia");
-            render(view: "procurarCidadao", model: modeloProcurarCidadao +
+            return render(view: "procurarCidadao", model: modeloProcurarCidadao +
                     [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:], familiaErro: familiaErro] )
         }
         Cidadao cidadaoInstance = new Cidadao();
         cidadaoInstance.familia = Familia.get(idFamilia);
         //Verifica se é o primeiro membro e força a ser a referencia
-        if (cidadaoInstance.familia.getMembrosHabilitados(true).count { it.referencia == true } == 0) {
+        if (cidadaoInstance.familia.membros.count { (it.habilitado == true) && (it.referencia == true) } == 0) {
             cidadaoInstance.referencia = true;
             cidadaoInstance.parentescoReferencia = cidadaoService.PARENTESCO_REFERENCIA;
         }
@@ -157,14 +174,14 @@ class CidadaoController extends AncestralController {
 
     protected def notFound() {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'cidadao.label', default: 'Cidadão'), params.id])
-        return redirect(action: "list")
+        return redirect(action: "procurarCidadao")
     }
 
 }
 
 @grails.validation.Validateable
 class FiltroCidadaoCommand implements Serializable {
-    String nomeOuCodigoLegado
+    String nomeOuCad
 //    String segundoMembro
     String logradouro
     String numero

@@ -120,7 +120,7 @@ h1 {
 	color: @cor-fonte-links-e-titulos;
 	font-weight: normal;
 	font-size: 1.25em;
-	margin: 0.8em 0 0.3em 0;
+	margin: 0.8em 0 0.3em 1em;
 }
 
 ul {
@@ -297,12 +297,20 @@ fieldset.form,
 
 .property-list .fieldcontain {
 	list-style: none;
-	overflow: hidden;
+	overflow: visible;
 	zoom: 1;
 }
 
-//adiciona espacamento apenas aa partir do segundo elemento da classe .fieldcontain
-.fieldcontain ~ .fieldcontain {
+//adiciona espacamento apenas aa partir do segundo elemento das classes utilizadas nos componentes de
+//formulario: .fieldcontain .property-list e .embedded
+.fieldcontain ~ .fieldcontain,
+.property-list ~ .property-list,
+.embedded ~ .embedded,
+.embedded ~ .property-list,
+.property-list ~ .embedded,
+.embedded ~ .fieldcontain,
+.fieldcontain ~ .embedded
+{
   margin-top: @espacamento-linhas-formulario;
 }
 

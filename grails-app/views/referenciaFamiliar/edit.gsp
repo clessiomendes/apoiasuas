@@ -46,7 +46,7 @@
 					<tr>
 						<th colspan="3" style="text-align: center;">Configuração Familiar Atual</th>
 					</tr>
-					<g:each in="${familiaInstance.membros}" var="m">
+					<g:each in="${familiaInstance.getMembrosOrdemPadrao(true)}" var="m">
 						<tr>
 							%{--<span class="property-value" aria-labelledby="membros-label" style="display: block; margin: 5px">--}%
 							<td>${m.referencia ? raw("<b>Referência</b>") : m.parentescoReferencia }</td>
@@ -74,7 +74,7 @@
 						<td>
 							<g:select style="max-width:200px;" id="novaReferencia"
 									  optionKey='id' optionValue="nomeCompleto" name="novaReferencia"
-									  from="${familiaInstance.getMembrosHabilitados(true)}"
+									  from="${familiaInstance.getMembrosOrdemPadrao(true)}"
 									  value="${novaReferencia?.id}" noSelection="['': '']" onchange="submit();"/>
 						</td>
 						<td>${novaReferencia?.idade ? novaReferencia?.idade + " anos" : ""}</td>

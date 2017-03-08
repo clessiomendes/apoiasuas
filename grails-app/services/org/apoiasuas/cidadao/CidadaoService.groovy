@@ -2,11 +2,13 @@ package org.apoiasuas.cidadao
 
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringEscapeUtils
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.apoiasuas.util.HqlPagedResultList
-import org.hibernate.Hibernate
 
 import java.util.regex.Pattern
 
@@ -18,61 +20,70 @@ class CidadaoService {
     static transactional = false
 
     @Transactional(readOnly = true)
-    grails.gorm.PagedResultList procurarCidadao(GrailsParameterMap params, FiltroCidadaoCommand filtro) {
+    public grails.gorm.PagedResultList procurarCidadao(GrailsParameterMap params, FiltroCidadaoCommand filtro) {
         String filtroNome
-        String filtroCodigoLegado
-        if (filtro?.nomeOuCodigoLegado) {
-            if (StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCodigoLegado))
-                filtroNome = filtro.nomeOuCodigoLegado
+        String filtroCad
+        if (filtro?.nomeOuCad) {
+            if (StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCad))
+                filtroNome = filtro.nomeOuCad
             else
-                filtroCodigoLegado = filtro.nomeOuCodigoLegado
+                filtroCad = filtro.nomeOuCad
         }
         def filtros = [:]
 
-        String hql = 'from Cidadao a where 1=1 '
+        String hqlCount = "select count(*) from Cidadao a ";
+        String hqlList = "from Cidadao a inner join fetch a.familia left join fetch a.familia.tecnicoReferencia ";
+//        String hqlList = "from Cidadao a  ";
+
+        String hqlWhere = ' where 1=1 '
         if (!filtroNome) {
-            hql += "and a.referencia = true"
+            hqlWhere += "and a.referencia = true"
         }
 
 
-        hql += ' and a.servicoSistemaSeguranca = :servicoSistema'
+        hqlWhere += ' and a.servicoSistemaSeguranca = :servicoSistema'
         filtros << [servicoSistema: segurancaService.getServicoLogado()]
 
-        if (filtroCodigoLegado) {
-            hql += ' and a.familia.codigoLegado = :codigoLegado'
-            filtros << [codigoLegado: filtroCodigoLegado]
+        if (filtroCad) {
+            if (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO)) {
+                hqlWhere += ' and a.familia.codigoLegado = :cad'
+                filtros << [cad: filtroCad]
+            } else {
+                hqlWhere += ' and a.familia.id = :cad'
+                filtros << [cad: filtroCad.toLong()]
+            }
         }
 
         String[] nomes = filtroNome?.split(" ");
         nomes?.eachWithIndex { nome, i ->
             String label = 'nome'+i
-            hql += " and lower(remove_acento(a.nomeCompleto)) like remove_acento(:"+label+")"
+            hqlWhere += " and lower(remove_acento(a.nomeCompleto)) like remove_acento(:"+label+")"
             filtros.put(label, '%'+nome?.toLowerCase()+'%')
         }
 
         String[] logradouros = filtro?.logradouro?.split(" ");
         logradouros?.eachWithIndex { logradouro, i ->
             String label = 'logradouro'+i
-            hql += " and (lower(remove_acento(a.familia.endereco.nomeLogradouro)) like remove_acento(:"+label+")" +
+            hqlWhere += " and (lower(remove_acento(a.familia.endereco.nomeLogradouro)) like remove_acento(:"+label+")" +
                     " or lower(remove_acento(a.familia.endereco.complemento)) like remove_acento(:"+label+"))"
             filtros.put(label, '%'+logradouro?.toLowerCase()+'%')
         }
 
         if (filtro?.numero) {
-            hql += ' and a.familia.endereco.numero = :numero'
+            hqlWhere += ' and a.familia.endereco.numero = :numero'
             filtros << [numero: filtro.numero]
         }
 
         String hqlOrder = ""
         if (filtroNome)
-            hqlOrder = 'order by a.nomeCompleto'
+            hqlOrder = ' order by a.nomeCompleto'
         else if (filtro.logradouro)
-            hqlOrder = 'order by ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero')
+            hqlOrder = ' order by ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero')
         else if (filtro.numero)
-            hqlOrder = 'order by a.familia.endereco.nomeLogradouro, ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero')
+            hqlOrder = ' order  by a.familia.endereco.nomeLogradouro, ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero')
 
-        int count = Cidadao.executeQuery("select count(*) " + hql, filtros)[0]
-        List cidadaos = Cidadao.executeQuery(hql + ' ' + hqlOrder, filtros, params)
+        int count = Cidadao.executeQuery(hqlCount + hqlWhere, filtros)[0]
+        List cidadaos = Cidadao.executeQuery(hqlList + hqlWhere + hqlOrder, filtros, params)
 
         //Coloca em negrito os termos de busca utilizados
         Iterator<Cidadao> iterator = cidadaos.iterator()
@@ -85,8 +96,9 @@ class CidadaoService {
             nomes?.each {
                 cidadao.nomeCompleto = cidadao.nomeCompleto?.replaceAll("(?i)" + Pattern.quote(it), '<b>$0</b>')
             }
+            log.debug("Endereco da familia "+cidadao.familia.id)
             //Para que o mesmo endereco nao seja reformatado varias vezes, precisamos verificar se ele ja foi processado na lista
-            if (! enderecosFormatados.contains(cidadao.familia.endereco) ) {
+            if (cidadao.familia.endereco && ! enderecosFormatados.contains(cidadao.familia.endereco) ) {
                 cidadao.familia.endereco.nomeLogradouro = cidadao.familia.endereco.nomeLogradouro ? StringEscapeUtils.escapeHtml(cidadao.familia.endereco.nomeLogradouro) : null
                 cidadao.familia.endereco.complemento = cidadao.familia.endereco.complemento ? StringEscapeUtils.escapeHtml(cidadao.familia.endereco.complemento) : null
                 logradouros?.each {
@@ -116,34 +128,36 @@ class CidadaoService {
     }
 
     @Transactional(readOnly = true)
-    Familia obtemFamilia(String codigoLegado, boolean carregaMembros) {
-        Familia result = Familia.findByCodigoLegadoAndServicoSistemaSeguranca(codigoLegado, segurancaService.getServicoLogado())
-        log.debug("inicializando colecao de membros")
-        if (result && carregaMembros)
-            Hibernate.initialize(result.membros)
+    public Familia obtemFamiliaPeloCad(String cad, boolean carregaMembros = false) {
+        //Se for necessário carregar os membros, passa um parametro determinando o modo fetch como join (familia e cidadaos em uma unica sql)
+        Map fetchMap = carregaMembros ? [fetch: [membros: 'join']] : [:];
+        ServicoSistema servicoLogado = segurancaService.getServicoLogado();
+        Familia result = (servicoLogado.acessoSeguranca.identificacaoPeloCodigoLegado) ?
+                Familia.findByCodigoLegadoAndServicoSistemaSeguranca(cad, servicoLogado, fetchMap)
+                : Familia.findById(cad, fetchMap);
         return result
     }
 
     @Transactional(readOnly = true)
-    Familia obtemFamilia(Long id) {
-        log.debug("buscando familia ${id}")
-        return id ? Familia.get(id) : null
+    public Cidadao obtemCidadao(Long id, boolean carregaFamilia = false, boolean carregaDemaisMembros = false) {
+        Map fetchMap = [:];
+        if (carregaFamilia || carregaDemaisMembros)
+            fetchMap << [familia: 'join'];
+        if (carregaDemaisMembros)
+            fetchMap << ['familia.membros': 'join'];
+        if (fetchMap)
+            fetchMap = [fetch: fetchMap];
+        return Cidadao.findById(id, fetchMap);
     }
 
     @Transactional(readOnly = true)
-    Cidadao obtemCidadao(Long id) {
-        log.debug("buscando cidadao ${id}")
-        Cidadao result = id ? Cidadao.get(id) : null
-        return result
-    }
-
-    @Transactional(readOnly = true)
-    Set<Telefone> obtemTelefonesViaCidadao(Long idCidadao) {
-        return Cidadao.get(idCidadao)?.familia?.telefones
+    public Set<Telefone> obtemTelefonesViaCidadao(Long idCidadao) {
+        return obtemCidadao(idCidadao, true)?.familia?.telefones
     }
 
     @Transactional(readOnly = true)
     public boolean testaAcessoDominio(Cidadao cidadao) {
+        log.debug("Testando acesso ao cidadao "+cidadao.nomeCompleto)
         //Restringir acesso apenas ao servicoSistema que criou a familia
         if (cidadao.servicoSistemaSeguranca && segurancaService.getServicoLogado() &&
                 cidadao.servicoSistemaSeguranca.id != segurancaService.getServicoLogado().id)
@@ -163,11 +177,11 @@ class CidadaoService {
             return false;
         Familia familia = cidadao.familia
         //se for o ultimo cidadão habilitado, não permite excluir
-        if (familia.getMembrosHabilitados().size() == 1)
+        if (familia.getMembrosOrdemPadrao().size() == 1)
             return false;
         //se for uma referencia familiar, so pode excluir se houver outra referencia
         if (cidadao.referencia)
-            return (familia.getMembrosHabilitados().count { it.referencia } > 1 )
+            return (familia.membros.count { (it.habilitado == true) && (it.referencia == true) } > 1 )
         else
             return true;
     }

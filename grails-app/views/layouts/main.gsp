@@ -47,7 +47,7 @@
                 %>
                 <g:if test="${ultimaFamilia != null}">
                     <div id="caixa-familia">
-                        <g:link controller="familia" action="show" id="${ultimaFamilia.id}">Cad ${ultimaFamilia.codigoLegado}</g:link>
+                        <g:link controller="familia" action="show" id="${ultimaFamilia.id}">Cad ${ultimaFamilia.cad}</g:link>
                         <br>
                         <g:if test="${ultimoCidadao != null}">
                             <g:link controller="cidadao" action="show" id="${ultimoCidadao.id}">${ultimoCidadao.nomeCompleto}</g:link>

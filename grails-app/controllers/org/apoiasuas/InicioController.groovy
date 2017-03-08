@@ -26,12 +26,12 @@ class InicioController extends AncestralController {
     public static final A = "A"
 
     GrailsApplication grailsApplication
-    ApoiaSuasService apoiaSuasService
-    ImportarFamiliasService importarFamiliasService
-    ServicoSistemaService servicoSistemaService
-    ServicoService servicoService
-    DataSource dataSource
-    FileStorageService fileStorageService
+    def apoiaSuasService
+    def importarFamiliasService
+    def servicoSistemaService
+    def servicoService
+    def dataSource
+    def fileStorageService
 
     static defaultAction = "actionInicial"
 
@@ -50,9 +50,11 @@ class InicioController extends AncestralController {
         }
          */
 
+/*
         if (segurancaService.getUsuarioLogado().temPerfil(DefinicaoPapeis.STR_RECEPCAO))
             return redirect(controller: "cidadao", action: "procurarCidadao")
         else
+*/
             return redirect(action: "menu")
     }
 
@@ -140,6 +142,25 @@ class InicioController extends AncestralController {
     def alive() {
         response.status = 200 //OK
         return render ([mensagem: "apoiasuas ok"] as JSON)
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def validaEsquemaBD() {
+        String[] atualizacoesPendentes = []
+        try {
+            atualizacoesPendentes = apoiaSuasService.getAtualizacoesPendentes()
+        } catch (Exception e) {
+            log.error("Impossível verificar estrutura do banco de dados");
+            e.printStackTrace();
+        }
+        if (atualizacoesPendentes) {
+            String erro = "Detectadas atualizacoes pendentes no banco de dados:"
+            atualizacoesPendentes.each { erro += "<br>" + it + ";" }
+            render erro;
+        } else
+            render "esquema de banco de dados atualizado <br> ok"
+
+//        render ([mensagem: atualizacoesPendentes]);
     }
 
 }

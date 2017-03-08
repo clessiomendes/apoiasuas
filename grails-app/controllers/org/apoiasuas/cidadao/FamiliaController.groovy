@@ -16,6 +16,8 @@ import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
+import org.apoiasuas.util.ApoiaSuasException
 import org.apoiasuas.util.StringUtils
 
 import javax.servlet.http.HttpSession
@@ -46,19 +48,31 @@ class FamiliaController extends AncestralController {
     def pedidoCertidaoProcessoService;
     def cidadaoService;
     def monitoramentoService;
-
+/*
+    @Override
+    protected interceptaSeguranca() {
+        try {
+            if (params?.getIdentifier()) {
+                familiaService.obtemFamilia(params.getIdentifier(), true)
+            }
+        } catch  (AcessoNegadoPersistenceException e) {
+            flash.message = e.getMessage()
+            redirect(uri: request.getHeader('referer') )
+            return false
+        }
+    }
+*/
     def index(Integer max) {
         redirect(controller: 'cidadao', action: 'procurarCidadao')
 //        render view: 'list', model: [familiaInstanceList: Familia.list(params), familiaInstanceCount: Familia.count()]
     }
 
     def show(Familia familiaInstance) {
-
         if (! familiaInstance)
             return notFound()
 
-        //Garante que as coleções sejam exibidas em uma ordem especifica
-//        familiaInstance.membros = familiaInstance.membros.sort { it.id }
+        familiaInstance = familiaService.obtemFamilia(familiaInstance.id, true, true, true, true);
+//        familiaInstance = familiaService.obtemFamilia(familiaInstance.id, true, true, true, false/*carregado na sequencia por ajax*/)
 
         List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familiaInstance.id)
 
@@ -66,32 +80,60 @@ class FamiliaController extends AncestralController {
         render view: 'show', model: [familiaInstance: familiaInstance, pedidosCertidaoPendentes: pedidosCertidaoPendentes]
     }
 
-/*
+    @Secured([DefinicaoPapeis.STR_USUARIO])
     def create() {
-        respond new Familia(params)
+        if (! segurancaService.acessoRecursoServico(RecursosServico.INCLUSAO_FAMILIA))
+            throw new ApoiaSuasException("O recurso de inclusão de família não está habilitado para este serviço")
+
+        //passa para o modelo da view DUAS novas instâncias: uma para a família e outra para a referência familiar
+        Cidadao referenciaFamiliar = new Cidadao();
+        referenciaFamiliar.referencia = true;
+        referenciaFamiliar.parentescoReferencia = cidadaoService.PARENTESCO_REFERENCIA;
+        render view: "create", model: getEditCreateModel(new Familia())+[cidadaoInstance: referenciaFamiliar];
     }
-*/
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def save(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand,
              VulnerabilidadesCommand vulnerabilidadesCommand, OutrosMarcadoresCommand outrosMarcadoresCommand) {
         if (! familiaInstance)
             return notFound()
-
         boolean modoCriacao = familiaInstance.id == null;
-        log.debug(outrosMarcadoresCommand);
 
-        //Grava
-        if (familiaInstance.validate()) {
-            familiaInstance = familiaService.grava(familiaInstance, programasCommand, acoesCommand,
-                    vulnerabilidadesCommand, outrosMarcadoresCommand)
+        //A gravação de uma nova família embute também a gravação de um primeiro membro como referencia familiar
+        Cidadao novaReferenciaFamiliar = null;
+        if (modoCriacao) {
+            //inicializando a referencia familiar
+            if (! params.cidadao)
+                throw new ApoiaSuasException("Faltando informações da referência familiar na criação de uma nova família.")
+            novaReferenciaFamiliar = new Cidadao(params.cidadao);
+            novaReferenciaFamiliar.familia = familiaInstance;
+            novaReferenciaFamiliar.servicoSistemaSeguranca = segurancaService.servicoLogado;
+            novaReferenciaFamiliar.criador = segurancaService.usuarioLogado;
+            novaReferenciaFamiliar.habilitado = true;
+            novaReferenciaFamiliar.ultimoAlterador = segurancaService.usuarioLogado;
+
+            //inicializando a familia
+            familiaInstance.criador = usuarioLogado;
+            familiaInstance.ultimoAlterador = usuarioLogado;
+            familiaInstance.situacaoFamilia = SituacaoFamilia.CADASTRADA;
+            familiaInstance.servicoSistemaSeguranca = servicoCorrente;
+        }
+
+        //Validacao: se estiver gravando também uma referencia familiar, é preciso validá-la também
+        boolean validado = familiaInstance.validate();
+        if (novaReferenciaFamiliar)
+            validado = validado && novaReferenciaFamiliar.validate();
+        if (validado) {
+            familiaInstance = modoCriacao ? familiaService.gravaNovo(familiaInstance, novaReferenciaFamiliar)
+                    : familiaService.grava(familiaInstance, programasCommand, acoesCommand,
+                        vulnerabilidadesCommand, outrosMarcadoresCommand);
+
             flash.message = message(code: 'default.updated.message', args: [message(code: 'familia.label', default: 'Família'), familiaInstance.id])
             return show(familiaInstance)
         } else {
             //exibe o formulario novamente em caso de problemas na validacao
-            return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(familiaInstance))
+            return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(familiaInstance)+[cidadaoInstance: novaReferenciaFamiliar]);
         }
-
     }
 
     private Map getEditCreateModel(Familia familiaInstance) {
@@ -196,8 +238,8 @@ class FamiliaController extends AncestralController {
     }
 
     def listMonitoramento(Long id) {
-        List monitoramentos = Familia.get(id).monitoramentos.sort();
-        render view: 'monitoramento/listMonitoramento', model: [monitoramentoInstanceList: monitoramentos]
+        List monitoramentos = familiaService.obtemFamilia(id, false, false, false, true).monitoramentos.sort();
+        render view: 'monitoramento/_listMonitoramento', model: [monitoramentoInstanceList: monitoramentos]
     }
 
     protected Monitoramento buscaMonitoramento(Long id) {
@@ -290,7 +332,7 @@ class FamiliaController extends AncestralController {
 
         monitoramento.suspenso = true;
         monitoramentoService.gravaMonitoramento(monitoramento)
-        flash.message = "Monitoramento removido"
+        flash.message = "Monitoramento suspenso"
         return render(contentType:'text/json', text: ['success': true] as JSON);
     }
 
@@ -309,7 +351,7 @@ class FamiliaController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def saveAcompanhamento(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand,
                            VulnerabilidadesCommand vulnerabilidadesCommand, OutrosMarcadoresCommand outrosMarcadoresCommand) {
-        familiaInstance.acompanhamentoFamiliar.familia = familiaInstance;
+//        familiaInstance.acompanhamentoFamiliar.familia = familiaInstance;
         if (! familiaInstance)
             return notFound()
 
@@ -336,18 +378,18 @@ class FamiliaController extends AncestralController {
     def selecionarAcompanhamento() {
         Map modelo = FamiliaController.modeloSelecionarAcompanhamento + [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:]];
         if (FamiliaController.getUltimaFamilia(session))
-            modelo << [defaultNomePesquisa: FamiliaController.getUltimaFamilia(session).codigoLegado];
+            modelo << [defaultNomePesquisa: FamiliaController.getUltimaFamilia(session).cad];
         render(view: "/cidadao/procurarCidadao", model: modelo )
     }
 
     def selecionarAcompanhamentoExecuta(FiltroCidadaoCommand filtro) {
-        //Preenchimento de numeros no primeiro campo de busca indica pesquisa por codigo legado
-        boolean buscaPorCodigoLegado = filtro.nomeOuCodigoLegado && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCodigoLegado)
+        //Preenchimento de numeros no primeiro campo de busca indica pesquisa por cad
+        boolean buscaPorCad = filtro.nomeOuCad && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCad)
         params.max = params.max ?: 20
         PagedResultList cidadaos = cidadaoService.procurarCidadao(params, filtro)
         Map filtrosUsados = params.findAll { it.value }
 
-        if (buscaPorCodigoLegado && cidadaos?.resultList?.size() > 0) {
+        if (buscaPorCad && cidadaos?.resultList?.size() > 0) {
             Cidadao cidadao = cidadaos?.resultList[0]
             redirect(controller: "familia", action: "editAcompanhamentoFamilia", id: cidadao.familia.id)
         } else {

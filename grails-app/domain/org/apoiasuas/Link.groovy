@@ -35,6 +35,7 @@ class Link {
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_link']
+        servicoSistemaSeguranca fetch: 'join' //por questoes de seguranca, sempre que um link eh obtido do banco de dados, o servicoSistema precisara ser consultado
     }
 
     static constraints = {

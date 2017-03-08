@@ -81,13 +81,14 @@ class Cidadao implements Serializable {
 //        origemImportacaoAutomatica(defaultValue: AmbienteExecucao.getFalse())
 //        familia column:'familia', index:'Cidadao_Familia_Idx'
 //        nomeCompleto column:'nomeCompleto', index:'Cidadao_Nome_Idx'
+        servicoSistemaSeguranca fetch: 'join' //por questoes de seguranca, sempre que um cidadao eh obtido do banco de dados, o servicoSistema precisara ser consultado
     }
 
     static Cidadao novaInstancia() {
         return new Cidadao()
     }
 
-    String toString() { return nomeCompleto ?: "sem nome (criado em "+dateCreated+")" }
+    public String toString() { return nomeCompleto ?: "sem nome (criado em "+dateCreated+")" }
 
     public boolean alteradoAposImportacao() {
         return dataUltimaImportacao == null || ! DateUtils.momentosProximos(dataUltimaImportacao, lastUpdated)

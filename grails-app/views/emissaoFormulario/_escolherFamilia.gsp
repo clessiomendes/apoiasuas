@@ -2,16 +2,16 @@
 <g:javascript>
     function limparFamilia() {
         document.getElementById("familiaParaSelecao").innerHTML='';
-        document.getElementById("codigoLegado").value='';
+        document.getElementById("cad").value='';
     }
 
     /**
     * Sempre que carregar a página, submete a chamada ajax identica ao click do botao de procurar familia
     */
     $(document).ready(function() {
-        if (document.getElementById("codigoLegado").value != '') {
-            ${remoteFunction(controller: 'emissaoFormulario', action: 'familiaParaSelecao', method: "post", update: "familiaParaSelecao", params: [codigoLegado: org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)?.codigoLegado])}
-            document.getElementById("codigoLegado").select();
+        if (document.getElementById("cad").value != '') {
+            ${remoteFunction(controller: 'emissaoFormulario', action: 'familiaParaSelecao', method: "post", update: "familiaParaSelecao", params: [cad: org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)?.cad])}
+            document.getElementById("cad").select();
         }
     });
 
@@ -35,10 +35,10 @@ if (evt.persisted) {
             </label>
         </div>
         <div class="fieldcontain">
-            <label for="codigoLegado">
+            <label for="cad">
                 <g:radio name="familiaCadastrada" value="true" checked="true"/> Família cadastrada:
             </label>
-            <g:textField autofocus="true" name="codigoLegado" id="codigoLegado" size="2" value="${FamiliaController.getUltimaFamilia(session)?.codigoLegado}"/>
+            <g:textField autofocus="true" name="cad" id="cad" size="2" value="${FamiliaController.getUltimaFamilia(session)?.cad}"/>
 %{--TODO: Formatar botão ok--}%
             <g:actionSubmit action="familiaParaSelecao" id="btnSelecionarFamilia" value="ok"/>
         </div>

@@ -1,30 +1,24 @@
 import apoiasuas.ImportacaoJob
 import org.apoiasuas.ApoiaSuasService
 import org.apoiasuas.FullTextSearchService
+import org.apoiasuas.ProgramaService
 import org.apoiasuas.cidadao.MarcadorService
 import org.apoiasuas.fileStorage.FileStorageService
-import org.apoiasuas.redeSocioAssistencial.ServicoSistema
-import org.apoiasuas.redeSocioAssistencial.ServicoSistemaController
-import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
-import org.apoiasuas.ProgramaService
-import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorialService
-import org.apoiasuas.formulario.CampoFormulario
-import org.apoiasuas.formulario.Formulario
 import org.apoiasuas.formulario.FormularioService
-import org.apoiasuas.formulario.PreDefinidos
 import org.apoiasuas.importacao.ImportarFamiliasService
+import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorialService
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
 import org.apoiasuas.seguranca.ApoiaSuasPersistenceListener
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
-import org.apoiasuas.util.FullTextSearchUtils
-import org.camunda.bpm.engine.task.Task
-import org.codehaus.groovy.grails.commons.ApplicationAttributes
 import org.codehaus.groovy.grails.commons.GrailsApplication
-
-import javax.servlet.ServletContext
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import java.sql.SQLException
+import groovy.sql.Sql
+import java.util.logging.Level
 
 class BootStrap {
 
@@ -74,7 +68,12 @@ class BootStrap {
 
         addPersistenceListener()
 
-        fullTextSearchService.index()
+//        if (AmbienteExecucao.isProducao())
+            fullTextSearchService.index()
+
+        RecursosServico.initTest();
+
+        Sql.LOG.level = Level.FINE; //necessario para gerar log de sqls que nao passam pelo hibernate
 
     }
 

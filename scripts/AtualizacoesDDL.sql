@@ -288,3 +288,15 @@ alter table programa add column habilitado boolean DEFAULT true;
 alter table vulnerabilidade add column habilitado boolean DEFAULT true;
 
 alter table monitoramento add column suspenso boolean DEFAULT false;
+
+alter table servico_sistema add column acesso_seguranca_pedidos_certidao boolean DEFAULT false;
+alter table servico_sistema add column acesso_seguranca_plano_acompanhamento boolean DEFAULT false;
+
+update servico_sistema set acesso_seguranca_inclusao_membro_familiar = true;
+update servico_sistema set acesso_seguranca_pedidos_certidao = true;
+update servico_sistema set acesso_seguranca_plano_acompanhamento = true;
+
+-- mudando o mapeamento de companhamento familiar para associacao simples
+alter table familia add column acompanhamento_familiar_id int8 null;
+alter table familia add constraint FK_gb4i0mpvmugpxggdw5y7hqbac foreign key (acompanhamento_familiar_id) references acompanhamento_familiar;
+update familia a set acompanhamento_familiar_id = (select id from acompanhamento_familiar b where a.id = b.familia) where a.id in (select familia from acompanhamento_familiar);

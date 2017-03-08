@@ -29,7 +29,7 @@ class ApoiaSuasService {
                     "   and 'sq_' || table_name not IN ( SELECT a.sequence_name FROM information_schema.sequences a )"
 
     @Transactional(readOnly = true)
-    String[] getAtualizacoesPendentes() {
+    public String[] getAtualizacoesPendentes() {
         Configuration conf = grailsApplication.mainContext.getBean("&sessionFactory").configuration
         //FIXME as classes Postgree* não podem estar acopladas (levar para AmbienteExecucao)
         DatabaseMetadata metadata = new DatabaseMetadata(new Sql(dataSource).dataSource.connection, new PostgreSQL81Dialect());

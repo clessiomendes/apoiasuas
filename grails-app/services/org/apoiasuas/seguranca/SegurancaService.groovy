@@ -7,6 +7,7 @@ import org.apoiasuas.Link
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.springframework.security.authentication.BadCredentialsException
@@ -20,7 +21,9 @@ class SegurancaService {
 
     public static final String LOGIN_AMD = "admin"
     public static final int MIN_TAMANHO_SENHA = 4
-    public static final boolean HABILITAR_RESTRICAO_DE_ACESSO_AO_DOMINIO = true; //FIXME: manter habilitado em produção, se ainda não estiver
+    public static final boolean HABILITAR_RESTRICAO_DE_ACESSO_AO_DOMINIO = true || AmbienteExecucao.isProducao();
+    public static final String SUFIXO_OPERADOR_LOGADO = " (logado)"
+    public static final String SUFIXO_OPERADOR_EXCLUIDO = " (excl.)"
 
     def springSecurityService
     def authenticationManager
@@ -29,8 +32,6 @@ class SegurancaService {
     def familiaService
     def cidadaoService
     def abrangenciaTerritorialService
-
-    static transactional = false
 
     @NotTransactional
     public UsuarioSistema getUsuarioLogado() {
@@ -166,30 +167,31 @@ class SegurancaService {
      */
     @Transactional(readOnly = true)
     public ArrayList<UsuarioSistema> getOperadoresOrdenados(boolean somenteHabilitados, UsuarioSistema sempreMostrar = null) {
-        UsuarioSistema logado = getUsuarioLogado()
-        logado.discard() //desconecta dos objetos na cache da sessao hibernate
-        logado.username = logado.username+" (logado)"
+        ApoiaSuasUser principal = getPrincipal();
+//        UsuarioSistema logado = getUsuarioLogado()
+//        logado.discard() //desconecta dos objetos na cache da sessao hibernate
+//        logado.username = logado.username+" (logado)"
 
         ArrayList<UsuarioSistema> habilitados = [];
         ArrayList<UsuarioSistema> desabilitados = [];
         UsuarioSistema.findAllByServicoSistemaSeguranca(getServicoLogado()).sort {it.username?.toLowerCase()}.each { operador ->
             operador.discard(); //desconecta os objetos da sessao hibernate para nao gravar as alteracoes
-            if (operador.id != logado.id) { //usuario logado ja incluido na resposta
-                if (operador.enabled )
-                    habilitados << operador
-                else {
-                    if (! somenteHabilitados) {
-                        operador.username = operador.username + " (excl.)"
-                        desabilitados << operador
-                    } else if (operador.id == sempreMostrar?.id) {
-                        operador.username = operador.username + " (excl.)"
-                        desabilitados << operador
-                    }
+            if (operador.id == principal.id) //usuario logado
+                operador.username += SUFIXO_OPERADOR_LOGADO
+            if (operador.enabled )
+                habilitados << operador
+            else {
+                if (! somenteHabilitados) {
+                    operador.username = operador.username + SUFIXO_OPERADOR_EXCLUIDO
+                    desabilitados << operador
+                } else if (operador.id == sempreMostrar?.id) {
+                    operador.username = operador.username + SUFIXO_OPERADOR_EXCLUIDO
+                    desabilitados << operador
                 }
             }
         }
 
-        return [logado] + habilitados + desabilitados;
+        return /*[logado] +*/ habilitados + desabilitados;
     }
 
     /**
@@ -203,7 +205,7 @@ class SegurancaService {
             (sempreMostrar?.id == operador.id
             ||
             //ou se o operador tiver o papel de tecnico
-            ! UsuarioSistemaPapel.findAllByUsuarioSistemaAndPapel(operador, papelTecnico).isEmpty())
+            UsuarioSistemaPapel.countByUsuarioSistemaAndPapel(operador, papelTecnico) > 0)
         }
 
         return result
@@ -246,9 +248,9 @@ class SegurancaService {
     @Transactional(readOnly = true)
     public void testaAcessoDominio(def entityObject) {
 
-        if (    isSuperUser() //Administrador tem acesso restrito
+        if (    isSuperUser() //Administrador tem acesso irrestrito
                 || (! HABILITAR_RESTRICAO_DE_ACESSO_AO_DOMINIO) //flag de teste para desabilitar checagem de seguranca
-                || (! getUsuarioLogado())) //se estiver fora de um contexto de sessao de usuario, manter acesso irrestrito
+                || (! getPrincipal())) //se estiver fora de um contexto de sessao de usuario, manter acesso irrestrito
             return; //Super usuário tem acesso irrestrito
 
         boolean temAcesso = true;
@@ -267,11 +269,17 @@ class SegurancaService {
 
     }
 
-    public boolean acessoTagLib(String acessoServico) {
-        if (acessoServico && ! acessoServico.trim().isEmpty()) {
-            def temp = servicoLogado.acessoSeguranca.getProperty(acessoServico)
+    /**
+     * @param recurso verifica se o serviço logado tem acesso a determinada funcionalidade.
+     * Ex: acessoServico='inclusaoMembroFamiliar' (todas as opções disponíveis são obtidas de AcessoSeguranca em ServicoSistema)
+     */
+    public boolean acessoRecursoServico(RecursosServico recurso) {
+
+        if (recurso && ! recurso.propriedade.trim().isEmpty()) {
+            def temp = servicoLogado.acessoSeguranca.getProperty(recurso.propriedade)
             return temp.asBoolean();
         }
         return true;
     }
 }
+

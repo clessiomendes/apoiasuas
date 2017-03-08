@@ -7,7 +7,7 @@
 <g:if test="${processo.familia}">
 <li class="fieldcontain">
     <span class="property-label">Familia</span>
-    <span class="property-value" aria-labelledby="nomeCompleto-label">${processo.familia?.toString()}</span>
+    <span class="property-value" aria-labelledby="nomeCompleto-label">${processo.familia?.montaDescricao()}</span>
 </li>
 </g:if>
 
@@ -30,13 +30,11 @@
 </li>
 
 %{--String numeroAR--}%
-<g:formRemote name="fool" method="post" url="[action: 'gravaAR', id: processo.id]" update="mensagemAR">
-              %{--onSuccess="alert('AR gravada com sucesso');" onFailure="alert(XMLHttpRequest.responseText)">--}%
-    <div class="fieldcontain">
+<div class="fieldcontain">
+    <g:formRemote name="fool" method="post" url="[action: 'gravaAR', id: processo.id]" update="mensagemAR">
         <label for="numeroAR">Número AR</label>
         <g:textField name="numeroAR" value="${processo.numeroAR}"/>
         <g:actionSubmit class="save" action="gravaAR" id="btnGravaAR" value="Alterar"/>
-%{--        <g:submitToRemote class="save" url="[action: 'gravaAR']" id="btnGravaAR" value="Alterar" update="mensagemAR"/>--}%
         <br><div id="mensagemAR"></div>
-    </div>
-</g:formRemote>
+    </g:formRemote>
+</div>

@@ -33,7 +33,6 @@ class BuscaCentralizadaController extends AncestralController {
         FullTextSearchService.Resultado resultado = fullTextSearchService.search(palavraChave)
 
         List <FullTextSearchService.ObjetoEncontrado> temp = []
-
         resultado.objetosEncontrados.each { FullTextSearchService.ObjetoEncontrado objetoEncontrado ->
             def objeto = objetoEncontrado.objeto //CUIDADO! O objeto trazido da pesquisa vem semi-preenchido
 //            try {

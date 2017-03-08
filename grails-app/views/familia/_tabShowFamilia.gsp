@@ -1,3 +1,4 @@
+<%@ page import="org.apoiasuas.redeSocioAssistencial.RecursosServico" %>
 <%
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance;
 %>
@@ -73,12 +74,10 @@
     </fieldset>
 %{--</g:if>--}%
 
-<g:if test="${localDtoFamilia?.codigoLegado}">
-    <li class="fieldcontain">
-        <span id="codigoLegado-label" class="property-label"><g:message code="familia.codigoLegado.label" default="Codigo Legado" /></span>
-        <span class="property-value" aria-labelledby="codigoLegado-label"><g:fieldValue bean="${localDtoFamilia}" field="codigoLegado"/></span>
-    </li>
-</g:if>
+<li class="fieldcontain">
+    <span id="cad-label" class="property-label"><g:message code="familia.codigoLegado.label" default="Cad" /></span>
+    <span class="property-value" aria-labelledby="cad-label"><g:fieldValue bean="${localDtoFamilia}" field="cad"/></span>
+</li>
 
 <g:if test="${localDtoFamilia?.tecnicoReferencia}">
     <li class="fieldcontain">
@@ -108,7 +107,7 @@
     %{--Lista membros habilitados--}%
     <li class="fieldcontain">
         <span id="membros-label" class="property-label"><g:message code="familia.membros.label" default="Membros" /></span>
-        <g:each in="${localDtoFamilia.getMembrosHabilitados(true)}" var="m">
+        <g:each in="${localDtoFamilia.getMembrosOrdemPadrao(true)}" var="m">
             <span class="property-value" aria-labelledby="membros-label">
                 <g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link>
                 ${m.parentescoReferencia ? ", "+m.parentescoReferencia : ""}
@@ -116,7 +115,7 @@
             </span>
         </g:each>
         <span class="property-value" aria-labelledby="membros-label">
-            <sec:access acessoServico="inclusaoMembroFamiliar">
+            <sec:access acessoServico="${RecursosServico.INCLUSAO_MEMBRO_FAMILIAR}">
                 <input id="novoMembro" type="button" class="create" style="margin: 5px 5px 5px 0"
                        title="Incluir um novo cidadão como membro desta família" value="Novo membro" onclick="novoMembro();">
             </sec:access>
@@ -126,10 +125,11 @@
     </li>
 
     %{--Lista membros removidos do grupo familiar--}%
-    <g:if test="${localDtoFamilia?.getMembrosHabilitados(false)}">
+    <g:set var="membrosDesabilitados" value="${localDtoFamilia?.getMembrosOrdemPadrao(false)}"/>
+    <g:if test="${membrosDesabilitados}">
         <li class="fieldcontain">
             <span id="membros-removidos-label" class="property-label">Membros removidos</span>
-            <g:each in="${localDtoFamilia.getMembrosHabilitados(false)}" var="m">
+            <g:each in="${membrosDesabilitados}" var="m">
                 <span class="property-value" aria-labelledby="membros-removidos-label">
                     <g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link>
                     ${m.parentescoReferencia ? ", "+m.parentescoReferencia : ""}

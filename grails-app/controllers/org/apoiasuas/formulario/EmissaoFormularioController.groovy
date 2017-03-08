@@ -10,6 +10,7 @@ import org.apoiasuas.cidadao.Endereco
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.FiltroCidadaoCommand
 import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
@@ -81,7 +82,7 @@ class EmissaoFormularioController extends AncestralController {
         Formulario formulario
 
         instanciamento_dos_objetos: try { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
-            formulario = servico(Formulario.get(idFormulario)).getFormularioComCampos(idFormulario)
+            formulario = servico(Formulario.get(idFormulario)).getFormulario(idFormulario, true)
             String idUsuarioSistema = params.avulso?.get(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
             if (idUsuarioSistema)
                 formulario.usuarioSistema = UsuarioSistema.get(idUsuarioSistema.toLong())
@@ -113,7 +114,7 @@ class EmissaoFormularioController extends AncestralController {
             //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
             //javascript que rodara automaticamente na proxima pagina)
             setReportParaBaixar(session, reportDTO)
-            if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO) {
+            if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO && segurancaService.acessoRecursoServico(RecursosServico.PEDIDOS_CERTIDAO)) {
                 String idProcesso = pedidoCertidaoProcessoService.getIdProcessoPeloFormularioEmitido(reportDTO.formularioEmitido.id)
                 return redirect(controller: "pedidoCertidaoProcesso", action: "mostraProcesso", id:idProcesso)
             } else {
@@ -158,11 +159,11 @@ class EmissaoFormularioController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def familiaParaSelecao(String codigoLegado) {
+    def familiaParaSelecao(String cad) {
         Familia familiaSelecionada = null
         boolean familiaEncontrada = false
-        if (codigoLegado) {
-            familiaSelecionada = cidadaoService.obtemFamilia(codigoLegado, true)
+        if (cad) {
+            familiaSelecionada = cidadaoService.obtemFamiliaPeloCad(cad, true)
             if (familiaSelecionada)
                 familiaEncontrada = true
         }
@@ -182,7 +183,7 @@ class EmissaoFormularioController extends AncestralController {
 
         //Grava alteracoes
         cidadaoService.atualizarFamiliaTelefoneCidadao(familia, telefoneSelecionado, params.novoTelefoneDDD)
-        request.message = "Família "+familia.codigoLegado+" atualizada"
+        request.message = "Família "+familia.cad+" atualizada"
         //Volta para a tela de selecao de familias
         forward action: "procurarCidadao"
     }

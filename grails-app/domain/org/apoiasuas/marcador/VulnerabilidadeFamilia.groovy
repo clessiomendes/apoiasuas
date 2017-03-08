@@ -20,6 +20,7 @@ class VulnerabilidadeFamilia implements AssociacaoMarcador {
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_vulnerabilidade_familia'];
         version defaultValue: "0";
+        vulnerabilidade fetch: 'join'
     }
 
     static constraints = {

@@ -1,19 +1,28 @@
+<%@ page import="org.apoiasuas.redeSocioAssistencial.RecursosServico" %>
 <%
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance
     org.apoiasuas.cidadao.Endereco enderecoInstance = localDtoFamilia.endereco
 %>
 
-<div class="fieldcontain">
-    <label>Referência familiar</label>
-    ${localDtoFamilia?.getReferencia()?.nomeCompleto}
-</div>
+<g:if test="${localDtoFamilia?.referencia}">
+    <div class="fieldcontain">
+        <label>Referência familiar</label>
+        ${localDtoFamilia.getReferencia().nomeCompleto}
+    </div>
+</g:if>
 
-<div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'codigoLegado', 'error')} ">
-    <label for="codigoLegado">
-        <g:message code="familia.codigoLegado.label" default="Codigo Legado" />
-    </label>
-    <g:textField name="codigoLegado" value="${localDtoFamilia?.codigoLegado}"/>
-</div>
+%{--
+O código legado só fica disponível se o serviço tem acesso a este recurso, pois ele oculta o id na apresentação da
+descrição da familia: Familita.getCad()
+--}%
+<sec:access acessoServico="${RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO}">
+    <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'codigoLegado', 'error')} ">
+        <label for="codigoLegado">
+            <g:message code="familia.codigoLegado.label" default="Codigo Legado" />
+        </label>
+        <g:textField name="codigoLegado" pattern="[0-9]{0,}" value="${localDtoFamilia?.codigoLegado}"/>
+    </div>
+</sec:access>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'tecnicoReferencia', 'error')} ">
     <label for="tecnicoReferencia">
@@ -31,11 +40,12 @@
         <g:textField name="endereco.tipoLogradouro" size="15" maxlength="15" value="${enderecoInstance?.tipoLogradouro}"/>
     </div>
 
-    <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'endereco.nomeLogradouro', 'error')} ">
+    <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'endereco.nomeLogradouro', 'error')} required">
         <label for="endereco.nomeLogradouro">
             <g:message code="familia.endereco.nomeLogradouro.label" default="Nome Logradouro" />
+            <span class="required-indicator">*</span>
         </label>
-        <g:textField name="endereco.nomeLogradouro" size="60" maxlength="60" value="${enderecoInstance?.nomeLogradouro}"/>
+        <g:textField name="endereco.nomeLogradouro" size="60" maxlength="60" required="" value="${enderecoInstance?.nomeLogradouro}"/>
     </div>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'endereco.numero', 'error')} ">

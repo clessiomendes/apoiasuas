@@ -222,6 +222,7 @@ class ApoiaSuasTagLib {
     Closure submitButton = { attrs ->
         if (attrs.showif != null && attrs.showif == false)
             return;
+        attrs.remove("showif");
 
         //Eh preciso buscar a tag original antes de executa-la, pois ela foi sobrescrita
         FormTagLib original = grailsAttributes.applicationContext.getBean(FormTagLib.name)
@@ -242,6 +243,7 @@ class ApoiaSuasTagLib {
         //Uma vez que o parametro showif esta presente, testar se ele eh falso ou nulo e, neste caso, ignorar o javascript
         if (attrs.containsKey("showif") && (! attrs.showif))
             return;
+        attrs.remove("showif");
 
         //Eh preciso buscar a tag original antes de executa-la, pois ela foi sobrescrita
         JavascriptTagLib original = grailsAttributes.applicationContext.getBean(JavascriptTagLib.name)
@@ -321,6 +323,7 @@ class ApoiaSuasTagLib {
         //Uma vez que o parametro showif esta presente, testar se ele eh falso ou nulo e, neste caso, ignorar o conteúdo
         if (attrs.containsKey("showif") && (! attrs.showif))
             return;
+        attrs.remove("showif");
 
         if (attrs.containsKey('roles') && ! SpringSecurityUtils.ifAnyGranted(attrs.roles))
             return;

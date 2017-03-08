@@ -16,6 +16,7 @@ class ServicoController extends AncestralServicoController {
     ServicoService servicoService
     FormularioService formularioService
     CidadaoService cidadaoService
+    def familiaService
 
     static defaultAction = "list"
 
@@ -38,7 +39,7 @@ class ServicoController extends AncestralServicoController {
 
         if (servico.encaminhamentoPadrao) {
             Cidadao cidadao = cidadaoService.obtemCidadao(idCidadao)
-            Familia familia = cidadaoService.obtemFamilia(idFamilia)
+            Familia familia = familiaService.obtemFamilia(idFamilia)
             servico.encaminhamentoPadrao = servico.encaminhamentoPadrao
                     .replaceAll("(?i)%nome%", cidadao?.getNomeCompleto() ?: "")
                     .replaceAll("(?i)%endereco%", familia?.endereco?.enderecoCompleto ?: "")

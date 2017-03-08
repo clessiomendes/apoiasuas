@@ -96,13 +96,14 @@
         %{--</fieldset>--}%
     </g:tab>
     <g:tab id="tabAcesso" titulo="recursos disponíveis" roles="${DefinicaoPapeis.STR_SUPER_USER}">
-        <div class="fieldcontain ${hasErrors(bean: servicoSistema, field: 'enabled', 'error')}">
-            <label></label>
-            <g:checkBox name="habilitado" value="${servicoSistema?.habilitado}"/>
-            <g:message code="servicoSistema.habilitado.label"/>
-        </div>
         <f:with bean="${servicoSistema}">
-            <f:field property="acessoSeguranca.inclusaoMembroFamiliar"/>
+            <f:field label="acesso liberado ao sistema" property="habilitado"/>
+            <f:field label="cadastrar novas famílias" property="acessoSeguranca.inclusaoFamilia"/>
+            <f:field label="incluir novos membros familiares (cidadãos)" property="acessoSeguranca.inclusaoMembroFamiliar"/>
+            <f:field label="permitir cadastros mais detalhados de famílias e cidadãos" property="acessoSeguranca.cadastroDetalhado"/>
+            <f:field label="gerencia o processo de pedidos de certidão para outros municípios" property="acessoSeguranca.pedidosCertidao"/>
+            <f:field label="emitir planos de acompanhamento familiar à partir do modelo previsto no sistema" property="acessoSeguranca.planoAcompanhamento"/>
+            <f:field label="utilizar o código legado como identificador principal de busca de famílias" property="acessoSeguranca.identificacaoPeloCodigoLegado"/>
         </f:with>
     </g:tab>
 </g:tabs>

@@ -30,14 +30,23 @@ class FamiliaService {
     def marcadorService
 
     @Transactional
+    public Familia gravaNovo(Familia familia, Cidadao novaReferenciaFamiliar) {
+        novaReferenciaFamiliar.familia = familia;
+        familia.membros.add(novaReferenciaFamiliar);
+        Familia result = grava(familia, null, null, null, null);
+        novaReferenciaFamiliar.save();
+        return result;
+    }
+
+    @Transactional
     public Familia grava(Familia familia, MarcadoresCommand programasCommand, MarcadoresCommand acoesCommand,
-                         MarcadoresCommand vulnerabilidadesCommand, MarcadoresCommand outrosMarcadoresCommand)
-    {
+                         MarcadoresCommand vulnerabilidadesCommand, MarcadoresCommand outrosMarcadoresCommand) {
         marcadorService.gravaMarcadoresFamilia(programasCommand, familia.programas, familia, Programa.class, ProgramaFamilia.class);
         marcadorService.gravaMarcadoresFamilia(vulnerabilidadesCommand, familia.vulnerabilidades, familia, Vulnerabilidade.class, VulnerabilidadeFamilia.class);
         marcadorService.gravaMarcadoresFamilia(acoesCommand, familia.acoes, familia, Acao.class, AcaoFamilia.class);
         marcadorService.gravaMarcadoresFamilia(outrosMarcadoresCommand, familia.outrosMarcadores, familia, OutroMarcador.class, OutroMarcadorFamilia.class);
-
+        familia.acompanhamentoFamiliar?.save();
+        familia.errors.reject("some.error.code");
         return familia.save()
     }
 
@@ -76,6 +85,7 @@ class FamiliaService {
 
     @Transactional(readOnly = true)
     public boolean testaAcessoDominio(Familia familia) {
+        log.debug("Testando acesso  aa familia "+familia.id)
         //Restringir acesso apenas ao servicoSistema que criou a familia
         if (familia.servicoSistemaSeguranca && segurancaService.getServicoLogado() &&
                 familia.servicoSistemaSeguranca.id != segurancaService.getServicoLogado().id)
@@ -94,7 +104,7 @@ class FamiliaService {
             result << messageSource.getMessage("notificacao.familia.acompanhada", [familia.tecnicoReferencia.username].toArray(), locale);
 
         //testa idades voltadas ao SCFV
-        familia.getMembrosHabilitados().each { Cidadao cidadao ->
+        familia.getMembrosOrdemPadrao().each { Cidadao cidadao ->
             if (cidadao.idade && cidadao.idade < 7)
                 result << messageSource.getMessage("notificacao.familia.SCFV.0a6", null, locale);
             if (cidadao.idade && cidadao.idade >= 60)
@@ -111,7 +121,7 @@ class FamiliaService {
     @Transactional(readOnly = true)
     public ReportDTO emitePlanoAcompanhamento(Familia familia) {
         ReportDTO result = new ReportDTO();
-        result.nomeArquivo = "PlanoAcompanhamentoCad${familia.codigoLegado}.docx"
+        result.nomeArquivo = "PlanoAcompanhamentoCad${familia.cad}.docx"
 
 // 1) Load doc file and set Velocity template engine and cache it to the registry
         InputStream stream = this.class.getResourceAsStream(TEMPLATE_PLANO_ACOMPANHAMENTO)
@@ -130,7 +140,7 @@ class FamiliaService {
         // pelo conteúdo correspondente. Esse mapa é transferido na sequência para o CONTEXTO do mecanismo de geração do .doc
         [
                 cras               : familia.servicoSistemaSeguranca?.nome,
-                codigo_legado      : familia.codigoLegado,
+                codigo_legado      : familia.cad,
                 referencia_familiar: familia.getReferencia()?.nomeCompleto,
                 nis_referencia     : familia.getReferencia()?.nis,
                 tecnico_referencia : tecnicoReferencia,
@@ -156,7 +166,7 @@ class FamiliaService {
      */
     private String membrosToString(Familia familia, String separadorCampos = ", ", String separadorLinhas = "\n") {
         List<String> dadosCidadao = [];
-        familia.membrosOrdemAlfabetica.each { cidadao ->
+        familia.getMembrosOrdemPadrao().each { cidadao ->
             if (cidadao.nomeCompleto)
                 dadosCidadao << CollectionUtils.join(["- " + cidadao.nomeCompleto,
                                                       cidadao.parentescoReferencia,
@@ -190,5 +200,27 @@ class FamiliaService {
         }
         return familia.save()
     }
+
+    @Transactional(readOnly = true)
+    public Familia obtemFamilia(Long id, boolean carregaMembros = false, boolean carregaTelefones = false,
+                                boolean carregaMarcadores = false, boolean carregaMonitoramentos = false) {
+        Map fetchMap = [:];
+        if (carregaMembros)
+            fetchMap << [membros: 'join'];
+        if (carregaTelefones)
+            fetchMap << [telefones: 'join'];
+        if (carregaMarcadores) {
+            fetchMap << [programas: 'join'];
+            fetchMap << [acoes: 'join'];
+            fetchMap << [outrosMarcadores: 'join'];
+            fetchMap << [vulnerabilidades: 'join'];
+        }
+        if (carregaMonitoramentos)
+            fetchMap << [monitoramentos: 'join'];
+        if (fetchMap)
+            fetchMap = [fetch: fetchMap];
+        return Familia.findById(id, fetchMap);
+    }
+
 
 }

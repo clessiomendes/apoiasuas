@@ -7,7 +7,8 @@
         <th><g:message code="cidadao.nomeCompleto.label" default="Nome"/></th>
         <th><g:message code="cidadao.parentescoReferencia.label" default="Parentesco"/></th>
         <th><g:message code="cidadao.familia.endereco.label" default="Endereco"/></th>
-        <th><g:message code="cidadao.familia.telefones.label" default="Telefones"/></th>
+        %{--Removendo telefones da tela de resultado por questão de performance (eles nao tem como ser buscado na SQL original--}%
+        %{--<th><g:message code="cidadao.familia.telefones.label" default="Telefones"/></th>--}%
         <th><g:message code="cidadao.idade.label" default="Idade"/></th>
     </tr></thead>
 
@@ -19,7 +20,7 @@
             <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
                         controller="${controllerLinkFamilia}" action="${actionLinkFamilia}" id="${cidadaoInstance.familia.id}">
             %{--url="${urlVerFamilia}">--}%
-                ${fieldValue(bean: cidadaoInstance, field: "familia.codigoLegado")}
+                ${fieldValue(bean: cidadaoInstance, field: "familia.cad")}
             </g:link></td>
 
             <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
@@ -32,12 +33,13 @@
             <td>${fieldValue(bean: cidadaoInstance, field: "parentescoReferencia")}</td>
 
             <td>${raw( org.apoiasuas.util.CollectionUtils.join([
-                    cidadaoInstance.familia.endereco.tipoENomeLogradouro,
-                    cidadaoInstance.familia.endereco.numero,
-                    cidadaoInstance.familia.endereco.complemento,
-                    cidadaoInstance.familia.endereco.bairro], ", ") ?: "" )}</td>
+                    cidadaoInstance.familia.endereco?.tipoENomeLogradouro,
+                    cidadaoInstance.familia.endereco?.numero,
+                    cidadaoInstance.familia.endereco?.complemento,
+                    cidadaoInstance.familia.endereco?.bairro], ", ") ?: "" )}</td>
 
-            <td>${cidadaoInstance.familia.getTelefonesToString()}</td>
+            %{--Removendo telefones da tela de resultado por questão de performance (eles nao tem como ser buscado na SQL original--}%
+            %{--<td>${cidadaoInstance.familia.getTelefonesToString()}</td>--}%
 
             <td>${cidadaoInstance.idade}</td>
 

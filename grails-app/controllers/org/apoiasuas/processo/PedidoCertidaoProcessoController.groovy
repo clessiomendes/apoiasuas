@@ -47,9 +47,7 @@ class PedidoCertidaoProcessoController extends ProcessoController {
 
         List<PedidoCertidaoProcessoDTO> processos = []
         if (! erroValidacao)
-//    (String codigoLegado, String dadosCertidao, Long idUsuarioSistema, Boolean pendentes, String numeroAR,
-//    String cartorio, Date dataInicio, Date dataFim)
-            processos = pedidoCertidaoProcessoService.getProcessos([codigoLegado: params.codigoLegado,
+            processos = pedidoCertidaoProcessoService.getProcessos([cad: params.cad,
                     dadosCertidao: params.dadosCertidao, idUsuarioSistema: idUsuarioSistema, pendentes: pendentes,
                     numeroAR: params.numeroAR, cartorio: params.cartorio, dataInicio: dataInicio, dataFim: dataFim]);
 
@@ -92,7 +90,7 @@ class PedidoCertidaoProcessoController extends ProcessoController {
         Familia familia = null
         //Valida cad digitado
         if (processoDTO.cadTransiente) {
-            familia = cidadaoService.obtemFamilia(processoDTO.cadTransiente, false)
+            familia = cidadaoService.obtemFamiliaPeloCad(processoDTO.cadTransiente, false)
             if (! familia) {
                 flash.message = "Erro! Cadastro de familia nao encontrado"
                 return render(view: "/processo/pedidoCertidao/create", model: [processoInstance: processoDTO, operadores: getOperadoresOrdenadosController(true)])

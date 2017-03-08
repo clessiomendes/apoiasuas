@@ -1,7 +1,7 @@
 package org.apoiasuas.processo
 
-import grails.transaction.Transactional
 import org.apoiasuas.cidadao.Familia
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.camunda.bpm.engine.history.HistoricProcessInstance
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery
@@ -94,7 +94,7 @@ class PedidoCertidaoProcessoService extends ProcessoService {
     //Erro nullpointer do framework caso se defina @Transactional explicitamente nos metodos desta classe (que foi especializada de outra classe que
     // implementa um serviço). Bug do grails, nao consegui identificar o porque ???
     public List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes(long idFamilia) {
-        if (! idFamilia)
+        if ((! idFamilia) || (! segurancaService.acessoRecursoServico(RecursosServico.PEDIDOS_CERTIDAO)))
             return []
 
         List<ProcessInstance> processInstances = runtimeService
@@ -123,8 +123,6 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         return processos[0].id
     }
 
-//    (String codigoLegado, String dadosCertidao, Long idUsuarioSistema, Boolean pendentes, String numeroAR,
-//    String cartorio, Date dataInicio, Date dataFim)
     @Override
     protected HistoricProcessInstanceQuery getQuery(Map filtros) {
         HistoricProcessInstanceQuery result = super.getQuery(filtros)
@@ -134,8 +132,8 @@ class PedidoCertidaoProcessoService extends ProcessoService {
             result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_FORMULARIO_EMTIDO, filtros.idFormularioEmitido.toString())
         if (filtros.idFamilia)
             result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_FAMILIA, filtros.idFamilia.toString())
-        else if (filtros.codigoLegado) {
-            Familia familia = cidadaoService.obtemFamilia(filtros.codigoLegado, false)
+        else if (filtros.cad) {
+            Familia familia = cidadaoService.obtemFamiliaPeloCad(filtros.cad, false)
             result = result.variableValueEquals(PedidoCertidaoProcessoDTO.VARIABLE_ID_FAMILIA, familia ? familia.id.toString() : "-1"/*nao listara nenhum processo*/)
         }
         if (filtros.dadosCertidao)

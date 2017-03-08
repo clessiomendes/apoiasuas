@@ -23,7 +23,7 @@
                 <tr>
                     <td>
                         <div>
-                            <nobr>Cad <g:textField name="codigoLegado" size="3" autofocus=""/></nobr>
+                            <nobr>Cad <g:textField name="cad" size="3" autofocus=""/></nobr>
                             <nobr>Nome na certidão <g:textField name="dadosCertidao" size="25"/></nobr>
                             <nobr>Autor <g:select name="usuarioSistema" noSelection="${['':'']}" from="${ususariosDisponiveis.collect{it.username}}" keys="${ususariosDisponiveis.collect{it.id}}"/></nobr>
                         </div>
@@ -64,7 +64,7 @@
                         <td><g:formatDate format="dd/MM/yyyy HH:mm" date="${processo.inicio}"/></td>
                         <td>${processo.operadorResponsavel?.username}</td>
                         <td><g:link action="mostraProcesso" id="${processo.id}">${processo.situacaoAtual}</g:link></td>
-                        <td>${processo.familia?.codigoLegado}</td>
+                        <td>${processo.familia?.cad}</td>
 					</tr>
 				</g:each>
 				</tbody>

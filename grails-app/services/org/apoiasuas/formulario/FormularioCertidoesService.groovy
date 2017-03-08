@@ -3,6 +3,7 @@ package org.apoiasuas.formulario
 import org.apoiasuas.formulario.definicao.FormularioCertidoes
 import org.apoiasuas.formulario.definicao.FormularioCertidoesPedido
 import org.apoiasuas.cidadao.Cidadao
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.util.StringUtils
 
 /**
@@ -183,7 +184,7 @@ class FormularioCertidoesService extends FormularioService {
      */
     @Override
     protected void eventoPosEmissao(Formulario formulario) {
-        if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO) {
+        if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO && segurancaService.acessoRecursoServico(RecursosServico.PEDIDOS_CERTIDAO)) {
             String cartorio = formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_NOME_CARTORIO) + ", " +
                     formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_BAIRRO_DISTRITO_CARTORIO) + ", " +
                     formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_MUNICIPIO_CARTORIO) + ", " +

@@ -25,9 +25,12 @@
 			</ul>
 			</g:hasErrors>
 			<g:form url="[resource:familiaInstance, action:'save']" >
-				<fieldset class="form">
-					<g:render template="form"/>
-				</fieldset>
+				%{--<fieldset class="form">--}%
+                    <g:tabs id="tabs" style="margin: 5px;">
+                        <g:tab id="tabEditFamilia" titulo="família" template="tabEditFamilia"/>
+                        <g:tab id="tabReferencia" titulo="referência familiar" template="/cidadao/form" model="[prefixoEntidade: 'cidadao.']"/>
+                    </g:tabs>
+				%{--</fieldset>--}%
 				<fieldset class="buttons">
 					<g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />
 				</fieldset>

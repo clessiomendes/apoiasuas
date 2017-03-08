@@ -42,23 +42,23 @@
                 <g:if test="${processo.tarefas}">
                     <fieldset id="fieldsetTarefas" class="embedded"><legend>Histórico</legend>
                         <g:each in="${processo.tarefas}" var="tarefa">
-                            <g:form action="reabreTarefa" id="${tarefa.id}">
                             <li class="fieldcontain">
                                 <span class="property-label">${tarefa.descricao}</span>
                                 <span class="property-value">
-                                    <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CONCLUIDA}">
-                                        Concluída por ${tarefa.responsavel?.username} em <g:formatDate date="${tarefa.fim}"/>
-                                        <g:submitButton showif="${processo.fim == null}" name="reabreTarefa" class="save" value="voltar" />
-                                    </g:if>
-                                    <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.PENDENTE}">
-                                        Aguardando por ${tarefa.responsavel?.username} desde <g:formatDate date="${tarefa.inicio}"/>
-                                    </g:if>
-                                    <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CANCELADA}">
-                                        Cancelada com ${tarefa.responsavel?.username} em <g:formatDate date="${tarefa.fim}"/>
-                                    </g:if>
+                                    <g:form action="reabreTarefa" id="${tarefa.id}">
+                                            <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CONCLUIDA}">
+                                                Concluída por ${tarefa.responsavel?.username} em <g:formatDate date="${tarefa.fim}"/>
+                                                <g:submitButton showif="${processo.fim == null}" name="reabreTarefa" class="save" value="voltar" />
+                                            </g:if>
+                                            <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.PENDENTE}">
+                                                Aguardando por ${tarefa.responsavel?.username} desde <g:formatDate date="${tarefa.inicio}"/>
+                                            </g:if>
+                                            <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CANCELADA}">
+                                                Cancelada com ${tarefa.responsavel?.username} em <g:formatDate date="${tarefa.fim}"/>
+                                            </g:if>
+                                    </g:form>
                                 </span>
                             </li>
-                            </g:form>
                         </g:each>
                     </fieldset>
                 </g:if>

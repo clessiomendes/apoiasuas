@@ -30,9 +30,12 @@
 			</g:hasErrors>
 			<g:form controller="familia" id="${familiaInstance.id}">
 				<g:hiddenField name="version" value="${familiaInstance?.version}" />
-				<fieldset class="form">
-					<g:render template="form"/>
-				</fieldset>
+				%{--<fieldset class="form">--}%
+                    <g:tabs id="tabs" style="margin: 5px;">
+                        <g:tab id="tabEditFamilia" titulo="família" template="tabEditFamilia"/>
+                        <g:tab id="tabMarcadores" titulo="programas, ações..." template="marcador/tabMarcadores" model="[permiteInclusao: 'true']"/>
+                    </g:tabs>
+                %{--</fieldset>--}%
 
 				<fieldset class="buttons">
 					<g:actionSubmit action="save" id="${familiaInstance.id}" class="save" value="${message(code: 'default.button.update.label', default: 'Gravar')}"/>

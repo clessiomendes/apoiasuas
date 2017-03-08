@@ -21,11 +21,6 @@ class FormularioAcompanhamento extends FormularioBase {
             nome 'Plano de Acompanhamento'
             descricao 'Plano de Acompanhamento Familiar Individualizado'
             template "PlanoAcompanhamento-Template.docx"
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.FAMILIA
-                codigo 'codigo_legado'
-                obrigatorio true
-            }
             campoAvulso {
                 codigo 'numero_SIGPS'
                 descricao 'Número da família no SIGPS'

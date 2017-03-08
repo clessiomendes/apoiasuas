@@ -19,8 +19,8 @@ class StringUtils {
     public static String firstLowerCase(String value) {
         return value[0].toLowerCase() + value.substring(1)
     }
-    public static String upperToCamelCase(String value) {
-        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, value);
+    public static String upperToCamelCase(String value, CaseFormat caseFormat = CaseFormat.UPPER_CAMEL) {
+        return CaseFormat.UPPER_UNDERSCORE.to(caseFormat, value);
     }
     public static String toHtml(String s) {
         StringBuilder builder = new StringBuilder();
@@ -65,7 +65,7 @@ class StringUtils {
         result = result.replaceAll('www', 'http://www'); //adiciona o http:// em urls contendo www
         result = result.replaceAll(PATTERN_URL, '<a href="$0" target="_blank">$0</a>'); //remove o http:// de urls contendo www
 
-        //Trocando linhas em branco por um espaçamento de meia linha
+        //Trocando linhas em branco por um espaï¿½amento de meia linha
 //        result = result.replaceAll('(<br>\n){2,}','<span style="font-size: 50%;"><br></span>')
 
         return result;

@@ -1,17 +1,13 @@
 <%@ page import="org.apoiasuas.cidadao.CidadaoController; org.apoiasuas.AncestralController" %>
 <g:if test="${dtoFamiliaSelecionada}">
     <g:hiddenField name="familiaSelecionada" id="familiaSelecionada" value="${dtoFamiliaSelecionada.id}"/>
-        <div class="fieldcontain">
-            <label>
-                <g:message code="???" default="referência: "/>
-            </label>
+        <div class="fieldcontain" style="margin-top: 0.7em">
+            <label>Referência:</label>
             ${fieldValue(bean: dtoFamiliaSelecionada, field: "referencia")}
         </div>
 
         <div class="fieldcontain">
-            <label for="membroSelecionado">
-                <g:message code="???" default="usuário: "/>
-            </label>
+            <label for="membroSelecionado">membro:</label>
             <g:select name="membroSelecionado" id="membroSelecionado"
                       from="${dtoFamiliaSelecionada.membrosOrdemAlfabetica*.nomeCompleto}"
                       keys="${dtoFamiliaSelecionada.membrosOrdemAlfabetica*.id}"

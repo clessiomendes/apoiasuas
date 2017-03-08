@@ -23,13 +23,19 @@ class FormularioService {
 
     CidadaoService cidadaoService
     SegurancaService segurancaService
+    def familiaService
 
     public List<Formulario> getFormulariosDisponiveis() {
         return Formulario.list().findAll({it.formularioPreDefinido.habilitado}).sort({ it.nome })
     }
 
-    public Formulario getFormulario(Long id) {
-        return Formulario.get(id)
+    public Formulario getFormulario(Long id, boolean carregaCampos = false) {
+        Map fetchMap = [:];
+        if (carregaCampos)
+            fetchMap << [campos: 'join'];
+        if (fetchMap)
+            fetchMap = [fetch: fetchMap];
+        return Formulario.findById(id, fetchMap);
     }
 
     private void valoresFixos(Formulario formulario) {
@@ -40,8 +46,8 @@ class FormularioService {
 
     @Transactional
     public ReportDTO prepararImpressao(Formulario formulario) {
-        Hibernate.initialize(formulario.template)
-        Hibernate.initialize(formulario.campos)
+//        Hibernate.initialize(formulario.template)
+//        Hibernate.initialize(formulario.campos)
 
         ReportDTO result = new ReportDTO()
         result.nomeArquivo = formulario.geraNomeArquivo()
@@ -75,17 +81,17 @@ class FormularioService {
     public Formulario preparaPreenchimentoFormulario(Long idFormulario, Long idCidadao, Long idFamilia) {
         if (!idFormulario)
             return null
-        Formulario formulario = Formulario.get(idFormulario)
+        Formulario formulario = getFormulario(idFormulario, true);
         if (! formulario)
             return null
-        Hibernate.initialize(formulario.campos)
+//        Hibernate.initialize(formulario.campos)
         formulario.cidadao = idCidadao ? Cidadao.get(idCidadao) : null
         if (formulario.cidadao) {
             Hibernate.initialize(formulario.cidadao.familia)
             Hibernate.initialize(formulario.cidadao.familia.endereco)
         } else {            //Se nenhum cidadao foi selecionado,
             formulario.cidadao = new Cidadao()
-            formulario.cidadao.familia = cidadaoService.obtemFamilia(idFamilia)
+            formulario.cidadao.familia = familiaService.obtemFamilia(idFamilia)
             if (formulario.cidadao.familia) {   //Nao selecionou cidadao mas selecionou familia
                 Hibernate.initialize(formulario.cidadao.familia.endereco)
             } else {        //Se nenhuma familia foi selecionada
@@ -239,15 +245,6 @@ class FormularioService {
         return result
     }
 */
-
-    public Formulario getFormularioComCampos(long idFormulario) {
-        Formulario result = null
-        if (idFormulario) {
-            result = Formulario.get(idFormulario)
-            Hibernate.initialize(result.campos)
-        }
-        return result
-    }
 
     public Formulario getFormularioPreDefinido(PreDefinidos codigo) {
         return Formulario.findByFormularioPreDefinido(codigo)
