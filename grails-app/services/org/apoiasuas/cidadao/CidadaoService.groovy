@@ -4,7 +4,6 @@ import grails.transaction.Transactional
 import org.apache.commons.lang.StringEscapeUtils
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
-import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap

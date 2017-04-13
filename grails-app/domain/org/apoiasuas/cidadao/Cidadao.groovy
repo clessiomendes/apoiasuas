@@ -8,7 +8,6 @@ import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.DateUtils
-import org.docx4j.docProps.core.dc.terms.Period
 import org.grails.databinding.BindingFormat
 import org.joda.time.Period
 import org.joda.time.DateTime

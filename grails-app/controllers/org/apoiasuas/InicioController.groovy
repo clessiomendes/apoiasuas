@@ -6,19 +6,13 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apache.log4j.AppenderSkeleton
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
-import org.apoiasuas.fileStorage.FileStorageService
 import org.apoiasuas.importacao.ImportacaoFamiliasController
-import org.apoiasuas.importacao.ImportarFamiliasService
-import org.apoiasuas.redeSocioAssistencial.ServicoService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
-import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.ItemMenuDTO
 import org.apoiasuas.util.AmbienteExecucao
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
-
-import javax.sql.DataSource
 
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class InicioController extends AncestralController {

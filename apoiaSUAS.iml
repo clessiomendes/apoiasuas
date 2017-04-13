@@ -382,5 +382,6 @@
     </orderEntry>
     <orderEntry type="library" name="grails-2.5.4" level="application" />
     <orderEntry type="module" module-name="apoiasuas-grailsPlugins" />
+    <orderEntry type="library" name="grails-2.5.4" level="application" />
   </component>
 </module>

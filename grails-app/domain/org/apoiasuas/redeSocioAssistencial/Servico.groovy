@@ -1,9 +1,6 @@
 package org.apoiasuas.redeSocioAssistencial
 
-import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Endereco
-import org.apoiasuas.cidadao.Telefone
-import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.FullTextSearchUtils
 

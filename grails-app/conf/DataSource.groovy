@@ -23,7 +23,6 @@ hibernate {
 
 dataSource {
     dbCreate = ""
-    //dbCreate="validate"
     if (! AmbienteExecucao.isProducao() && "true".equalsIgnoreCase(AmbienteExecucao.sysProperties('org.apoiasuas.recriarBD'))) {
         println("recriando banco de dados")
         dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
@@ -31,6 +30,64 @@ dataSource {
     pooled = true
     jmxExport = true
 
+    dialect = AmbienteExecucao.CURRENT2.dialect
+    driverClassName = AmbienteExecucao.CURRENT2.driverClassName
+
+    url = AmbienteExecucao.CURRENT2.url
+    username = AmbienteExecucao.CURRENT2.username
+    password = AmbienteExecucao.CURRENT2.password
+
+//configuracao de pool:
+    properties {
+        minEvictableIdleTimeMillis = AmbienteExecucao.CURRENT2.minEvictableIdleTimeMillis
+        timeBetweenEvictionRunsMillis = AmbienteExecucao.CURRENT2.timeBetweenEvictionRunsMillis
+        numTestsPerEvictionRun = AmbienteExecucao.CURRENT2.numTestsPerEvictionRun
+        testOnBorrow = AmbienteExecucao.CURRENT2.testOnBorrow
+        testOnConnect = AmbienteExecucao.CURRENT2.testOnConnect
+        testWhileIdle = AmbienteExecucao.CURRENT2.testWhileIdle
+        testOnReturn = AmbienteExecucao.CURRENT2.testOnReturn
+        validationQuery = AmbienteExecucao.CURRENT2.validationQuery
+        maxActive = AmbienteExecucao.CURRENT2.maxActive
+        initialSize = AmbienteExecucao.CURRENT2.initialSize
+        minIdle = AmbienteExecucao.CURRENT2.minIdle
+        maxIdle = AmbienteExecucao.CURRENT2.maxIdle
+    }
+}
+
+dataSource_log {
+    dbCreate = ""
+    if (! AmbienteExecucao.isProducao() && "true".equalsIgnoreCase(AmbienteExecucao.sysProperties('org.apoiasuas.recriarBD'))) {
+        println("recriando banco de dados")
+        dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+    }
+    pooled = true
+    jmxExport = true
+
+    dialect = AmbienteExecucao.CURRENT2.dialect
+    driverClassName = AmbienteExecucao.CURRENT2.driverClassName
+
+    url = AmbienteExecucao.CURRENT2.url_logs
+    username = AmbienteExecucao.CURRENT2.username_logs
+    password = AmbienteExecucao.CURRENT2.password_logs
+
+//configuracao de pool:
+    properties {
+        minEvictableIdleTimeMillis = AmbienteExecucao.CURRENT2.minEvictableIdleTimeMillis
+        timeBetweenEvictionRunsMillis = AmbienteExecucao.CURRENT2.timeBetweenEvictionRunsMillis
+        numTestsPerEvictionRun = AmbienteExecucao.CURRENT2.numTestsPerEvictionRun
+        testOnBorrow = AmbienteExecucao.CURRENT2.testOnBorrow
+        testOnConnect = AmbienteExecucao.CURRENT2.testOnConnect
+        testWhileIdle = AmbienteExecucao.CURRENT2.testWhileIdle
+        testOnReturn = AmbienteExecucao.CURRENT2.testOnReturn
+        validationQuery = AmbienteExecucao.CURRENT2.validationQuery
+        maxActive = AmbienteExecucao.CURRENT2.maxActive
+        initialSize = AmbienteExecucao.CURRENT2.initialSize
+        minIdle = AmbienteExecucao.CURRENT2.minIdle
+        maxIdle = AmbienteExecucao.CURRENT2.maxIdle
+    }
+}
+
+/*
     switch (AmbienteExecucao.CURRENT) {
         case AmbienteExecucao.LOCAL_POSTGRES:
             println("Ambiente: Postgres local " + environment)
@@ -44,8 +101,7 @@ dataSource {
 //                throw new RuntimeException("parâmetro contextPath não acessível durante inicialização")
 //                jndiName = "java:comp/env/jdbc/ds" + contexPath.substring(1)
 
-/* -estas configuracoes foram migradas para web-app/META-INF/context.xml
-*/
+// -as configuracoes abaixo podem ser migradas para web-app/META-INF/context.xml
             url = "jdbc:postgresql://localhost:5432/apoiasuas"
             username = "postgres"
             password = "senha"
@@ -57,11 +113,11 @@ dataSource {
 
 //            String contextPath = PreGrailsServletContextListener.getContextPath();
 //            if (contextPath)
-//                jndiName = "java:comp/env/jdbc/ds" + contextPath.substring(1/*retira a "/" do caminho*/)
+//                jndiName = "java:comp/env/jdbc/ds" + contextPath.substring(1) //retira a "/" do caminho
 //            else
 //                throw RuntimeException("parâmetro contextPath não acessível durante inicialização")
-/* -estas configuracoes foram migradas para web-app/META-ING/context.xml
-*/
+
+// -as configuracoes abaixo podem ser migradas para web-app/META-INF/context.xml
             driverClassName = "org.postgresql.Driver"
             host = System.getProperties().getProperty("POSTGRESQL_ADDON_HOST")
             port = System.getProperties().getProperty("POSTGRESQL_ADDON_PORT")
@@ -137,21 +193,4 @@ dataSource {
         default:
             throw new RuntimeException("tipo de banco de dados nao reconhecido")
     }
-
-//configuracao de pool:
-    properties {
-        minEvictableIdleTimeMillis = 1800000
-        timeBetweenEvictionRunsMillis = 1800000
-        numTestsPerEvictionRun = 3
-        testOnBorrow = true
-        testOnConnect = true
-        testWhileIdle = true
-        testOnReturn = true
-        validationQuery = "SELECT 1*1"
-        maxActive = 3
-        initialSize = 1
-        minIdle = 1
-        maxIdle = 1
-    }
-
-}
+*/

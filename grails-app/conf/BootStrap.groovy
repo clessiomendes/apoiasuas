@@ -24,6 +24,8 @@ class BootStrap {
 
     def roleHierarchy
     def groovySql
+    def dataSource
+    def dataSource_log
 
     SegurancaService segurancaService
     ImportarFamiliasService importarFamiliasService
@@ -163,14 +165,18 @@ class BootStrap {
     private void validaEsquemaBD() {
         String[] atualizacoesPendentes = []
         try {
-            atualizacoesPendentes = apoiaSuasService.getAtualizacoesPendentes()
+            atualizacoesPendentes += apoiaSuasService.getAtualizacoesPendentes(dataSource, "sessionFactory")
+            atualizacoesPendentes += apoiaSuasService.getAtualizacoesPendentes(dataSource_log, "sessionFactory_log")
         } catch (Exception e) {
             log.error("Impossível verificar estrutura do banco de dados");
             e.printStackTrace();
         }
         if (atualizacoesPendentes) {
             String erro = "Detectadas atualizacoes pendentes no banco de dados:"
-            atualizacoesPendentes.each { erro += "\n" + it + ";" }
+            Formatter formatter = FormatStyle.DDL.getFormatter();
+            atualizacoesPendentes.each {
+                erro += "\n" + formatter.format(it) + ";"
+            }
             log.error(erro);
             throw new RuntimeException("Startup interrompido. Banco de dados fora de sincronia com a aplicação: "+erro)
         }

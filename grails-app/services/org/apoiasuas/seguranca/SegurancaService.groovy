@@ -248,9 +248,12 @@ class SegurancaService {
     @Transactional(readOnly = true)
     public void testaAcessoDominio(def entityObject) {
 
+        if (! entityObject instanceof Link && ! entityObject instanceof Familia && ! entityObject instanceof Cidadao)
+            return;
+
         if (    isSuperUser() //Administrador tem acesso irrestrito
                 || (! HABILITAR_RESTRICAO_DE_ACESSO_AO_DOMINIO) //flag de teste para desabilitar checagem de seguranca
-                || (! getPrincipal())) //se estiver fora de um contexto de sessao de usuario, manter acesso irrestrito
+                || (! springSecurityService.principal)) //se estiver fora de um contexto de sessao de usuario, manter acesso irrestrito
             return; //Super usuário tem acesso irrestrito
 
         boolean temAcesso = true;

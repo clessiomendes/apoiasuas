@@ -346,7 +346,7 @@ class ImportarFamiliasService {
         try {
             return Integer.parseInt(s?.toString()?.trim())
         } catch (Throwable t) {
-            log.warb("tentaConverterInt", t)
+            log.warn("tentaConverterInt", t)
             return null
         }
     }
