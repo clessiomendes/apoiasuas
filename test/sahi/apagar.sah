@@ -1,0 +1,13 @@
+_click(_link("Cadastrar família"));
+_setValue(_textbox("endereco.tipoLogradouro"), "rua");
+_setValue(_textbox("endereco.nomeLogradouro"), "teste automatizado");
+_setValue(_textbox("endereco.numero"), "99");
+_click(_link("referência familiar"));
+_setValue(_textbox("cidadao.nomeCompleto"), "referencia teste automatizado");
+_click(_submit("Criar"));
+_assertExists(_link("referencia teste automatizado"));
+_click(_button("Novo membro"));
+_setValue(_textbox("nomeCompleto"), "membro teste automatizado");
+_setValue(_textbox("parentescoReferencia"), "filho");
+_click(_submit("Criar"));
+_assertExists(_link("membro teste automatizado[1]"));

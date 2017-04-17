@@ -1,0 +1,3 @@
+_click(_button("editarTelefones"));
+_setValue(_textbox("numero"), "");
+_click(_submit("Gravar"));

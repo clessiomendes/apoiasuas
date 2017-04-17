@@ -1,0 +1,14 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+_setValue(_textbox("palavraChave"), "idoso");
+_click(_submit("list"));
+_assertExists(_link("Gratuidade Viagens Interestaduais para idosos"));
+_click(_link("Gratuidade Viagens Interestaduais para idosos"));
+_assertExists(_span("Gratuidade Viagens Interestaduais para idosos"));
+_setValue(_textbox("cad"), "513");
+_click(_submit("ok"));
+_setSelected(_select("membroSelecionado"), "EZEQUIEL DE SOUZA REIS");
+_click(_submit("Encaminhar"));
+_assertEqual("Gratuidade Viagens Interestaduais para idosos", _getSelectedText(_select("servico")));

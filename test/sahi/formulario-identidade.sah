@@ -1,0 +1,33 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+_click(_link("Emissão de Formulários"));
+_assertExists(_heading1("Emissão de Formulários"));
+_setValue(_textbox("cad"), "513");
+_click(_submit("ok"));
+
+//espera retorno da chamada AJAX
+_wait(5000, _exists(_select("membroSelecionado")));
+
+_setSelected(_select("membroSelecionado"), "ANA MARIA DE SOUZA");
+_click(_submit("Guia de identidade"));
+_assertExists(_heading1("Guia de identidade"));
+_assertEqual(_getText(_textbox("cidadao.nomeCompleto")), "ANA MARIA DE SOUZA");
+_setValue(_textbox("cidadao.nomeCompleto"), "ANA MARIA DE SOUZA");
+_setValue(_textbox("cidadao.dataNascimento"), "29/05/1996");
+_setValue(_textbox("cidadao.nomeMae"), "MAE DE ANA MARIA");
+_setValue(_textbox("cidadao.nomePai"), "PAI DE ANA MARIA");
+_setValue(_textbox("cidadao.identidade"), "123456");
+_setValue(_textbox("cidadao.naturalidade"), "BELO HORIZONTE");
+_setValue(_textbox("cidadao.UFNaturalidade"), "MG");
+_setValue(_textbox("endereco.tipoLogradouro"), "BECO");
+_setValue(_textbox("endereco.nomeLogradouro"), "HOMERO");
+_setValue(_textbox("endereco.numero"), "99");
+_setValue(_textbox("endereco.complemento"), "CASA B");
+_setValue(_textbox("endereco.bairro"), "HAVAI");
+_setValue(_textbox("endereco.CEP"), "30550-631");
+_setSelected(_select("avulso.responsavel_preenchimento"), "clessio (logado)");
+_setValue(_textbox("avulso.data_preenchimento"), "21/02/2016");
+_click(_submit("Gerar formulário"));
+_assertExists(_heading1("Emissão de Formulários"));

@@ -1,0 +1,39 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+abreFamilia("448");
+
+_click(_button("editarMarcadores"));
+
+_assertExists(_fieldset("fieldsetProgramas"));
+
+_setValue(_checkbox("programasDisponiveis[0].habilitado"), "false");
+
+_click(_submit("Gravar"));
+
+_click(_button("editarMarcadores"));
+
+_assertExists(_fieldset("fieldsetProgramas"));
+
+_click(_link("Acompanhamento PAIF"));
+
+//espera chamada ajax
+_wait(5000, _isVisible(_textbox("inputObservacaoMarcador")));
+_assert(_isVisible(_textbox("inputObservacaoMarcador")));
+
+var $observacao = "observacao teste " + new Date();
+_setValue(_textbox("inputObservacaoMarcador"), $observacao);
+
+_click(_button("Confirmar"));
+
+_click(_submit("Gravar"));
+
+_assertExists(_link("Acompanhamento PAIF"));
+
+_click(_link("Acompanhamento PAIF"));
+
+//espera chamada ajax
+_wait(5000, _exists(_span("detalhes...")));
+
+_assertExists(_span($observacao));

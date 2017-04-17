@@ -1,0 +1,55 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+abreFamilia("449");
+
+_click(_link("monitoramentos"));
+
+_assert(_isVisible(_div("divListMonitoramento")));
+
+_click(_button("Novo monitoramento"));
+
+//espera chamada ajax
+_wait(5000, _isVisible(_textarea("memo")));
+_assert(_isVisible(_textarea("memo")));
+
+var $descricao = "monitoramento teste " + new Date();
+_setValue(_textarea("memo"), $descricao);
+
+_setSelected(_select("responsavel.id"), "clessio (logado)");
+
+_click(_submit("Gravar"));
+
+//espera chamada ajax
+_wait(5000, _getText(_div("message")) == "Monitoramento gravado com sucesso");
+_assertEqual("Monitoramento gravado com sucesso", _getText(_div("message")));
+
+_assertExists(_link($descricao));
+
+_click(_link($descricao));
+
+//espera chamada ajax
+_wait(5000, _isVisible(_span($descricao)));
+_assertExists(_span($descricao));
+
+//conclui monitoramento
+_click(_link("Ação executada"));
+//obs, o engine do sahi automaticamente simula o OK na janela modal de confirmacao
+
+_wait(5000, _isVisible(_div("Ação monitorada efetivada")));
+_assertExists(_div("Ação monitorada efetivada"));
+
+/* Monitoramentos agora so podem ser excluidos pelo administrador
+	//exclui o monitoramento
+	_click(_link($descricao));
+
+	//espera chamada ajax
+	_wait(5000, _isVisible(_span($descricao)));
+	_assertExists(_span($descricao));
+
+	_click(_link("Suspender"));
+
+	_wait(5000, _isVisible(_div("Monitoramento suspenso")));
+	_assertExists(_div("Monitoramento suspenso"));
+*/

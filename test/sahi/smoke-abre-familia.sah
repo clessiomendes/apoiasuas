@@ -1,0 +1,7 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+abreFamilia("513");
+
+_log("fim");

@@ -1,0 +1,20 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+//Testa acesso a programas
+_click(_link("Gestão técnica"));
+_setSelected(_select("idTecnico"), "clessio (logado)");
+_click(_link("listarFamiliasProgramas-3"));
+_assertExists(_heading1("Famílias em programas, projetos, etc - Acompanhamento PAIF - clessio"));
+_click(_link(0, _in(_cell(0, _under(_tableHeader("Cad"))))));
+_assertExists(_heading1("Ver Familia"));
+
+
+//Testa acesso monitoramentos
+_click(_heading1("APOIA CRAS"));
+_click(_link("Gestão técnica"));
+_setSelected(_select("idTecnico"), "clessio (logado)");
+_click(_link("moitoramento-EFETIVADO"));
+_click(_link(0, _in(_cell(0, _under(_tableHeader("Descrição"))))));
+_assertExists(_span("ação efetivada"));

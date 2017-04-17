@@ -1,0 +1,8 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+_click(_link("Listagens"));
+_click(_submit("Exibir na tela"));
+_assertExists(_cell("cad CRAS"));
+

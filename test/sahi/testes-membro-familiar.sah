@@ -1,0 +1,25 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+abreFamilia("994");
+
+_click(_button("Novo membro"));
+
+var $nomeCompleto = "Novo Membro " + new Date();
+_setValue(_textbox("nomeCompleto"), $nomeCompleto);
+
+_setValue(_textbox("parentescoReferencia"), "amigo");
+
+_click(_submit("Criar"));
+
+_assertExists(_div("Membro familiar "+$nomeCompleto+" gravado com sucesso"));
+
+_click(_link($nomeCompleto));
+
+_click(_link("Remover"));
+
+//_expectConfirm("Tem certeza?", true);
+//_click(_link("Remover"));
+
+_assertExists(_div($nomeCompleto+" removido do grupo familiar"));

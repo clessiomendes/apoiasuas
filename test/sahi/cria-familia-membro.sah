@@ -1,0 +1,20 @@
+_include("lib/comuns.sah");
+login("clessio","senha");
+
+_click(_link("Cadastrar família"));
+_setValue(_textbox("endereco.tipoLogradouro"), "rua");
+_setValue(_textbox("endereco.nomeLogradouro"), "teste automatizado");
+_setValue(_textbox("endereco.numero"), "99");
+
+_click(_link("referência familiar"));
+var $referencia = "referencia teste " + new Date();
+_setValue(_textbox("cidadao.nomeCompleto"), $referencia);
+_click(_submit("Criar"));
+_assertExists(_link($referencia));
+
+_click(_button("Novo membro"));
+var $membro = "membro teste " + new Date();
+_setValue(_textbox("nomeCompleto"), $membro);
+_setValue(_textbox("parentescoReferencia"), "filho");
+_click(_submit("Criar"));
+_assertExists(_link($membro));

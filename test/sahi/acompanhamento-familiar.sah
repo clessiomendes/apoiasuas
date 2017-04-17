@@ -1,0 +1,15 @@
+_include("lib/comuns.sah");
+login("clessio","senha");
+
+_click(_link("Acompanhamento familiar"));
+_setValue(_textbox("nomeOuCad"), "418");
+_click(_button("btnProcurarCidadao"));
+
+_click(_link("plano de acompanhamento"));
+_setValue(_textbox("acompanhamentoFamiliar.dataInicio"), "01/01/2017");
+_setValue(_textarea("acompanhamentoFamiliar.analiseTecnica"), "analise teste" + new Date());
+_setValue(_textarea("acompanhamentoFamiliar.resultados"), "resultado teste" + new Date());
+_click(_link("programas, ações..."));
+
+_click(_submit("gravar e emitir plano"));
+_assertExists(_div("As informações da família e do acompanhamento foram atualizados"));

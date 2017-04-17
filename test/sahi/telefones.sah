@@ -1,0 +1,25 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+abreFamilia("58");
+
+//Remove o telefone atual
+_click(_button("editarTelefones"));
+_click(_button("removerTelefone"));
+_click(_submit("Gravar"));
+_assertNotExists(_span("(31)1234-5678 atendeu hoje"));
+
+//Reinsere o telefone
+_click(_button("editarTelefones"));
+_setValue(_textbox("ddd[0]"), "31");
+_setValue(_textbox("numero[0]"), "1234-5678");
+_setValue(_textarea("obs[0]"), "atendeu hoje");
+_click(_submit("Gravar"));
+_assertExists(_span("(31)1234-5678 atendeu hoje"));
+
+//Teta validacao de campo numero vazio
+_click(_button("editarTelefones"));
+_setValue(_textbox("numero[0]"), "");
+_click(_submit("Gravar"));
+_assertExists(_listItem("O campo [numero] não pode ficar em branco"));

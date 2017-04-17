@@ -1,0 +1,21 @@
+function login($usr, $pwd){
+	_log("inicio login");	
+	_navigateTo("http://localhost:8080/apoiasuas/logout")
+
+	_setValue(_textbox("j_username"), $usr);
+	_setValue(_password("j_password"), $pwd);
+	_click(_submit("Entrar"));
+	
+	//confirma se o login foi bem sucedido
+	_assertExists(_div("menu"));
+	_log("fim login");	
+}
+
+//Abre uma familia qualquer
+function abreFamilia($cad){
+	_log("inicio abreFamilia");	
+	_setValue(_textbox("nomeOuCad"), $cad);
+	_click(_button("btnProcurarCidadao"));
+	_assertExists(_span($cad));
+	_log("fim abreFamilia");	
+}

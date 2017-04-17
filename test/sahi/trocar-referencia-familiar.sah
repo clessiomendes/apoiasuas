@@ -1,0 +1,23 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+abreFamilia("993");
+
+_click(_button("Trocar referência"));
+_setSelected(_select("novaReferencia"), "LUCAS FELIPE PAULINO DA SILVA");
+_setValue(_textbox("parentescoMembro"), "teste");
+_setValue(_textbox("parentescoMembro[1]"), "teste");
+_setValue(_textbox("parentescoMembro[2]"), "teste");
+_setValue(_textbox("parentescoMembro[3]"), "teste");
+_click(_submit("Confirmar"));
+_assertExists(_div("Configuração familiar alterada com sucesso"));
+_assertExists(_span("LUCAS FELIPE PAULINO DA SILVA , REFERENCIA , 18 anos"));
+_assertExists(_span("ALESSANDRA MARIA DA SILVA , teste , 43 anos"));
+_click(_button("Trocar referência"));
+_setSelected(_select("novaReferencia"), "ALESSANDRA MARIA DA SILVA");
+_setValue(_textbox("parentescoMembro"), "filho");
+_setValue(_textbox("parentescoMembro[1]"), "esposo");
+_setValue(_textbox("parentescoMembro[2]"), "filho");
+_setValue(_textbox("parentescoMembro[3]"), "filha");
+_click(_submit("Confirmar"));
