@@ -364,10 +364,10 @@ class ImportarFamiliasService {
             if (!telefone) {
                 telefone = new Telefone()
                 telefone.familia = familiaPersistida
-                telefone.criador = usuarioSistema
+//                telefone.criador = usuarioSistema
 //                            telefone.dateCreated = convertExcelDate(mapaDeCampos.get("DataCadastroFamilia"));
             }
-            telefone.ultimoAlterador = usuarioSistema
+//            telefone.ultimoAlterador = usuarioSistema
             telefone.numero = numeroTelefone
             telefone.dataUltimaImportacao = new Date()
 

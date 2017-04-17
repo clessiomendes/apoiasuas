@@ -173,9 +173,9 @@ class BootStrap {
         }
         if (atualizacoesPendentes) {
             String erro = "Detectadas atualizacoes pendentes no banco de dados:"
-            Formatter formatter = FormatStyle.DDL.getFormatter();
+//            Formatter formatter = FormatStyle.DDL.getFormatter();
             atualizacoesPendentes.each {
-                erro += "\n" + formatter.format(it) + ";"
+                erro += "\n" + it + ";"
             }
             log.error(erro);
             throw new RuntimeException("Startup interrompido. Banco de dados fora de sincronia com a aplicação: "+erro)

@@ -27,6 +27,24 @@
     function novoMembro() {
         location.href = "${createLink(controller: 'cidadao', action: 'create', params: [idFamilia: localDtoFamilia.id])}";
     }
+
+    var janelaModalTelefones = new JanelaModalAjax(updateTelefones);
+
+    /**
+     * Abre popup de edicao de telefones
+     */
+    function editTelefones() {
+        janelaModalTelefones.abreJanela("Alterar telefones","${createLink(action:'editTelefones', params: [idFamilia: localDtoFamilia.id])}");
+    }
+
+    function updateTelefones() {
+        $("#divTelefones").html('<asset:image src="loading.gif"/> carregando...');
+        ${remoteFunction(action:'getTelefones', id: localDtoFamilia.id,
+            update: [success: 'divTelefones', failure: 'divTelefones'],
+            onFailure: 'alert("Erro buscando telefones (via ajax)");'
+    )};
+    }
+
 </g:javascript>
 
 <ol class="property-list servico" style="padding: 0; margin: 0;">
@@ -40,7 +58,7 @@
             ações previstas<g:helpTooltip chave="help.marcador.acoes"/>
             e outras sinalizações<g:helpTooltip chave="help.marcador.outros.marcadores"/>
 
-            <input id="editarMarcadores" type="button" class="btn-editar-marcadores" style="transform: scale(0.8);"
+            <input id="editarMarcadores" type="button" class="speed-button-editar" style="transform: scale(0.8);"
                    title="Clique para alterar estas definições (incluir, remover, etc)" onclick="editMarcadores();">
         </legend>
         <g:each in="${localDtoFamilia.programasHabilitados}" var="marcadorFamilia">
@@ -139,17 +157,16 @@
         </li>
     </g:if>
 
-<g:if test="${localDtoFamilia?.telefones}">
     <li class="fieldcontain">
         <span id="telefones-label" class="property-label"><g:message code="familia.telefones.label" default="Telefones" /></span>
-
-        <g:each in="${localDtoFamilia.telefones}" var="t">
-            <span class="property-value" aria-labelledby="telefones-label">${t?.encodeAsHTML()}</span>
-        </g:each>
-
+        <span class="property-value" aria-labelledby="telefones-label">
+            <span id="divTelefones">
+                <g:include controller="familia" action="getTelefones" id="${localDtoFamilia?.id}"/>
+            </span>
+            <input id="editarTelefones" type="button" class="speed-button-editar" style="transform: scale(0.8);"
+                   title="Clique para incluir, remover ou alterar telefones." onclick="editTelefones();">
+        </span>
     </li>
-</g:if>
-
 </ol>
 
 <fieldset class="buttons">

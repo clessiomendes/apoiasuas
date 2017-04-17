@@ -296,6 +296,9 @@ update servico_sistema set acesso_seguranca_inclusao_membro_familiar = true;
 update servico_sistema set acesso_seguranca_pedidos_certidao = true;
 update servico_sistema set acesso_seguranca_plano_acompanhamento = true;
 
+alter table servico_sistema add column acesso_seguranca_identificacao_pelo_codigo_legado boolean DEFAULT false;
+update servico_sistema set acesso_seguranca_identificacao_pelo_codigo_legado = true;
+
 -- mudando o mapeamento de companhamento familiar para associacao simples
 alter table familia add column acompanhamento_familiar_id int8 null;
 alter table familia add constraint FK_gb4i0mpvmugpxggdw5y7hqbac foreign key (acompanhamento_familiar_id) references acompanhamento_familiar;
@@ -303,3 +306,11 @@ update familia a set acompanhamento_familiar_id = (select id from acompanhamento
 
 _log create table log (id int8 not null, inicio timestamp not null, request varchar(255), parametros varchar(255), valores_parametros varchar(1000), username varchar(255), session_id varchar(255), version int8 not null, jvmmax_memory0 float4, jvmmax_memory1 float4, jvmused_memory0 float4, jvmused_memory1 float4, code_cache0 float4, code_cache1 float4, duracaoms int8, eden_space0 float4, eden_space1 float4, free_physical_memory_size0 float4, free_physical_memory_size1 float4, perm_gen0 float4, perm_gen1 float4, process_cpu_time0 float4, process_cpu_time1 float4, survivor_space0 float4, survivor_space1 float4, tenured_gen0 float4, tenured_gen1 float4, total_physical_memory_size0 float4, total_physical_memory_size1 float4, primary key (id));
 _log create sequence sq_log;
+
+-- versao ate aqui: current (local:feito, producao: feito)
+
+alter table telefone add column obs varchar(255);
+ALTER TABLE public.telefone DROP criador_id;
+ALTER TABLE public.telefone DROP ultimo_alterador_id;
+
+ALTER TABLE public.telefone ALTER COLUMN numero SET NOT NULL;

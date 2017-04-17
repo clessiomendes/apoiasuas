@@ -74,7 +74,7 @@ class Familia implements Serializable {
     }
 
     String getTelefonesToString() {
-        return telefones?.join(", ")
+        return telefones?.sort{it.dateCreated}?.join(", ")
     }
 
     Cidadao getReferencia() {
@@ -124,7 +124,7 @@ class Familia implements Serializable {
      * @return
      */
     public List<Cidadao> getMembrosOrdemPadrao(boolean habilitados = true) {
-        return membros.findAll{ it.habilitado == habilitados }.sort{ a,b ->
+        return membros?.findAll{ it.habilitado == habilitados }?.sort{ a,b ->
                 if (a.referencia && ! b.referencia)
                     return -1;
                 if (b.referencia && ! a.referencia)

@@ -35,6 +35,7 @@ class FamiliaService {
         familia.membros.add(novaReferenciaFamiliar);
         Familia result = grava(familia, null, null, null, null);
         novaReferenciaFamiliar.save();
+        gravaTelefones(familia);
         return result;
     }
 
@@ -47,7 +48,9 @@ class FamiliaService {
         marcadorService.gravaMarcadoresFamilia(outrosMarcadoresCommand, familia.outrosMarcadores, familia, OutroMarcador.class, OutroMarcadorFamilia.class);
         familia.acompanhamentoFamiliar?.save();
         familia.errors.reject("some.error.code");
-        return familia.save()
+        familia.save();
+        gravaTelefones(familia);
+        return familia;
     }
 
     @Transactional
@@ -196,6 +199,15 @@ class FamiliaService {
     public Familia gravaFamiliaEMembros(Familia familia)
     {
         familia.getMembros().each {
+            it.save()
+        }
+        return familia.save()
+    }
+
+    @Transactional
+    public Familia gravaTelefones(Familia familia)
+    {
+        familia.telefones.each {
             it.save()
         }
         return familia.save()

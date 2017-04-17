@@ -19,6 +19,7 @@ import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.util.ApoiaSuasException
 import org.apoiasuas.util.StringUtils
+import org.hibernate.Hibernate
 
 import javax.servlet.http.HttpSession
 
@@ -29,6 +30,8 @@ class FamiliaController extends AncestralController {
     private static final String SESSION_ULTIMA_FAMILIA = "SESSION_ULTIMA_FAMILIA"
     private static final String SESSION_NOTIFICACAO_FAMILIA = "SESSION_NOTIFICACAO_FAMILIA"
     private static final String SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES = "SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES"
+    private static final int TELEFONES_POR_FAMILIA = 5; //numero máximo de possíveis telefones para uma dada familia
+
     //destinos de navegação usados na seleção de famílias para o caso de uso de acompanhamento familiar
     public static final Map modeloSelecionarAcompanhamento = [
             controllerButtonProcurar: "familia",
@@ -89,7 +92,9 @@ class FamiliaController extends AncestralController {
         Cidadao referenciaFamiliar = new Cidadao();
         referenciaFamiliar.referencia = true;
         referenciaFamiliar.parentescoReferencia = cidadaoService.PARENTESCO_REFERENCIA;
-        render view: "create", model: getEditCreateModel(new Familia())+[cidadaoInstance: referenciaFamiliar];
+        Familia novaFamilia = new Familia();
+        preparaTelefonesParaEdicao(novaFamilia);
+        render view: "create", model: getEditCreateModel(novaFamilia)+[cidadaoInstance: referenciaFamiliar];
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -120,7 +125,7 @@ class FamiliaController extends AncestralController {
         }
 
         //Validacao: se estiver gravando também uma referencia familiar, é preciso validá-la também
-        boolean validado = familiaInstance.validate();
+        boolean validado = familiaInstance.validate() && telefonesFromRequest(familiaInstance) ;
         if (novaReferenciaFamiliar)
             validado = validado && novaReferenciaFamiliar.validate();
         if (validado) {
@@ -179,7 +184,10 @@ class FamiliaController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def edit(Familia familiaInstance) {
-        render view: 'edit', model: getEditCreateModel(familiaInstance)
+        def model = getEditCreateModel(familiaInstance);
+        Hibernate.initialize(familiaInstance.membros);
+        preparaTelefonesParaEdicao(familiaInstance);
+        render view: 'edit', model: model
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -557,6 +565,93 @@ class FamiliaController extends AncestralController {
             render(status: 500, text: "sinalização não encontrada");
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def editTelefones(Long idFamilia) {
+        Familia familia = Familia.get(idFamilia);
+        if (! familia)
+            throw new RuntimeException("Impossível acessar familia. id "+idFamilia);
+
+        preparaTelefonesParaEdicao(familia)
+
+        render view: 'telefone/editTelefones', model: [familiaInstance: familia];
+    }
+
+    private void preparaTelefonesParaEdicao(Familia familia) {
+        Hibernate.initialize(familia.telefones);
+        familia.discard();
+
+//        familia.telefones = new LinkedHashSet<>(familia.telefones);
+        for (int i = familia.telefones.size(); i < TELEFONES_POR_FAMILIA - 1; i++)
+            familia.telefones.add(new Telefone(familia));
+        familia.telefones.add(new Telefone(familia)); //Sempre adicionar um em branco
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def getTelefones(Long id) {
+        Familia familia = Familia.get(id);
+        String result = "";
+        familia.telefones?.sort{it.dateCreated}?.eachWithIndex { Telefone telefone, int i ->
+            if (i > 0)
+                result += ", ";
+            result += telefone.toString();
+            if (telefone.obs)
+                result += g.helpTooltip { telefone.obs }
+        }
+        return render(text: result);
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def saveTelefones(Long idFamilia) {
+        Familia familia = Familia.get(idFamilia);
+        if (! familia)
+            throw new RuntimeException("Impossível acessar familia. id "+idFamilia);
+
+        boolean validado = telefonesFromRequest(familia)
+
+        if (validado) {
+            familiaService.gravaTelefones(familia);
+            flash.message = "Telefones gravados com sucesso"
+            //retornando mensagem de sucesso sem exibir nada na tela (a janela modal sera simplemente fechada)
+            return render(contentType:'text/json', text: ['success': true] as JSON);
+        } else {
+            //exibe o formulario novamente em caso de problemas na validacao
+            return render(status: 500 /*apontar que houve erro*/,
+                    view: 'telefone/editTelefones', model: [familiaInstance: familia]);
+        }
+    }
+
+    /**
+     * Busca os telefones fornecidos na tela e transmitidos via request e os converte em uma lista de dominios Telefone
+     * associada à familia passada como parametro. Retorna verdadeiro caso todos os telefones passem pela validacao
+     * do dominio (e falso caso pelo menos um deles não tenha passado. Neste caso, cada objeto telefone carrega os seus
+     * erros de validacao)
+     */
+    private boolean telefonesFromRequest(Familia familia) {
+        boolean result = true;
+        request.getParameterValues("numero").eachWithIndex { fool, i ->
+            String idTelefone = request.getParameterValues("idTelefone")[i];
+            String ddd = request.getParameterValues("ddd")[i];
+            String numero = request.getParameterValues("numero")[i];
+            String obs = request.getParameterValues("obs")[i];
+            if (request.getParameterValues("remover")[i]?.toBoolean()) {
+                Telefone telefone = Telefone.get(idTelefone);
+                familia.telefones.remove(telefone);
+                telefone.delete();
+            } else if (numero || ddd || obs || idTelefone) {
+                Telefone telefone = idTelefone ? Telefone.get(idTelefone) : new Telefone(familia)
+                telefone.DDD = ddd;
+                telefone.numero = numero;
+                telefone.obs = obs;
+                familia.telefones.add(telefone);
+                result = result && telefone.validate();
+            } else if (!numero && !ddd && !obs && idTelefone) {
+                Telefone telefone = Telefone.get(idTelefone);
+                familia.telefones.remove(telefone);
+                telefone.delete();
+            }
+        }
+        return result
+    }
 }
 
 class ProgramasCommand implements MarcadoresCommand {

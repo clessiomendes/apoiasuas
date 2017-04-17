@@ -117,8 +117,8 @@ class CidadaoService {
         familia.save()
         if (novoTelefone) {
             Telefone telefone = new Telefone()
-            telefone.criador = segurancaService.usuarioLogado
-            telefone.ultimoAlterador = segurancaService.usuarioLogado
+//            telefone.criador = segurancaService.usuarioLogado
+//            telefone.ultimoAlterador = segurancaService.usuarioLogado
             telefone.numero = novoTelefone
             telefone.DDD = novoTelefoneDDD
             telefone.familia = familia

@@ -218,11 +218,21 @@ class ApoiaSuasTagLib {
 
     /**
      * Overriding FormTagLib.submitButton to check for conditions before rendering
+     * @attr name REQUIRED the field name
+     * @attr value the button text
+     * @attr type input type; defaults to 'submit'
+     * @attr event the webflow event id
+     * @attr showif condição de teste
+     * @attr roles Um ou mais perfis de acesso ao sistema para restringir a exibição do botão
      */
     Closure submitButton = { attrs ->
-        if (attrs.showif != null && attrs.showif == false)
+        if (attrs.containsKey('showif') && attrs.showif == false)
             return;
         attrs.remove("showif");
+
+        if (attrs.containsKey('roles') && ! SpringSecurityUtils.ifAnyGranted(attrs.roles))
+            return;
+        attrs.remove("roles");
 
         //Eh preciso buscar a tag original antes de executa-la, pois ela foi sobrescrita
         FormTagLib original = grailsAttributes.applicationContext.getBean(FormTagLib.name)
@@ -267,6 +277,8 @@ class ApoiaSuasTagLib {
             mensagem = message(code: attrs.chave, args: attrs.args)
         if (! mensagem?.trim())
             return;
+        //substitui quebras de linha pela tag html <br>
+        mensagem = mensagem.replaceAll("\n", "<br>");
 
         out << "<div class='help-tooltip'>";
         out << asset.image(src: 'help.png');

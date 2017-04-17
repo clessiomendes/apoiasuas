@@ -89,4 +89,9 @@ descrição da familia: Familita.getCad()
         </label>
         <g:textField name="endereco.UF" size="2" maxlength="2" value="${enderecoInstance?.UF}"/>
     </div>
+
+</fieldset>
+
+<fieldset class="embedded"><legend>Telefones</legend>
+    <g:render template="telefone/formTelefones" model="${[localDtoFamilia: localDtoFamilia]}"/>
 </fieldset>
