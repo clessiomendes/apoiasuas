@@ -309,8 +309,11 @@ _log create sequence sq_log;
 
 -- versao ate aqui: current (local:feito, producao: feito)
 
-alter table telefone add column obs varchar(255);
+alter table telefone add column obs varchar(1000);
 ALTER TABLE public.telefone DROP criador_id;
 ALTER TABLE public.telefone DROP ultimo_alterador_id;
 
 ALTER TABLE public.telefone ALTER COLUMN numero SET NOT NULL;
+
+-- versao ate aqui: current (local:feito, producao: feito)
+

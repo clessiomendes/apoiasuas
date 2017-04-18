@@ -101,29 +101,30 @@ function InterfaceDivEditMarcador() {
     /**
  * busca incremental de marcadores. Mostra marcador cujo texto contenha QUALQUER UMA DAS PALAVRAS PESQUISADAS (operador ou)
  */
-function filtraMarcadores(textInput, spans) {
+function filtraMarcadores(textInput) {
     clearTimeout(timerKeyUp);
     timerKeyUp = setTimeout( function() {
         var words = $(textInput).val().match(/[^\s]+|\s+[^\s+]$/g);
-        $(spans).show();
-        spans.each(function(){
-            for(x=0; (words != null) && (x < words.length); x++) {
-                //ignora as primeiras 2 letras digitadas
-                if (words[x].length >= CONST_TAMANHO_MINIMO_PESQUISA) {
-                    if (! contem(this, words[x]))
-                        $(this).hide();
+
+        $(".fieldsetMarcadores").each(function() {
+            var spans = $(this).find('span');
+            $(spans).show();
+            spans.each(function () {
+                for (x = 0; (words != null) && (x < words.length); x++) {
+                    //ignora as primeiras 2 letras digitadas
+                    if (words[x].length >= CONST_TAMANHO_MINIMO_PESQUISA) {
+                        if (!contem(this, words[x]))
+                            $(this).hide();
+                    }
                 }
-            }
+            });
         });
+
     }, CONST_TEMPO_DELAY_KEYUP);
 }
 
 function inicializaEventosTabMarcadores(fieldsetMarcadores/*, divMarcadores*/) {
     var $fieldsetMarcadores = $(fieldsetMarcadores)
-    //onkeyup - pesquisa incremental à partir do input de busca
-    $fieldsetMarcadores.find(".input-search").keyup( function() {
-        filtraMarcadores(this, $fieldsetMarcadores.find('span'))
-    } );
 
     //onclick - expandir o fieldset de marcadores
     $fieldsetMarcadores.find(".speed-button-expandir").click( function() {

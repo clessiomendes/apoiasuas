@@ -16,6 +16,12 @@
                 return false;
             }
         });
+
+        //onkeyup - pesquisa incremental à partir do input de busca
+        $(".input-search").keyup( function() {
+            filtraMarcadores(this)
+        } );
+
     } );
 </g:javascript>
 
@@ -75,10 +81,11 @@
     }
 </g:javascript>
 
+Procurar: <input type="text" class="input-search"
+       title="Digite uma ou mais palavras chaves para procurar uma sinalização (programa, vulnerabilidade, ação ou outras) já definida.">
+
 <fieldset id="fieldsetProgramas" class="fieldsetMarcadores">
     <legend>Programas <g:helpTooltip chave="help.marcador.programas"/>
-        <input type="text" class="input-search"
-               title="Digite uma palavra chave para buscar um programa específico.">
         <g:if test="${permiteInclusao == 'true'}">
             &nbsp;<input type="button" class="btn-adicionar-marcador" onclick="novoMarcadorPrograma(updateListProgramas);"
                          title="Caso ainda não exista, você pode definir um novo programa em execução no seu território">
@@ -97,8 +104,6 @@
 
 <fieldset id="fieldsetVulnerabilidades" class="fieldsetMarcadores">
     <legend>Vulnerabilidades <g:helpTooltip chave="help.marcador.vulnerabilidades"/>
-        <input type="text" class="input-search"
-               title="Digite uma palavra chave para buscar uma vulnerabilidade específica.">
         <g:if test="${permiteInclusao == 'true'}">
             &nbsp;<input type="button" class="btn-adicionar-marcador" onclick="novoMarcadorVulnerabilidade(updateListVulnerabilidades);"
                          title="Caso ainda não exista, você pode definir uma nova categoria de vulnerabilidades">
@@ -117,8 +122,6 @@
 
 <fieldset id="fieldsetAcoes" class="fieldsetMarcadores">
     <legend>Ações <g:helpTooltip chave="help.marcador.acoes"/>
-        <input type="text" class="input-search"
-               title="Digite uma palavra chave para buscar uma ação específica.">
         <g:if test="${permiteInclusao == 'true'}">
             &nbsp;<input type="button" class="btn-adicionar-marcador" onclick="novoMarcadorAcao(updateListAcoes);"
                          title="Caso ainda não exista, você pode definir uma nova categoria de ações previstas para serem executadas com as famílias">
@@ -137,8 +140,6 @@
 
 <fieldset id="fieldsetOutrosMarcadores" class="fieldsetMarcadores">
     <legend>Outros tipos de sinalização <g:helpTooltip chave="help.marcador.outros.marcadores"/>
-        <input type="text" class="input-search"
-               title="Digite uma palavra chave para buscar uma sinalização específica.">
         <g:if test="${permiteInclusao == 'true'}">
             &nbsp;<input type="button" class="btn-adicionar-marcador" onclick="novoMarcadorOutroMarcador(updateListOutrosMarcadores);"
                          title="Caso ainda não exista, você pode definir um novo tipo de sinalização para as famílias">
