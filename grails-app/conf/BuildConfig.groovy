@@ -189,5 +189,7 @@ grails.project.dependency.resolution = {
         compile ':quartz:1.0.1'
 
         compile "org.grails.plugins:fields:1.5.1"
+
+        compile 'org.grails.plugins:cascade-validation:0.1.4'
     }
 }

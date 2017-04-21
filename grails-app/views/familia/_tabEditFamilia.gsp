@@ -45,7 +45,7 @@ descrição da familia: Familita.getCad()
             <g:message code="familia.endereco.nomeLogradouro.label" default="Nome Logradouro" />
             <span class="required-indicator">*</span>
         </label>
-        <g:textField name="endereco.nomeLogradouro" size="60" maxlength="60" required="" value="${enderecoInstance?.nomeLogradouro}"/>
+        <g:textField name="endereco.nomeLogradouro" size="60" maxlength="60" value="${enderecoInstance?.nomeLogradouro}"/>
     </div>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'endereco.numero', 'error')} ">

@@ -5,6 +5,9 @@ _click(_link("Cadastrar família"));
 _setValue(_textbox("endereco.tipoLogradouro"), "rua");
 _setValue(_textbox("endereco.nomeLogradouro"), "teste automatizado");
 _setValue(_textbox("endereco.numero"), "99");
+_setValue(_textbox("ddd[0]"), "31");
+_setValue(_textbox("numero[0]"), "1234-5678");
+_setValue(_textarea("obs[0]"), "atendeu hoje");
 
 _click(_link("referência familiar"));
 var $referencia = "referencia teste " + new Date();

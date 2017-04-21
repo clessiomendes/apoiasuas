@@ -26,8 +26,15 @@
 
 </g:javascript>
 
-<f:with bean="${localDtoCidadao}">
-	<f:field property="nomeCompleto" prefix="${prefixo}" label="Nome completo" widget-size="60" required="true"/>
+%{--<f:with bean="${localDtoCidadao}">--}%
+	%{--<f:field property="nomeCompleto" prefix="${prefixo}" label="Nome completo" widget-size="60"/>--}%
+
+	<div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'nomeCompleto', 'error')} ">
+		<label for="nomeCompleto">
+			<g:message code="cidadao.nomeCompleto.label" default="Nome Completo" />
+		</label>
+		<g:textField name="${prefixo}nomeCompleto" size="60" maxlength="60" value="${localDtoCidadao?.nomeCompleto}"/>
+	</div>
 
 %{--Só permite alterar se não for a referência--}%
 	<div id="divParentescoReferencia" class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'parentescoReferencia', 'error')} ">
@@ -103,4 +110,4 @@
 	<g:textField name="nomePai" size="60" maxlength="60" value="${localDtoCidadao?.nomePai}"/>
 </div>
 
-</f:with>
+%{--</f:with>--}%

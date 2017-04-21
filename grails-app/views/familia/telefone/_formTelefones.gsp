@@ -7,11 +7,11 @@
     $(document).ready(function() {
 //Inicialização dos eventos
         $(".obs").focus(function () {
-            this.rows = "3";
+            $(this).css("height", "54px");
         });
 
         $(".obs").blur(function () {
-            this.rows = "1";
+            $(this).css("height", "19px");
         });
     });
 
@@ -41,9 +41,15 @@
         <g:hiddenField name="idTelefone" id="idTelefone${i}" value="${telefone?.id}"/>
         <g:hiddenField name="remover" id="removerTelefone${i}"  value="false"/>
         <tr id="linhaTelefone${i}">
-            <td><g:textField name="ddd" id="ddd${i}" size="1" maxlength="3" value="${telefone?.DDD}"/></td>
-            <td><g:textField name="numero" id="numero${i}" size="10" maxlength="40" value="${telefone?.numero}"/></td>
-            <td><g:textArea rows="1" cols="40" name="obs" class="obs" id="obs${i}" maxlength="1000" value="${telefone?.obs}"/></td>
+            <td class="${hasErrors(bean: telefone, field: 'DDD', 'error')}">
+                <g:textField name="ddd" id="ddd${i}" size="1" maxlength="3" value="${telefone?.DDD}"/>
+            </td>
+            <td class="${hasErrors(bean: telefone, field: 'numero', 'error')}">
+                <g:textField name="numero" id="numero${i}" size="10" maxlength="40" value="${telefone?.numero}"/>
+            </td>
+            <td class="${hasErrors(bean: telefone, field: 'obs', 'error')}">
+                <g:textArea style="height:19px" cols="40" name="obs" class="obs" id="obs${i}" maxlength="1000" value="${telefone?.obs}"/>
+            </td>
             <td> <g:if test="${telefone?.id}">
                 <input type="button" id="removerTelefone" class="speed-button-remover" onclick="removerTelefoneClick(removerTelefone${i}, linhaTelefone${i}); return false;" title="remover"/>
             </g:if> </td>

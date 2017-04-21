@@ -66,6 +66,7 @@ class Familia implements Serializable {
         criador(nullable: false)
         ultimoAlterador(nullable: false)
         servicoSistemaSeguranca(nullable: false)
+        endereco(nullable: false, cascade: true)
     }
 
     static mapping = {

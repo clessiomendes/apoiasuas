@@ -93,7 +93,6 @@ class FamiliaController extends AncestralController {
         referenciaFamiliar.referencia = true;
         referenciaFamiliar.parentescoReferencia = cidadaoService.PARENTESCO_REFERENCIA;
         Familia novaFamilia = new Familia();
-        preparaTelefonesParaEdicao(novaFamilia);
         render view: "create", model: getEditCreateModel(novaFamilia)+[cidadaoInstance: referenciaFamiliar];
     }
 
@@ -103,8 +102,9 @@ class FamiliaController extends AncestralController {
         if (! familiaInstance)
             return notFound()
         boolean modoCriacao = familiaInstance.id == null;
+        boolean validado = true;
 
-        //A gravação de uma nova família embute também a gravação de um primeiro membro como referencia familiar
+                //A gravação de uma nova família embute também a gravação de um primeiro membro como referencia familiar
         Cidadao novaReferenciaFamiliar = null;
         if (modoCriacao) {
             //inicializando a referencia familiar
@@ -116,6 +116,7 @@ class FamiliaController extends AncestralController {
             novaReferenciaFamiliar.criador = segurancaService.usuarioLogado;
             novaReferenciaFamiliar.habilitado = true;
             novaReferenciaFamiliar.ultimoAlterador = segurancaService.usuarioLogado;
+            validado = novaReferenciaFamiliar.validate() && validado;
 
             //inicializando a familia
             familiaInstance.criador = usuarioLogado;
@@ -125,9 +126,8 @@ class FamiliaController extends AncestralController {
         }
 
         //Validacao: se estiver gravando também uma referencia familiar, é preciso validá-la também
-        boolean validado = familiaInstance.validate() && telefonesFromRequest(familiaInstance) ;
-        if (novaReferenciaFamiliar)
-            validado = validado && novaReferenciaFamiliar.validate();
+        validado = familiaInstance.validate() && validado;
+        validado = telefonesFromRequest(familiaInstance) && validado ;
         if (validado) {
             familiaInstance = modoCriacao ? familiaService.gravaNovo(familiaInstance, novaReferenciaFamiliar)
                     : familiaService.grava(familiaInstance, programasCommand, acoesCommand,
@@ -142,10 +142,14 @@ class FamiliaController extends AncestralController {
     }
 
     private Map getEditCreateModel(Familia familiaInstance) {
-        List<Programa> programasDisponiveis = marcadoresDisponiveis(familiaInstance.programas, marcadorService.getProgramasDisponiveis() )
-        List<Acao> acoesDisponiveis = marcadoresDisponiveis(familiaInstance.acoes, marcadorService.getAcoesDisponiveis() )
-        List<Vulnerabilidade> vulnerabilidadesDisponiveis = marcadoresDisponiveis(familiaInstance.vulnerabilidades, marcadorService.getVulnerabilidadesDisponiveis() )
-        List<OutroMarcador> outrosMarcadoresDisponiveis = marcadoresDisponiveis(familiaInstance.outrosMarcadores, marcadorService.getOutrosMarcadoresDisponiveis() )
+        Hibernate.initialize(familiaInstance.membros);
+        Hibernate.initialize(familiaInstance.monitoramentos);
+
+        List<Programa> programasDisponiveis = marcadoresDisponiveis(familiaInstance.programas, marcadorService.getProgramasDisponiveis() );
+        List<Acao> acoesDisponiveis = marcadoresDisponiveis(familiaInstance.acoes, marcadorService.getAcoesDisponiveis() );
+        List<Vulnerabilidade> vulnerabilidadesDisponiveis = marcadoresDisponiveis(familiaInstance.vulnerabilidades, marcadorService.getVulnerabilidadesDisponiveis() );
+        List<OutroMarcador> outrosMarcadoresDisponiveis = marcadoresDisponiveis(familiaInstance.outrosMarcadores, marcadorService.getOutrosMarcadoresDisponiveis() );
+        preparaTelefonesParaEdicao(familiaInstance);
         return [familiaInstance: familiaInstance,
                 operadores: marcadorService.getTecnicosIncluiMarcadores(familiaInstance),
                 outrosMarcadoresDisponiveis: outrosMarcadoresDisponiveis, programasDisponiveis: programasDisponiveis,
@@ -184,10 +188,7 @@ class FamiliaController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def edit(Familia familiaInstance) {
-        def model = getEditCreateModel(familiaInstance);
-        Hibernate.initialize(familiaInstance.membros);
-        preparaTelefonesParaEdicao(familiaInstance);
-        render view: 'edit', model: model
+        render view: 'edit', model: getEditCreateModel(familiaInstance);
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -364,7 +365,11 @@ class FamiliaController extends AncestralController {
             return notFound()
 
         //Valida antes de gravar
-        if (familiaInstance.validate() && familiaInstance.acompanhamentoFamiliar.validate()) {
+        boolean validado = familiaInstance.validate();
+        validado = familiaInstance.acompanhamentoFamiliar.validate() && validado;
+        validado = telefonesFromRequest(familiaInstance) && validado; Telefone.getSimpleName()
+
+        if (validado) {
             flash.message = "As informações da família e do acompanhamento foram atualizados"
             familiaInstance = familiaService.grava(familiaInstance, programasCommand,
                     acoesCommand, vulnerabilidadesCommand, outrosMarcadoresCommand)

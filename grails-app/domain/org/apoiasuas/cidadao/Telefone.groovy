@@ -23,9 +23,9 @@ class Telefone implements Serializable {
     static constraints = {
 //        criador(nullable: false)
 //        ultimoAlterador(nullable: false)
-        DDD(nullable: true, maxSize: 3);
+        DDD(blank: true, maxSize: 3);
         numero(blank: false, maxSize: 40);
-        obs(nullable: true, maxSize: 1000);
+        obs(blank: true, maxSize: 1000);
     }
 
 

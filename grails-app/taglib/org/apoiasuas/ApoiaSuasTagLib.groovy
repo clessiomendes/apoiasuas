@@ -300,11 +300,13 @@ class ApoiaSuasTagLib {
         //MarkupBuilder para geração de HTML por meio de uma DSL groovy
         def html = new groovy.xml.MarkupBuilder(out)
 
+        out << asset.javascript(src: 'especificos/tabs.js');
+
         //Javascript JQuery para adicionar o comportamento do componente no div sendo criado
         g.javascript{
-            'jQuery(document).ready(function() {\n' +
-            '   jQuery("#'+attrs.id+'").tabs();\n' +
-            '} );'
+            '\n\njQuery(document).ready(function() {\n' +
+            '   inicializaTabs(jQuery("#'+attrs.id+'"));\n' +
+            '} );\n\n'
         }
 
         //No primeiro processamento das tags <g:tab>, usamos a flag para sinalizar a montagem do menu por <ul>

@@ -67,6 +67,7 @@ class Cidadao implements Serializable {
 
     static constraints = {
         id(bindable: true)
+        nomeCompleto(nullable: false, maxSize: 255)
         referencia(nullable: false)
         criador(nullable: false)
         ultimoAlterador(nullable: false)

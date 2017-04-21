@@ -38,7 +38,7 @@ class Endereco  implements Serializable {
     static constraints = {
         CEP(nullable: true)
         tipoLogradouro (nullable: true)
-        nomeLogradouro (nullable: true)
+        nomeLogradouro (nullable: false)
         numero (nullable: true)
         complemento (nullable: true)
         bairro (nullable: true)
