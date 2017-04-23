@@ -138,7 +138,7 @@ log4j.main = {
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/mem.log',
             maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm};%m%n'));
 //sqls
-    def sqlAppender = new RollingFileAppender(name: 'sqlFile', append: true, maxFileSize: '30000KB',
+    def sqlAppender = new RollingFileAppender(name: 'sqlFile', append: true, maxFileSize: '100000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/sql.log',
             maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm:ss};%X{username};%X{requestedSessionId};%m%n'));
 

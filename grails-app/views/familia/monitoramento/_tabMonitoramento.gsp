@@ -1,7 +1,6 @@
 <%
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance
 %>
-<asset:javascript src="especificos/apoiasuas-modal.js"/>
 
 <g:javascript>
     var janelaModal = new JanelaModalAjax(updateList);

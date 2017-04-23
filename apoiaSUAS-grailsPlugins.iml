@@ -42,6 +42,9 @@
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0/grails-app/controllers" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/camunda-0.5.0/grails-app/services" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/target/work/plugins/cascade-validation-0.1.4">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/cascade-validation-0.1.4/src/groovy" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/elasticsearch-0.1.0">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/elasticsearch-0.1.0/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/elasticsearch-0.1.0/grails-app/services" isTestSource="false" />
@@ -55,6 +58,9 @@
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/fields-1.5.1/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/fields-1.5.1/grails-app/services" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/fields-1.5.1/grails-app/taglib" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/target/work/plugins/grails-melody-1.54.0">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/grails-melody-1.54.0/src/groovy" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/hibernate4-4.3.5.5">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/hibernate4-4.3.5.5/src/java" isTestSource="false" />

@@ -4,7 +4,6 @@
 <head>
     <meta name="layout" content="main">
     <title>Monitoramentos</title>
-    <asset:javascript src="especificos/apoiasuas-modal.js"/>
 </head>
 
 <body>

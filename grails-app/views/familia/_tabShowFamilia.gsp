@@ -2,7 +2,6 @@
 <%
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance;
 %>
-<asset:javascript src="especificos/apoiasuas-modal.js"/>
 
 <g:javascript>
     var janelaModalMarcador = new JanelaModalAjax();
