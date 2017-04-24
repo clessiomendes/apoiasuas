@@ -226,6 +226,18 @@ class AmbienteExecucao {
             return "(Validação)"
     }
 
+    /**
+     * Em ambientes clusterizados, determina se o servidor corrente é o primario
+     */
+    public static boolean isServidorPrimario() {
+        switch (CURRENT) {
+            case LOCAL: return true;
+            case CLEVERCLOUD: return sysProperties('INSTANCE_NUMBER')?.equals("0");
+            default: throw new RuntimeException("impossível definir servidor primário em um ambiente (possivelmente) clusterizado")
+        }
+    }
+
+
 /*
     public static String getDatabaseDependency() {
         return 'org.postgresql:postgresql:9.3-1101-jdbc41';

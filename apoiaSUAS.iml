@@ -270,8 +270,6 @@
           <root url="jar://$MAVEN_REPOSITORY$/org/camunda/bpm/model/camunda-xml-model/7.3.0/camunda-xml-model-7.3.0.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/camunda/bpm/model/camunda-bpmn-model/7.3.0/camunda-bpmn-model-7.3.0.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/camunda/bpm/camunda-engine/7.3.0/camunda-engine-7.3.0.jar!/" />
-          <root url="jar://$MAVEN_REPOSITORY$/net/bull/javamelody/javamelody-core/1.54.0/javamelody-core-1.54.0.jar!/" />
-          <root url="jar://$MAVEN_REPOSITORY$/org/jrobin/jrobin/1.5.9/jrobin-1.5.9.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/joda-time/joda-time/2.3/joda-time-2.3.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/springframework/security/spring-security-web/3.2.3.RELEASE/spring-security-web-3.2.3.RELEASE.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/springframework/security/spring-security-core/3.2.3.RELEASE/spring-security-core-3.2.3.RELEASE.jar!/" />
@@ -334,6 +332,8 @@
           <root url="jar://$MAVEN_REPOSITORY$/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/apache/maven/maven-ant-tasks/2.1.3/maven-ant-tasks-2.1.3.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/grails/grails-docs/2.4.3/grails-docs-2.4.3.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/net/bull/javamelody/javamelody-core/1.54.0/javamelody-core-1.54.0.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/jrobin/jrobin/1.5.9/jrobin-1.5.9.jar!/" />
         </CLASSES>
         <JAVADOC>
           <root url="jar://$MAVEN_REPOSITORY$/net/arnx/wmf2svg/0.9.0/wmf2svg-0.9.0-javadoc.jar!/" />

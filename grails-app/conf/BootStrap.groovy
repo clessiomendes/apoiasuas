@@ -115,14 +115,14 @@ class BootStrap {
 //                importarFamiliasService.inicializaDefinicoes(admin)
                 fileStorageService.init();
 //                marcadorService.init();
-                programaService.inicializaProgramas(admin);
+                if (AmbienteExecucao.servidorPrimario)
+                    programaService.inicializaProgramas(admin);
 //                marcadorService.inicializaMarcadores(admin);
 
                 try {
                     //Descarta eventuais alteracoes em formularios e reinicializa tudo
-                    formularioService.inicializaFormularios(admin)
-                    //NAO PRECISA MAIS ==> Para producao, acionar o menu "Reinstalar formularios pre-definidos"
-
+                    if (AmbienteExecucao.servidorPrimario)
+                        formularioService.inicializaFormularios(admin)
                 } catch (Throwable t) {
                     if (AmbienteExecucao.desenvolvimento)
                         t.printStackTrace()
