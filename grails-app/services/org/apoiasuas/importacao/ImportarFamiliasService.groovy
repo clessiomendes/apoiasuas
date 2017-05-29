@@ -316,8 +316,8 @@ class ImportarFamiliasService {
             //Sobrescrever a data de criacao automatica com a data do cadastro presente na planilha importada
             result.save()
 
-            importarPrograma(ProgramasPreDefinidos.BOLSA_FAMILIA, result, trim(mapaDeCampos.get("PBF")))
-            importarPrograma(ProgramasPreDefinidos.BPC, result, trim(mapaDeCampos.get("BPC")))
+            importarPrograma(ProgramasPreDefinidos.BOLSA_FAMILIA, result, trim(mapaDeCampos.get("PBF")), usuarioSistema)
+            importarPrograma(ProgramasPreDefinidos.BPC, result, trim(mapaDeCampos.get("BPC")), usuarioSistema)
 
             familiaGravada = true
         }
@@ -379,7 +379,7 @@ class ImportarFamiliasService {
     /**
      * Importa informação relativa a um programa específico (PBF ou BPC)
      */
-    private void importarPrograma(ProgramasPreDefinidos tipoPrograma, Familia familiaPersistida, String conteudoPrograma) {
+    private void importarPrograma(ProgramasPreDefinidos tipoPrograma, Familia familiaPersistida, String conteudoPrograma, UsuarioSistema usuarioSistema) {
         ProgramaFamilia associacao = ProgramaFamilia.findByFamiliaAndPrograma(familiaPersistida, tipoPrograma.instanciaPersistida)
         if (StringUtils.removeAcentos(conteudoPrograma?.toUpperCase()) != "SIM" && associacao) {
             associacao.delete();
@@ -389,6 +389,7 @@ class ImportarFamiliasService {
             ProgramaFamilia pf = new ProgramaFamilia()
             pf.familia = familiaPersistida
             pf.programa = tipoPrograma.instanciaPersistida
+            pf.tecnico = usuarioSistema;
             if (! familiaPersistida.programas)
                 familiaPersistida.programas = []
             familiaPersistida.programas.add(pf.save())

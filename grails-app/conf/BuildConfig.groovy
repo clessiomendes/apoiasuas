@@ -168,10 +168,12 @@ grails.project.dependency.resolution = {
 //            runtime "org.grails.plugins:console:1.5.6"
         }
 
-        //ferramenta de profiling, util para testes de performance no ambiente de validacao
-//        if (System.getProperty('org.apoiasuas.datasource') == 'CLEVERCLOUD_POSTGRES_VALID') {
+        //ferramenta de profiling, util para testes de performance no ambiente de validacao.
+        //mas ATENÇÃO! se habilitada, espere por uma exceção na linha
+        //      super.transfereConteudo(formulario, reportDTO)
+        //da classe FormularioBeneficioEventualService
         if (System.getProperty('org.apoiasuas.datasource') != 'CLEVERCLOUD_POSTGRES_PROD') {
-            compile ":grails-melody:1.54.0" //plugin para profiling
+//            compile ":grails-melody:1.54.0" //plugin para profiling
         }
 
         // Uncomment these to enable additional asset-pipeline capabilities

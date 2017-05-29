@@ -3,7 +3,6 @@
     Servico localDtoServico = servicoInstance
 %>
 
-<f:with bean="${localDtoServico}">
 <g:tabs id="tabs" style="margin: 5px;">
     <g:tab id="tabInicial" titulo="informações">
         <f:field property="apelido" label="servico.apelido.label" widget-size="60"/>
@@ -61,8 +60,6 @@
             <g:checkBox name="podeEncaminhar" value="${localDtoServico.podeEncaminhar}" onclick="document.getElementById('fieldsetEncaminhamento').disabled = ! this.checked; return true"/>
             <g:message code="servico.podeEncaminhar" default="Permitir encaminhamento" />
         </legend>
-
-        <f:field property="nomeFormal" label="servico.nomeFormal.label" widget-size="60" widget-maxlength="10"/>
 
         <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'nomeFormal', 'error')}">
             <label for="nomeFormal">
@@ -136,4 +133,3 @@
     </fieldset>
     </g:tab>
 </g:tabs>
-</f:with>

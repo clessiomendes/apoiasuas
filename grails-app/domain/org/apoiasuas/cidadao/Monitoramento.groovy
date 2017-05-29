@@ -5,14 +5,14 @@ import org.apoiasuas.util.AmbienteExecucao
 
 class Monitoramento implements Comparable<Monitoramento> {
 
-    public enum Situacao {
-        ATRASADO("atrasado", "_ref_.efetivado = false and _ref_.data_prevista < ${AmbienteExecucao.SqlProprietaria.currentDate()}"),
-        SEM_PRAZO("sem prazo definido", "_ref_.efetivado = false and _ref_.data_prevista is null"),
+    public enum FiltroPadrao {
         PENDENTE_NO_PRAZO("pendente, dentro do prazo", "_ref_.efetivado = false and _ref_.data_prevista >= ${AmbienteExecucao.SqlProprietaria.currentDate()}"),
+        ATRASADO("pendente, atrasado", "_ref_.efetivado = false and _ref_.data_prevista < ${AmbienteExecucao.SqlProprietaria.currentDate()}"),
+        SEM_PRAZO("pendente, sem prazo definido", "_ref_.efetivado = false and _ref_.data_prevista is null"),
         SUSPENSO("suspenso", "_ref_.suspenso = true and _ref_.efetivado = false"),
         EFETIVADO("efetivado", "_ref_.efetivado = true")
 
-        Situacao(String label, String sqlWhere) {
+        FiltroPadrao(String label, String sqlWhere) {
             this.label = label
             this.sqlWhere = sqlWhere
         }
@@ -81,16 +81,16 @@ class Monitoramento implements Comparable<Monitoramento> {
         if (outro == null)
             return BEFORE;
 
-        //suspensos por ultimo
-        if (this.suspenso && ! outro.suspenso )
-            return AFTER;
-        if (! this.suspenso && outro.suspenso )
-            return BEFORE;
-
         //efetivados por ultimo
         if (this.efetivado && ! outro.efetivado )
             return AFTER;
         if (! this.efetivado && outro.efetivado )
+            return BEFORE;
+
+        //suspensos penultimos
+        if (this.suspenso && ! outro.suspenso )
+            return AFTER;
+        if (! this.suspenso && outro.suspenso )
             return BEFORE;
 
         //atrasados primeiro
@@ -139,4 +139,22 @@ class Monitoramento implements Comparable<Monitoramento> {
         }
         return result;
     }
+
+    /**
+     * Define a classe css contendo o icone para a situação do monitoramento
+     */
+    public String getIconeSituacao() {
+        if (efetivado)
+            return "monitoramento-efetivado"
+        else if (suspenso)
+            return "monitoramento-suspenso"
+        else { //pendente
+            if (prioritario)
+                return "monitoramento-prioritario"
+            else
+                return "monitoramento-pendente"
+        }
+    }
+
+
 }

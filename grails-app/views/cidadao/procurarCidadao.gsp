@@ -33,19 +33,25 @@
 
 %{--<g:form action="procurarCidadaoExecuta">--}%
             <div class="buttons">
-                Nome ou Cad: <g:textField name="nomeOuCad" id="inputNomeOuCad" size="23" autofocus=""
+                <nobr>Nome ou Cad: <g:textField name="nomeOuCad" id="inputNomeOuCad" size="23" autofocus=""
                                           onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"
-                                          value="${defaultNomePesquisa}"/>
-                Endereço: <g:textField name="logradouro" id="inputLogradouro" size="23"
-                                       onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
-                Nº <g:textField name="numero" id="inputNumero" size="1"
-                             onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
-                <g:link onclick="linkProcurarCidadao(this, '${createLink(action: actionButtonProcurar, controller: controllerButtonProcurar)}',
-                                                            document.getElementById('inputNomeOuCad'),
-                                                            document.getElementById('inputNumero'),
-                                                            document.getElementById('inputLogradouro'));">
+                                          value="${defaultNomePesquisa}"/></nobr>
+                <nobr>Endereço: <g:textField name="logradouro" id="inputLogradouro" size="23"
+                                       onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/></nobr>
+                <nobr>Nº <g:textField name="numero" id="inputNumero" size="1"
+                             onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/></nobr>
+                <g:link onclick="linkProcurarCidadao(this, '${createLink(action: actionButtonProcurar, controller: controllerButtonProcurar)}');">
                     <input id="btnProcurarCidadao" type="button" class="speed-button-procurar"/>
                 </g:link>
+                <br>
+                <nobr>Idade: <g:textField name="idade" id="inputIdade" size="2"
+                                    onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/></nobr>
+                <nobr>NIS: <g:textField name="nis" id="inputNis" size="10"
+                                    onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/></nobr>
+                <nobr>Programa: <g:select name="programa" id="inputPrograma" noSelection="${['':'']}" from="${programas.collect{it.descricao}}"
+                                          keys="${programas.collect{it.id}}"/></nobr>
+                <nobr>Nome de outro membro na mesma familia: <g:textField name="outroMembro" id="inputOutroMembro" size="23"
+                                           onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/></nobr>
             </div>
 %{--</g:form>--}%
 

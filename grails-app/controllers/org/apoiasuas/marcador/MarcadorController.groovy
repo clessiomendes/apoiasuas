@@ -21,6 +21,7 @@ class MarcadorController extends AncestralController {
                                     acoesList: getMarcadores(Acao.class, idServicoSistema, params),
                                     outrosMarcadoresList: getMarcadores(OutroMarcador.class, idServicoSistema, params),
                                     servicosDisponiveis: segurancaService.superUser ? ServicoSistema.findAll() : [servicoCorrente],
+                                    tabAtual: params.tabId,
                                     servicoEscolhido: idServicoSistema
         ]
     }

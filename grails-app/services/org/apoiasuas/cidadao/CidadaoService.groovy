@@ -19,37 +19,67 @@ class CidadaoService {
     static transactional = false
 
     @Transactional(readOnly = true)
-    public grails.gorm.PagedResultList procurarCidadao(GrailsParameterMap params, FiltroCidadaoCommand filtro) {
+    public grails.gorm.PagedResultList procurarCidadao(GrailsParameterMap params, FiltroCidadaoCommand filtrosOperador) {
         String filtroNome
         String filtroCad
-        if (filtro?.nomeOuCad) {
-            if (StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCad))
-                filtroNome = filtro.nomeOuCad
+        if (filtrosOperador?.nomeOuCad) {
+            if (StringUtils.PATTERN_TEM_LETRAS.matcher(filtrosOperador.nomeOuCad))
+                filtroNome = filtrosOperador.nomeOuCad
             else
-                filtroCad = filtro.nomeOuCad
+                filtroCad = filtrosOperador.nomeOuCad
         }
-        def filtros = [:]
+        def filtrosHql = [:]
 
         String hqlCount = "select count(*) from Cidadao a ";
-        String hqlList = "from Cidadao a inner join fetch a.familia left join fetch a.familia.tecnicoReferencia ";
-//        String hqlList = "from Cidadao a  ";
+        String hqlList = "select distinct a, a.familia from Cidadao a inner join fetch a.familia left join fetch a.familia.tecnicoReferencia ";
+//        String hqlCount = "select count(*) from Cidadao a ";
+//        String hqlList = "from Cidadao a inner join fetch a.familia left join fetch a.familia.tecnicoReferencia ";
 
         String hqlWhere = ' where 1=1 '
-        if (!filtroNome) {
+        if (! filtroNome) {
             hqlWhere += "and a.referencia = true"
         }
 
-
         hqlWhere += ' and a.servicoSistemaSeguranca = :servicoSistema'
-        filtros << [servicoSistema: segurancaService.getServicoLogado()]
+        filtrosHql << [servicoSistema: segurancaService.getServicoLogado()]
+
+        if (filtrosOperador.programa) {
+            String join = " join a.familia.programas programaFamilia ";
+            hqlList += join;
+            hqlCount += join;
+            hqlWhere += ' and programaFamilia.programa.id = :programa ';
+            filtrosHql.put('programa', new Long(filtrosOperador.programa))
+        }
+
+        if (filtrosOperador.idade) {
+            hqlWhere += ' and '+AmbienteExecucao.SqlProprietaria.idade('a.dataNascimento')+' = :idade ';
+            filtrosHql.put('idade', new Integer(filtrosOperador.idade))
+        }
+
+        if (filtrosOperador.nis) {
+            hqlWhere += ' and a.nis = :nis';
+            filtrosHql.put('nis', filtrosOperador.nis)
+        }
+
+        if (filtrosOperador.outroMembro) {
+            String join = " join a.familia.membros membrosFamiliares ";
+            hqlList += join;
+            hqlCount += join;
+            String[] nomesOutroMembro = filtrosOperador.outroMembro?.split(" ");
+            nomesOutroMembro?.eachWithIndex { nome, i ->
+                String label = 'outroNome' + i;
+                hqlWhere += " and lower(remove_acento(membrosFamiliares.nomeCompleto)) like remove_acento(:" + label + ")"
+                filtrosHql.put(label, '%' + nome?.toLowerCase() + '%')
+            }
+        }
 
         if (filtroCad) {
             if (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO)) {
                 hqlWhere += ' and a.familia.codigoLegado = :cad'
-                filtros << [cad: filtroCad]
+                filtrosHql << [cad: filtroCad]
             } else {
                 hqlWhere += ' and a.familia.id = :cad'
-                filtros << [cad: filtroCad.toLong()]
+                filtrosHql << [cad: filtroCad.toLong()]
             }
         }
 
@@ -57,44 +87,49 @@ class CidadaoService {
         nomes?.eachWithIndex { nome, i ->
             String label = 'nome'+i
             hqlWhere += " and lower(remove_acento(a.nomeCompleto)) like remove_acento(:"+label+")"
-            filtros.put(label, '%'+nome?.toLowerCase()+'%')
+            filtrosHql.put(label, '%'+nome?.toLowerCase()+'%')
         }
 
-        String[] logradouros = filtro?.logradouro?.split(" ");
+        String[] logradouros = filtrosOperador?.logradouro?.split(" ");
         logradouros?.eachWithIndex { logradouro, i ->
             String label = 'logradouro'+i
             hqlWhere += " and (lower(remove_acento(a.familia.endereco.nomeLogradouro)) like remove_acento(:"+label+")" +
                     " or lower(remove_acento(a.familia.endereco.complemento)) like remove_acento(:"+label+"))"
-            filtros.put(label, '%'+logradouro?.toLowerCase()+'%')
+            filtrosHql.put(label, '%'+logradouro?.toLowerCase()+'%')
         }
 
-        if (filtro?.numero) {
+        if (filtrosOperador?.numero) {
             hqlWhere += ' and a.familia.endereco.numero = :numero'
-            filtros << [numero: filtro.numero]
+            filtrosHql << [numero: filtrosOperador.numero]
         }
 
         String hqlOrder = ""
-        if (filtroNome)
-            hqlOrder = ' order by a.nomeCompleto'
-        else if (filtro.logradouro)
+        if (filtrosOperador.logradouro)
             hqlOrder = ' order by ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero')
-        else if (filtro.numero)
-            hqlOrder = ' order  by a.familia.endereco.nomeLogradouro, ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero')
+        else if (filtrosOperador.numero)
+            hqlOrder = ' order by a.familia.endereco.nomeLogradouro, ' + AmbienteExecucao.SqlProprietaria.StringToNumber('a.familia.endereco.numero')
+        else
+            hqlOrder = ' order by a.nomeCompleto';
 
-        int count = Cidadao.executeQuery(hqlCount + hqlWhere, filtros)[0]
-        List cidadaos = Cidadao.executeQuery(hqlList + hqlWhere + hqlOrder, filtros, params)
+
+        int count = Cidadao.executeQuery(hqlCount + hqlWhere, filtrosHql)[0]
+        List resultado = Cidadao.executeQuery(hqlList + hqlWhere + hqlOrder, filtrosHql, params)
+        List<Cidadao> cidadaos = [];
 
         //Coloca em negrito os termos de busca utilizados
-        Iterator<Cidadao> iterator = cidadaos.iterator()
+        Iterator<Cidadao> iterator = resultado.iterator()
         List<Endereco> enderecosFormatados = []
         while (iterator.hasNext()) {
-            Cidadao cidadao = iterator.next()
+            Cidadao cidadao = iterator.next()[0] //seleciona o cidadao e ignora a familia
+            cidadaos << cidadao;
             cidadao.discard() //NAO gravar alteracoes
+            cidadao.familia?.discard() //NAO gravar alteracoes
             //Escapa caracteres html por questoes de seguranca
             cidadao.nomeCompleto = cidadao.nomeCompleto ? StringEscapeUtils.escapeHtml(cidadao.nomeCompleto) : null
             nomes?.each {
                 cidadao.nomeCompleto = cidadao.nomeCompleto?.replaceAll("(?i)" + Pattern.quote(it), '<b>$0</b>')
             }
+            cidadao.familia?.discard();
             log.debug("Endereco da familia "+cidadao.familia.id)
             //Para que o mesmo endereco nao seja reformatado varias vezes, precisamos verificar se ele ja foi processado na lista
             if (cidadao.familia.endereco && ! enderecosFormatados.contains(cidadao.familia.endereco) ) {
@@ -107,7 +142,6 @@ class CidadaoService {
                 enderecosFormatados << cidadao.familia.endereco
             }
         }
-
 
         return new HqlPagedResultList(cidadaos, count)
     }
@@ -147,6 +181,16 @@ class CidadaoService {
         if (fetchMap)
             fetchMap = [fetch: fetchMap];
         return Cidadao.findById(id, fetchMap);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean nomeDuplicado(Cidadao cidadao) {
+        boolean result = false;
+        Cidadao.findAllByNomeCompletoIlike(cidadao.nomeCompleto).each {
+            if (it.id != cidadao.id)
+                result = true;
+        };
+        return result;
     }
 
     @Transactional(readOnly = true)

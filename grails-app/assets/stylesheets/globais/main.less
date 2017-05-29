@@ -1071,3 +1071,17 @@ input::-moz-focus-inner {
 nobr {
   display: inline-block;
 }
+
+//Situações de monitoramento
+.situacao-monitoramento(@imagem) {
+  background: @imagem no-repeat center;
+  border: hidden;
+  width: 25px;
+  height: 25px;
+  background-size: 25px 25px;
+}
+.monitoramento-efetivado { .situacao-monitoramento(url(../../images/done.png)); }
+.monitoramento-suspenso { .situacao-monitoramento(url(../../images/suspended.png)); }
+.monitoramento-pendente { .situacao-monitoramento(url(../../images/pending.png)); }
+.monitoramento-prioritario { .situacao-monitoramento(url(../../images/important.png)); }
+

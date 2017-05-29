@@ -28,6 +28,7 @@
                     </li>
                 </g:if>
 
+                <g:if test="${cidadaoInstance?.parentescoReferencia}">
                     <li class="fieldcontain">
                         <g:if test="${cidadaoInstance?.referencia}">
                             <span class="property-label"></span>
@@ -38,6 +39,7 @@
                             <span class="property-value" aria-labelledby="parentescoReferencia-label"><g:fieldValue bean="${cidadaoInstance}" field="parentescoReferencia"/></span>
                         </g:else>
                     </li>
+                </g:if>
 
                 <g:if test="${cidadaoInstance?.dataNascimento}">
                     <li class="fieldcontain">

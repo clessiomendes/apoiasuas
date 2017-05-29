@@ -37,7 +37,7 @@ class Familia implements Serializable {
     Set<VulnerabilidadeFamilia> vulnerabilidades = []
     Set<OutroMarcadorFamilia> outrosMarcadores = []
     Set<Cidadao> membros = []
-    AcompanhamentoFamiliar acompanhamentoFamiliar //deeria ser hasOne, mas essa funcionalidade não está estável no Grails/Hibernate
+    AcompanhamentoFamiliar acompanhamentoFamiliar //deveria ser hasOne, mas essa funcionalidade não está estável no Grails/Hibernate
 
     @InfoPropriedadeDominio(codigo='telefone', descricao = 'Telefone', tipo = CampoFormulario.Tipo.TELEFONE, tamanho = 10)
     String telefone //campo transiente (usado para conter telefones escolhidos/digitados pelo operador em casos de uso como o de preenchimento de formulario

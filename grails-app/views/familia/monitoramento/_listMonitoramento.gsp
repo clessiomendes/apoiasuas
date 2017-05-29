@@ -6,7 +6,8 @@
     <thead><tr>
         <th>Data</th>
         <th>Descrição</th>
-        <th>Situação</th>
+        <th></th>
+        %{--<th>Situação</th>--}%
     </tr></thead>
     <tbody>
     <g:each in="${monitoramentoInstanceList}" status="i" var="monitoramentoInstance">
@@ -17,9 +18,12 @@
             <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela("ver monitoramento","${createLink(action:'showMonitoramento', id: monitoramentoInstance.id)}");'>
                 ${monitoramentoInstance.memoCortado}
             </a></td>
+            <td><input type="button" class="${monitoramentoInstance.iconeSituacao}" title="${monitoramentoInstance.situacao}"/></td>
+%{--
             <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela("ver monitoramento","${createLink(action:'showMonitoramento', id: monitoramentoInstance.id)}");'>
                 ${monitoramentoInstance.situacao}
             </a></td>
+--}%
         </tr>
     </g:each>
     </tbody>

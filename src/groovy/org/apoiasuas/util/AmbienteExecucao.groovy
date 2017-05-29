@@ -13,6 +13,7 @@ class AmbienteExecucao {
 
     public static final TipoAmbiente LOCAL_POSTGRE2 = new PostgreLocal();
     public static final TipoAmbiente CLEVERCLOUD_POSTGRE_PROD2 = new PostgreCleverCloud();
+    public static final TipoAmbiente CLEVERCLOUD_POSTGRE_VALID2 = new PostgreCleverCloud();
     public static final TipoAmbiente CURRENT2 = escolheTipoBD2();
 
     public static final Integer CURRENT = escolheTipoBD()
@@ -183,6 +184,7 @@ class AmbienteExecucao {
         String ds = sysProperties('org.apoiasuas.datasource')?.toUpperCase();
         switch (ds) {
             case 'CLEVERCLOUD_POSTGRES_PROD': return CLEVERCLOUD_POSTGRE_PROD2
+            case 'CLEVERCLOUD_POSTGRES_VALID': return CLEVERCLOUD_POSTGRE_VALID2
             case 'LOCAL_POSTGRES': return LOCAL_POSTGRE2
             default:
                 if (isDesenvolvimento())

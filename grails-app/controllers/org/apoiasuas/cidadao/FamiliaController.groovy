@@ -529,6 +529,8 @@ class FamiliaController extends AncestralController {
         if (marcadorInstance.validate()) {
             //força o marcador a ser gravado exclusivamente para o servico logado
             marcadorInstance.servicoSistemaSeguranca = segurancaService.servicoLogado;
+            //a principio, habilitado para exibicao
+            marcadorInstance.habilitado = true
             marcadorService.gravaMarcador(marcadorInstance);
             if (marcadoresCommand && marcadoresCommand.marcadoresDisponiveis && familia) {
                 marcadorService.gravaMarcadoresFamilia(marcadoresCommand, marcadoresFamilia, familia, classeMarcador, classeAssociacaoMarcador);

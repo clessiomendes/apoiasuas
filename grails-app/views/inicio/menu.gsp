@@ -24,8 +24,7 @@
         <nobr>
             <g:textField name="nomeOuCad" id="inputNomeOuCad" autofocus="" size="50" class="input-menu-procurar"
                          onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
-            <g:link class="input-menu-procurar" onclick="linkProcurarCidadao(this, '${createLink(controller: 'cidadao', action: 'procurarCidadaoExecuta')}',
-                                                                document.getElementById('inputNomeOuCad'), null, null);">
+            <g:link class="input-menu-procurar" onclick="linkProcurarCidadao(this, '${createLink(controller: 'cidadao', action: 'procurarCidadaoExecuta')}');">
                 <input id="btnProcurarCidadao" type="button" class="speed-button-procurar"/>
             </g:link>
         </nobr>
@@ -44,6 +43,7 @@
     </div>
 
     <g:render template="anuncioRedeSocioAssistencial"/>
+
 
     <div id="menu">
             <g:link title="Formulários emitidos on-line com preenchimento automático à partir do banco de dados de cidadãos (quando disponíveis)" class="verde_oliva" controller="emissaoFormulario" action="escolherFamilia">Emissão de Formulários</g:link>

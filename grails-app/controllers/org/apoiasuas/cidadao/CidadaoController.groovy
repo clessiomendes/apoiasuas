@@ -28,6 +28,7 @@ class CidadaoController extends AncestralController {
     ];
 
     def cidadaoService
+    def marcadorService
 
     /**
      * Interceptor configurado para a action show. Inicializa todas as informacoes necessarias em uma unica consulta ao banco de dados
@@ -53,7 +54,8 @@ class CidadaoController extends AncestralController {
     }
 
     def procurarCidadao() {
-        render(view: "procurarCidadao", model: modeloProcurarCidadao + [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:]] )
+        render(view: "procurarCidadao", model: modeloProcurarCidadao + [programas: marcadorService.programasDisponiveis]
+                + [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:]] )
     }
 
     def procurarCidadaoExecuta(FiltroCidadaoCommand filtro) {
@@ -67,7 +69,8 @@ class CidadaoController extends AncestralController {
             Cidadao cidadao = cidadaos?.resultList[0]
             redirect(controller: "familia", action: "show", id: cidadao.familia.id)
         } else
-            render(view:"procurarCidadao", model: modeloProcurarCidadao + [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados])
+            render(view:"procurarCidadao", model: modeloProcurarCidadao + [programas: marcadorService.programasDisponiveis] +
+                    [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados]);
     }
 
     def abrirFamilia(Familia familiaInstance) {
@@ -131,9 +134,14 @@ class CidadaoController extends AncestralController {
         cidadaoInstance.ultimoAlterador = segurancaService.usuarioLogado;
 
         //Grava
-        if (cidadaoInstance.validate()) {
+        boolean nomeDuplicado = cidadaoService.nomeDuplicado(cidadaoInstance);
+
+        if (cidadaoInstance.validate() && ! nomeDuplicado ) {
             cidadaoService.grava(cidadaoInstance)
         } else {
+            //Somente após a chamada a validate() devemos adicionar erros ao objeto
+            if (nomeDuplicado)
+                cidadaoInstance.errors.rejectValue("nomeCompleto","","Um membro com este nome (${cidadaoInstance.nomeCompleto}) já existe na família.")
             //exibe o formulario novamente em caso de problemas na validacao
             return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(cidadaoInstance))
         }
@@ -182,7 +190,10 @@ class CidadaoController extends AncestralController {
 @grails.validation.Validateable
 class FiltroCidadaoCommand implements Serializable {
     String nomeOuCad
-//    String segundoMembro
     String logradouro
     String numero
+    Integer idade
+    String nis
+    String programa
+    String outroMembro
 }

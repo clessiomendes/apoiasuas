@@ -29,7 +29,8 @@ class FormularioBeneficioEventualService extends FormularioService {
 
         /*
         FIXME O plugin Melody (para monitoramento e profilling) tem um bug: quando invocamos o metodo super o plguin
-        acaba direcionando para o proprio método, em uma recursão infinita, ocasionando um stackoverflowError
+        acaba direcionando para o proprio método, em uma recursão infinita, ocasionando um stackoverflowError. Detalhes em:
+        https://github.com/javamelody/grails-melody-plugin/issues/5
         */
         super.transfereConteudo(formulario, reportDTO)
     }

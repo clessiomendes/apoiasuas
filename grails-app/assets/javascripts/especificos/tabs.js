@@ -17,6 +17,15 @@ function inicializaTabs($tabs) {
  */
 function onTabsCreate (event, ui) {
     var $tabs = $(this);
+
+    //Verifica se tem um evento personalizado a ser disparado na criacao
+    if (this.customOnCreate)
+        this.customOnCreate();
+
+    //Verifica se o componente deve ser aberto automaticamente em algum tab especifico (ordem iniciada em 0)
+    if (this.tabMostradoInicialmente && this.tabMostradoInicialmente != '')
+        $tabs.tabs("option","active",this.tabMostradoInicialmente);
+
     var ixTab = 0;
     var tabComErro = -1;
     //itera sobre todos os panels (na ordem inversa, para mostrar sempre o primeiro panel com erro)

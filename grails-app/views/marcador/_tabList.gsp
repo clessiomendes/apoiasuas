@@ -3,13 +3,22 @@
         <li><g:link class="create" action="create${entityName}">Novo</g:link></li>
         <li><g:form action="list">
                 Filtrar apenas se disponíveis para
+                <g:hiddenField name="tabId"/>
                 <g:select name="idServicoSistema" noSelection="${['':'qualquer serviço']}"
                           from="${servicosDisponiveis.collect{it.nome}}" keys="${servicosDisponiveis.collect{it.id}}"
-                          value="${servicoEscolhido}" onchange="submit();"  />
+                          value="${servicoEscolhido}" onchange="atualiza(this);"  />
         </g:form></li>
     </ul>
 </div>
 %{--<g:actionSubmit action="create${entityName}" class="create" value="Novo"/>--}%
+
+<g:javascript>
+    function atualiza(select) {
+        //Guarda no form sendo submetido o indice do tab atualmente sendo exibido para o usuario
+        $(select.form).find("#tabId").val($("#tabs").tabs("option","active"));
+        select.form.submit();
+    }
+</g:javascript>
 
 <table class="tabelaListagem">
     <thead>

@@ -162,7 +162,7 @@
             <span id="divTelefones">
                 <g:include controller="familia" action="getTelefones" id="${localDtoFamilia?.id}"/>
             </span>
-            <input id="editarTelefones" type="button" class="speed-button-editar" style="transform: scale(0.8);"
+            <input id="editarTelefones" type="button" class="speed-button-editar" style="transform: scale(0.8); vertical-align: middle"
                    title="Clique para incluir, remover ou alterar telefones." onclick="editTelefones();">
         </span>
     </li>

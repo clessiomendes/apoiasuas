@@ -2,6 +2,7 @@ package org.apoiasuas.cidadao
 
 import grails.transaction.Transactional
 import groovy.sql.GroovyRowResult
+import org.apoiasuas.util.AmbienteExecucao
 
 @Transactional(readOnly = true)
 class MonitoramentoService {
@@ -40,7 +41,7 @@ class MonitoramentoService {
     public Map<String, Long> qntMonitoramentosAgruparSituacao(Long idTecnico) {
         def filtros = [:];
         String sqlCase = "CASE ";
-        Monitoramento.Situacao.values().each {
+        Monitoramento.FiltroPadrao.values().each {
             sqlCase += "\n    WHEN ${it.getSqlWhere('m')} THEN '${it.label}' "
         }
         sqlCase += " END";
@@ -51,9 +52,9 @@ class MonitoramentoService {
 
         log.debug("\n"+sql);
         List<GroovyRowResult> resultado = groovySql.rows(sql, filtros) ;
-        Map<Monitoramento.Situacao, Long> result = [:];
+        Map<Monitoramento.FiltroPadrao, Long> result = [:];
 
-        Monitoramento.Situacao.values().each { Monitoramento.Situacao situacao ->
+        Monitoramento.FiltroPadrao.values().each { Monitoramento.FiltroPadrao situacao ->
             result.put(situacao, 0); //para que apareçam também os resultados vazios...
             resultado.each {
                 if (it['situacao'] == situacao.label)
@@ -79,14 +80,30 @@ class MonitoramentoService {
     @Transactional(readOnly = true)
     /**
      * Retorna listagem de monitoramentos filtrando por situacao e ou tecnico
-     * situacao filtro opcional por situacao
+     * filtroPadrao filtro padrao opcional de situacoes
      * idTecnico filtro opcional por um tecnico especifico
      */
-    public List<Monitoramento> getMonitoramentos(Monitoramento.Situacao situacao, Long idTecnico) {
+    public List<Monitoramento> getMonitoramentos(Map args) {
         def filtros = [:]
-        String sql = 'select distinct m.id as idMonitoramento ' + baseSqlMonitoramentos(filtros, idTecnico);
-        if (situacao) {
-            sql += " and ("+situacao.getSqlWhere("m")+")";
+        String sql = 'select distinct m.id as idMonitoramento ' + baseSqlMonitoramentos(filtros, args.idTecnico);
+        if (args.filtroPadrao) {
+            sql += " and ("+ args.filtroPadrao.getSqlWhere("m")+")";
+        } else {
+            if (args.efetivado == true)
+                sql += " and (m.efetivado = true)";
+            else if (args.efetivado == false) {
+                sql += " and (m.efetivado = false)";
+                if (args.atrasado == true)
+                    sql += " and m.data_prevista < ${AmbienteExecucao.SqlProprietaria.currentDate()}";
+                if (args.dentroPrazo == true)
+                    sql += " and m.data_prevista >= ${AmbienteExecucao.SqlProprietaria.currentDate()}";
+                if (args.semPrazo == true)
+                    sql += " and m.data_prevista is null";
+            }
+            if (args.suspenso == true)
+                sql += " and (m.suspenso = true)"
+            if (args.prioritario == true)
+                sql += " and (m.prioritario = true)"
         }
         List<Monitoramento> result = []
         log.debug("SQL getMonitoramentos:" +"\n" + sql + "\n "+filtros);

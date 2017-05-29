@@ -124,19 +124,38 @@ class GestaoTecnicaController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def listarMonitoramentos(String situacao, Long idTecnico) {
+    def listarMonitoramentos(/*String filtroPadrao, Long idTecnico*/) {
         String tituloListagem = message(code:"titulo.monitoramentos");
 
-        Monitoramento.Situacao lSituacao = situacao as Monitoramento.Situacao
-        List<Monitoramento> monitoramentosInstanceList = monitoramentoService.getMonitoramentos(lSituacao, idTecnico);
+        Long idTecnico = params.idTecnico ? new Long(params.idTecnico) : null;
 
-        if (lSituacao)
-            tituloListagem += " - "+lSituacao.label;
-        if (idTecnico)
-            tituloListagem += " - "+UsuarioSistema.get(idTecnico).username;
+        Monitoramento.FiltroPadrao lFiltroPadrao = params.filtroPadrao as Monitoramento.FiltroPadrao
+        Boolean efetivado = params.situacao == 'efetivado' ? true : (params.situacao == 'todos' || params.situacao == null ? null : false);
+        Boolean suspenso = params.situacao == 'suspenso' ? true : null;
+        Boolean prioritario = params.prioritario == null ? null : true;
+        Boolean atrasado = params.atrasado == null ? null : true;
+        Boolean semPrazo = params.semPrazo == null ? null : true;
+        Boolean dentroPrazo = params.dentroPrazo == null ? null : true;
+
+        List<Monitoramento> monitoramentosInstanceList = monitoramentoService.getMonitoramentos(filtroPadrao: lFiltroPadrao, idTecnico: idTecnico,
+                efetivado: efetivado, suspenso: suspenso, prioritario: prioritario,
+                atrasado: atrasado, semPrazo: semPrazo, dentroPrazo: dentroPrazo);
+
+        List<UsuarioSistema> ususariosDisponiveis = getOperadoresOrdenadosController(false);
+
+        //Para preencher a tela com filtros diante de uma filtragem padrao
+        switch (lFiltroPadrao) {
+            case Monitoramento.FiltroPadrao.PENDENTE_NO_PRAZO: params.situacao = "pendente"; params.put('dentroPrazo', true); break;
+            case Monitoramento.FiltroPadrao.ATRASADO: params.situacao = "pendente"; params.put('atrasado', true); break;
+            case Monitoramento.FiltroPadrao.SEM_PRAZO: params.situacao = "pendente"; params.put('semPrazo', true); break;
+            case Monitoramento.FiltroPadrao.SUSPENSO: params.situacao = "suspenso"; break;
+            case Monitoramento.FiltroPadrao.EFETIVADO: params.situacao = "efetivado"; break;
+        }
 
         render view: "listarMonitoramentos", model: [tituloListagem: tituloListagem, monitoramentosInstanceList: monitoramentosInstanceList,
-                situacao: situacao, idTecnico: idTecnico] + CidadaoController.modeloProcurarCidadao
+                situacao: params.situacao, atrasado: params.atrasado, dentroPrazo: params.dentroPrazo, semPrazo: params.semPrazo,
+                prioritario: prioritario, filtroPadrao: lFiltroPadrao.toString(), idTecnico: idTecnico,
+                ususariosDisponiveis: ususariosDisponiveis] + CidadaoController.modeloProcurarCidadao
         }
 
 }

@@ -317,7 +317,13 @@ ALTER TABLE public.telefone ALTER COLUMN numero SET NOT NULL;
 
 -- versao ate aqui: current (local:feito, producao: feito)
 
+DROP INDEX unique_familia_id CASCADE;
+alter table cidadao drop constraint unique_familia_id;
+CREATE UNIQUE INDEX unique_familia_id ON cidadao (lower(nome_completo), familia_id);
+
+/*
 CREATE TABLE ambiente(id INT PRIMARY KEY, descricao VARCHAR(255));
 INSERT into ambiente (id, descricao) values (0, );
 _log CREATE TABLE ambiente(id INT PRIMARY KEY, descricao VARCHAR(255));
 _log INSERT into ambiente (id, descricao) values (0, );
+*/

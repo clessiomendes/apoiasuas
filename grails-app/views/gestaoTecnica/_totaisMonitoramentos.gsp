@@ -3,7 +3,7 @@
 <g:each in="${monitoramentos}" var="entryMonitoramento">
     <div class="conteudo-gestao-tecnica">
         <g:if test="${entryMonitoramento.value > 0}">
-        <g:link elementId="moitoramento-${entryMonitoramento.key}" title="clique para ver a relação detalhada de monitoramentos" action="listarMonitoramentos" params="[situacao: entryMonitoramento.key, idTecnico: idTecnico]">
+        <g:link elementId="moitoramento-${entryMonitoramento.key}" title="clique para ver a relação detalhada de monitoramentos" action="listarMonitoramentos" params="[filtroPadrao: entryMonitoramento.key, idTecnico: idTecnico]">
             ${entryMonitoramento.key.label}: ${entryMonitoramento.value}
         </g:link>
         </g:if>
