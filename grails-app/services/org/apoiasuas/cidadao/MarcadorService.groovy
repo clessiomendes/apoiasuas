@@ -1,5 +1,6 @@
 package org.apoiasuas.cidadao
 
+import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import groovy.sql.GroovyRowResult
 import org.apoiasuas.marcador.Acao
@@ -12,7 +13,9 @@ import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.Papel
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.seguranca.UsuarioSistemaPapel
+import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasException
+import org.springframework.transaction.annotation.Propagation
 
 @Transactional(readOnly = true)
 class MarcadorService {
@@ -236,7 +239,7 @@ class MarcadorService {
         def filtros = [:]
         String sql = 'select distinct f.id as idFamilia '+baseSqlFamiliasMarcadores(classeMarcador, filtros, idTecnico, destinoFiltroTecnico);
         if (idMarcador) {
-            sql += "\n  and marcador.${id(classeMarcador)} = :idMarcador";
+            sql += "\n and marcador.${id(classeMarcador)} = :idMarcador";
             filtros << [idMarcador: idMarcador]
         }
         List<Cidadao> result = []
@@ -248,6 +251,13 @@ class MarcadorService {
             if (referencia)
                 result << referencia
         }
+
+        //Usar para testar transacoes somente leitura
+//        if (AmbienteExecucao.isDesenvolvimento())
+//            result.each {
+//                it.familia.endereco.numero = (new Integer(it.familia.endereco.numero) + 3).toString();
+//            }
+
         return result.sort{ it.nomeCompleto?.toLowerCase() };
     }
 

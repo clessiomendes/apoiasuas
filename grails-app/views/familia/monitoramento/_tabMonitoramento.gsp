@@ -27,5 +27,5 @@
 <input id="btnNovoMonitoramento" type="button" class="create" value="Novo monitoramento" style="margin: 5px" onclick="createMonitoramento();"/>
 
 <div id="divListMonitoramento"/>
-    <g:render template="monitoramento/listMonitoramento" model="[monitoramentoInstanceList: localDtoFamilia.monitoramentos.sort()]"/>
+    <g:render template="monitoramento/listMonitoramento" model="[monitoramentoInstanceList: localDtoFamilia.monitoramentos?.sort()]"/>
 </div>

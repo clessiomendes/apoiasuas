@@ -1,0 +1,44 @@
+_include("lib/comuns.sah");
+
+login("clessio","senha");
+
+//Pesquisa por nome
+_click(_link("Pesquisa de Usuários"));
+_setValue(_textbox("nomeOuCad"), "ana maria souza");
+_click(_button("btnProcurarCidadao"));
+_assertExists(_link("ANA MARIA DE SOUZA"));
+
+//pesquisa por logradouro
+_setValue(_textbox("nomeOuCad"), "ana");
+_setValue(_textbox("logradouro"), "tito dias assis");
+_click(_button("btnProcurarCidadao"));
+_assertExists(_link("ANA MARIA DE SOUZA"));
+
+//pesquisa por numero de rua
+_setValue(_textbox("nomeOuCad"), "ana");
+_setValue(_textbox("numero"), "165");
+_click(_button("btnProcurarCidadao"));
+_assertExists(_link("ANA MARIA DE SOUZA"));
+
+//pesquisa por idade
+_setValue(_textbox("nomeOuCad"), "ana");
+_setValue(_textbox("idade"), "20");
+_click(_button("btnProcurarCidadao"));
+_assertExists(_link("ANA MARIA DE SOUZA"));
+
+//pesquisa por NIS
+_setValue(_textbox("nis"), "12777457133");
+_click(_button("btnProcurarCidadao"));
+_assertExists(_link("ADENIZE PEREIRA GOMES"));
+
+//pesquisa por programa
+_setValue(_textbox("nomeOuCad"), "adenize");
+_setSelected(_select("programa"), "Acompanhamento PAIF");
+_click(_button("btnProcurarCidadao"));
+_assertExists(_link("ADENIZE PEREIRA GOMES"));
+
+//pesquisa por outro membro
+_setValue(_textbox("nomeOuCad"), "adenize");
+_setValue(_textbox("outroMembro"), "ana carla");
+_click(_button("btnProcurarCidadao"));
+_assertExists(_link("ADENIZE PEREIRA GOMES"));

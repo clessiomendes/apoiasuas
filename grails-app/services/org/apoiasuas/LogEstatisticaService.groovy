@@ -1,5 +1,6 @@
 package org.apoiasuas
 
+import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
 import org.apoiasuas.log.Log
@@ -34,48 +35,49 @@ class LogEstatisticaService {
         }
     }
 
-    @Transactional
+    @NotTransactional
     public Log iniciaLog(String username, String sessionId, String request, String parametros, String valoresParametros) {
 
-
         final Log novoLog = new Log();
-        novoLog.request = StringUtils.substring(request, 0, Log.MAX_SIZE);
-        novoLog.parametros = StringUtils.substring(parametros, 0, Log.MAX_SIZE);
-        novoLog.valoresParametros = StringUtils.substring(valoresParametros, 0, Log.MAX_SIZE_VALORES_PARAMETROS);
-        novoLog.inicio = new Date();
-        novoLog.username = StringUtils.substring(username, 0, Log.MAX_SIZE);
-        novoLog.sessionId = StringUtils.substring(sessionId, 0, Log.MAX_SIZE);
+        Log.withNewTransaction { status ->
+            novoLog.request = StringUtils.substring(request, 0, Log.MAX_SIZE);
+            novoLog.parametros = StringUtils.substring(parametros, 0, Log.MAX_SIZE);
+            novoLog.valoresParametros = StringUtils.substring(valoresParametros, 0, Log.MAX_SIZE_VALORES_PARAMETROS);
+            novoLog.inicio = new Date();
+            novoLog.username = StringUtils.substring(username, 0, Log.MAX_SIZE);
+            novoLog.sessionId = StringUtils.substring(sessionId, 0, Log.MAX_SIZE);
 
-        novoLog.JVMUsedMemory0 = runtime.maxMemory() - runtime.freeMemory();
-        novoLog.JVMMaxMemory0 = runtime.maxMemory();
-        novoLog.processCpuTime0 = operatingSystemMXBean.getProcessCpuLoad();
-        novoLog.freePhysicalMemorySize0 = operatingSystemMXBean.getFreePhysicalMemorySize();
-        novoLog.totalPhysicalMemorySize0 = operatingSystemMXBean.getTotalPhysicalMemorySize();
-        novoLog.permGen0 = beanPermGen?.usage?.used;
-        novoLog.codeCache0 = beanCodeCache?.usage?.used;
-        novoLog.edenSpace0 = beanEdenSpace?.usage?.used;
-        novoLog.survivorSpace0 = beanSurvivorSpace?.usage?.used;
-        novoLog.tenuredGen0 = beanTenuredGen?.usage?.used;
-
-        return novoLog.save();
+            novoLog.JVMUsedMemory0 = runtime.maxMemory() - runtime.freeMemory();
+            novoLog.JVMMaxMemory0 = runtime.maxMemory();
+            novoLog.processCpuTime0 = operatingSystemMXBean.getProcessCpuLoad();
+            novoLog.freePhysicalMemorySize0 = operatingSystemMXBean.getFreePhysicalMemorySize();
+            novoLog.totalPhysicalMemorySize0 = operatingSystemMXBean.getTotalPhysicalMemorySize();
+            novoLog.permGen0 = beanPermGen?.usage?.used;
+            novoLog.codeCache0 = beanCodeCache?.usage?.used;
+            novoLog.edenSpace0 = beanEdenSpace?.usage?.used;
+            novoLog.survivorSpace0 = beanSurvivorSpace?.usage?.used;
+            novoLog.tenuredGen0 = beanTenuredGen?.usage?.used;
+            novoLog.save();
+        }
+        return novoLog;
     }
 
-    @Transactional
+    @NotTransactional
     public void finalizaLog(Log log) {
-        log.duracaoms = new Date().time - log.inicio.time;
-
-        log.JVMUsedMemory1 = runtime.maxMemory() - runtime.freeMemory();
-        log.JVMMaxMemory1 = runtime.maxMemory();
-        log.processCpuTime1 = operatingSystemMXBean.getProcessCpuLoad();
-        log.freePhysicalMemorySize1 = operatingSystemMXBean.getFreePhysicalMemorySize();
-        log.totalPhysicalMemorySize1 = operatingSystemMXBean.getTotalPhysicalMemorySize();
-        log.permGen1 = beanPermGen?.usage?.used;
-        log.codeCache1 = beanCodeCache?.usage?.used;
-        log.edenSpace1 = beanEdenSpace?.usage?.used;
-        log.survivorSpace1 = beanSurvivorSpace?.usage?.used;
-        log.tenuredGen1 = beanTenuredGen?.usage?.used;
-        
-        log.save();
+        Log.withNewTransaction { status ->
+            log.duracaoms = new Date().time - log.inicio.time;
+            log.JVMUsedMemory1 = runtime.maxMemory() - runtime.freeMemory();
+            log.JVMMaxMemory1 = runtime.maxMemory();
+            log.processCpuTime1 = operatingSystemMXBean.getProcessCpuLoad();
+            log.freePhysicalMemorySize1 = operatingSystemMXBean.getFreePhysicalMemorySize();
+            log.totalPhysicalMemorySize1 = operatingSystemMXBean.getTotalPhysicalMemorySize();
+            log.permGen1 = beanPermGen?.usage?.used;
+            log.codeCache1 = beanCodeCache?.usage?.used;
+            log.edenSpace1 = beanEdenSpace?.usage?.used;
+            log.survivorSpace1 = beanSurvivorSpace?.usage?.used;
+            log.tenuredGen1 = beanTenuredGen?.usage?.used;
+            log.save();
+        }
     }
 
 }

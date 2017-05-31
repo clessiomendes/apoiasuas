@@ -5,8 +5,8 @@ login("clessio","senha");
 //Testa acesso a programas
 _click(_link("Gestão técnica"));
 _setSelected(_select("idTecnico"), "clessio (logado)");
-_click(_link("listarFamiliasProgramas-3"));
-_assertExists(_heading1("Famílias em programas, projetos, etc - Acompanhamento PAIF - clessio"));
+_click(_link("listarFamiliasProgramas-1"));
+_assertExists(_heading1("Famílias em programas, projetos, etc - Programa Bolsa Família - clessio"));
 _click(_link(0, _in(_cell(0, _under(_tableHeader("Cad"))))));
 _assertExists(_heading1("Ver Familia"));
 

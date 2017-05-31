@@ -1,6 +1,7 @@
 package org.apoiasuas
 
 import grails.plugin.springsecurity.annotation.Secured
+import grails.transaction.Transactional
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.CidadaoController
 import org.apoiasuas.cidadao.MarcadorService
@@ -70,6 +71,8 @@ class GestaoTecnicaController extends AncestralController {
             tituloListagem += " - "+UsuarioSistema.get(idTecnico).username;
             //Remover as referencias tecnicas APENAS NA EXIBIÇÃO DO RESULTADO, para evitar colorir o resultado de vermelho (sinal de familias com referencia)
             cidadaoInstanceList.each {
+                it.discard();
+                it.familia.discard();
                 it.familia.tecnicoReferencia = null;
             }
         }

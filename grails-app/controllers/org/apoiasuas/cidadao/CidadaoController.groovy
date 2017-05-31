@@ -62,7 +62,7 @@ class CidadaoController extends AncestralController {
         //Preenchimento de numeros no primeiro campo de busca indica pesquisa pelo cad
         boolean buscaPorCad = filtro.nomeOuCad && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCad)
         params.max = params.max ?: 20
-        PagedResultList cidadaos = cidadaoService.procurarCidadao(params, filtro)
+        PagedResultList cidadaos = cidadaoService.procurarCidadao2(params, filtro)
         Map filtrosUsados = params.findAll { it.value }
 
         if (buscaPorCad && cidadaos?.resultList?.size() > 0) {

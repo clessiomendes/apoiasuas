@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.transaction.annotation.Propagation
 
 @Transactional(readOnly = true)
 class SegurancaService {
@@ -245,7 +246,7 @@ class SegurancaService {
     /**
      * Confirma se o usuario logado tem permicoes de acesso a uma entidade de dominio qualquer (de acordo com as regras de seguranca de cada entidade)
      */
-    @Transactional(readOnly = true)
+    @NotTransactional
     public void testaAcessoDominio(def entityObject) {
 
         if (! entityObject instanceof Link && ! entityObject instanceof Familia && ! entityObject instanceof Cidadao)

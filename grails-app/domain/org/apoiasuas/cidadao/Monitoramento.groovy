@@ -6,9 +6,9 @@ import org.apoiasuas.util.AmbienteExecucao
 class Monitoramento implements Comparable<Monitoramento> {
 
     public enum FiltroPadrao {
-        PENDENTE_NO_PRAZO("pendente, dentro do prazo", "_ref_.efetivado = false and _ref_.data_prevista >= ${AmbienteExecucao.SqlProprietaria.currentDate()}"),
-        ATRASADO("pendente, atrasado", "_ref_.efetivado = false and _ref_.data_prevista < ${AmbienteExecucao.SqlProprietaria.currentDate()}"),
-        SEM_PRAZO("pendente, sem prazo definido", "_ref_.efetivado = false and _ref_.data_prevista is null"),
+        PENDENTE_NO_PRAZO("pendente, dentro do prazo", "_ref_.suspenso = false and _ref_.efetivado = false and _ref_.data_prevista >= ${AmbienteExecucao.SqlProprietaria.currentDate()}"),
+        ATRASADO("pendente, atrasado", "_ref_.suspenso = false and _ref_.efetivado = false and _ref_.data_prevista < ${AmbienteExecucao.SqlProprietaria.currentDate()}"),
+        SEM_PRAZO("pendente, sem prazo definido", "_ref_.suspenso = false and _ref_.efetivado = false and _ref_.data_prevista is null"),
         SUSPENSO("suspenso", "_ref_.suspenso = true and _ref_.efetivado = false"),
         EFETIVADO("efetivado", "_ref_.efetivado = true")
 

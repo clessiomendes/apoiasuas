@@ -339,7 +339,10 @@
           <root url="jar://$MAVEN_REPOSITORY$/org/jrobin/jrobin/1.5.9/jrobin-1.5.9.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ideaLibSources/hibernate-core-4.3.5.Final-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/grails-datastore-gorm-3.1.2.RELEASE-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
   </component>
