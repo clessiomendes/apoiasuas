@@ -47,7 +47,7 @@ class FamiliaService {
         marcadorService.gravaMarcadoresFamilia(acoesCommand, familia.acoes, familia, Acao.class, AcaoFamilia.class);
         marcadorService.gravaMarcadoresFamilia(outrosMarcadoresCommand, familia.outrosMarcadores, familia, OutroMarcador.class, OutroMarcadorFamilia.class);
         familia.acompanhamentoFamiliar?.save();
-        familia.errors.reject("some.error.code");
+//        familia.errors.reject("some.error.code");
         familia.save();
         gravaTelefones(familia);
         return familia;

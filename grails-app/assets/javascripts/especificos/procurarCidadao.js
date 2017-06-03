@@ -3,6 +3,7 @@
  * passando os parametros pela url em uma requisicao GET para o servidor
  */
 function linkProcurarCidadao(link, url) {
+
     var params = "";
     var inputNomeOuCad = document.getElementById('inputNomeOuCad')
     var inputNumero = document.getElementById('inputNumero')

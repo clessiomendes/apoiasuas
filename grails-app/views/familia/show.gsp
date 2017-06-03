@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.cidadao.Familia" %>
+<%@ page import="org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.cidadao.Familia" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -33,7 +33,7 @@
 
 		<g:tabs id="tabs" style="margin: 5px;">
 			<g:tab id="tabShowFamilia" titulo="família" template="tabShowFamilia"/>
-			<g:tab id="tabMonitoramento" titulo="monitoramentos" template="monitoramento/tabMonitoramento"/>
+			<g:tab id="tabMonitoramento" titulo="monitoramentos" template="monitoramento/tabMonitoramento" roles="${DefinicaoPapeis.STR_TECNICO}"/>
 		</g:tabs>
 
 	</div>

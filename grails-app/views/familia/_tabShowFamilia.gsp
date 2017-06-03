@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.redeSocioAssistencial.RecursosServico" %>
+<%@ page import="org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.redeSocioAssistencial.RecursosServico" %>
 <%
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance;
 %>
@@ -49,8 +49,9 @@
 <ol class="property-list servico" style="padding: 0; margin: 0;">
 
 %{--Exibe PROGRAMAS, AÇÕES E VULNERABILIADES--}%
-%{--<g:if test="${localDtoFamilia?.programasHabilitados || localDtoFamilia?.acoesHabilitadas  || localDtoFamilia?.vulnerabilidadesHabilitadas  || localDtoFamilia?.outrosMarcadoresHabilitados}">--}%
-    <fieldset id="fieldsetDadosEncaminhamento" class="embedded">
+
+<sec:ifAnyGranted roles="${DefinicaoPapeis.STR_TECNICO}">
+    <fieldset id="fieldsetMarcadores" class="embedded">
         <legend>
             Programas<g:helpTooltip chave="help.marcador.programas"/>,
             vulnerabilidades<g:helpTooltip chave="help.marcador.vulnerabilidades"/>,
@@ -89,7 +90,7 @@
             </span>
         </g:each>
     </fieldset>
-%{--</g:if>--}%
+</sec:ifAnyGranted>
 
 <li class="fieldcontain">
     <span id="cad-label" class="property-label"><g:message code="familia.codigoLegado.label" default="Cad" /></span>

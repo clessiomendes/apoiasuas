@@ -11,7 +11,8 @@
 
     <li class="fieldcontain">
         <span class="property-value">
-            Definido em ${localDtoMarcador.data?.format("dd/MM/yyyy")} por ${localDtoMarcador.tecnico?.username}
+            Definido ${localDtoMarcador.data ? "em "+localDtoMarcador.data.format("dd/MM/yyyy") : ""}
+            ${localDtoMarcador.tecnico ? "por "+localDtoMarcador.tecnico.username : ""}
         </span>
     </li>
 

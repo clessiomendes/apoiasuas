@@ -48,19 +48,21 @@
     <div id="menu">
             <g:link title="Formulários emitidos on-line com preenchimento automático à partir do banco de dados de cidadãos (quando disponíveis)" class="verde_oliva" controller="emissaoFormulario" action="escolherFamilia">Emissão de Formulários</g:link>
             <g:link title="Banco de dados de famílias cadastradas em ${sec.loggedInUserInfo(field:'servicoSistemaSessaoCorrente.nome')}" class="laranja" controller="cidadao" action="procurarCidadao">Pesquisa de Usuários</g:link>
-            <sec:access acessoServico="${org.apoiasuas.redeSocioAssistencial.RecursosServico.INCLUSAO_FAMILIA}">
+            <sec:access acessoServico="${RecursosServico.INCLUSAO_FAMILIA}">
                 <g:link title="Cadastra uma nova família no banco de dados" class="rosa" controller="familia" action="create">Cadastrar família</g:link>
             </sec:access>
             <g:link title="Serviços, programas, projetos e ações disponíveis na rede sócio-assistencial" class="verde_agua" controller="servico">Rede sócio-assistencial</g:link>
             <g:link title="Links para sites externos ou documentos, formulários, planilhas, etc salvos no sistema para consulta posterior" class="azul" controller="link" action="exibeLinks">Links e documentos</g:link>
             <g:link title="Geração de planilhas com a relação de famílias ou membros de acordo com diferentes critérios (idade, técnico de referência, programa de que participa, etc)" class="magenta" controller="emissaoRelatorio" action="definirListagem">Listagens</g:link>
-            <sec:access acessoServico="${org.apoiasuas.redeSocioAssistencial.RecursosServico.PEDIDOS_CERTIDAO}">
+            <sec:access acessoServico="${RecursosServico.PEDIDOS_CERTIDAO}">
                 <g:link title="Consultar a situação de pedidos de certidão emitidos anteriormente (ou registrar manualmente um pedido feito fora do sistema)" class="marrom" controller="pedidoCertidaoProcesso" action="preList">Gestão de Pedidos de Certidão</g:link>
             </sec:access>
-            <sec:access acessoServico="${org.apoiasuas.redeSocioAssistencial.RecursosServico.PLANO_ACOMPANHAMENTO}">
-                <g:link title="Registrar um acompanhamento e emitir o Plano de Acompanhamento Familiar" class="lilas" controller="familia" action="selecionarAcompanhamento">Acompanhamento familiar</g:link>
-            </sec:access>
-            <g:link title="Permite ao técnico gerenciar as famílias de quem é referência, monitoramentos das intervenções com as famílias (acompanhadas ou não), pedidos de certidão, etc" class="rosa" controller="gestaoTecnica" action="inicial">Gestão técnica</g:link>
+            <sec:ifAnyGranted roles="${DefinicaoPapeis.STR_TECNICO}">
+                <sec:access acessoServico="${RecursosServico.PLANO_ACOMPANHAMENTO}">
+                    <g:link title="Registrar um acompanhamento e emitir o Plano de Acompanhamento Familiar" class="lilas" controller="familia" action="selecionarAcompanhamento">Acompanhamento familiar</g:link>
+                </sec:access>
+                <g:link title="Permite ao técnico gerenciar as famílias de quem é referência, monitoramentos das intervenções com as famílias (acompanhadas ou não), pedidos de certidão, etc" class="rosa" controller="gestaoTecnica" action="inicial">Gestão técnica</g:link>
+            </sec:ifAnyGranted>
             <g:link title="Informações técnicas do sistema" class="verde_oliva" controller="inicio" action="status">Status do sistema</g:link>
             <g:link title="Alterar suas informações como nome, matrícula, senha, etc" class="laranja" controller="usuarioSistema" action="alteraPerfil" id="${sec.loggedInUserInfo(field:'id')}">Perfil e senha</g:link>
 
