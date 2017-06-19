@@ -5,15 +5,16 @@ import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+import org.apoiasuas.seguranca.DominioProtegidoServico
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
-import org.apoiasuas.util.DateUtils
+import org.apoiasuas.util.ApoiaSuasDateUtils
 import org.grails.databinding.BindingFormat
 import org.joda.time.Period
 import org.joda.time.DateTime
 
 @InfoClasseDominio(codigo=CampoFormulario.Origem.CIDADAO)
-class Cidadao implements Serializable {
+class Cidadao implements Serializable, DominioProtegidoServico {
 
     //TODO: internacionalizar todas as descricoes de campo das annotations InfoPropriedadeDominio
     @InfoPropriedadeDominio(codigo='nome_completo', descricao = 'Nome completo', tamanho = 60)
@@ -91,7 +92,7 @@ class Cidadao implements Serializable {
     public String toString() { return nomeCompleto ?: "sem nome (criado em "+dateCreated+")" }
 
     public boolean alteradoAposImportacao() {
-        return dataUltimaImportacao == null || ! DateUtils.momentosProximos(dataUltimaImportacao, lastUpdated)
+        return dataUltimaImportacao == null || ! ApoiaSuasDateUtils.momentosProximos(dataUltimaImportacao, lastUpdated)
     }
 
     public Integer getIdade() {

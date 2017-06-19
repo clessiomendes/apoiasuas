@@ -9,7 +9,7 @@
 		<g:message code="usuarioSistema.nomeCompleto.label" default="Nome Completo" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="nomeCompleto" required="" value="${localDtoUsuarioSistema?.nomeCompleto}"/>
+	<g:textField name="nomeCompleto" value="${localDtoUsuarioSistema?.nomeCompleto}"/>
 </div>
 
 <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.STR_SUPER_USER}">
@@ -18,21 +18,21 @@
             <g:message code="usuarioSistema.username.label" default="Nome Simplificado"/>
             <span class="required-indicator">*</span>
         </label>
-        <g:textField name="username" required="" value="${localDtoUsuarioSistema?.username}"/>
+        <g:textField name="username" value="${localDtoUsuarioSistema?.username}"/>
     </div>
     <div class="fieldcontain ${hasErrors(bean: localDtoUsuarioSistema, field: 'servicoSistemaSeguranca', 'error')} required">
         <label for="servicoSistemaSeguranca">
             <g:message code="usuarioSistema.servico.label"/>
             <span class="required-indicator">*</span>
         </label>
-        <g:select name="servicoSistemaSeguranca" noSelection="${['':'']}" from="${servicos.collect{it.nome}}" keys="${servicos.collect{it.id}}" required="" value="${localDtoUsuarioSistema?.servicoSistemaSeguranca?.id}"/>
+        <g:select name="servicoSistemaSeguranca" noSelection="${['':'']}" from="${servicos.collect{it.nome}}" keys="${servicos.collect{it.id}}" value="${localDtoUsuarioSistema?.servicoSistemaSeguranca?.id}"/>
     </div>
     <div class="fieldcontain ${hasErrors(bean: localDtoUsuarioSistema, field: 'papel', 'error')} required">
         <label for="papel">
             <g:message code="usuarioSistema.papel.label" default="Perfil de acesso" />
             <span class="required-indicator">*</span>
         </label>
-        <g:select name="papel" noSelection="${['':'']}" from="${org.apoiasuas.seguranca.DefinicaoPapeis?.values}" keys="${org.apoiasuas.seguranca.DefinicaoPapeis?.values}" required="" value="${localDtoUsuarioSistema?.papel}" valueMessagePrefix="DefinicaoPapeis" />
+        <g:select name="papel" noSelection="${['':'']}" from="${org.apoiasuas.seguranca.DefinicaoPapeis?.values}" keys="${org.apoiasuas.seguranca.DefinicaoPapeis?.values}" value="${localDtoUsuarioSistema?.papel}" valueMessagePrefix="DefinicaoPapeis" />
     </div>
     <div class="fieldcontain ${hasErrors(bean: localDtoUsuarioSistema, field: 'enabled', 'error')}">
         <label></label>

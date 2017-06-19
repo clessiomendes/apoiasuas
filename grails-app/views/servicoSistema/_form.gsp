@@ -10,7 +10,7 @@
                 <g:message code="servico.nome.label" default="Nome" />
                 <span class="required-indicator">*</span>
             </label>
-            <g:textField name="nome" size="60" maxlength="80" required="" value="${servicoSistema?.nome}"/>
+            <g:textField name="nome" size="60" maxlength="80" value="${servicoSistema?.nome}"/>
         </div>
 
         <div class="fieldcontain ${hasErrors(bean: servicoSistema, field: 'telefone', 'error')}">

@@ -52,6 +52,7 @@
                 <g:link title="Cadastra uma nova família no banco de dados" class="rosa" controller="familia" action="create">Cadastrar família</g:link>
             </sec:access>
             <g:link title="Serviços, programas, projetos e ações disponíveis na rede sócio-assistencial" class="verde_agua" controller="servico">Rede sócio-assistencial</g:link>
+            <g:link title="Agenda de atendimentos e demais compromissos" class="lilas" controller="agenda" action="calendario">Agenda</g:link>
             <g:link title="Links para sites externos ou documentos, formulários, planilhas, etc salvos no sistema para consulta posterior" class="azul" controller="link" action="exibeLinks">Links e documentos</g:link>
             <g:link title="Geração de planilhas com a relação de famílias ou membros de acordo com diferentes critérios (idade, técnico de referência, programa de que participa, etc)" class="magenta" controller="emissaoRelatorio" action="definirListagem">Listagens</g:link>
             <sec:access acessoServico="${RecursosServico.PEDIDOS_CERTIDAO}">

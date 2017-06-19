@@ -249,6 +249,7 @@ class SegurancaService {
     @NotTransactional
     public void testaAcessoDominio(def entityObject) {
 
+/*
         if (! entityObject instanceof Link && ! entityObject instanceof Familia && ! entityObject instanceof Cidadao)
             return;
 
@@ -264,9 +265,21 @@ class SegurancaService {
             temAcesso = familiaService.testaAcessoDominio(entityObject)
         else if (entityObject instanceof Cidadao)
             temAcesso = cidadaoService.testaAcessoDominio(entityObject)
+*/
+
+        DominioProtegidoServico dominioProtegido = entityObject instanceof DominioProtegidoServico ? entityObject : null;
+        if (! dominioProtegido)
+            return;
+
+        boolean temAcesso = true;
+        if (dominioProtegido in Link) //delega verificacao de acesso para o servico especifico (verificacao nao padrao)
+            temAcesso = linkService.testaAcessoDominio(dominioProtegido as Link)
+        else //Verificacao padrao: a entidade foi criada no mesmo ServicoSistema do usuario logado
+            temAcesso = (dominioProtegido.getServicoSistemaSeguranca() == null || servicoLogado == null ||
+                    dominioProtegido.getServicoSistemaSeguranca().getId() == servicoLogado.getId())
 
         if (! temAcesso) {
-            def e = new AcessoNegadoPersistenceException(getUsuarioLogado().username, entityObject.class.simpleName, entityObject.toString())
+            def e = new AcessoNegadoPersistenceException(getUsuarioLogado().username, dominioProtegido.class.simpleName, dominioProtegido.toString())
             log.error(e.getMessage())
             throw e;
         }

@@ -9,7 +9,7 @@
 		<g:message code="formulario.nome.label" default="Nome" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="nome" size="60" required="" value="${localDtoFormulario?.nome}"/>
+	<g:textField name="nome" size="60" value="${localDtoFormulario?.nome}"/>
 
 </div>
 

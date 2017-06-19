@@ -43,7 +43,7 @@
             onFailure: 'alert("Erro buscando telefones (via ajax)");'
     )};
     }
-
+    //# sourceURL=tabShowFamilia
 </g:javascript>
 
 <ol class="property-list servico" style="padding: 0; margin: 0;">
@@ -174,4 +174,5 @@
     <g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosFamilia" params="[idFamilia: familiaInstance.id]" >Formulários emitidos</g:link>
     <g:link class="edit" action="edit" resource="${familiaInstance}">Alterar dados</g:link>
     <g:link class="acompanhamento" controller="familia" action="editAcompanhamentoFamilia" id="${familiaInstance.id}">Acompanhamento</g:link>
+    <g:link class="atendimento" controller="agenda" action="calendario">Atendimento</g:link>
 </fieldset>

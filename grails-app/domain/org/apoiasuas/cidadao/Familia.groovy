@@ -14,12 +14,13 @@ import org.apoiasuas.marcador.OutroMarcadorFamilia
 import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.marcador.ProgramaFamilia
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
-import org.apoiasuas.util.DateUtils
+import org.apoiasuas.seguranca.DominioProtegidoServico
+import org.apoiasuas.util.ApoiaSuasDateUtils
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.CollectionUtils;
 
 @InfoClasseDominio(codigo=CampoFormulario.Origem.FAMILIA)
-class Familia implements Serializable {
+class Familia implements Serializable, DominioProtegidoServico {
 
     @InfoPropriedadeDominio(codigo='cad', descricao = 'Cad', tamanho = 10, atualizavel = false)
     String cad //transiente
@@ -142,7 +143,7 @@ class Familia implements Serializable {
     }
 
     public boolean alteradoAposImportacao() {
-        return dataUltimaImportacao == null || ! DateUtils.momentosProximos(dataUltimaImportacao, lastUpdated)
+        return dataUltimaImportacao == null || ! ApoiaSuasDateUtils.momentosProximos(dataUltimaImportacao, lastUpdated)
     }
 
     public String vulnerabilidadesToString(String separador = ", ") {

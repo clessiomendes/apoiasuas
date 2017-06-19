@@ -21,12 +21,9 @@ class LinkService {
     @Transactional
     public Link grava(Link link, FileStorageDTO file) {
 
-        //Criacao de novo usuario
-        if (! link.id) {
-//            usuarioSistema.criador = getUsuarioLogado()
+        //Criacao de novo link
+        if (! link.id)
             link.servicoSistemaSeguranca = segurancaService.getServicoLogado()
-        }
-//        link.ultimoAlterador = getUsuarioLogado()
 
         //Efetua validacoes antes de iniciar gravacao (já que a manipulação do fileStorage não respeita as regras de uma transacao atomica - ou tudo ou nada)
         link.validate();

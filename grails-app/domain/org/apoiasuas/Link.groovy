@@ -3,9 +3,11 @@ package org.apoiasuas
 import org.apoiasuas.fileStorage.FileStorageDTO
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+import org.apoiasuas.seguranca.DominioProtegidoServico
 import org.apoiasuas.util.FullTextSearchUtils
 
-class Link {
+//FIXME Ao marcarmos Link como dominio protegido, o ElasticSearch nao consegue indexa-lo na inicializacao do servidor - o metodo linkService.testaAcessoDominio(), chamado automaticamente ao se buscar um registro do BD, necessita saber o ServicoSistema logado, o que ainda não é possível se determinar durante a inicialização
+class Link /*implements DominioProtegidoServico*/ {
 
     public static enum Tipo { URL, FILE
         boolean isUrl() { return this == URL }

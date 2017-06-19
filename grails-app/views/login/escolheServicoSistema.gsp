@@ -18,7 +18,7 @@
         <g:form action="servicoEscolhido" method="PUT" class='cssform' autocomplete='off'>
             <p>
                 <label for='servicoSistema'>Serviço</label>
-                <g:select autofocus="" name="servicoSistema" noSelection="${['':'']}" from="${servicosDisponiveis.collect{it.nome}}" keys="${servicosDisponiveis.collect{it.id}}" required="" />
+                <g:select autofocus="" name="servicoSistema" noSelection="${['':'']}" from="${servicosDisponiveis.collect{it.nome}}" keys="${servicosDisponiveis.collect{it.id}}" required=""/>
             </p>
             <p>
                 <input type='submit' id="submit" value='${message(code: "springSecurity.login.button")}'/>

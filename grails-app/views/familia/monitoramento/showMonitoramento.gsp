@@ -25,6 +25,7 @@
             ${remoteFunction(action: 'suspendeMonitoramento', id: localDtoMonitoramento.id,
                 onFailure: 'janelaModal.loadHTML(XMLHttpRequest.responseText);', onSuccess: 'janelaModal.confirmada();')};
     }
+    //# sourceURL=showMonitoramento
 </script>
 
 <g:if test="${flash.message}">

@@ -100,8 +100,10 @@ grails.project.dependency.resolution = {
 //            compile 'xerces:xerces:2.4.0'
 //        }
 
-        compile "org.apache.poi:poi:3.9"
-        compile "org.apache.poi:poi-ooxml:3.9"
+        compile "org.apache.poi:poi:3.11"
+        compile "org.apache.poi:poi-ooxml:3.11"
+//        compile "org.apache.poi:ooxml:3.9"
+        compile "org.apache.poi:ooxml-schemas:1.1"
         compile "commons-beanutils:commons-beanutils:1.9.2"
         compile "com.google.guava:guava:18.0"
 
@@ -132,8 +134,12 @@ grails.project.dependency.resolution = {
 //        compile ... //Liquibase
         compile "org.apache.velocity:velocity:1.7" //Velocity
 //        compile "com.opencsv:opencsv:3.8"
-
         //		compile "com.myjeeva.poi:excelReader:1.2"
+
+        //Biblioteca avançada para lidar com streams e threads. Necessária para converter um OutputStream para InputStream
+        // (ou seja, criar um pipe que ligue a saida de um processamento aa entrada de outro)
+        // http://io-tools.sourceforge.net/easystream
+        compile "net.sf.jsignature.io-tools:easystream:1.2.15"
 
     }
 
@@ -151,7 +157,7 @@ grails.project.dependency.resolution = {
 //        compile ":perf4j:0.1.1" //plugin para profiling minucioso
 //        compile ":ajax-uploader:1.1"
         compile ":jquery:1.11.1"
-        compile ":jquery-ui:1.10.4"
+//        compile ":jquery-ui:1.10.4"
         runtime ":resources:1.2.14"
         compile ":joda-time:1.5"
         compile ":excel-export:0.2.1"
@@ -165,7 +171,7 @@ grails.project.dependency.resolution = {
         }
 */
         if (Environment.current == Environment.DEVELOPMENT)  {
-//            runtime "org.grails.plugins:console:1.5.6"
+            runtime "org.grails.plugins:console:1.5.6"
         }
 
         //ferramenta de profiling, util para testes de performance no ambiente de validacao.

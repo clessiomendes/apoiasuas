@@ -4,7 +4,7 @@ import groovy.time.TimeCategory
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
-import org.apoiasuas.util.DateUtils
+import org.apoiasuas.util.ApoiaSuasDateUtils
 
 class TentativaImportacao {
 
@@ -97,7 +97,7 @@ class TentativaImportacao {
     }
 
     static String formataComHora(Date date) {
-        return date.format(DateUtils.FORMATO_DATA_HORA)
+        return date.format(ApoiaSuasDateUtils.FORMATO_DATA_HORA)
     }
 
     private int percentualProcessamentoFinal() {

@@ -1,6 +1,6 @@
 /* Cores */
 @cor-principal:					#abbf78;
-@cor-fonte-links-e-titulos:		#48802c;
+@cor-fonte-links-e-titulos:		#48802c; //tambem é a cor dos icones de butoes
 @cor-caption-jquery-ui: 		#E1F2B6;
 @cor-fundo-paineis-e-botoes:	#efefef;
 @cor-fundo-principal:	        #dddddd;
@@ -794,6 +794,11 @@ table.tabelaListagem .even {
   background-image: url(../../images/database_edit.png);
 }
 
+.buttons .atendimento {
+  .buttonsFooter();
+  background-image: url(../../images/atendimento.png);
+}
+
 .buttons .check {
   .buttonsFooter();
   background-image: url(../../images/checked.png);
@@ -869,6 +874,14 @@ input.search {
   .imageTextButton(url(../../images/search.png));
 }
 
+input.atendimento {
+  .imageTextButton(url(../../images/atendimento.png));
+}
+
+input.close {
+  .imageTextButton(url(../../images/close.png));
+}
+
 input.create {
   .imageTextButton(url(../../images/database_add.png));
 }
@@ -877,12 +890,20 @@ input.save {
   .imageTextButton(url(../../images/database_save.png));
 }
 
+input.delete {
+  .imageTextButton(url(../../images/database_delete.png));
+}
+
 input.edit {
   .imageTextButton(url(../../images/database_edit.png));
 }
 
 input.cancel {
   .imageTextButton(url(../../images/cancel.png));
+}
+
+input.check {
+  .imageTextButton(url(../../images/checked.png));
 }
 
 input.ok {
@@ -1074,6 +1095,7 @@ nobr {
 
 //Situações de monitoramento
 .situacao-monitoramento(@imagem) {
+  cursor: pointer;
   background: @imagem no-repeat center;
   border: hidden;
   width: 25px;
@@ -1084,4 +1106,3 @@ nobr {
 .monitoramento-suspenso { .situacao-monitoramento(url(../../images/suspended.png)); }
 .monitoramento-pendente { .situacao-monitoramento(url(../../images/pending.png)); }
 .monitoramento-prioritario { .situacao-monitoramento(url(../../images/important.png)); }
-

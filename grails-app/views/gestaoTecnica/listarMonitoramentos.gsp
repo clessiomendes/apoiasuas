@@ -88,8 +88,8 @@
     <table class="tabelaListagem">
         <thead><tr>
             <th>Data</th>
-            <th>Descrição</th>
             <th/>
+            <th>Descrição</th>
             <th>Família</th>
         </tr></thead>
 
@@ -100,10 +100,10 @@
                     <g:formatDate date="${monitoramentoInstance.dataCriacao}"/>
                 </a></td>
                 <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela("ver monitoramento","${createLink(controller: 'familia', action:'showMonitoramento', id: monitoramentoInstance.id)}");'>
-                    ${monitoramentoInstance.memoCortado}
+                    <input type="button" class="${monitoramentoInstance.iconeSituacao}" title="${monitoramentoInstance.situacao}"/>
                 </a></td>
                 <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela("ver monitoramento","${createLink(controller: 'familia', action:'showMonitoramento', id: monitoramentoInstance.id)}");'>
-                    <input type="button" class="${monitoramentoInstance.iconeSituacao}" title="${monitoramentoInstance.situacao}"/>
+                    ${monitoramentoInstance.memoCortado}
                 </a></td>
                 <td>
                     <g:link controller="familia" action="show" id="${monitoramentoInstance?.familia?.id}">

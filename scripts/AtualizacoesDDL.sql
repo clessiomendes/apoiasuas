@@ -321,6 +321,22 @@ DROP INDEX unique_familia_id CASCADE;
 alter table cidadao drop constraint unique_familia_id;
 CREATE UNIQUE INDEX unique_familia_id ON cidadao (lower(nome_completo), familia_id);
 
+create table atendimento_particularizado (id int8 not null, version int8 not null, data_hora timestamp, nome_cidadao varchar(255), compareceu boolean, familia_id int8, servico_sistema_seguranca_id int8 not null, tecnico_id int8, telefone_contato varchar(255), primary key (id));
+create table compromisso (id int8 not null, version int8 not null, descricao varchar(255) not null, inicio timestamp not null, fim timestamp not null, responsavel_id int8, tipo varchar(255) not null, servico_sistema_seguranca_id int8 not null, atendimento_particularizado_id int8, habilitado boolean not null, primary key (id));
+alter table atendimento_particularizado add constraint FK_l284tdstdu00cr3cfs3emq3er foreign key (familia_id) references familia;
+alter table atendimento_particularizado add constraint FK_ly9f1273nupef57bjjv1ydw83 foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table atendimento_particularizado add constraint FK_2lp7id10sf6cnt2fr3lpovgal foreign key (tecnico_id) references usuario_sistema;
+alter table compromisso add constraint ck_inicio_fim_compromisso CHECK (fim > inicio);
+alter table compromisso add constraint ck_atendimento_particularizado CHECK (tipo = 'ATENDIMENTO_PARTICULARIZADO' and atendimento_particularizado_id is not null);
+
+alter table compromisso add constraint FK_6jv5upwhyw8hde3b3kraeafxy foreign key (atendimento_particularizado_id) references atendimento_particularizado;
+alter table compromisso add constraint FK_eld7ltohoh9mirxbaru8889cl foreign key (responsavel_id) references usuario_sistema;
+alter table compromisso add constraint FK_67ye2ii152dpky5cqu114j9pb foreign key (servico_sistema_seguranca_id) references servico_sistema;
+create sequence sq_atendimento_particularizado;
+create sequence sq_compromisso;
+
+ALTER TABLE public.atendimento_particularizado ADD sem_telefone BOOL NULL;
+
 /*
 CREATE TABLE ambiente(id INT PRIMARY KEY, descricao VARCHAR(255));
 INSERT into ambiente (id, descricao) values (0, );

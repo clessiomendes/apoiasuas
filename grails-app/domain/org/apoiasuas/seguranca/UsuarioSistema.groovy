@@ -48,6 +48,7 @@ class UsuarioSistema {
 		accountLocked(nullable: false)
 		passwordExpired(nullable: false)
 		enabled(nullable: false)
+		papel(nullable: false, bindable: true)
 
 //Manter criador e ultimoAlterador obrigatorios pode ser um problema na inicializacao de usuarios
 //		criador(nullable: false)

@@ -15,7 +15,7 @@
         Técnico responsável
         <span class="required-indicator">*</span>
     </label>
-    <g:select required="" id="operadorResponsavel" name="operadorResponsavel.id" from="${operadoresLocal}" optionKey="id" value="${processoDTO?.operadorResponsavel?.id}" class="many-to-one" noSelection="['': '']"/>
+    <g:select id="operadorResponsavel" required="" name="operadorResponsavel.id" from="${operadoresLocal}" optionKey="id" value="${processoDTO?.operadorResponsavel?.id}" class="many-to-one" noSelection="['': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: processoDTO, field: 'dadosCertidao', 'error')} required">
@@ -34,7 +34,7 @@
         Cartório
         <span class="required-indicator">*</span>
     </label>
-    <g:textField maxlength="250" size="80" required="" name="cartorio" value="${processoDTO?.cartorio}"/>
+    <g:textField maxlength="250" required="" size="80" name="cartorio" value="${processoDTO?.cartorio}"/>
     <br>Ex: Cartório de Registro de Pessoas Naturais, distrito de Ariranha, Pedra Azul - MG
 </div>
 

@@ -5,8 +5,8 @@
 <table class="tabelaListagem">
     <thead><tr>
         <th>Data</th>
-        <th>Descrição</th>
         <th></th>
+        <th>Descrição</th>
         %{--<th>Situação</th>--}%
     </tr></thead>
     <tbody>
@@ -15,10 +15,10 @@
             <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela("ver monitoramento","${createLink(action:'showMonitoramento', id: monitoramentoInstance.id)}");'>
                 <g:formatDate date="${monitoramentoInstance.dataCriacao}"/>
             </a></td>
+            <td><input type="button" class="${monitoramentoInstance.iconeSituacao}" title="${monitoramentoInstance.situacao}"/></td>
             <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela("ver monitoramento","${createLink(action:'showMonitoramento', id: monitoramentoInstance.id)}");'>
                 ${monitoramentoInstance.memoCortado}
             </a></td>
-            <td><input type="button" class="${monitoramentoInstance.iconeSituacao}" title="${monitoramentoInstance.situacao}"/></td>
 %{--
             <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela("ver monitoramento","${createLink(action:'showMonitoramento', id: monitoramentoInstance.id)}");'>
                 ${monitoramentoInstance.situacao}

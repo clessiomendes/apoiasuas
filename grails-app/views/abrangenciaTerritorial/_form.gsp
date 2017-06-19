@@ -10,7 +10,7 @@
 		<g:message code="abrangenciaTerritorial.nome.label" default="Nome" />
         <span class="required-indicator">*</span>
 	</label>
-	<g:textField size="60" name="nome" required="" value="${abrangenciaTerritorial?.nome}"/>
+	<g:textField size="60" name="nome" value="${abrangenciaTerritorial?.nome}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: abrangenciaTerritorial, field: 'habilitado', 'error')} ">

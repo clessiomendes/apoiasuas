@@ -109,6 +109,7 @@
                 <g:if test="${! cidadaoInstance.habilitado}">
                     <g:link class="import" action="reabilitar" title="Reintegrar este cidadão ao grupo familiar de ${cidadaoInstance.familia.referencia.nomeCompleto}" resource="${cidadaoInstance}">Reintegrar</g:link>
                 </g:if>
+                <g:link class="atendimento" controller="agenda" action="calendario">Atendimento</g:link>
             </fieldset>
 		</div>
 	</body>

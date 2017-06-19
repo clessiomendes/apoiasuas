@@ -13,7 +13,7 @@
                 <g:message code="servico.apelido.label" default="Nome popular" />
                 <span class="required-indicator">*</span>
             </label>
-            <g:textField name="apelido" size="60" maxlength="60" required="" value="${localDtoServico?.apelido}"/>
+            <g:textField name="apelido" size="60" maxlength="60" value="${localDtoServico?.apelido}"/>
         </div>
 --}%
 

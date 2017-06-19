@@ -22,7 +22,7 @@
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
 
-			%{--Procurar por erros tanta na instancia de familia quanto na de acompanhamento--}%
+			%{--Procurar por erros tanto na instancia de familia quanto na de acompanhamento--}%
 			<g:hasErrors model="${[familiaInstance:familiaInstance, acompanhamentoInstance:familiaInstance.acompanhamentoFamiliar]}">
 				<ul class="errors" role="alert">
 					<g:eachError model="${[familiaInstance:familiaInstance, acompanhamentoInstance:familiaInstance.acompanhamentoFamiliar]}" var="error">

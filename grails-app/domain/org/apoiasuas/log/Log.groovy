@@ -1,5 +1,7 @@
 package org.apoiasuas.log
 
+import org.apoiasuas.seguranca.DominioProtegidoServico
+
 /**
  * Entidade para registrar diferentes tipos de logs, com possibilidade de calcular estatisticas de desempenho
  */
