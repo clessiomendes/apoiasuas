@@ -45,10 +45,7 @@
     </div>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoCompromisso, field: 'responsavel', 'error')} ">
-        <label for="responsavel">
-            <nobr>Responsável<span class="required-indicator">*</span>
-        </nobr>
-        </label>
+        <label for="responsavel">Responsável</label>
         <g:select id="responsavel" name="responsavel.id" from="${operadores}" optionKey="id" value="${localDtoCompromisso?.responsavel?.id}" class="many-to-one" noSelection="['': '']"/>
     </div>
 </f:with>

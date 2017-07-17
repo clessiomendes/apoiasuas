@@ -17,18 +17,28 @@
         %{Cidadao cidadaoInstance = cidadao}%
         <tr class="${cidadaoInstance.familia.tecnicoReferencia ? 'tecnicoReferencia' : (i % 2) == 0 ? 'even' : 'odd'}">
 
-            <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
-                        controller="${controllerLinkFamilia}" action="${actionLinkFamilia}" id="${cidadaoInstance.familia.id}">
-            %{--url="${urlVerFamilia}">--}%
-                ${fieldValue(bean: cidadaoInstance, field: "familia.cad")}
-            </g:link></td>
+            <g:if test="${popup}">
+                <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
+                            onclick="selecionaPopup(event, {idFamilia: ${cidadaoInstance.familia.id}, cad: '${cidadaoInstance.familia.cad}'})">
+                    ${fieldValue(bean: cidadaoInstance, field: "familia.cad")}
+                </g:link></td>
+                <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
+                            onclick="selecionaPopup(event, {idFamilia: ${cidadaoInstance.familia.id}, cad: '${cidadaoInstance.familia.cad}'})">
+                    ${raw(cidadaoInstance.nomeCompleto)}
+                </g:link></td>
+            </g:if>
 
-            <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
-                        controller="${controllerLinkCidadao}" action="${actionLinkCidadao}" id="${cidadaoInstance.id}">
-            %{--controller="cidadao" action="show" id="${cidadaoInstance.id}">--}%
-            %{--url="${urlVerCidadao}">--}%
-                ${raw(cidadaoInstance.nomeCompleto)}
-            </g:link></td>
+            <g:else>
+                <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
+                            controller="${controllerLinkFamilia}" action="${actionLinkFamilia}" id="${cidadaoInstance.familia.id}">
+                    ${fieldValue(bean: cidadaoInstance, field: "familia.cad")}
+                </g:link></td>
+
+                <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
+                            controller="${controllerLinkCidadao}" action="${actionLinkCidadao}" id="${cidadaoInstance.id}">
+                    ${raw(cidadaoInstance.nomeCompleto)}
+                </g:link></td>
+            </g:else>
 
             <td>${fieldValue(bean: cidadaoInstance, field: "parentescoReferencia")}</td>
 

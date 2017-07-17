@@ -98,7 +98,16 @@ class Familia implements Serializable, DominioProtegidoServico {
      * Exibe o identificador principal desta familia (o codigo legado ou o id)
      */
     public String getCad() {
+        if (cad)
+            return cad
         return codigoLegado ?: id?.toString();
+    }
+
+    /**
+     * Exibe o identificador principal desta familia (o codigo legado ou o id)
+     */
+    public setCad(String cad) {
+        this.cad = cad;
     }
 
     static Familia novaInstacia() {

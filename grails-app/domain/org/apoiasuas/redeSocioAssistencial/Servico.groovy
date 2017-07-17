@@ -58,4 +58,8 @@ class Servico {
         return site.toLowerCase().startsWith("http") ? site : "http://"+site
     }
 
+    public setVersion(Long version) {
+        this.version = version;
+    }
+
 }

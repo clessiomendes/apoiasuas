@@ -4,7 +4,7 @@
 %>
 
 <g:javascript>
-    var janelaModalMarcador = new JanelaModalAjax();
+    var janelaModal = new JanelaModalAjax();
 
     /**
      * Navega para nova tela de edição de marcadores (inclusão, remoção, alteração)
@@ -27,13 +27,12 @@
         location.href = "${createLink(controller: 'cidadao', action: 'create', params: [idFamilia: localDtoFamilia.id])}";
     }
 
-    var janelaModalTelefones = new JanelaModalAjax(updateTelefones);
-
     /**
      * Abre popup de edicao de telefones
      */
     function editTelefones() {
-        janelaModalTelefones.abreJanela("Alterar telefones","${createLink(action:'editTelefones', params: [idFamilia: localDtoFamilia.id])}");
+        janelaModal.abreJanela( { titulo: "Alterar telefones", refreshFunction: updateTelefones,
+                url: "${createLink(action:'editTelefones', params: [idFamilia: localDtoFamilia.id])}" });
     }
 
     function updateTelefones() {
@@ -63,28 +62,28 @@
         </legend>
         <g:each in="${localDtoFamilia.programasHabilitados}" var="marcadorFamilia">
             <span class="marcadores-programa">
-                <a href="javascript:void(0)" onclick='janelaModalMarcador.abreJanela("detalhes...","${createLink(action:'showPrograma', id: marcadorFamilia.id)}");'>
+                <a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showPrograma', id: marcadorFamilia.id)}"});'>
                     ${marcadorFamilia?.programa?.descricao}
                 </a>
             </span>
         </g:each>
         <g:each in="${localDtoFamilia.vulnerabilidadesHabilitadas}" var="marcadorFamilia">
             <span class="marcadores-vulnerabilidade">
-                <a href="javascript:void(0)" onclick='janelaModalMarcador.abreJanela("detalhes...","${createLink(action:'showVulnerabilidade', id: marcadorFamilia.id)}");'>
+                <a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showVulnerabilidade', id: marcadorFamilia.id)}"});'>
                     ${marcadorFamilia?.vulnerabilidade?.descricao}
                 </a>
             </span>
         </g:each>
         <g:each in="${localDtoFamilia.acoesHabilitadas}" var="marcadorFamilia">
             <span class="marcadores-acao">
-                <a href="javascript:void(0)" onclick='janelaModalMarcador.abreJanela("detalhes...","${createLink(action:'showAcao', id: marcadorFamilia.id)}");'>
+                <a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showAcao', id: marcadorFamilia.id)}"});'>
                     ${marcadorFamilia?.acao?.descricao}
                 </a>
             </span>
         </g:each>
         <g:each in="${localDtoFamilia.outrosMarcadoresHabilitados}" var="marcadorFamilia">
             <span class="marcadores-outro-marcador">
-                <a href="javascript:void(0)" onclick='janelaModalMarcador.abreJanela("detalhes...","${createLink(action:'showOutroMarcador', id: marcadorFamilia.id)}");'>
+                <a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showOutroMarcador', id: marcadorFamilia.id)}"});'>
                     ${marcadorFamilia?.outroMarcador?.descricao}
                 </a>
             </span>

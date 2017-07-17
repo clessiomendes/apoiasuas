@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.apoiasuas.AgendaController; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta name="layout" content="main">
@@ -8,28 +8,50 @@
     <asset:javascript src="especificos/calendar/moment.js"/>
     <asset:javascript src="especificos/calendar/fullcalendar.js"/>
     <asset:javascript src="especificos/calendar/locale-all.js"/>
+    <asset:javascript src="especificos/cookie.js"/>
+    <asset:javascript src="especificos/jquery.timepicker.js"/>
+    <asset:stylesheet src="especificos/jquery.timepicker.css"/>
+
+    <asset:javascript src="especificos/procurarCidadao.js"/>
 </head>
 
 <g:javascript>
-    var janelaModal = new JanelaModalAjax(null, 800);
+    var janelaModal = new JanelaModalAjax();
+    var janelaModalTipoCompromisso = new JanelaModalAjax();
+    var configuracaoAgenda = ${raw(configuracao as String)};
+
+        %{--var minhaUrl = "${createLink(action:'gravaConfiguracaoAgenda')}";--}%
+%{--
+        $.ajax({
+            type: 'POST',
+            url: "${createLink(action:'gravaConfiguracaoAgenda')}",
+            data: JSON.stringify(minhaView),
+            contentType: "application/json",
+            dataType: 'json'
+        });
+--}%
 
     $(document).ready(function() {
+        var cookieCalendario = cookie.get("calendario") ? JSON.parse(cookie.get("calendario")) :
+                { //Configuração inicial ou default da agenda
+                    defaultView: "agendaWeek", start: moment().format()
+                };
+
         //Inicialização do calendário
         $divCalendario = $('#calendar');
-        %{--selectUsuarioSistema = "${idUsuarioSistema}";--}%
+        $('#selectUsuarioSistema').val("${idUsuarioSistema}");
+
         $divCalendario.fullCalendar({
-            events: getEvents(),
-            firstDay: 3/*quarta-feira*/, //TODO tornar um parâmetro configurável
-            minTime: "08:00:00", //TODO tornar um parâmetro configurável
-            maxTime: "18:00:00", //TODO tornar um parâmetro configurável
+            events: getEvents(configuracaoAgenda.mostrarAtendimentos, configuracaoAgenda.mostrarOutrosCompromissos),
+            firstDay: configuracaoAgenda.firstDay,
+            minTime: configuracaoAgenda.minTime,
+            maxTime: configuracaoAgenda.maxTime,
             aspectRatio: "auto",
-            defaultView: "agendaWeek",
+            defaultView: cookieCalendario.defaultView,
             slotLabelFormat: "HH:mm",
             locale: 'pt',
             allDaySlot: false,
-            weekends: false, //TODO tornar um parâmetro configurável
-            //dayClick: function() {            },
-            //header: false,
+            weekends: configuracaoAgenda.weekends,
             header: {
                 //left: 'prev,next today',
                 left: '',
@@ -37,7 +59,7 @@
                 right: '',
                 //right: 'month,agendaWeek,listWeek,agendaDay'
             },
-            //defaultDate: '2017-05-12',
+            defaultDate: moment(cookieCalendario.start),
             navLinks: true, // can click day/week names to navigate views
             selectable: true,
             selectHelper: true,
@@ -53,33 +75,51 @@
             eventRender: function(event, element) {
                 $(element).attr("title", event.title);
             },
-            eventLimit: true, // allow "more" link when too many events
+            eventLimit: false, // allow "more" link when too many events
             //eventRender: verificaConflitos,
             //eventAfterAllRender: verificaConflitos2,
             eventDataTransform: injetaMetodos,
-            eventTextColor: "black"
+            eventTextColor: "black",
+            viewRender: function( view ) {     //Evento acionado após cada mudança na página para gravar em um cookie a visão atual
+                cookie.set("calendario", JSON.stringify({
+                        defaultView: view.name, start: view.intervalStart.format()
+                }));
+            }
+
         })
     });
 
     /**
-     * Função acionada pelo evento on select do fullCalendar que será usado para disparar a criação de um novo compromisso
-     * que pode ser automatico (se o shift estiver pressionado) ou via janela popup.
-     */
+      * Função que dispara o processo de criação de um novo compromisso (ou atendimento). Por padrão, abre uma tela primeiro
+      * para escolha do tipo de compromisso. Se o operador mantiver o shift apertado no momento do click (e se houver um
+      * tecnico previamente escolhido na tela), sera criado um ATENDIMENTO automaticamente, sem a necessidade de informar mais
+      * nada. A tela intermediária está definida em divEscolherTipoCompromisso e contém botões que, ao serem clicados, acionam
+      * os eventos definidos no corpo desta funcao e adicionados dinamicamente à janela modal, específica para esta seleção.
+      */
     function createCompromisso(start, end, jsEvent, view) {
         var inicioStr = start ? start.format() : ""
         var fimStr = end ? end.format() : ""
-        var usuarioSistemaSelecionado = $('#selectUsuarioSistema').val()
+        var $usuarioSelecionadoModal = $('#selectUsuarioSistemaOpcoesCompromisso')
+        var $usuarioSelecionadoTelaMae = $('#selectUsuarioSistema')
+        //$usuarioSelecionado.attr("value", $('#selectUsuarioSistema').val());
 
-        if (jsEvent.shiftKey) { //compromisso automatico - do tipo Atendimento
-            if (! usuarioSistemaSelecionado) {
-                alert("É necessário escolher um técnico antes de definir um horário de atendimento");
-                $divCalendario.fullCalendar('unselect');
+        //Para conseguirmos copiar o valor de um input select via jQuery, é necessário alterar o HTML que marca o item selecionado, e nao simplesmente só atribur um valor via .val()
+        //$usuarioSelecionado.find(":selected").removeAttr('selected'); //remove do HTML valores selecionados anteriormente
+        //$usuarioSelecionado.val($('#selectUsuarioSistema').val()) //atribui um novo valor ao select
+        //$usuarioSelecionado.find(":selected").attr("selected", "selected"); //transforma o valor atribuido em um codigo HTML que marca o item como selecionado
+
+        if ($usuarioSelecionadoTelaMae.val()) //Força que o tecnico selecionado na tela mae (se houver) sobrescreva o tecnico previamente selecionado na tela modal
+            $usuarioSelecionadoModal.val($usuarioSelecionadoTelaMae.val()) //copia valor ao select no topo da tela para o select que aparecera na janela modal
+
+        janelaModalTipoCompromisso.createAtendimento = function() {
+            if (! $usuarioSelecionadoModal.val()) {
+                alert("Escolha um técnico para o atendimento!")
                 return;
             }
             //duração de uma hora (TODO: permitir que esse tempo seja configuravel)
             fimStr = start ? start.add(1,"h").format() : ""
-            var urlCreate = "${createLink(action:'createCompromissoAutomatico')}?idUsuarioSistema="+usuarioSistemaSelecionado
-                        +"&inicio="+inicioStr+"&fim="+fimStr;
+            var urlCreate = "${createLink(action:'createCompromissoAutomatico')}?idUsuarioSistema="+$usuarioSelecionadoModal.val()
+                                +"&inicio="+inicioStr+"&fim="+fimStr;
             //Executa a chamada ajax para autalizar o compromisso no banco de dados
             $.ajax({
                 url: urlCreate,
@@ -94,33 +134,27 @@
                     $divCalendario.fullCalendar('renderEvent', data);
                 }
             });
-        } else { //cria compromisso genérico, abrindo a tela para entrada de dados do operador
-            janelaModal.abreJanela("Criar novo Compromisso", "${createLink(action:'createCompromisso')}?idUsuarioSistema="+
-                    usuarioSistemaSelecionado+"&inicio="+inicioStr+"&fim="+fimStr);
+            $('#calendar').fullCalendar('unselect');
+            janelaModalTipoCompromisso.confirmada();
         }
-        $('#calendar').fullCalendar('unselect');
-    };
 
-%{--
-    function criaCompromissoGenerico() {
-        janelaModal.abreJanela("Criar novo Compromisso", "${createLink(action:'createCompromisso',
-                params: [idUsuarioSistema: idUsuarioSistema])}&inicio="+inicioStr+"&fim="+fimStr);
+        janelaModalTipoCompromisso.createOutroCompromisso = function() {
+            janelaModal.abreJanela({titulo: "Criar novo Compromisso",
+                    url: "${createLink(action:'createCompromisso')}?idUsuarioSistema="+$usuarioSelecionadoTelaMae.val()+"&inicio="+inicioStr+"&fim="+fimStr,
+                    largura: 800});
+            $('#calendar').fullCalendar('unselect');
+            janelaModalTipoCompromisso.confirmada();
+        }
+
+        if (jsEvent.shiftKey && $usuarioSelecionadoTelaMae.val()) //compromisso automatico - do tipo Atendimento
+            janelaModalTipoCompromisso.createAtendimento();
+        else
+            janelaModalTipoCompromisso.abreJanela({titulo: "Agenda", element: $('#divEscolherTipoCompromisso'), largura: 550});
     }
---}%
 
     function abreCompromisso( event, delta, revertFunc, jsEvent, ui, view ) {
-        var tituloJanela = event.tipoAtendimento ? "Alterar Atendimento" : "Alterar Compromisso";
- /*       var url = "${createLink(action:'editCompromisso')}?idCompromisso="+event.id
-        if (event.tipoAtendimento) {
-            alert("idCidadao"+idCidadao+" idFamilia"+idFamilia)
-            if (idCidadao)
-                url += "&idCidadao="+idCidadao
-            if (idFamilia)
-                url += "&idFamilia="+idFamilia
-        }
-        janelaModal.abreJanela(tituloJanela, url);
-*/
-        janelaModal.abreJanela(tituloJanela, "${createLink(action:'editCompromisso')}?idCompromisso="+event.id);
+         var tituloJanela = event.tipoAtendimento ? "Alterar Atendimento" : "Alterar Compromisso";
+         janelaModal.abreJanela({titulo: tituloJanela, url: "${createLink(action:'editCompromisso')}?idCompromisso="+event.id, largura: 800});
     }
 
     function updateHorarioCompromisso( event, delta, revertFunc, jsEvent, ui, view) {
@@ -138,9 +172,20 @@
                 alert("Erro gravando alteração do compromisso ["+event.title+"] no banco de dados : "+textStatus+", "+errorThrown);
             },
             //como sinalizar sucesso?
-            success: function(data) { }
+            success: function(data) { refreshEvento(data) }
         });
     };
+
+    /*
+     * Reflete o compromisso, após gravação, no componente de calendario, para ser exibido ao operador
+     */
+    function refreshEvento(compromisso){
+        var $calendar = $('#calendar')
+        $calendar.fullCalendar('removeEvents', compromisso.id)
+        var $selectOperadores = $('#selectUsuarioSistema')
+        if ($selectOperadores.val() == '' || $selectOperadores.val() == compromisso.idResponsavel)
+            $calendar.fullCalendar('renderEvent', compromisso);
+    }
 
     function imprimirCompromissos() {
         //janelaModal.abreJanela("escolha...",null,$('#divEscolherTipoCompromisso').html());
@@ -156,18 +201,7 @@
      */
     function sucessoSave(data) {
         janelaModal.confirmada(); //fecha a janela modal
-        var $calendar = $('#calendar')
-        $calendar.fullCalendar('removeEvents', data.id)
-        var $selectOperadores = $('#selectUsuarioSistema')
-/*
-        $('#divAgendandoAtendimento').slideUp();
-        if (data.nome) {
-            idCidadao = null;
-            idFamilia = null;
-        }
-*/
-        if ($selectOperadores.val() == '' || $selectOperadores.val() == data.idResponsavel)
-            $calendar.fullCalendar('renderEvent', data);
+        refreshEvento(data);
     }
 
     /*
@@ -235,12 +269,29 @@
         return {
                 url: urlObterCompromissos,
                 type: 'POST',
-                data: { idUsuarioSistema: $('#selectUsuarioSistema').val() },
+                data: { idUsuarioSistema: $('#selectUsuarioSistema').val(),
+                        mostrarAtendimentos: configuracaoAgenda.atendimentos,
+                        mostrarOutrosCompromissos: configuracaoAgenda.outrosCompromissos
+                },
                 error: function() {
                     alert('Erro obtendo agenda do servidor');
                 }
-            }
+        }
     }
+
+    function configuracoes() {
+         janelaModal.abreJanela({titulo: "Configurações de exibição da agenda", largura: 600, url: "${createLink(action:'configuracao')}",
+                refreshFunction: function() {
+                    //atualiza a exibição do calendário
+                    $selectUsuarioSistema = $("#selectUsuarioSistema");
+                    var destino = "${createLink(controller: 'agenda', action: 'calendario')}"
+                    if ($selectUsuarioSistema.val())
+                        destino += '?idUsuarioSistema='+$selectUsuarioSistema.val();
+                    window.location = destino;
+                }
+         });
+    }
+
 
 </g:javascript>
 
@@ -251,6 +302,7 @@
 <g:form action="calendario">
         <div style="float: left; display: inline">
             <input type="button" class="speed-button-voltar" title="período anterior" onclick="$('#calendar').fullCalendar('prev');"/>
+            <input type="button" class="speed-button-config" title="configurações de exibição da agenda" onclick="configuracoes()"/>
             <input type="button" class="speed-button-atualizar" title="recarregar" onclick="atualiza()"/>
             <input type="button" class="speed-button-imprimir" title="imprimir" onclick="imprimirCompromissos();"/>
             Responsável <g:select id="selectUsuarioSistema" name="idUsuarioSistema" from="${operadores}"
@@ -269,12 +321,16 @@
 
 <div id='calendar'></div>
 
-%{--
-<div id='divEscolherTipoCompromisso'>Esolhendo...
-    <input type="button" value="atendimento particularizado" onclick="alert('parti');"/>
-    <input type="button" value="outros tipos de compromisso" onclick="alert('parti');"/>
+
+<div style="display: none" id='divEscolherTipoCompromisso'>
+    <input type="button" class="speed-button-atendimento" onclick="janelaModalTipoCompromisso.createAtendimento();"/>
+        Atedimento Particularizado com <g:select id="selectUsuarioSistemaOpcoesCompromisso" name="idUsuarioSistema" from="${operadores}"
+                          optionKey="id" class="many-to-one" noSelection="['': '']"/>
+        <br>
+        <input type="button" class="speed-button-compromisso" onclick="janelaModalTipoCompromisso.createOutroCompromisso();"/>
+        Outros tipos de compromisso
 </div>
---}%
 
 </body>
 </html>
+

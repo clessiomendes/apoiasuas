@@ -5,9 +5,6 @@
 
 <g:tabs id="tabs" style="margin: 5px;">
     <g:tab id="tabInicial" titulo="informações">
-        <f:field property="apelido" label="servico.apelido.label" widget-size="60"/>
-
-%{--
         <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'apelido', 'error')} required">
             <label for="apelido">
                 <g:message code="servico.apelido.label" default="Nome popular" />
@@ -15,7 +12,6 @@
             </label>
             <g:textField name="apelido" size="60" maxlength="60" value="${localDtoServico?.apelido}"/>
         </div>
---}%
 
         <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'enabled', 'error')}">
             <label></label>

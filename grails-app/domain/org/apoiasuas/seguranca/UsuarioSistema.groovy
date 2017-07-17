@@ -19,6 +19,7 @@ class UsuarioSistema {
 	String username;
     String matricula;
     String password;
+    String configuracaoAgenda;
 
 	boolean accountExpired
 	boolean accountLocked
@@ -47,8 +48,10 @@ class UsuarioSistema {
 		accountExpired(nullable: false)
 		accountLocked(nullable: false)
 		passwordExpired(nullable: false)
-		enabled(nullable: false)
-		papel(nullable: false, bindable: true)
+        springSecurityService(nullable: true)
+        enabled(nullable: false)
+		papel(nullable: true, bindable: true)
+        configuracaoAgenda(nullable: true, maxSize: 10000)
 
 //Manter criador e ultimoAlterador obrigatorios pode ser um problema na inicializacao de usuarios
 //		criador(nullable: false)

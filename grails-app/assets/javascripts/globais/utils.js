@@ -123,3 +123,10 @@ function removeAcentos (str) {
     return str;
 
 }
+
+//Simula o operador ?: do groovy, ou seja, retorna um valor default em caso do parametro passado ser vazio
+function ifNull(value, ifnull) {
+    if (value === null || value === undefined)
+        return ifnull;
+    return value;
+}

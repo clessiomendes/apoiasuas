@@ -16,34 +16,72 @@
  * @param refreshFunction função OPCIONAL a ser chamada quando o objeto sendo exibido na janela modal for alterado
  *                        e essa alteração precisar ser refletida na tela original
  */
-function JanelaModalAjax(refreshFunction, largura) {
-    //var self = this;
-    largura = typeof largura !== 'undefined' ? largura : 700;
+function JanelaModalAjax() {
+    //guarda globalmente a funcao de refresh para uso posterior (confirmacao da caixa de dialogo)
+    var refreshFunction
 
     //Div (criado dinamicamente) que conterá a janela modal esperada pelo componente JQuery UI Modal
     var $divModal = $('<div/>');
 
+    this.getDivModal = function() {
+        return $divModal
+    }
+
     /**
      * Abre uma janela modal com o título e a url (ou o conteudo HTML) passados
+     * Os parametros são passados como {titulo: ..., url: ..., conteudoHTML: ..., element: ..., refreshFunction: ..., largura: ...}
      * @param titulo exibido na barra de topo da janela
      * @param url (usada apenas se conteudoHTML for nulo) montada com a action e a view necessarias para recuperar o html contendo um div a ser exibido no conteudo da janela
      * @param conteudoHTML o próprio conteúdo HTML a ser exibido, sem a necessidade de submeter nenhuma nova requisição ao servidor. Se presente, o parametro url é desprezado
+     * @param element um <div> html representando o conteúdo inteiro da janela
+     * @param refreshFunction o ponteiro para uma função callback que será acionada caso seja clicado um botao de confirmacao
+     * @param largura em pixels, para a tela criada(default 700)
      */
-    this.abreJanela = function(titulo, url, conteudoHTML) {
-        //var $janelaMonitoramento = $("#janelaMonitoramento");
+    //this.abreJanela = function(titulo, url, conteudoHTML, element) {
+    this.abreJanela = function(parametros) {
+        //Primeiro testa se apenas (e pelo menos) um dos três parâmetros [url, conteudoHTML ou element] foi passado
+        if ( (parametros.url?1:0)+(parametros.conteudoHTML?1:0)+(parametros.element?1:0) != 1) {
+            throw "Erro! Apenas (e pelo menos) um parâmetro entre url, conteudoHTML e element deve ser passado para abrejanela() em apoiasuas-modal.js"
+            //alert("Erro! Apenas (e pelo menos) um parâmetro entre url, conteudoHTML e element deve ser passado para abrejanela() em apoiasuas-modal.js")
+            //return;
+        }
+
+        if (parametros.conteudoHTML) {
+            $divModal.html(parametros.conteudoHTML)
+        } else if (parametros.element) {
+            $(parametros.element).appendTo($divModal);
+            $(parametros.element).show();
+        } else if (parametros.url) {
+            $divModal.html('<asset:image src="loading.gif"/> carregando...');
+        } else {
+            throw "Erro! conteudoHTML, element ou url devem ser fornecidos para abrejanela() em apoiasuas-modal.js"
+        }
+
+        refreshFunction  = parametros.refreshFunction;
+
         //exibe uma janela modal inicialmente vazia enquanto aguarda a resposta do servidor
-        $divModal.html(conteudoHTML ? conteudoHTML : '<asset:image src="loading.gif"/> carregando...').dialog({
+        var largura = ifNull(parametros.largura, 700);
+        $divModal.dialog({
             position:  {my: "center", at: "center", of: window},
             resizable: false,
             modal: true,
-            title: titulo,
+            title: ifNull(parametros.titulo, ""),
             width: $(window).width() > largura ? largura : 'auto'
         }).dialog('open');
 
+        //$divModal.html(conteudoHTML ? conteudoHTML : '<asset:image src="loading.gif"/> carregando...').dialog({
+        //    position:  {my: "center", at: "center", of: window},
+        //    resizable: false,
+        //    modal: true,
+        //    title: titulo,
+        //    width: $(window).width() > largura ? largura : 'auto'
+        //}).dialog('open');
+
+
         //Executa a chamada ajax para preencher a janela com o resultado retornado do servidor
-        if (! conteudoHTML)
+        if (parametros.url)
             $.ajax({
-                url: url,
+                url: parametros.url,
                 error: function( jqXHR, textStatus, errorThrown ) {
                     $divModal.html(jqXHR.responseText).dialog({position: ['center']}).dialog('open');
                 },
@@ -51,6 +89,10 @@ function JanelaModalAjax(refreshFunction, largura) {
                     $divModal.html(data).dialog({position: ['center']}).dialog('open');
                 }
             });
+    }
+
+    this.setOnClose = function(callback) {
+        $divModal.on( "dialogclose", callback );
     }
 
     this.fechaJanela = function () {
@@ -69,7 +111,7 @@ function JanelaModalAjax(refreshFunction, largura) {
      */
     this.confirmada = function () {
         $divModal.dialog('close');
-        if (typeof refreshFunction != 'undefined' && refreshFunction != null)
+        if (refreshFunction !== undefined && refreshFunction !== null)
             refreshFunction();
     }
 

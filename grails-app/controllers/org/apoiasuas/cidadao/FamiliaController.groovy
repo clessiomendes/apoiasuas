@@ -128,12 +128,14 @@ class FamiliaController extends AncestralController {
         //Validacao: se estiver gravando também uma referencia familiar, é preciso validá-la também
         validado = familiaInstance.validate() && validado;
         validado = telefonesFromRequest(familiaInstance) && validado ;
+        validado = validaVersao(familiaInstance) && validado;
         if (validado) {
             familiaInstance = modoCriacao ? familiaService.gravaNovo(familiaInstance, novaReferenciaFamiliar)
                     : familiaService.grava(familiaInstance, programasCommand, acoesCommand,
                         vulnerabilidadesCommand, outrosMarcadoresCommand);
 
             flash.message = message(code: 'default.updated.message', args: [message(code: 'familia.label', default: 'Família'), familiaInstance.id])
+            guardaUltimaFamiliaSelecionada(familiaInstance);
             return show(familiaInstance)
         } else {
             //exibe o formulario novamente em caso de problemas na validacao
@@ -293,7 +295,12 @@ class FamiliaController extends AncestralController {
             return buscaMonitoramento(-1);
 
         boolean modoCriacao = monitoramentoInstance.id == null;
-        if (monitoramentoInstance.validate()) {
+
+        //Valida antes de gravar
+        boolean validado = monitoramentoInstance.validate();
+        validado = validaVersao(monitoramentoInstance) && validado;
+
+        if (validado) {
             monitoramentoService.gravaMonitoramento(monitoramentoInstance);
             flash.message = "Monitoramento gravado com sucesso"
             //retornando mensagem de sucesso sem exibir nada na tela (a janela modal sera simplemente fechada)
@@ -368,6 +375,7 @@ class FamiliaController extends AncestralController {
         boolean validado = familiaInstance.validate();
         validado = familiaInstance.acompanhamentoFamiliar.validate() && validado;
         validado = telefonesFromRequest(familiaInstance) && validado; Telefone.getSimpleName()
+        validado = validaVersao(familiaInstance) && validado;
 
         if (validado) {
             flash.message = "As informações da família e do acompanhamento foram atualizados"

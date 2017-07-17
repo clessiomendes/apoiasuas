@@ -59,7 +59,7 @@ class FormularioController extends AncestralController {
     }
 
     def reinicializarFormulariosPreDefinidos() {
-        formularioService.inicializaFormularios(null, true)
+        formularioService.inicializaFormularios(segurancaService.usuarioLogado)
         flash.message = "Formulários reinicializados. Eventuas alterações feitas pelos operadores foram descartadas."
         forward(action: 'list')
     }

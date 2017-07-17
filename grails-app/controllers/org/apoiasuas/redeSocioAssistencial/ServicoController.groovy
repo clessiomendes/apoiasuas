@@ -86,11 +86,10 @@ class ServicoController extends AncestralServicoController {
         servicoInstance.abrangenciaTerritorial = atribuiAbrangenciaTerritorial();
 
         //Validações:
-//        if (! servicoInstance.abrangenciaTerritorial) //exibe o formulario novamente em caso de problemas na validacao
-//            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, usuarios: segurancaService.getOperadoresOrdenadosController() ])
-
+        boolean validado = servicoInstance.validate();
+        validado = validado & validaVersao(servicoInstance);
         //Grava
-        if (servicoInstance.validate()) {
+        if (validado) {
             servicoService.grava(servicoInstance)
         } else {
             //exibe o formulario novamente em caso de problemas na validacao

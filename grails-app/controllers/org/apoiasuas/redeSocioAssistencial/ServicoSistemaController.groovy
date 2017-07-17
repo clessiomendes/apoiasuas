@@ -58,8 +58,11 @@ class ServicoSistemaController extends AncestralServicoController {
 
         servicoSistemaInstance.abrangenciaTerritorial = atribuiAbrangenciaTerritorial();
 
-        //Grava
-        if (! servicoSistemaInstance.validate()) {
+        //Validações:
+        boolean validado = servicoSistemaInstance.validate();
+        validado = validado & validaVersao(servicoSistemaInstance);
+
+        if (! validado) {
             //exibe o formulario novamente em caso de problemas na validacao
             return render(view: 'show', model: getModelExibicao(servicoSistemaInstance))
         }

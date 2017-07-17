@@ -34,7 +34,6 @@ class AncestralController {
     public static String JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL = "JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL"
     private static final String ULTIMO_REPORT_DTO = "ULTIMO_FORMULARIO_REPORT_DTO"
 
-
     protected void guardaUltimoCidadaoSelecionado(Cidadao cidadao) {
         if (cidadao && cidadao.id) {
             CidadaoController.setUltimoCidadao(session, cidadao)
@@ -192,6 +191,20 @@ class AncestralController {
 
     public static void setReportParaBaixar(HttpSession session, ReportDTO reportParaBaixar) {
         session[ULTIMO_REPORT_DTO] = reportParaBaixar
+    }
+
+    protected boolean validaVersao(Object instancia) {
+        log.debug("conferindo gravacao concorrente de "+instancia.class.simpleName)
+        if (params && params.version && instancia && instancia['version'] && new Long(params.version) != instancia['version']) {
+            instancia.errors.rejectValue("", "", "Este registro foi alterado simultaneamente por outra pessoa. Favor abri-lo novamente antes de gravar.");
+            instancia['version'] = new Long(params.version);
+            return false;
+        }
+        if (params && instancia['version'] && ! params.version)
+            log.warn("Atenção! A gravação de "+instancia.class.simpleName+" em "+request.requestURL+
+                    " não está verificando possíveis erros de gravação concorrente que sobrescrevem informações" +
+                    " sem o conhecimento do operador (optimistic lock).");
+        return true;
     }
 
 }

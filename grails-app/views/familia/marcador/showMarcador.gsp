@@ -25,4 +25,4 @@
 
 </ol>
 
-<input type="button" id="btnCancelar" onclick="janelaModalMarcador.cancelada();" value="Fechar" class="cancel" style="margin-top: 20px;"/>
+<input type="button" id="btnCancelar" onclick="janelaModal.cancelada();" value="Fechar" class="cancel" style="margin-top: 20px;"/>

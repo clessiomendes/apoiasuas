@@ -3,7 +3,7 @@
 %>
 
 <g:javascript>
-    var janelaModal = new JanelaModalAjax(updateList);
+    var janelaModal = new JanelaModalAjax();
 
     $(document).ready(function() {
 		//updateList();
@@ -11,7 +11,8 @@
     } );
 
     function createMonitoramento() {
-        janelaModal.abreJanela("Criar novo Monitoramento","${createLink(action:'createMonitoramento', params: [idFamilia: localDtoFamilia.id])}");
+        janelaModal.abreJanela({titulo: "Criar novo Monitoramento", refreshFunction: updateList,
+                url: "${createLink(action:'createMonitoramento', params: [idFamilia: localDtoFamilia.id])}"});
     }
 
     function updateList() {

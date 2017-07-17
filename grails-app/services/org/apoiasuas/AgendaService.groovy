@@ -6,7 +6,9 @@ import fr.opensagres.xdocreport.document.registry.XDocReportRegistry
 import fr.opensagres.xdocreport.template.IContext
 import fr.opensagres.xdocreport.template.TemplateEngineKind
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata
+import grails.converters.JSON
 import grails.transaction.Transactional
+import groovy.json.JsonSlurper
 import org.apache.commons.lang.time.DateUtils
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.xwpf.usermodel.XWPFDocument
@@ -22,7 +24,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody
 @Transactional(readOnly = true)
 class AgendaService {
 
-    SegurancaService segurancaService
+    def segurancaService
+    def usuarioSistemaService
 
     @Transactional
     public Compromisso gravaCompromisso(Compromisso compromisso) {
@@ -48,7 +51,25 @@ class AgendaService {
      * opcionalmente filtrados pelo id do operador para o qual o compromisso foi designado.
      * Exemplo: para obter todos os dias da semana iniciada em 12/06/2017, passar os parametros (12/06/2017, 19/06/2017)
      */
-    public List<Compromisso> listarCompromissos(Date inicioInclusive, Date fimExclusive, Long idUsuarioSistema) {
+    public List<Compromisso> listarCompromissos(Date inicioInclusive, Date fimExclusive, Long idUsuarioSistema,
+                                                Boolean mostrarAtendimentos, Boolean mostrarOutrosCompromissos) {
+        String hql = "from Compromisso a where a.servicoSistemaSeguranca = :servicoSistema "+
+                " and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim >= :periodoInicio and a.fim < :periodoFim)) ";
+        Map filtros = [servicoSistema: segurancaService.servicoLogado, periodoInicio: inicioInclusive, periodoFim: fimExclusive]
+        if (idUsuarioSistema) {
+            hql += ' and (a.responsavel is null or a.responsavel = :responsavel) ';
+            filtros.put("responsavel", UsuarioSistema.get(idUsuarioSistema))
+        }
+        if (! mostrarAtendimentos) {
+            hql += " and a.tipo != :tipoAcompanahemnto ";
+            filtros.put("tipoAcompanahemnto", Compromisso.Tipo.ATENDIMENTO_PARTICULARIZADO)
+        }
+        if (! mostrarOutrosCompromissos) {
+            hql += " and a.tipo !=  :tipoOutros ";
+            filtros.put("tipoOutros", Compromisso.Tipo.OUTROS)
+        }
+        return Compromisso.executeQuery(hql, filtros, [fetch:[atentimentoParticularizado:"eager"]]);
+/*
         if (idUsuarioSistema)
             return Compromisso.findAllByInicioGreaterThanEqualsAndInicioLessThanAndResponsavelAndServicoSistemaSeguranca(
                     inicioInclusive, fimExclusive, UsuarioSistema.get(idUsuarioSistema), segurancaService.servicoLogado,
@@ -56,6 +77,7 @@ class AgendaService {
         else
             return Compromisso.findAllByInicioGreaterThanEqualsAndInicioLessThanAndServicoSistemaSeguranca(
                     inicioInclusive, fimExclusive, segurancaService.servicoLogado, [fetch:[atentimentoParticularizado:"eager"]])
+*/
     }
 
     public Compromisso getCompromisso(Long idCompromisso) {
@@ -186,11 +208,11 @@ class AgendaService {
     @Transactional
     public boolean deleteCompromisso(Long idCompromisso) {
         Compromisso compromisso = Compromisso.get(idCompromisso);
+        compromisso.delete();
         if (compromisso.tipo.atendimento)
             compromisso.atendimentoParticularizado.delete();
         if (! compromisso)
             return false;
-        compromisso.delete();
         return true;
     }
 
@@ -240,4 +262,24 @@ class AgendaService {
         atendimento.save();
     }
 
+    @Transactional
+    public void gravaConfiguracao(ConfiguracaoCommand configuracao) {
+        UsuarioSistema usuarioSistema = UsuarioSistema.get(segurancaService.usuarioLogado.id)
+        usuarioSistema.configuracaoAgenda = (configuracao as JSON).toString();
+        if (! usuarioSistemaService.gravaUsuario(usuarioSistema, null, null))
+            throw new RuntimeException("Erro gravando configurações: "+usuarioSistema.errors)
+    }
+
+    public Map getConfiguracao() {
+        //Valores default para as configuracoes do calenario. Ao carregar os valores default e sobrescrever com os valores
+        //gravados pelo usuario caso existam, permitimos a adicao de novos parametros dinamicamente sem "quebrar" a estrutura
+        //anterior, além de tratar de forma transparente os casos de usuarios sem gravacao previa das configuracoes
+        Map mapaConfiguracao = [minTime: "08:00:00", atendimentos: true, outrosCompromissos: true,
+                                maxTime: "20:00:00", firstDay: 3/*quarta-feira*/,
+                                weekends: false];
+        if (segurancaService.usuarioLogado.configuracaoAgenda) //sobrescrever com as configuracoes gravadas pelo operador
+            mapaConfiguracao << new JsonSlurper().parseText(segurancaService.usuarioLogado.configuracaoAgenda);
+
+        return mapaConfiguracao;
+    }
 }

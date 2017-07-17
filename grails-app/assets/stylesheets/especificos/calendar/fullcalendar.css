@@ -823,11 +823,11 @@ a.fc-more:hover {
 }
 
 .fc-toolbar.fc-header-toolbar {
-	margin-bottom: 1em;
+	margin-bottom: 0.3em;
 }
 
 .fc-toolbar.fc-footer-toolbar {
-	margin-top: 1em;
+	margin-top: 0.3em;
 }
 
 .fc-toolbar .fc-left {

@@ -24,7 +24,7 @@
         <nobr>
             <g:textField name="nomeOuCad" id="inputNomeOuCad" autofocus="" size="50" class="input-menu-procurar"
                          onkeydown="requisicaoProcurarCidadao(event, document.getElementById('btnProcurarCidadao'));"/>
-            <g:link class="input-menu-procurar" onclick="linkProcurarCidadao(this, '${createLink(controller: 'cidadao', action: 'procurarCidadaoExecuta')}');">
+            <g:link class="input-menu-procurar" onclick="linkProcurarCidadao(this, '${createLink(controller: 'cidadao', action: 'procurarCidadao')}');">
                 <input id="btnProcurarCidadao" type="button" class="speed-button-procurar"/>
             </g:link>
         </nobr>

@@ -188,7 +188,7 @@ class CidadaoService {
                 " LEFT OUTER JOIN usuario_sistema c ON b.tecnico_referencia_id=c.id ";
 
         String sqlWhere = ' where 1=1 '
-        if (! filtroNome) {
+        if (!filtroNome && !filtrosOperador.idade && !filtrosOperador.nis && !filtroCad) {
             sqlWhere += "and a.referencia = true"
         }
 

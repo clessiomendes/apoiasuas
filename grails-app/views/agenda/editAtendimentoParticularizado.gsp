@@ -18,6 +18,7 @@
         if (confirm(mensagem))
             btnApagarAtendimento.click();
     }
+
 </script>
 
 <div id="edit-atendimento" class="content scaffold-create" role="main">

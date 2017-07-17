@@ -5,7 +5,8 @@
 
 <script>
     function editMonitoramento() {
-        janelaModal.abreJanela("alterar monitoramento","${createLink(action: 'editMonitoramento', id: localDtoMonitoramento.id)}");
+        janelaModal.abreJanela({titulo: "alterar monitoramento", refreshFunction: updateList,
+            url: "${createLink(action: 'editMonitoramento', id: localDtoMonitoramento.id)}"});
     }
 
     function efetivaMonitoramento() {

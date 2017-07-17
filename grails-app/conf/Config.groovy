@@ -209,7 +209,8 @@ log4j.main = {
             'org.hibernate.stat',                            // tempo e numero de registros em cada SQL
             'org.hibernate.type.descriptor.sql',             //mostra os valores passados como parametros para as SQLs
             'org.hibernate.SQL',
-            'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
+            'org.hibernate.type.descriptor.sql.BasicExtractor', //parametros RETORNADOS pelas SQLs
+//            'org.hibernate.type.descriptor.sql.BasicBinder', //mostra os valores passados como parametros para as SQLs
             'org.hibernate.engine.transaction.spi.AbstractTransactionImpl', //inicio e fim das transacoes
             'org.springframework.transaction.interceptor.TransactionInterceptor', //Mostra inicio e fim das transacoes e a que metodos elas estao associadas
             'org.springframework.webflow.engine',

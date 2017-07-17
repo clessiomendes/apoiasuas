@@ -5,36 +5,43 @@
     org.apoiasuas.cidadao.Familia localFamiliaCandidata = familiaCandidata;
 %>
 
-<asset:javascript src="especificos/jquery.timepicker.js"/>
-<asset:stylesheet src="especificos/jquery.timepicker.css"/>
-
 <script>
+    var janelaModalProcurarCidadao = new JanelaModalAjax();
+
     var idCidadaoCandidatoSelecao = "${localCidadaoCandidato?.id}"
     var nomeCidadaoCandidatoSelecao = "${localCidadaoCandidato?.nomeCompleto}"
     var idFamiliaCandidataSelecao = "${localFamiliaCandidata?.id}"
     var cadFamiliaCandidataSelecao = "${localFamiliaCandidata?.cad}"
 
-    //auotmaticamente configura inputs com base nas classes css abaixo:
-    //.timepicker-agenda, .timepicker
     $(document).ready(function() {
+        //auotmaticamente configura inputs com base nas classes css timepicker-agenda
         $('.timepicker-agenda').timepicker({
             //disableTextInput: true,
-            maxTime: '18:00',
-            minTime: '08:00',
+            minTime: '00:00',
+            maxTime: '23:30',
             //noneOption: true,
             //forceRoundTime: true,
             step: 30,
             timeFormat: 'H:i' //18:00
         });
+
         $('#checkSemTelefone').change();
     });
 
-    function chekTelefoneChange(check) {
+    function checkTelefoneChange(check) {
         var $inputTelefoneContato = $('#inputTelefoneContato');
         if (check.checked)
             $inputTelefoneContato.val('').prop('disabled', true)
         else
             $inputTelefoneContato.prop('disabled', false)
+    }
+
+    function checkCadChange(check) {
+        var $inputTelefoneContato = $('#inputTelefoneContato');
+        if (check.checked) {
+            $('#hiddenIdFamilia').val('');
+            $('#spanCad').text('');
+        }
     }
 
     /**
@@ -50,7 +57,8 @@
         $('#inputNomeCidadao').val('');
 
         $('#hiddenIdFamilia').val('');
-        $('#spanCad').hide();
+        $('#spanCad').text('');
+        $('#checkSemCad').prop('checked', false).change();
 
         $('#inputTelefoneContato').val('');
         $('#checkSemTelefone').prop('checked', false).change();
@@ -75,10 +83,29 @@
         if (idFamiliaCandidataSelecao)
             $('#hiddenIdFamilia').val(idFamiliaCandidataSelecao);
         if (cadFamiliaCandidataSelecao)
-            $('#spanCad').text("cad "+cadFamiliaCandidataSelecao);
+            $('#spanCad').text(" "+cadFamiliaCandidataSelecao+" ");
         if (nomeCidadaoCandidatoSelecao)
             $inputNomeCidadao.val(nomeCidadaoCandidatoSelecao);
         $('#divAgendandoAtendimento').slideUp();
+    }
+
+    function selecionaPopup(event, result) {
+        event.preventDefault();
+//        alert('selectFamilia '+JSON.stringify(result));
+        if (result.idFamilia)
+            $('#hiddenIdFamilia').val(result.idFamilia);
+        if (result.cad)
+            $('#spanCad').text(" "+result.cad+" ");
+        $('#checkSemCad').prop('checked', false);
+        janelaModalProcurarCidadao.confirmada();
+        return false;
+    }
+
+    function popupProcurarCidadao() {
+        var url = "${createLink(controller: 'cidadao', action:'procurarCidadaoPopup')}";
+        if ($('#inputNomeCidadao').val())
+            url += "?nomeOuCad="+$('#inputNomeCidadao').val();
+        janelaModalProcurarCidadao.abreJanela({ titulo: "passo 1", largura: 900, url: url })
     }
     //# sourceURL=formAtendimentoParticularizado
 </script>
@@ -99,19 +126,21 @@
 
     <f:field property="nomeCidadao">
         <input type="text" id="inputNomeCidadao" name="nomeCidadao" size="40" maxlength="255" value="${localDtoAtendimento.nomeCidadao}"/>
-        <span id="spanCad">${localDtoAtendimento.familia ? "cad "+localDtoAtendimento.familia.cad : ""}</span>
     </f:field>
 
-%{--
-    boolean temTelefone = localDtoAtendimento.telefoneContato != null;
-    if (localDtoAtendimento.nomeCidadao && ! localDtoAtendimento.telefoneContato)
-        temTelefone = false
-    <g:set var="temTelefone" value="${! localDtoAtendimento.nomeCidadao || localDtoAtendimento.telefoneContato}"/>
---}%
-    <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'telefoneContao', 'error')} ">
+    <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'familia', 'error')} ">
+        <label>Cad</label>
+        <span id="spanCad">${localDtoAtendimento.familia?.cad}</span>
+        <input type="button" class="search field-button" value="Procurar" onclick='popupProcurarCidadao();'/>
+        &nbsp;&nbsp;<g:checkBox name="familiaSemCadastro" id="checkSemCad" checked="${localDtoAtendimento.familiaSemCadastro}" onchange="checkCadChange(this);"/>
+        <span>família sem cadastro</span>
+    </div>
+
+    <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'telefoneContato', 'error')} ">
         <label>Telefone</label>
         <g:textField name="telefoneContato" id="inputTelefoneContato" size="11" value="${localDtoAtendimento.telefoneContato}" />
-        <g:checkBox name="semTelefone" id="checkSemTelefone" checked="${localDtoAtendimento.semTelefone}" onchange="chekTelefoneChange(this);"/> sem telefone
+        &nbsp;&nbsp;<g:checkBox name="semTelefone" id="checkSemTelefone" checked="${localDtoAtendimento.semTelefone}" onchange="checkTelefoneChange(this);"/>
+        <span>sem telefone</span>
     </div>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'tecnico', 'error')} ">
@@ -134,7 +163,7 @@
         <label></label>
         <span id="spanSituacao" style="padding: 0.5em 0.7em; display: inline-block; border-radius: 0.3em; background-color: ${localDtoAtendimento.getCor()}">
             ${localDtoAtendimento.getTooltip()}
-            <g:if test="${localDtoAtendimento.nomeCidadao}">
+            <g:if test="${localDtoAtendimento.horarioPreenchido}">
                 <input type="button" id="btnLiberar" class="speed-button-liberar" onclick="liberarClick(); return false;" title="Liberar horário"/>
             </g:if>
         </span>

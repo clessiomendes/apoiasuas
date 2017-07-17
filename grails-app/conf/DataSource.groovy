@@ -31,6 +31,7 @@ dataSource {
     jmxExport = true
 
     dialect = AmbienteExecucao.CURRENT2.dialect
+//    driverClassName = "net.sf.log4jdbc.DriverSpy"   usado pelo log4jdb para fazer log de sqls
     driverClassName = AmbienteExecucao.CURRENT2.driverClassName
 
     url = AmbienteExecucao.CURRENT2.url

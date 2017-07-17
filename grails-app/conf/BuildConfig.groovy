@@ -204,5 +204,8 @@ grails.project.dependency.resolution = {
         compile "org.grails.plugins:fields:1.5.1"
 
         compile 'org.grails.plugins:cascade-validation:0.1.4'
+
+// https://mvnrepository.com/artifact/com.googlecode.log4jdbc/log4jdbc
+//        compile 'com.googlecode.log4jdbc:log4jdbc:1.2'
     }
 }

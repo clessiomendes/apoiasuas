@@ -16,16 +16,17 @@ class AtendimentoParticularizado implements DominioProtegidoServico {
 //    public static final String ROXO = "#D2B4DE"
 //    public static final String ROSA = "#ff4dd2"
 
-    public static final String COMPARECEU = "atendimento - compareceu"
-    public static final String NAO_COMPARECEU = "atendimento - não compareceu"
-    public static final String HORARIO_PREENCHIDO = "atendimento - horário preenchido"
-    public static final String COMPARECIMENTO_INDEFINIDO = "atendimento - compareceu?"
+    public static final String COMPARECEU = "atendimento (compareceu) - "
+    public static final String NAO_COMPARECEU = "atendimento (NÂO compareceu) - "
+    public static final String HORARIO_PREENCHIDO = "atendimento agendado - "
+    public static final String COMPARECIMENTO_INDEFINIDO = "atendimento (compareceu ?   ) - "
     public static final String LIVRE = "atendimento - horário livre"
 
     Date dataHora
     String nomeCidadao
     String telefoneContato
     Boolean semTelefone
+    Boolean familiaSemCadastro
     Familia familia
     ServicoSistema servicoSistemaSeguranca
     UsuarioSistema tecnico
@@ -34,7 +35,7 @@ class AtendimentoParticularizado implements DominioProtegidoServico {
     //transientes:
     Compromisso compromisso
 
-    static transients = ['compromisso','cor','tooltip']
+    static transients = ['compromisso','cor','tooltip','horarioPreenchido']
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_atendimento_particularizado']
@@ -45,8 +46,7 @@ class AtendimentoParticularizado implements DominioProtegidoServico {
         nomeCidadao(maxSize: 255);
         telefoneContato(maxSize: 255);
         servicoSistemaSeguranca(nullable: false);
-//até ser efetivado o atendimento, a dataHora e o tecnico permanecem vazios
-//        tecnico(nullable: false);
+        tecnico(nullable: false);
     }
 
 //    @Override
@@ -56,34 +56,39 @@ class AtendimentoParticularizado implements DominioProtegidoServico {
 
     public String getCor() {
         String result = null
-        if (compareceu == true)
-            result = AMARELO //MARROM
-        else if (compareceu == false)
-            result = AMARELO //ROXO
-        else if (nomeCidadao) { //horario preenchido
-            use (TimeCategory) {
-                if (dataHora > new Date() + 1.hours)
+        use (TimeCategory) {
+            if (compareceu == true)
+                result = AMARELO //MARROM
+            else if (compareceu == false)
+                result = AMARELO //ROXO
+            else if (horarioPreenchido) { //horario preenchido
+                if ((dataHora > (new Date() - 1.hours)))
                     result = AMARELO
                 else
                     result = VERMELHO
-            }
+            } else if (! horarioPreenchido && dataHora < (new Date() - 1.hours)) //horario livre mas ja no passado (nao tem como ser utilizado mais)
+                result = AMARELO
         }
         result = result ? result : VERDE;
         return result;
     }
 
+    public Boolean getHorarioPreenchido() {
+        return nomeCidadao || familia
+    }
+
     public String getTooltip() {
         String result = null
         if (compareceu == true)
-            result = COMPARECEU //marrom
+            result = COMPARECEU + (nomeCidadao ?: "(nenhum cidadão definido)") //marrom
         else if (compareceu == false)
-            result = NAO_COMPARECEU //marrom
-        else if (nomeCidadao) { //horario preenchido
+            result = NAO_COMPARECEU + (nomeCidadao ?: "(nenhum cidadão definido)") //marrom
+        else if (horarioPreenchido) { //horario preenchido
             use (TimeCategory) {
                 if (dataHora > new Date() + 1.hours)
-                    result = HORARIO_PREENCHIDO //marrom
+                    result = HORARIO_PREENCHIDO + (nomeCidadao ?: "(nenhum cidadão definido)") //marrom
                 else
-                    result = COMPARECIMENTO_INDEFINIDO //marrom
+                    result = COMPARECIMENTO_INDEFINIDO + (nomeCidadao ?: "(nenhum cidadão definido)") //marrom
             }
         }
         result = result ? result : LIVRE //marrom

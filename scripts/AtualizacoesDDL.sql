@@ -327,7 +327,7 @@ alter table atendimento_particularizado add constraint FK_l284tdstdu00cr3cfs3emq
 alter table atendimento_particularizado add constraint FK_ly9f1273nupef57bjjv1ydw83 foreign key (servico_sistema_seguranca_id) references servico_sistema;
 alter table atendimento_particularizado add constraint FK_2lp7id10sf6cnt2fr3lpovgal foreign key (tecnico_id) references usuario_sistema;
 alter table compromisso add constraint ck_inicio_fim_compromisso CHECK (fim > inicio);
-alter table compromisso add constraint ck_atendimento_particularizado CHECK (tipo = 'ATENDIMENTO_PARTICULARIZADO' and atendimento_particularizado_id is not null);
+alter table compromisso add constraint ck_atendimento_particularizado CHECK (tipo != 'ATENDIMENTO_PARTICULARIZADO' or (tipo = 'ATENDIMENTO_PARTICULARIZADO' and atendimento_particularizado_id is not null));
 
 alter table compromisso add constraint FK_6jv5upwhyw8hde3b3kraeafxy foreign key (atendimento_particularizado_id) references atendimento_particularizado;
 alter table compromisso add constraint FK_eld7ltohoh9mirxbaru8889cl foreign key (responsavel_id) references usuario_sistema;
@@ -336,6 +336,11 @@ create sequence sq_atendimento_particularizado;
 create sequence sq_compromisso;
 
 ALTER TABLE public.atendimento_particularizado ADD sem_telefone BOOL NULL;
+
+-- versao ate aqui: current (local:feito, producao: feito)
+
+ALTER TABLE public.usuario_sistema ADD configuracao_agenda VARCHAR(10000) NULL;
+ALTER TABLE public.atendimento_particularizado ADD familia_sem_cadastro BOOL NULL;
 
 /*
 CREATE TABLE ambiente(id INT PRIMARY KEY, descricao VARCHAR(255));

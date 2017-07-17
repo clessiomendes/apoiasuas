@@ -2,6 +2,7 @@ package org.apoiasuas
 
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.json.JsonSlurper
 import org.apoiasuas.agenda.Compromisso
 import org.apoiasuas.cidadao.CidadaoController
 import org.apoiasuas.cidadao.FamiliaController
@@ -9,6 +10,8 @@ import org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasDateUtils
+import org.apoiasuas.util.StringUtils
+import org.springframework.security.access.annotation.Secured
 
 //import fr.opensagres.xdocreport.samples.docxandvelocity.model.Developer;
 //import fr.opensagres.xdocreport.samples.docxandvelocity.model.Project;
@@ -16,11 +19,18 @@ import org.apoiasuas.util.ApoiaSuasDateUtils
 class AgendaController extends AncestralController {
 
     static defaultAction = "calendario";
+    static public final String CONFIGURACAO_CALENDARIO = "CONFIGURACAO_CALENDARIO";
     def agendaService;
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def calendario(Long idUsuarioSistema) {
-        render view: "calendario", model: [operadores: getOperadoresOrdenadosController(true)]
+//        Map configuracaoCalendario;
+//        if (! session[CONFIGURACAO_CALENDARIO])
+//            session[CONFIGURACAO_CALENDARIO] = (CONFIGURACAO_INICIAL + [defaultDate: ApoiaSuasDateUtils.dateTimeToStringIso8601(new Date())]) as JSON;
+//                //Caso não haja configuração prévia guardada na sessão, usar parâmetros default e partir da data atual
+
+        render view: "calendario", model: [operadores: getOperadoresOrdenadosController(true),
+                configuracao: agendaService.getConfiguracao() as JSON, idUsuarioSistema: idUsuarioSistema]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -40,7 +50,7 @@ class AgendaController extends AncestralController {
             render(status: 500, text: "responsável ou hora inicial ou hora final do atendimento não foi fornecido");
         UsuarioSistema tecnico = UsuarioSistema.get(idUsuarioSistema);
         if (! tecnico)
-            render(status: 500, text: "técnico não encontrado para o id $idUsuarioSistema");
+            render(status: 500, text: "técnico  não encontrado para o id $idUsuarioSistema");
 
         Compromisso novoCompromisso = agendaService.criaCompromissoAtendimento(tecnico,  ApoiaSuasDateUtils.stringToDateTimeIso8601(inicio),
                 ApoiaSuasDateUtils.stringToDateTimeIso8601(fim));
@@ -48,11 +58,12 @@ class AgendaController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def obterCompromissos(Long idUsuarioSistema, String start, String end) {
+    def obterCompromissos(Long idUsuarioSistema, String start, String end,
+                          Boolean mostrarAtendimentos, Boolean mostrarOutrosCompromissos) {
         List<Compromisso> compromissos = agendaService.listarCompromissos(
                 ApoiaSuasDateUtils.stringToDateTimeIso8601(start),
                 ApoiaSuasDateUtils.stringToDateTimeIso8601(end),
-                idUsuarioSistema);
+                idUsuarioSistema, mostrarAtendimentos, mostrarOutrosCompromissos);
 
         //Verifica possíveis conflitos entre compromissos de um mesmo responsavel, marcando-os de vermelho
 /*
@@ -78,7 +89,8 @@ class AgendaController extends AncestralController {
         compromisso.inicio = ApoiaSuasDateUtils.stringToDateTimeIso8601(start);
         compromisso.fim = ApoiaSuasDateUtils.stringToDateTimeIso8601(end);
         agendaService.gravaCompromisso(compromisso);
-        render(['success': true] as JSON);
+        return render(compromissoToEvent(compromisso) as JSON);
+//        render(['success': true] as JSON);
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -86,9 +98,20 @@ class AgendaController extends AncestralController {
 //        if (! compromissoInstance)
 //            return buscaMonitoramento(-1);
 
+        if (compromissoInstance == null) //registro excluido em outra sessao de usuario
+            return render(status: 500 /*apontar que houve erro*/,
+                    view: /*modoCriacao ? "" : */ "erroAlteracaoConcorrente",
+                    model: [detalhesErro: "Este compromisso foi excluído em outro computador."]
+            )
+        else if (!validaVersao(compromissoInstance))  //registro alterado em outra sessao de usuario
+            return render(status: 500 /*apontar que houve erro*/,
+                    view: /*modoCriacao ? "" : */ "erroAlteracaoConcorrente",
+                    model: [detalhesErro: "Este compromisso foi alterado em outro computador. Tente novamente."]
+            );
+
         boolean modoCriacao = compromissoInstance.id == null;
         if (modoCriacao)
-            compromissoInstance.servicoSistemaSeguranca = segurancaService.getServicoLogado();
+            compromissoInstance.servicoSistemaSeguranca = segurancaService.getServicoLogado()
 
         compromissoInstance.inicio = dataDoRequest(params['dataInicio'], params['horaInicio'])
         compromissoInstance.fim = dataDoRequest(params['dataFim'], params['horaFim'])
@@ -145,6 +168,13 @@ class AgendaController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def editCompromisso(Long idCompromisso) {
         Compromisso compromisso = agendaService.getCompromisso(idCompromisso);
+
+        if (compromisso == null) //registro excluido em outra sessao de usuario
+            return render(status: 500 /*apontar que houve erro*/,
+                    view: /*modoCriacao ? "" : */ "erroAlteracaoConcorrente",
+                    model: [detalhesErro: "Este compromisso/atendimento foi excluído em outro computador."]
+            )
+
         if (compromisso.tipo.atendimento)
             render view: "editAtendimentoParticularizado", model: getEditCreateModelAtendimento(compromisso.atendimentoParticularizado);
         else
@@ -161,13 +191,22 @@ class AgendaController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def saveAtendimento(AtendimentoParticularizado atendimentoInstance) {
-//        if (! compromissoInstance)
-//            return buscaMonitoramento(-1);
 
 //        Metodo acionado apenas para gravacao de edicao (nunca para novo atendimento)
 //        boolean modoCriacao = atendimentoInstance.id == null;
 //        if (modoCriacao)
 //            atendimentoInstance.servicoSistemaSeguranca = segurancaService.getServicoLogado();
+
+        if (atendimentoInstance == null) //registro excluido em outra sessao de usuario
+            return render(status: 500 /*apontar que houve erro*/,
+                    view: /*modoCriacao ? "" : */ "erroAlteracaoConcorrente",
+                    model: [detalhesErro: "Este atendimento foi excluído em outro computador."]
+            )
+        else if (!validaVersao(atendimentoInstance))  //registro alterado em outra sessao de usuario
+            return render(status: 500 /*apontar que houve erro*/,
+                    view: /*modoCriacao ? "" : */ "erroAlteracaoConcorrente",
+                    model: [detalhesErro: "Este atendimento foi alterado em outro computador. Tente novamente."]
+            );
 
         atendimentoInstance.dataHora = dataDoRequest(params['data'], params['hora'])
 //        if (params['idFamilia'])
@@ -183,9 +222,22 @@ class AgendaController extends AncestralController {
                 validado = false;
                 atendimentoInstance.errors.rejectValue('telefoneContato', "", "Obrigatório informar um telefone ou escolher 'sem telefone'")
             }
-        if (! atendimentoInstance.nomeCidadao && atendimentoInstance.familia) {
+        //Se preencher o nome, defe informar o cadastro ou marcar explicitamente "sem cadastro"
+        if (atendimentoInstance.nomeCidadao)
+            if ((!atendimentoInstance.familia) && (!atendimentoInstance.familiaSemCadastro)) {
+                validado = false;
+                atendimentoInstance.errors.rejectValue('familia', "", "Obrigatório buscar o cad ou informar 'família sem cadastro'")
+            }
+        //Se escolher uma familia ou marcou explicitamente "sem cadastro", deve informar um nome ou liberar o horario
+        if (atendimentoInstance.familia || atendimentoInstance.familiaSemCadastro)
+            if (! atendimentoInstance.nomeCidadao) {
+                validado = false;
+                atendimentoInstance.errors.rejectValue('nomeCidadao', "", "Obrigatório informar o nome ou liberar o horário")
+            }
+        //Nome contendo numeros nao sao permitidos
+        if (atendimentoInstance.nomeCidadao && StringUtils.PATTERN_TEM_NUMEROS.matcher(atendimentoInstance.nomeCidadao)) {
             validado = false;
-            atendimentoInstance.errors.rejectValue('nomeCidadao', "", "Obrigatório informar o nome ou liberar o horário")
+            atendimentoInstance.errors.rejectValue('nomeCidadao', "", "Nome inválido")
         }
 
         if (validado) {
@@ -229,9 +281,10 @@ class AgendaController extends AncestralController {
      * Converte da classe Compromisso para um mapa contendo as propriedades de um Event do componente FullCalendar
      */
     private Map compromissoToEvent(Compromisso compromisso) {
-        String titulo = (("["+compromisso.responsavel?.username+"] ") ?: "") + compromisso.descricao;
+        String responsavel = compromisso.responsavel ? "["+compromisso.responsavel.username+"] " : "";
+        String titulo = responsavel + compromisso.descricao;
         if (compromisso.atendimentoParticularizado)
-            titulo = (("["+compromisso.responsavel?.username+"] ") ?: "") + compromisso.tooltip;
+            titulo = responsavel + compromisso.tooltip;
         return [id: compromisso.id,
                 title: titulo,
                 start: ApoiaSuasDateUtils.dateTimeToStringIso8601(compromisso.inicio),
@@ -243,5 +296,27 @@ class AgendaController extends AncestralController {
                 idResponsavel: compromisso.responsavel?.id]
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def configuracao() {
+        LinkedHashMap<String, Integer> inicioSemana = [1: "segunda", 2: "terça", 3: "quarta", 4: "quinta",
+                5:"sexta", 6:"sábado", 0: "domingo"];
+        return render(view: "configuracao", model: [configuracao: agendaService.getConfiguracao(), inicioSemana: inicioSemana]);
+    }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def saveConfiguracao(ConfiguracaoCommand configuracao) {
+        agendaService.gravaConfiguracao(configuracao);
+        return render(contentType:'text/json', text: ["Configurações gravadas com sucesso."] as JSON)
+//        return render(status: 200 /*apontar sucesso*/);
+    }
+
+}
+
+class ConfiguracaoCommand implements Serializable {
+    String minTime
+    Boolean atendimentos
+    Boolean outrosCompromissos
+    String maxTime
+    Integer firstDay
+    Boolean weekends
 }

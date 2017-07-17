@@ -453,8 +453,9 @@ ul.one-to-many li.add {
 
 /* form fields with errors */
 
-.error input, .error select, .error textarea {
-  background: lighten(@cor-base-mensagem-erro, @lighten-fundo);
+.error input, .error select, .error textarea, .error input[type=checkbox] + *, .error .field-button {
+  //background: lighten(@cor-base-mensagem-erro, @lighten-fundo);
+  background-color: lighten(@cor-base-mensagem-erro, @lighten-fundo);
   border-color: lighten(@cor-base-mensagem-erro, @lighten-borda);
   color: @cor-base-mensagem-erro;
 }

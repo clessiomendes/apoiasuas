@@ -20,7 +20,9 @@ class CidadaoController extends AncestralController {
     //destinos de navegação usados na busca pura de cidadãos
     public static final Map modeloProcurarCidadao = [
             controllerButtonProcurar: "cidadao",
-            actionButtonProcurar: "procurarCidadaoExecuta",
+            actionButtonProcurar: "procurarCidadao",
+            controllerButtonProcurarPopup: "cidadao",
+            actionButtonProcurarPopup: "procurarCidadaoPopup",
             controllerLinkFamilia: "familia",
             actionLinkFamilia: "show",
             controllerLinkCidadao: "cidadao",
@@ -39,7 +41,6 @@ class CidadaoController extends AncestralController {
             cidadaoService.obtemCidadao(params.long('id'), true, true)
     }
 
-
     static List<String> getDocumentos(Cidadao cidadao) {
         List<String> result = []
         if (cidadao.nis)
@@ -53,24 +54,53 @@ class CidadaoController extends AncestralController {
         return result
     }
 
+/*
     def procurarCidadao() {
         render(view: "procurarCidadao", model: modeloProcurarCidadao + [programas: marcadorService.programasDisponiveis]
                 + [cidadaoInstanceList: [], cidadaoInstanceCount: 0, filtro: [:]] )
     }
+*/
 
-    def procurarCidadaoExecuta(FiltroCidadaoCommand filtro) {
+    def procurarCidadao(FiltroCidadaoCommand filtro) {
         //Preenchimento de numeros no primeiro campo de busca indica pesquisa pelo cad
         boolean buscaPorCad = filtro.nomeOuCad && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCad)
         params.max = params.max ?: 20
-        PagedResultList cidadaos = cidadaoService.procurarCidadao2(params, filtro)
         Map filtrosUsados = params.findAll { it.value }
+
+        PagedResultList cidadaos;
+        Integer totalCidadaos;
+        if (filtro.vazio()) {
+            cidadaos = [];
+            totalCidadaos = 0;
+        } else {
+            cidadaos = cidadaoService.procurarCidadao2(params, filtro);
+            totalCidadaos = cidadaos.getTotalCount();
+        }
 
         if (buscaPorCad && cidadaos?.resultList?.size() > 0) {
             Cidadao cidadao = cidadaos?.resultList[0]
             redirect(controller: "familia", action: "show", id: cidadao.familia.id)
         } else
             render(view:"procurarCidadao", model: modeloProcurarCidadao + [programas: marcadorService.programasDisponiveis] +
-                    [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados]);
+                    [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: totalCidadaos, filtro: filtrosUsados]);
+    }
+
+    def procurarCidadaoPopup(FiltroCidadaoCommand filtro) {
+        params.max = params.max ?: 20
+        Map filtrosUsados = params.findAll { it.value }
+
+        PagedResultList cidadaos;
+        Integer totalCidadaos;
+        if (filtro.vazio()) {
+            cidadaos = [];
+            totalCidadaos = 0;
+        } else {
+            cidadaos = cidadaoService.procurarCidadao2(params, filtro);
+            totalCidadaos = cidadaos.getTotalCount();
+        }
+
+        render(view:"procurarCidadaoPopup", model: modeloProcurarCidadao + [programas: marcadorService.programasDisponiveis] +
+                [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: totalCidadaos, filtro: filtrosUsados]);
     }
 
     def abrirFamilia(Familia familiaInstance) {
@@ -133,25 +163,26 @@ class CidadaoController extends AncestralController {
         }
         cidadaoInstance.ultimoAlterador = segurancaService.usuarioLogado;
 
-        //Grava
-        boolean nomeDuplicado = cidadaoService.nomeDuplicado(cidadaoInstance);
-
-        if (cidadaoInstance.validate() && ! nomeDuplicado ) {
-            cidadaoService.grava(cidadaoInstance)
+        boolean validado = cidadaoInstance.validate();
+        //Somente após a chamada a validate() devemos adicionar erros ao objeto
+        if (! validaVersao(cidadaoInstance))
+            validado = false;
+        if (cidadaoService.nomeDuplicado(cidadaoInstance)) {
+            validado = false;
+            cidadaoInstance.errors.rejectValue("nomeCompleto","","Um membro com este nome (${cidadaoInstance.nomeCompleto}) já existe na família.")
+        }
+        if (validado) {
+            cidadaoService.grava(cidadaoInstance);
+            flash.message = "Membro familiar ${cidadaoInstance.nomeCompleto} gravado com sucesso";
+            if (modoCriacao) //volta para a tela da familia que chamou a tela atual
+                forward(controller: 'familia', action: 'show', id: cidadaoInstance.familia.id)
+            else
+                render view: 'show', model: [cidadaoInstance: cidadaoInstance, podeExcluir: cidadaoService.podeExcluir(cidadaoInstance)];
+            guardaUltimoCidadaoSelecionado(cidadaoInstance)
         } else {
-            //Somente após a chamada a validate() devemos adicionar erros ao objeto
-            if (nomeDuplicado)
-                cidadaoInstance.errors.rejectValue("nomeCompleto","","Um membro com este nome (${cidadaoInstance.nomeCompleto}) já existe na família.")
             //exibe o formulario novamente em caso de problemas na validacao
             return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(cidadaoInstance))
         }
-
-        flash.message = "Membro familiar ${cidadaoInstance.nomeCompleto} gravado com sucesso";
-        guardaUltimoCidadaoSelecionado(cidadaoInstance)
-        if (modoCriacao) //volta para a tela da familia que chamou a tela atual
-            forward(controller: 'familia', action: 'show', id: cidadaoInstance.familia.id)
-        else
-            render view: 'show', model: [cidadaoInstance: cidadaoInstance, podeExcluir: cidadaoService.podeExcluir(cidadaoInstance)];
     }
 
     private Map getEditCreateModel(Cidadao cidadaoInstance) {
@@ -196,4 +227,8 @@ class FiltroCidadaoCommand implements Serializable {
     String nis
     String programa
     String outroMembro
+
+    public boolean vazio() {
+        return ! (nomeOuCad || logradouro ||numero || idade || nis || programa || outroMembro)
+    }
 }

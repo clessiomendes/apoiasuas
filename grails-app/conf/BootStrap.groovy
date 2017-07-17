@@ -49,6 +49,11 @@ class BootStrap {
             updateAttributesFromMap delegate, it
         }
 
+        //Criando um novo metodo em todos os objetos groovy da aplicacao
+//        Object.metaClass.apenasCamposExplicitamenteDeclarados = {
+//            updateAttributesFromMap delegate, it
+//        }
+
         //Validando esquema de banco de dados
         validaEsquemaBD()
 

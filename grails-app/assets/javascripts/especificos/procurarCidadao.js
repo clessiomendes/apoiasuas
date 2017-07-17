@@ -3,32 +3,44 @@
  * passando os parametros pela url em uma requisicao GET para o servidor
  */
 function linkProcurarCidadao(link, url) {
+    link.href = url + montaParametros();
+};
+
+function montaParametros(elementoPai) {
+    if (! elementoPai)
+        elementoPai = $(document);
+    var $divPai = $(elementoPai)
+    var $inputNomeOuCad = $divPai.find('#inputNomeOuCad')
+    var $inputNumero = $divPai.find('#inputNumero')
+    var $inputLogradouro = $divPai.find('#inputLogradouro')
+    var $inputOutroMembro = $divPai.find('#inputOutroMembro')
+    var $inputIdade = $divPai.find('#inputIdade')
+    var $inputNis = $divPai.find('#inputNis')
+    var $inputPrograma = $divPai.find('#inputPrograma')
 
     var params = "";
-    var inputNomeOuCad = document.getElementById('inputNomeOuCad')
-    var inputNumero = document.getElementById('inputNumero')
-    var inputLogradouro = document.getElementById('inputLogradouro')
-    var inputOutroMembro = document.getElementById('inputOutroMembro')
-    var inputIdade = document.getElementById('inputIdade')
-    var inputNis = document.getElementById('inputNis')
-    var inputPrograma = document.getElementById('inputPrograma')
-    if (inputNomeOuCad != null && inputNomeOuCad.value != "")
-        params += "&nomeOuCad="+ encodeURIComponent(inputNomeOuCad.value);
-    if (inputNumero != null && inputNumero.value != "")
-        params += "&numero="+encodeURIComponent(inputNumero.value);
-    if (inputLogradouro != null && inputLogradouro.value != "")
-        params += "&logradouro="+encodeURIComponent(inputLogradouro.value);
-    if (inputOutroMembro != null && inputOutroMembro.value != "")
-        params += "&outroMembro="+encodeURIComponent(inputOutroMembro.value);
-    if (inputIdade != null && inputIdade.value != "")
-        params += "&idade="+encodeURIComponent(inputIdade.value);
-    if (inputNis != null && inputNis.value != "")
-        params += "&nis="+encodeURIComponent(inputNis.value);
-    if (inputPrograma && inputPrograma != null && inputPrograma.value != "")
-        params += "&programa="+encodeURIComponent(inputPrograma.value);
+    if ($inputNomeOuCad.length && $inputNomeOuCad.val() != "")
+        params += "&nomeOuCad="+ encodeURIComponent($inputNomeOuCad.val());
+    if ($inputNumero.length && $inputNumero.val() != "")
+        params += "&numero="+encodeURIComponent($inputNumero.val());
+    if ($inputLogradouro.length && $inputLogradouro.val() != "")
+        params += "&logradouro="+encodeURIComponent($inputLogradouro.val());
+    if ($inputOutroMembro.length && $inputOutroMembro.val() != "")
+        params += "&outroMembro="+encodeURIComponent($inputOutroMembro.val());
+    if ($inputIdade.length && $inputIdade.val() != "")
+        params += "&idade="+encodeURIComponent($inputIdade.val());
+    if ($inputNis.length && $inputNis.val() != "")
+        params += "&nis="+encodeURIComponent($inputNis.val());
+    if ($inputPrograma && $inputPrograma.length && $inputPrograma.val() != "")
+        params += "&programa="+encodeURIComponent($inputPrograma.val());
     if (params.substring(0,1) == "&")
         params = "?"+params.substring(1)
-    link.href = url + params
+    return params
+}
+
+function linkProcurarCidadaoPopup(localJanela, url) {
+    localJanela.abreJanela({titulo: 'Procurar cadastro familiar', url: url + montaParametros(localJanela.getDivModal()), largura: 900});
+    return false;
 };
 
 /**

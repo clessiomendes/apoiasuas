@@ -25,6 +25,10 @@ class FormularioIdentidade extends FormularioBase {
                 obrigatorio true
             }
             campoBancoDeDados {
+                origem CampoFormulario.Origem.FAMILIA
+                codigo 'cad'
+            }
+            campoBancoDeDados {
                 origem CampoFormulario.Origem.CIDADAO
                 codigo 'data_nascimento'
                 obrigatorio true

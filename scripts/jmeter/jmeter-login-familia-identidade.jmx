@@ -205,7 +205,7 @@
           </UniformRandomTimer>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://apoiacras-valid.cleverapps.io/cidadao/procurarCidadaoExecuta?nomeOuCad=maria%20gracas" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="https://apoiacras-valid.cleverapps.io/cidadao/procurarCidadao?nomeOuCad=maria%20gracas" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="nomeOuCad" elementType="HTTPArgument">
@@ -221,7 +221,7 @@
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">${BASE_PATH}/cidadao/procurarCidadaoExecuta</stringProp>
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/cidadao/procurarCidadao</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
