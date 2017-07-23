@@ -122,4 +122,8 @@ class UsuarioSistemaService {
             new UsuarioSistemaPapel(usuarioSistema: usuarioSistemaInstance, papel: papel).save()
     }
 
+    public UsuarioSistema getUsuarioSistema(Long id) {
+        return UsuarioSistema.get(id);
+    }
+
 }

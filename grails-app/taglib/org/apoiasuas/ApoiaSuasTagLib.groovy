@@ -7,6 +7,7 @@ import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.Formulario
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
 import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
@@ -22,6 +23,8 @@ class ApoiaSuasTagLib {
     public static final String TABS_MONTAR_MENU = "TABS_MONTAR_MENU"
     public static final String TABS_MONTAR_DIVS = "TABS_MONTAR_DIVS"
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
+
+    def segurancaService;
 
     /**
      * Cria um div para um novo campo numa tela de formulario APENAS se o campo estiver previsto para o formulario em questao.
@@ -380,6 +383,44 @@ class ApoiaSuasTagLib {
         html.spam attrs, {
             mkp.yieldUnescaped(body());
         }
+    }
+
+/**
+ * Sobrescreve a tag padrao de geracao de links (link) para decorar itens de menu e testar permissoes de acesso.
+ * General linking to controllers, actions etc. Examples:<br/>
+ *
+ * &lt;g:link action="myaction"&gt;link 1&lt;/gr:link&gt;<br/>
+ * &lt;g:link controller="myctrl" action="myaction"&gt;link 2&lt;/gr:link&gt;<br/>
+ *
+ * @attr acessoServico verifica se o serviço logado tem acesso a determinada funcionalidade.
+ * @attr controller The name of the controller to use in the link, if not specified the current controller will be linked
+ * @attr controller The name of the controller to use in the link, if not specified the current controller will be linked
+ * @attr action The name of the action to use in the link, if not specified the default action will be linked
+ * @attr controller The name of the controller to use in the link, if not specified the current controller will be linked
+ * @attr action The name of the action to use in the link, if not specified the default action will be linked
+ * @attr uri relative URI
+ * @attr url A map containing the action,controller,id etc.
+ * @attr base Sets the prefix to be added to the link target address, typically an absolute server URL. This overrides the behaviour of the absolute property, if both are specified.
+ * @attr absolute If set to "true" will prefix the link target address with the value of the grails.serverURL property from Config, or http://localhost:&lt;port&gt; if no value in Config and not running in production.
+ * @attr id The id to use in the link
+ * @attr fragment The link fragment (often called anchor tag) to use
+ * @attr params A map containing URL query parameters
+ * @attr mapping The named URL mapping to use to rewrite the link
+ * @attr event Webflow _eventId parameter
+ * @attr elementId DOM element id
+
+ */
+    def linkMenu = { attrs, body ->
+        RecursosServico acessoServico = attrs.remove("acessoServico")
+        if (! segurancaService.acessoRecursoServico(acessoServico))
+            return;
+
+        String imagem = attrs.remove("imagem");
+        if (imagem)
+            attrs.put("style","background-image: url('${asset.assetPath(src: imagem)}')");
+//            attrs.put("style","background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.7) 0%,rgba(255,255,255,0.7) 100%), url('${asset.assetPath(src: imagem)}')");
+
+        out << link(attrs, body)
     }
 
 }

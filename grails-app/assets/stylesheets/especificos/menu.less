@@ -1,12 +1,5 @@
 @import (reference) "../globais/main";
 
-/*
-.wrap{
-    width:95%;
-    margin: 10px auto ;
-}
-*/
-
 #menu {
     margin-bottom: 0px;
     font-weight: bold;
@@ -21,52 +14,52 @@
     text-align:center;
     display:block;
     text-align:center;
-    padding-top:20px;
-}
-
-#menu a.verde_oliva, #menu a.laranja, #menu a.verde_agua, #menu a.azul, #menu a.magenta, #menu a.marrom, #menu a.lilas, #menu a.rosa, #menu a.beje
-{
     margin: 2px;
-    padding: 20px;
-    width: 144px;
-    height: 144px;
+    padding: 10px;
+    //padding-top:20px;
+    width: 164px;
+    height: 164px;
+
+    font-size: 16px;
+    background-position: 50% 80%;
+    background-repeat: no-repeat;
+    background-size: 90px;
 }
 
 #menu a.verde_oliva {
-    background: #A6C91C;
-    /*background: #A6C91C url('http://wsnippets.com/wp-content/uploads/2013/11/logo.png') no-repeat center center;*/
+    background-color: #A6C91C;
 }
 
 #menu a.laranja {
-    background: #D87426;
+    background-color: #D87426;
 }
 
 #menu a.verde_agua {
-    background: #086A77;
+    background-color: #086A77;
 }
 
 #menu a.azul {
-    background: #5375CA;
+    background-color: #5375CA;
 }
 
 #menu a.magenta {
-    background: #DA3DF8;
+    background-color: #DA3DF8;
 }
 
 #menu .marrom {
-    background: #9C3939;
+    background-color: #9C3939;
 }
 
 #menu .lilas {
-    background: #363996;
+    background-color: #363996;
 }
 
 #menu .rosa {
-    background: #EC2141;
+    background-color: #EC2141;
 }
 
 #menu .beje {
-    background: #F4B32A;
+    background-color: #F4B32A;
 }
 
 
@@ -94,22 +87,6 @@
     transition: all 0.4s linear;
 }
 @media (max-width:768px){
-/*
-    #menu a i{
-        font-size:16px;
-    }
-    #menu .verde_oliva,
-    #menu .laranja,
-    #menu .verde_agua,
-    #menu .azul,
-    #menu .magenta,
-    #menu .lilas,
-    #menu .rosa,
-    #menu .beje,
-    #menu .marrom {
-        height:73px;
-    }
-*/
     #menu a.verde_oliva,
     #menu a.laranja,
     #menu a.verde_agua,
@@ -120,14 +97,18 @@
     #menu a.beje,
     #menu a.marrom
     {
-        font-size:12px;
-        height: 73px;
-        width: 73px;
+        font-size: 11px;
+        background-position: 50% 90%;
+        background-repeat: no-repeat;
+        background-size: 50px;
+        padding: 5px;
+        height: 103px;
+        width: 103px;
     }
 }
 
 .anuncio-rede-socio-assistencial {
-    background: lighten(@cor-base-mensagem-info, @lighten-fundo) url('../../images/rede-socio-assistencial.png') 0.5em 50% no-repeat;
+    background: lighten(@cor-base-mensagem-info, @lighten-fundo) url('../../images/usecases/rede-socio-assistencial.png') 0.5em 50% no-repeat;
     background-size: 40px 40px;
     cursor: pointer;
     padding: 7px;

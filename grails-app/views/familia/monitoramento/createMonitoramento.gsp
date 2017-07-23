@@ -2,6 +2,19 @@
 	org.apoiasuas.cidadao.Monitoramento localDtoMonitoramento = monitoramentoInstance
 %>
 
+%{--
+<script>
+	function onError(XMLHttpRequest) {
+//		console.log(XMLHttpRequest);
+		if (XMLHttpRequest.status == 401)
+			alert('Não autenticado')
+		else
+			janelaModal.loadHTML(XMLHttpRequest.responseText);
+	}
+//# sourceURL=createMonitoramento
+</script>
+--}%
+
 <div id="create-monitoramento" class="content scaffold-create" role="main">
 	<g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>
@@ -15,7 +28,7 @@
 	</g:hasErrors>
 
 	<g:formRemote url="[action:'saveMonitoramento']" name="saveMonitoramento"
-				  onFailure="janelaModal.loadHTML(XMLHttpRequest.responseText);"
+				  onFailure="onError(XMLHttpRequest);"
                   onSuccess="janelaModal.confirmada();">
 		<fieldset class="form">
             <g:render template="monitoramento/formMonitoramento"/>

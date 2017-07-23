@@ -29,9 +29,12 @@ class Compromisso implements DominioProtegidoServico {
     AtendimentoParticularizado atendimentoParticularizado
     Tipo tipo
     ServicoSistema servicoSistemaSeguranca
-    UsuarioSistema responsavel
+//    UsuarioSistema responsavel
+    List<UsuarioSistema> participantes = []
 
     static transients = ['cor','tooltip']
+
+    static hasMany = [participantes: UsuarioSistema]
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_compromisso']

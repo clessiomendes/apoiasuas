@@ -39,7 +39,7 @@ class BuscaCentralizadaController extends AncestralController {
                 if (objeto instanceof Servico) {
                     Servico servicoInstance = servicoService.getServico(objeto.id)
                     objetoEncontrado.tipo = "serviço, programa ou ação da rede sócio-assistencial"
-                    objetoEncontrado.imagem = "rede-socio-assistencial.png"
+                    objetoEncontrado.imagem = "usecases/rede-socio-assistencial.png"
                     objetoEncontrado.url = link([controller: "servico", action: "show", id: servicoInstance.id]){ servicoInstance.apelido }
                     objetoEncontrado.detalhes = fullTextSearchService.formataDetalhe(objetoEncontrado.detalhes ?: servicoInstance.descricao)
                 } else if (objeto instanceof Link) {
@@ -47,18 +47,18 @@ class BuscaCentralizadaController extends AncestralController {
                     objetoEncontrado.detalhes = fullTextSearchService.formataDetalhe(objetoEncontrado.detalhes ?: linkInstance.instrucoes)
                     if (linkInstance.tipo.file) {
                         objetoEncontrado.tipo = "arquivo para download"
-                        objetoEncontrado.imagem = "file-download.png"
+                        objetoEncontrado.imagem = "usecases/file.png"
                         objetoEncontrado.url = link([controller: "link", action: "downloadFile", id: linkInstance.id]){ linkInstance.descricao }
                     } else if (linkInstance.tipo.url) {
                         objetoEncontrado.tipo = "link externo"
-                        objetoEncontrado.imagem = "link.png"
+                        objetoEncontrado.imagem = "usecases/link.png"
                         String urlCorrigida = linkInstance.url.toLowerCase().startsWith("http") ? linkInstance.url : "http://"+linkInstance.url
                         objetoEncontrado.url = link([target: "new", url: urlCorrigida]) { linkInstance.descricao }
                     }
                 } else if (objeto instanceof Formulario) {
                     Formulario formularioInstance = formularioService.getFormulario(objeto.id)
                     objetoEncontrado.tipo = "formulário online"
-                    objetoEncontrado.imagem = "formulario.png"
+                    objetoEncontrado.imagem = "usecases/formulario.png"
                     objetoEncontrado.url = link([controller: "emissaoFormulario", action: "escolherFamilia",
                                                  params: [idFormulario: formularioInstance.id]]) { formularioInstance.nome }
                     objetoEncontrado.detalhes = fullTextSearchService.formataDetalhe(objetoEncontrado.detalhes ?: formularioInstance.descricao)

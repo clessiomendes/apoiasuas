@@ -3,7 +3,7 @@ package apoiasuas
 import grails.plugin.springsecurity.SecurityTagLib
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 
-class ASSecurityTagLib {
+class ApoiaSuasSecurityTagLib {
     static defaultEncodeAs = [taglib:'raw']
     static namespace = "sec"
 

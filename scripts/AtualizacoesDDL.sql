@@ -342,6 +342,14 @@ ALTER TABLE public.atendimento_particularizado ADD sem_telefone BOOL NULL;
 ALTER TABLE public.usuario_sistema ADD configuracao_agenda VARCHAR(10000) NULL;
 ALTER TABLE public.atendimento_particularizado ADD familia_sem_cadastro BOOL NULL;
 
+-- versao ate aqui: current (local:feito, producao: feito)
+
+create table compromisso_usuario_sistema (compromisso_participantes_id int8 not null, usuario_sistema_id int8 not null, participantes_idx int4 not null);
+alter table compromisso_usuario_sistema add constraint FK_asamgomnny9f67otreqkfeikg foreign key (usuario_sistema_id) references usuario_sistema;
+alter table compromisso_usuario_sistema add constraint FK_yebda03yqels82367fbol12f foreign key (compromisso_participantes_id ) references compromisso;
+
+insert into compromisso_usuario_sistema select id, responsavel_id, 0 from compromisso where responsavel_id is not null;
+
 /*
 CREATE TABLE ambiente(id INT PRIMARY KEY, descricao VARCHAR(255));
 INSERT into ambiente (id, descricao) values (0, );

@@ -18,7 +18,7 @@
         if (confirm(mensagem))
             btnApagarAtendimento.click();
     }
-
+//# sourceURL=editAtendimentoParticularizado
 </script>
 
 <div id="edit-atendimento" class="content scaffold-create" role="main">

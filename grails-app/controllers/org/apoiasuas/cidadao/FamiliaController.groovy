@@ -159,7 +159,7 @@ class FamiliaController extends AncestralController {
     }
 
     private Map getEditCreateModelMonitoramento(Monitoramento monitoramentoInstance) {
-        return [monitoramentoInstance: monitoramentoInstance, operadores: getTecnicosOrdenadosController(true, monitoramentoInstance?.responsavel)];
+        return [monitoramentoInstance: monitoramentoInstance, operadores: getTecnicosOrdenadosController(true, monitoramentoInstance ? [monitoramentoInstance.responsavel] : [])];
     }
 
     /**
@@ -278,6 +278,9 @@ class FamiliaController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def createMonitoramento(Long idFamilia) {
+//        HttpSession session = request.getSession();
+//        session.setMaxInactiveInterval(5);
+
         Monitoramento novoMonitoramento = new Monitoramento();
         Familia familia = Familia.get(idFamilia);
         if (! familia)

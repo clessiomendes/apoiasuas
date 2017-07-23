@@ -38,8 +38,8 @@ class AgendaService {
             compromisso.atendimentoParticularizado.with {
                 if (compromisso.inicio && compromisso.inicio != dataHora)
                     dataHora = compromisso.inicio;
-                if (compromisso.responsavel && compromisso.responsavel.id != tecnico?.id)
-                    tecnico = compromisso.responsavel;
+//                if (compromisso.responsavel && compromisso.responsavel.id != tecnico?.id)
+//                    tecnico = compromisso.responsavel;
                 save();
             }
 
@@ -57,7 +57,7 @@ class AgendaService {
                 " and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim >= :periodoInicio and a.fim < :periodoFim)) ";
         Map filtros = [servicoSistema: segurancaService.servicoLogado, periodoInicio: inicioInclusive, periodoFim: fimExclusive]
         if (idUsuarioSistema) {
-            hql += ' and (a.responsavel is null or a.responsavel = :responsavel) ';
+            hql += ' and (size(a.participantes) = 0 or :responsavel in elements(a.participantes) ) ';
             filtros.put("responsavel", UsuarioSistema.get(idUsuarioSistema))
         }
         if (! mostrarAtendimentos) {
@@ -220,7 +220,7 @@ class AgendaService {
     public Compromisso criaCompromissoAtendimento(UsuarioSistema parametroTecnico, Date parametroInicio, Date parametroFim) {
         Compromisso novoCompromisso = new Compromisso();
         novoCompromisso.with {
-            responsavel = parametroTecnico;
+            participantes.add(parametroTecnico);
             inicio = parametroInicio;
             fim = parametroFim;
             tipo = Compromisso.Tipo.ATENDIMENTO_PARTICULARIZADO;
@@ -232,7 +232,7 @@ class AgendaService {
             atendimentoParticularizado.with {
                 dataHora = parametroInicio;
                 servicoSistemaSeguranca = segurancaService.getServicoLogado();
-                tecnico = responsavel;
+                tecnico = parametroTecnico;
                 compareceu = null;
             }
             atendimentoParticularizado.save();
@@ -255,8 +255,10 @@ class AgendaService {
                         (atendimento.compromisso.fim.time - atendimento.compromisso.inicio.time))
                 atendimento.compromisso.inicio = atendimento.dataHora;
             }
-            if (atendimento.tecnico && atendimento.tecnico.id != atendimento.compromisso.responsavel?.id)
-                atendimento.compromisso.responsavel = atendimento.tecnico;
+            if (atendimento.tecnico && ! atendimento.compromisso.participantes.contains(atendimento.tecnico)) {
+                atendimento.compromisso.participantes.clear();
+                atendimento.compromisso.participantes.add(atendimento.tecnico);
+            }
             atendimento.compromisso.save();
         }
         atendimento.save();

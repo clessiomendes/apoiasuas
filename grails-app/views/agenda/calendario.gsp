@@ -12,6 +12,7 @@
     <asset:javascript src="especificos/jquery.timepicker.js"/>
     <asset:stylesheet src="especificos/jquery.timepicker.css"/>
 
+    %{--<asset:javascript src="especificos/loadingoverlay.js"/>--}%
     <asset:javascript src="especificos/procurarCidadao.js"/>
 </head>
 
@@ -158,6 +159,10 @@
     }
 
     function updateHorarioCompromisso( event, delta, revertFunc, jsEvent, ui, view) {
+        if (! confirm("Confirma alteração de '"+event.title+"' ?")) {
+            revertFunc();
+            return;
+        }
         var strStart = event.start ? event.start.format() : "";
         var strEnd = event.end ? event.end.format() : "";
         var urlUpdate = "${createLink(action:'updateCompromissoHorario')}?idCompromisso="+event.id
@@ -171,7 +176,6 @@
                 //    null, jqXHR.responseText);
                 alert("Erro gravando alteração do compromisso ["+event.title+"] no banco de dados : "+textStatus+", "+errorThrown);
             },
-            //como sinalizar sucesso?
             success: function(data) { refreshEvento(data) }
         });
     };
@@ -183,7 +187,10 @@
         var $calendar = $('#calendar')
         $calendar.fullCalendar('removeEvents', compromisso.id)
         var $selectOperadores = $('#selectUsuarioSistema')
-        if ($selectOperadores.val() == '' || $selectOperadores.val() == compromisso.idResponsavel)
+        //Situacoes em que o evento deve ser exibido:
+        if ($selectOperadores.val() == '' || //nenhum operador filtrado na tela
+                    compromisso.idsParticipantes.length == 0 ||  //o compromisso nao tem nenhum participante, exibir para todos os operadores
+                    $.inArray(parseInt($selectOperadores.val()), compromisso.idsParticipantes) >= 0) //verificar se o operador filtrado na tela e um dos participantes do compromisso
             $calendar.fullCalendar('renderEvent', compromisso);
     }
 

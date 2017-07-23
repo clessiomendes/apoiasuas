@@ -121,11 +121,11 @@ class AncestralController {
         }
     }
 
-    protected ArrayList<UsuarioSistema> getOperadoresOrdenadosController(boolean somenteHabilitados, UsuarioSistema sempreMostrar = null) {
+    protected ArrayList<UsuarioSistema> getOperadoresOrdenadosController(boolean somenteHabilitados, Collection<UsuarioSistema> sempreMostrar = []) {
         return segurancaService.getOperadoresOrdenados(somenteHabilitados, sempreMostrar)
     }
 
-    protected ArrayList<UsuarioSistema> getTecnicosOrdenadosController(boolean somenteHabilitados, UsuarioSistema sempreMostrar = null) {
+    protected ArrayList<UsuarioSistema> getTecnicosOrdenadosController(boolean somenteHabilitados, Collection<UsuarioSistema> sempreMostrar = []) {
         return segurancaService.getTecnicosOrdenados(somenteHabilitados, sempreMostrar)
     }
 

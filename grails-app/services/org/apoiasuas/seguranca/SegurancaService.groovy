@@ -167,7 +167,7 @@ class SegurancaService {
      * com -. Mostra primeiro os operadores habilitados e, por ultimo, os desabilitados
      */
     @Transactional(readOnly = true)
-    public ArrayList<UsuarioSistema> getOperadoresOrdenados(boolean somenteHabilitados, UsuarioSistema sempreMostrar = null) {
+    public ArrayList<UsuarioSistema> getOperadoresOrdenados(boolean somenteHabilitados, Collection<UsuarioSistema> sempreMostrar = []) {
         ApoiaSuasUser principal = getPrincipal();
 //        UsuarioSistema logado = getUsuarioLogado()
 //        logado.discard() //desconecta dos objetos na cache da sessao hibernate
@@ -185,7 +185,7 @@ class SegurancaService {
                 if (! somenteHabilitados) {
                     operador.username = operador.username + SUFIXO_OPERADOR_EXCLUIDO
                     desabilitados << operador
-                } else if (operador.id == sempreMostrar?.id) {
+                } else if (operador.id in sempreMostrar.collect {it.id} ) {
                     operador.username = operador.username + SUFIXO_OPERADOR_EXCLUIDO
                     desabilitados << operador
                 }
@@ -199,11 +199,11 @@ class SegurancaService {
      * Apenas operadores com o perfil STR_TECNICO. Ver mais detalhes em getOperadoresOrdenados()
      */
     @Transactional(readOnly = true)
-    public ArrayList<UsuarioSistema> getTecnicosOrdenados(boolean somenteHabilitados, UsuarioSistema sempreMostrar = null) {
+    public ArrayList<UsuarioSistema> getTecnicosOrdenados(boolean somenteHabilitados, Collection<UsuarioSistema> sempreMostrar = []) {
         Papel papelTecnico = Papel.findByAuthority(DefinicaoPapeis.STR_TECNICO);
         ArrayList<UsuarioSistema> result = getOperadoresOrdenados(somenteHabilitados, sempreMostrar).findAll { operador ->
             //sempre mostrar o operador passado por parametro
-            (sempreMostrar?.id == operador.id
+            (operador.id in sempreMostrar.collect {it.id}
             ||
             //ou se o operador tiver o papel de tecnico
             UsuarioSistemaPapel.countByUsuarioSistemaAndPapel(operador, papelTecnico) > 0)

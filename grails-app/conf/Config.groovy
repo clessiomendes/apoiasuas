@@ -31,9 +31,6 @@ grails.gorm.default.constraints = {
     '*'(nullable: true)
 }
 
-//Permite que as informacoes de login sejam acessiveis aa partir de threads que nao o thread do request
-grails.plugin.springsecurity.sch.strategyName = org.springframework.security.core.context.SecurityContextHolder.MODE_INHERITABLETHREADLOCAL
-
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 
 // The ACCEPT header will not be used for content negotiation for user agents containing the following strings (defaults to the 4 major rendering engines)
@@ -233,6 +230,13 @@ log4j.main = {
 //            'org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler' //Limpar mensagem "Warning - shared formulas not yet supported"
 
 }
+
+//Permite que as informacoes de login sejam acessiveis aa partir de threads que nao o thread do request
+grails.plugin.springsecurity.sch.strategyName = org.springframework.security.core.context.SecurityContextHolder.MODE_INHERITABLETHREADLOCAL
+
+//Força sempre o redirecionamento parao menu inicial apos uma tela de login
+//grails.plugins.springsecurity.successHandler.alwaysUseDefault = true
+//grails.plugins.springsecurity.successHandler.defaultTargetUrl = '/'
 
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'org.apoiasuas.seguranca.UsuarioSistema'

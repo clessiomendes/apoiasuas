@@ -21,6 +21,7 @@ class AgendaController extends AncestralController {
     static defaultAction = "calendario";
     static public final String CONFIGURACAO_CALENDARIO = "CONFIGURACAO_CALENDARIO";
     def agendaService;
+    def usuarioSistemaService;
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def calendario(Long idUsuarioSistema) {
@@ -36,7 +37,8 @@ class AgendaController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def createCompromisso(Long idUsuarioSistema, String inicio, String fim) {
         Compromisso novoCompromisso = new Compromisso();
-        novoCompromisso.responsavel = UsuarioSistema.get(idUsuarioSistema);
+        if (idUsuarioSistema)
+            novoCompromisso.participantes.add(UsuarioSistema.get(idUsuarioSistema));
         novoCompromisso.inicio = ApoiaSuasDateUtils.stringToDateTimeIso8601(inicio);
         novoCompromisso.fim = ApoiaSuasDateUtils.stringToDateTimeIso8601(fim);// + 0.042;
         novoCompromisso.tipo = Compromisso.Tipo.OUTROS;
@@ -109,6 +111,14 @@ class AgendaController extends AncestralController {
                     model: [detalhesErro: "Este compromisso foi alterado em outro computador. Tente novamente."]
             );
 
+        LinkedHashSet participantes = [];
+        params.participantesAux?.each { String idParticipante ->
+            if (! idParticipante?.isEmpty())
+                participantes.add(usuarioSistemaService.getUsuarioSistema(new Long(idParticipante)))
+        }
+        compromissoInstance.participantes.clear();
+        compromissoInstance.participantes.addAll(participantes);
+
         boolean modoCriacao = compromissoInstance.id == null;
         if (modoCriacao)
             compromissoInstance.servicoSistemaSeguranca = segurancaService.getServicoLogado()
@@ -146,7 +156,7 @@ class AgendaController extends AncestralController {
 
     private Map getEditCreateModelCompromisso(Compromisso compromissoInstance) {
         return [ compromissoInstance: compromissoInstance,
-            operadores: getOperadoresOrdenadosController(true, compromissoInstance.responsavel)
+            operadores: getOperadoresOrdenadosController(true, compromissoInstance ? compromissoInstance.participantes : [] )
         ]
     }
 
@@ -268,7 +278,7 @@ class AgendaController extends AncestralController {
         return [ atentimentoParticularizadoInstance: atendimentoInstance,
                  cidadaoCandidato: CidadaoController.getUltimoCidadao(session),
                  familiaCandidata: FamiliaController.getUltimaFamilia(session),
-                 operadores: getOperadoresOrdenadosController(true, atendimentoInstance.tecnico)
+                 operadores: getOperadoresOrdenadosController(true, [atendimentoInstance.tecnico])
         ]
     }
 
@@ -281,10 +291,17 @@ class AgendaController extends AncestralController {
      * Converte da classe Compromisso para um mapa contendo as propriedades de um Event do componente FullCalendar
      */
     private Map compromissoToEvent(Compromisso compromisso) {
-        String responsavel = compromisso.responsavel ? "["+compromisso.responsavel.username+"] " : "";
-        String titulo = responsavel + compromisso.descricao;
+        String participantes = "";
+        if (compromisso.participantes) {
+            participantes += "["+compromisso.participantes[0].username;
+            if (compromisso.participantes.size() > 1)
+                participantes += ", ...";
+            participantes += "] "
+        }
+//        compromisso.participantes ? "["+compromisso.responsavel.username+"] " : "";
+        String titulo = participantes + compromisso.descricao;
         if (compromisso.atendimentoParticularizado)
-            titulo = responsavel + compromisso.tooltip;
+            titulo = participantes + compromisso.tooltip;
         return [id: compromisso.id,
                 title: titulo,
                 start: ApoiaSuasDateUtils.dateTimeToStringIso8601(compromisso.inicio),
@@ -293,7 +310,7 @@ class AgendaController extends AncestralController {
                 //Personalizados:
                 tipoAtendimento: compromisso.tipo.atendimento,
                 tooltip: compromisso.tooltip,
-                idResponsavel: compromisso.responsavel?.id]
+                idsParticipantes: compromisso.participantes.collect { it.id } ]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
