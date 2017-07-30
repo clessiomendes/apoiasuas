@@ -3,15 +3,15 @@
 %>
 
 <g:javascript>
-    var janelaModal = new JanelaModalAjax();
+    var janelaModalMonitoramentos = new JanelaModalAjax();
 
     $(document).ready(function() {
 		//updateList();
-		//janelaModal = new JanelaModalAjax(updateList);
+		janelaModalMonitoramentos
     } );
 
     function createMonitoramento() {
-        janelaModal.abreJanela({titulo: "Criar novo Monitoramento", refreshFunction: updateList,
+        janelaModalMonitoramentos.abreJanela({titulo: "Criar novo Monitoramento", refreshFunction: updateList,
                 url: "${createLink(action:'createMonitoramento', params: [idFamilia: localDtoFamilia.id])}"});
     }
 

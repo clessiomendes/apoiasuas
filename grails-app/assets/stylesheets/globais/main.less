@@ -825,6 +825,11 @@ table.tabelaListagem .even {
   background-image: url(../../images/usecases/acompanhamento.png);
 }
 
+.buttons .formulario {
+  .buttonsFooter();
+  background-image: url(../../images/usecases/formulario.png);
+}
+
 .buttons .list {
   .buttonsFooter();
   background-image: url(../../images/database/table.png);
@@ -1107,3 +1112,11 @@ nobr {
 .monitoramento-suspenso { .situacao-monitoramento(url(../../images/monitoramento/suspended.png)); }
 .monitoramento-pendente { .situacao-monitoramento(url(../../images/monitoramento/pending.png)); }
 .monitoramento-prioritario { .situacao-monitoramento(url(../../images/monitoramento/important.png)); }
+
+//Necessarios para customizar as caixas de dialogo modais do JQuery UI
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
+.no-titlebar .ui-dialog-titlebar {
+  display: none;
+}

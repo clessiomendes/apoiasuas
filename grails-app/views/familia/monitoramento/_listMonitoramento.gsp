@@ -13,20 +13,20 @@
     <tbody>
     <g:each in="${monitoramentoInstanceList}" status="i" var="monitoramentoInstance">
         <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-            <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "ver monitoramento", refreshFunction: updateList,
+            <td><a href="javascript:void(0)" onclick='janelaModalMonitoramentos.abreJanela({titulo: "ver monitoramento", refreshFunction: updateList,
                 url: "${createLink(action:'showMonitoramento', id: monitoramentoInstance.id)}"});'>
                 <g:formatDate date="${monitoramentoInstance.dataCriacao}"/>
             </a></td>
-            <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "ver monitoramento", refreshFunction: updateList,
+            <td><a href="javascript:void(0)" onclick='janelaModalMonitoramentos.abreJanela({titulo: "ver monitoramento", refreshFunction: updateList,
                 url: "${createLink(action:'showMonitoramento', id: monitoramentoInstance.id)}"});'>
                 <input type="button" class="${monitoramentoInstance.iconeSituacao}" title="${monitoramentoInstance.situacao}"/>
             </a></td>
-            <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "ver monitoramento", refreshFunction: updateList,
+            <td><a href="javascript:void(0)" onclick='janelaModalMonitoramentos.abreJanela({titulo: "ver monitoramento", refreshFunction: updateList,
                 url: "${createLink(action:'showMonitoramento', id: monitoramentoInstance.id)}"});'>
                 ${monitoramentoInstance.memoCortado}
             </a></td>
 %{--
-            <td><a href="javascript:void(0)" onclick='janelaModal.abreJanela("ver monitoramento","${createLink(action:'showMonitoramento', id: monitoramentoInstance.id)}");'>
+            <td><a href="javascript:void(0)" onclick='janelaModalMonitoramentos.abreJanela("ver monitoramento","${createLink(action:'showMonitoramento', id: monitoramentoInstance.id)}");'>
                 ${monitoramentoInstance.situacao}
             </a></td>
 --}%

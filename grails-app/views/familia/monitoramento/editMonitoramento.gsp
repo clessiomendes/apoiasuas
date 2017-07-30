@@ -16,8 +16,8 @@
     </g:hasErrors>
 
     <g:formRemote url="[action:'saveMonitoramento', id: localDtoMonitoramento.id]" name="saveMonitoramento"
-                  onFailure="janelaModal.loadHTML(XMLHttpRequest.responseText);"
-                  onSuccess="janelaModal.confirmada();">
+                  onFailure="janelaModalMonitoramentos.loadHTML(XMLHttpRequest.responseText);"
+                  onSuccess="janelaModalMonitoramentos.confirmada();">
         <g:hiddenField name="version" value="${localDtoMonitoramento?.version}" />
 
         <fieldset class="form">
@@ -26,7 +26,7 @@
 
         <fieldset class="buttons">
             <g:submitButton name="update" class="save" value="Gravar" />
-            <input type="button" class="cancel" onclick="janelaModal.cancelada();" value="Cancelar" />
+            <input type="button" class="cancel" onclick="janelaModalMonitoramentos.cancelada();" value="Cancelar" />
         </fieldset>
 
     </g:formRemote>

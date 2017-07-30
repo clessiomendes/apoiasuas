@@ -4,7 +4,7 @@
 %>
 
 <g:javascript>
-    var janelaModal = new JanelaModalAjax();
+    var janelaModalMarcadores = new JanelaModalAjax();
 
     /**
      * Navega para nova tela de edição de marcadores (inclusão, remoção, alteração)
@@ -30,11 +30,14 @@
     /**
      * Abre popup de edicao de telefones
      */
+%{--
     function editTelefones() {
         janelaModal.abreJanela( { titulo: "Alterar telefones", refreshFunction: updateTelefones,
                 url: "${createLink(action:'editTelefones', params: [idFamilia: localDtoFamilia.id])}" });
     }
+--}%
 
+%{--
     function updateTelefones() {
         $("#divTelefones").html('<asset:image src="loading.gif"/> carregando...');
         ${remoteFunction(action:'getTelefones', id: localDtoFamilia.id,
@@ -42,6 +45,7 @@
             onFailure: 'alert("Erro buscando telefones (via ajax)");'
     )};
     }
+--}%
     //# sourceURL=tabShowFamilia
 </g:javascript>
 
@@ -62,28 +66,28 @@
         </legend>
         <g:each in="${localDtoFamilia.programasHabilitados}" var="marcadorFamilia">
             <span class="marcadores-programa">
-                <a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showPrograma', id: marcadorFamilia.id)}"});'>
+                <a href="javascript:void(0)" onclick='janelaModalMarcadores.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showPrograma', id: marcadorFamilia.id)}"});'>
                     ${marcadorFamilia?.programa?.descricao}
                 </a>
             </span>
         </g:each>
         <g:each in="${localDtoFamilia.vulnerabilidadesHabilitadas}" var="marcadorFamilia">
             <span class="marcadores-vulnerabilidade">
-                <a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showVulnerabilidade', id: marcadorFamilia.id)}"});'>
+                <a href="javascript:void(0)" onclick='janelaModalMarcadores.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showVulnerabilidade', id: marcadorFamilia.id)}"});'>
                     ${marcadorFamilia?.vulnerabilidade?.descricao}
                 </a>
             </span>
         </g:each>
         <g:each in="${localDtoFamilia.acoesHabilitadas}" var="marcadorFamilia">
             <span class="marcadores-acao">
-                <a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showAcao', id: marcadorFamilia.id)}"});'>
+                <a href="javascript:void(0)" onclick='janelaModalMarcadores.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showAcao', id: marcadorFamilia.id)}"});'>
                     ${marcadorFamilia?.acao?.descricao}
                 </a>
             </span>
         </g:each>
         <g:each in="${localDtoFamilia.outrosMarcadoresHabilitados}" var="marcadorFamilia">
             <span class="marcadores-outro-marcador">
-                <a href="javascript:void(0)" onclick='janelaModal.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showOutroMarcador', id: marcadorFamilia.id)}"});'>
+                <a href="javascript:void(0)" onclick='janelaModalMarcadores.abreJanela({titulo: "detalhes...", url: "${createLink(action:'showOutroMarcador', id: marcadorFamilia.id)}"});'>
                     ${marcadorFamilia?.outroMarcador?.descricao}
                 </a>
             </span>
@@ -156,6 +160,7 @@
         </li>
     </g:if>
 
+%{--
     <li class="fieldcontain">
         <span id="telefones-label" class="property-label"><g:message code="familia.telefones.label" default="Telefones" /></span>
         <span class="property-value" aria-labelledby="telefones-label">
@@ -166,12 +171,14 @@
                    title="Clique para incluir, remover ou alterar telefones." onclick="editTelefones();">
         </span>
     </li>
+--}%
 </ol>
 
 <fieldset class="buttons">
-    <g:link class="add" controller="emissaoFormulario" action="escolherFamilia">Emitir formulário</g:link>
-    <g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosFamilia" params="[idFamilia: familiaInstance.id]" >Formulários emitidos</g:link>
+    <g:link class="formulario" controller="emissaoFormulario" action="escolherFamilia">Emitir formulário</g:link>
+    <g:link class="formulario" controller="emissaoFormulario" action="listarFormulariosEmitidosFamilia" params="[idFamilia: familiaInstance.id]" >Formulários emitidos</g:link>
     <g:link class="edit" action="edit" resource="${familiaInstance}">Alterar dados</g:link>
     <g:link class="acompanhamento" controller="familia" action="editAcompanhamentoFamilia" id="${familiaInstance.id}">Acompanhamento</g:link>
-    <g:link class="atendimento" controller="agenda" action="calendario">Atendimento</g:link>
+    <g:link class="atendimento" controller="agenda" action="calendario">Agendar atendimento</g:link>
+    %{--<g:link class="atendimento" controller="agenda" action="calendario">Histórico de atendimentos</g:link>--}%
 </fieldset>

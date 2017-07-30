@@ -9,7 +9,7 @@
 		if (XMLHttpRequest.status == 401)
 			alert('Não autenticado')
 		else
-			janelaModal.loadHTML(XMLHttpRequest.responseText);
+			janelaModalMonitoramentos.loadHTML(XMLHttpRequest.responseText);
 	}
 //# sourceURL=createMonitoramento
 </script>
@@ -29,13 +29,13 @@
 
 	<g:formRemote url="[action:'saveMonitoramento']" name="saveMonitoramento"
 				  onFailure="onError(XMLHttpRequest);"
-                  onSuccess="janelaModal.confirmada();">
+                  onSuccess="janelaModalMonitoramentos.confirmada();">
 		<fieldset class="form">
             <g:render template="monitoramento/formMonitoramento"/>
 		</fieldset>
 		<fieldset class="buttons">
 			<g:submitButton name="create" class="save" value="Gravar" />
-			<input type="button" class="cancel" onclick="janelaModal.cancelada();" value="Cancelar" />
+			<input type="button" class="cancel" onclick="janelaModalMonitoramentos.cancelada();" value="Cancelar" />
 		</fieldset>
 	</g:formRemote>
 </div>

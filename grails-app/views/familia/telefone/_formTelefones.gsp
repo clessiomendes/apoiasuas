@@ -14,8 +14,13 @@
             $(this).css("height", "19px");
         });
     });
-
 </script>
+
+<style>
+    #tableTelefones td, #tableTelefones th {
+        padding: 0;
+    }
+</style>
 
 <g:hiddenField name="idFamilia" value="${localDtoFamilia.id}"/>
 <table id="tableTelefones" class="pure-table pure-table-striped pure-table-bordered" style="max-width: 400px; margin: 10px auto;">
@@ -25,6 +30,7 @@
         <th style="text-align: center;">
             Observações<g:helpTooltip chave="help.telefone.obs"/>
         </th>
+        <th style="text-align: center;"></th>
         <th style="text-align: center;"></th>
     </tr>
 
@@ -48,7 +54,12 @@
                 <g:textField name="numero" id="numero${i}" size="10" maxlength="40" value="${telefone?.numero}"/>
             </td>
             <td class="${hasErrors(bean: telefone, field: 'obs', 'error')}">
-                <g:textArea style="height:19px" cols="40" name="obs" class="obs" id="obs${i}" maxlength="1000" value="${telefone?.obs}"/>
+                <g:textArea style="height:19px" cols="35" name="obs" class="obs" id="obs${i}" maxlength="1000" value="${telefone?.obs}"/>
+            </td>
+            <td>
+                <span style="font-size: 0.75em">
+                    &nbsp;<g:formatDate date="${telefone?.dateCreated}" format="(MMM/yyyy)"/>&nbsp;
+                </span>
             </td>
             <td> <g:if test="${telefone?.id}">
                 <input type="button" id="removerTelefone" class="speed-button-remover" onclick="removerTelefoneClick(removerTelefone${i}, linhaTelefone${i}); return false;" title="remover"/>

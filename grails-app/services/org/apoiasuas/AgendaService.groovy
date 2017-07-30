@@ -15,6 +15,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.xwpf.usermodel.XWPFParagraph
 import org.apache.xmlbeans.XmlOptions
 import org.apoiasuas.agenda.Compromisso
+import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
@@ -283,5 +284,12 @@ class AgendaService {
             mapaConfiguracao << new JsonSlurper().parseText(segurancaService.usuarioLogado.configuracaoAgenda);
 
         return mapaConfiguracao;
+    }
+
+    public getAtendimentos(Familia familia) {
+        List<AtendimentoParticularizado> result = [];
+        if (familia)
+            result = AtendimentoParticularizado.findAllByFamilia(familia);
+        return result;
     }
 }

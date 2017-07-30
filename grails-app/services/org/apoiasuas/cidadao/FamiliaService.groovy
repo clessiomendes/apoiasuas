@@ -15,6 +15,7 @@ import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.marcador.ProgramaFamilia
+import org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.CollectionUtils
 
@@ -234,5 +235,17 @@ class FamiliaService {
         return Familia.findById(id, fetchMap);
     }
 
-
+/*
+    @Transactional(readOnly = true)
+    public List<Map> buscaTelefonesAgendamento(Familia familia) {
+        if (! familia)
+            return [];
+        List<Map> result = [];
+        AtendimentoParticularizado.findAllByFamilia(familia).sort{ it.dataHora }.reverse().each { AtendimentoParticularizado atendimento ->
+            result.add([data: atendimento.dataHora, numero: atendimento.telefoneContato,
+                        tooltip: 'Fornecido na recepção em '+atendimento.dataHora.format('dd/MM/yyyy') ])
+        }
+        return result;
+    }
+*/
 }

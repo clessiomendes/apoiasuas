@@ -299,6 +299,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
     '/**/*.css':                      ['permitAll'],
     '/**/*.less':                     ['permitAll'],
     '/assets/**':                     ['permitAll'],
+    '/loginApoiaSuas/**':             ['permitAll'],
     '/log4j/**':                     ['permitAll'],
     '/**/js/**':                      ['permitAll'],
     '/searchable/**':                 ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.STR_SUPER_USER}"],

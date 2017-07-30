@@ -5,26 +5,26 @@
 
 <script>
     function editMonitoramento() {
-        janelaModal.abreJanela({titulo: "alterar monitoramento", refreshFunction: updateList,
+        janelaModalMonitoramentos.abreJanela({titulo: "alterar monitoramento", refreshFunction: updateList,
             url: "${createLink(action: 'editMonitoramento', id: localDtoMonitoramento.id)}"});
     }
 
     function efetivaMonitoramento() {
         if (confirm("Confirma efetivação desta ação nesta data?"))
             ${remoteFunction(action: 'efetivaMonitoramento', id: localDtoMonitoramento.id,
-                onFailure: 'janelaModal.loadHTML(XMLHttpRequest.responseText);', onSuccess: 'janelaModal.confirmada();')};
+                onFailure: 'janelaModalMonitoramentos.loadHTML(XMLHttpRequest.responseText);', onSuccess: 'janelaModalMonitoramentos.confirmada();')};
     }
 
     function deleteMonitoramento() {
         if (confirm("${message(code: 'default.button.delete.confirm.message')}"))
             ${remoteFunction(action: 'deleteMonitoramento', id: localDtoMonitoramento.id,
-                onFailure: 'janelaModal.loadHTML(XMLHttpRequest.responseText);', onSuccess: 'janelaModal.confirmada();')};
+                onFailure: 'janelaModalMonitoramentos.loadHTML(XMLHttpRequest.responseText);', onSuccess: 'janelaModalMonitoramentos.confirmada();')};
     }
 
     function suspendeMonitoramento() {
         if (confirm("Confirma suspensão deste monitoramento (você pode retomá-lo futuramente se precisar)?"))
             ${remoteFunction(action: 'suspendeMonitoramento', id: localDtoMonitoramento.id,
-                onFailure: 'janelaModal.loadHTML(XMLHttpRequest.responseText);', onSuccess: 'janelaModal.confirmada();')};
+                onFailure: 'janelaModalMonitoramentos.loadHTML(XMLHttpRequest.responseText);', onSuccess: 'janelaModalMonitoramentos.confirmada();')};
     }
     //# sourceURL=showMonitoramento
 </script>
@@ -85,5 +85,5 @@
     <sec:ifAnyGranted roles="${DefinicaoPapeis.STR_SUPER_USER}">
         <a href="javascript:void(0)" class="delete" title="Apaga definitvamente o monitoramento" onclick="deleteMonitoramento();">${message(code: 'default.button.delete.label', default: 'Remover')}</a>
     </sec:ifAnyGranted>
-    <a href="javascript:void(0)" class="close" onclick="janelaModal.cancelada();">Fechar</a>
+    <a href="javascript:void(0)" class="close" onclick="janelaModalMonitoramentos.cancelada();">Fechar</a>
 </fieldset>

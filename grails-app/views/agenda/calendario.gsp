@@ -43,7 +43,7 @@
         $('#selectUsuarioSistema').val("${idUsuarioSistema}");
 
         $divCalendario.fullCalendar({
-            events: getEvents(configuracaoAgenda.mostrarAtendimentos, configuracaoAgenda.mostrarOutrosCompromissos),
+            events: getEvents(),
             firstDay: configuracaoAgenda.firstDay,
             minTime: configuracaoAgenda.minTime,
             maxTime: configuracaoAgenda.maxTime,
@@ -280,8 +280,11 @@
                         mostrarAtendimentos: configuracaoAgenda.atendimentos,
                         mostrarOutrosCompromissos: configuracaoAgenda.outrosCompromissos
                 },
-                error: function() {
-                    alert('Erro obtendo agenda do servidor');
+                error: function(jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status == 401) //não logado
+                        alert('Sessão expirada por inatividade. Favor fazer novo login.');
+                    else
+                        alert(jqXHR.responseText);
                 }
         }
     }
@@ -299,6 +302,21 @@
          });
     }
 
+    /**
+     * This monitors all AJAX calls that have an error response. If a user's
+     * session has expired, then the system will return a 401 status,
+     * "Unauthorized", which will trigger this listener and so prompt the user if
+     * they'd like to be redirected to the login page.
+     */
+/*
+    $(document).ajaxError(function(event, jqxhr, settings, exception) {
+        if (jqxhr.status = 401) {
+        //if (exception == 'Unauthorized') {
+            alert("Favor efetuar novo login antes de prosseguir")
+            window.location = location.pathname;
+        }
+    });
+*/
 
 </g:javascript>
 
@@ -314,6 +332,7 @@
             <input type="button" class="speed-button-imprimir" title="imprimir" onclick="imprimirCompromissos();"/>
             Responsável <g:select id="selectUsuarioSistema" name="idUsuarioSistema" from="${operadores}"
                       optionKey="id" class="many-to-one" noSelection="['': '(todos)']" onchange="atualiza();" />
+            %{--<input type="button" class="speed-button-config" title="novo login" onclick="novoLogin()"/>--}%
         </div>
 
         <div style="float: right; display: inline">

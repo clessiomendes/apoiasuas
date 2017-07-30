@@ -15,6 +15,7 @@ import org.apoiasuas.marcador.Vulnerabilidade
 import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.marcador.Programa
+import org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.util.ApoiaSuasException
@@ -27,6 +28,10 @@ import javax.servlet.http.HttpSession
 class FamiliaController extends AncestralController {
 
     def beforeInterceptor = [action: this.&interceptaSeguranca, entity:Familia.class, only: ['show','edit', 'delete', 'update', 'save']]
+
+    public static final String TELEFONES_CADASTRADOS = 'Presentes no cadastro'
+    public static final String TELEFONES_AGENDAMENTO = 'Fornecidos na recepção'
+
     private static final String SESSION_ULTIMA_FAMILIA = "SESSION_ULTIMA_FAMILIA"
     private static final String SESSION_NOTIFICACAO_FAMILIA = "SESSION_NOTIFICACAO_FAMILIA"
     private static final String SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES = "SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES"
@@ -51,6 +56,7 @@ class FamiliaController extends AncestralController {
     def pedidoCertidaoProcessoService;
     def cidadaoService;
     def monitoramentoService;
+    def agendaService;
 /*
     @Override
     protected interceptaSeguranca() {
@@ -75,12 +81,12 @@ class FamiliaController extends AncestralController {
             return notFound()
 
         familiaInstance = familiaService.obtemFamilia(familiaInstance.id, true, true, true, true);
-//        familiaInstance = familiaService.obtemFamilia(familiaInstance.id, true, true, true, false/*carregado na sequencia por ajax*/)
 
-        List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familiaInstance.id)
+        List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familiaInstance.id);
 
         guardaUltimaFamiliaSelecionada(familiaInstance)
-        render view: 'show', model: [familiaInstance: familiaInstance, pedidosCertidaoPendentes: pedidosCertidaoPendentes]
+        render view: 'show', model: [familiaInstance: familiaInstance, pedidosCertidaoPendentes: pedidosCertidaoPendentes,
+                                     telefonesList: getTodosOsTelefones(familiaInstance)];
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -159,7 +165,7 @@ class FamiliaController extends AncestralController {
     }
 
     private Map getEditCreateModelMonitoramento(Monitoramento monitoramentoInstance) {
-        return [monitoramentoInstance: monitoramentoInstance, operadores: getTecnicosOrdenadosController(true, monitoramentoInstance ? [monitoramentoInstance.responsavel] : [])];
+        return [monitoramentoInstance: monitoramentoInstance, operadores: getTecnicosOrdenadosController(true, monitoramentoInstance?.responsavel ? [monitoramentoInstance.responsavel] : [])];
     }
 
     /**
@@ -605,17 +611,9 @@ class FamiliaController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def getTelefones(Long id) {
-        Familia familia = Familia.get(id);
-        String result = "";
-        familia.telefones?.sort{it.dateCreated}?.eachWithIndex { Telefone telefone, int i ->
-            if (i > 0)
-                result += ", ";
-            result += telefone.toString();
-            if (telefone.obs)
-                result += g.helpTooltip { telefone.obs }
-        }
-        return render(text: result);
+    def listTelefones(Long id) {
+        List<Map> telefones = getTodosOsTelefones(familiaService.obtemFamilia(id, false, true/*telefones*/, false, false));
+        render view: 'telefone/_listTelefones', model: [telefonesList: telefones];
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -670,6 +668,27 @@ class FamiliaController extends AncestralController {
         }
         return result
     }
+
+    /**
+     * Obtem uma lista completa de telefones associados aa familia, tanto do cadastro quanto dos agendamentos na recepcao
+     * na seguinte ordem:
+     * 1) telefones do cadastro, mais recentes primeiro
+     * 2) telefones fornecidos na recepcao (em agendamentos), mais recentes primeiro
+     */
+    private List<Map> getTodosOsTelefones(Familia familiaInstance) {
+        ArrayList<Map> result = [];
+        familiaInstance.getTelefones().sort { it.dateCreated }.reverse().each { Telefone telefone ->
+            result.add([data       : telefone.dateCreated, numero: telefone.toString(), origem: TELEFONES_CADASTRADOS,
+                           observacoes: telefone.obs])
+        }
+        agendaService.getAtendimentos(familiaInstance).sort { it.dataHora }.reverse().each { AtendimentoParticularizado atendimento ->
+            result.add([data  : atendimento.dataHora, numero: atendimento.telefoneContato,
+                           origem: TELEFONES_AGENDAMENTO])
+        }
+
+        return result;
+    }
+
 }
 
 class ProgramasCommand implements MarcadoresCommand {

@@ -5,6 +5,7 @@
 <!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
 <!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"><!--<![endif]-->
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -26,6 +27,30 @@
     <r:layoutResources/>
 
 </head>
+
+<script>
+    var intervaloVerificacaoSessaoExpirada = 2 /*segundos*/;
+    var janelaModalLogin = new JanelaModalAjax();
+    var timerSessaoExpirada
+
+    /**
+    * Inicia contador para fim da sessao que, ao final, abre uma janela de login para reconectar
+    */
+    function iniciaTimerSessaoExpirada() {
+        timerSessaoExpirada = setInterval(function () {
+            var tempoAtual = getCookie('expireTime');
+            setCookie('expireTime', tempoAtual - intervaloVerificacaoSessaoExpirada);
+            if (tempoAtual - intervaloVerificacaoSessaoExpirada <= 0) {
+                janelaModalLogin.abreJanela({url: "${createLink(controller: 'LoginApoiaSuas', action: 'loginAjax')}",largura: 500});
+                clearInterval(timerSessaoExpirada);
+            }
+        }, intervaloVerificacaoSessaoExpirada * 1000);
+    }
+
+    iniciaTimerSessaoExpirada();
+
+</script>
+
 <body>
 
     <g:render template="/layouts/notificacoes"></g:render>

@@ -33,7 +33,8 @@
 
 		<g:tabs id="tabs" style="margin: 5px;">
 			<g:tab id="tabShowFamilia" titulo="família" template="tabShowFamilia"/>
-			<g:tab id="tabMonitoramento" titulo="monitoramentos" template="monitoramento/tabMonitoramento" roles="${DefinicaoPapeis.STR_TECNICO}"/>
+			<g:tab id="tabShowTelefones" titulo="telefones" template="telefone/tabTelefones"/>
+			<g:tab id="tabMonitoramento" titulo="monitoramentos" template="monitoramento/tabMonitoramentos" roles="${DefinicaoPapeis.STR_TECNICO}"/>
 		</g:tabs>
 
 	</div>

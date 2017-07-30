@@ -36,6 +36,7 @@ function JanelaModalAjax() {
      * @param element um <div> html representando o conteúdo inteiro da janela
      * @param refreshFunction o ponteiro para uma função callback que será acionada caso seja clicado um botao de confirmacao
      * @param largura em pixels, para a tela criada(default 700)
+     * @param esconderBotaoFechar esconder botao fechar (x) no canto superior direito
      */
     //this.abreJanela = function(titulo, url, conteudoHTML, element) {
     this.abreJanela = function(parametros) {
@@ -57,6 +58,12 @@ function JanelaModalAjax() {
             throw "Erro! conteudoHTML, element ou url devem ser fornecidos para abrejanela() em apoiasuas-modal.js"
         }
 
+        var dialogClass = ""
+        if (parametros.esconderBotaoFechar)
+            dialogClass += "no-close "
+        if (! parametros.titulo)
+            dialogClass += "no-titlebar "
+
         refreshFunction  = parametros.refreshFunction;
 
         //exibe uma janela modal inicialmente vazia enquanto aguarda a resposta do servidor
@@ -64,6 +71,7 @@ function JanelaModalAjax() {
         $divModal.dialog({
             position:  {my: "center", at: "center", of: window},
             resizable: false,
+            dialogClass: dialogClass,
             modal: true,
             title: ifNull(parametros.titulo, ""),
             width: $(window).width() > largura ? largura : 'auto'
