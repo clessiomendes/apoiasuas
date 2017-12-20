@@ -10,7 +10,7 @@ import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 class ProcessoDTO {
 
     public static final String SITUACAO_CONCLUIDA = "Concluído"
-    public static final int MAX_PAGINACAO = 50
+    public static final int MAX_PAGINACAO = 100
 
     String id
     DefinicaoProcessoDTO definicaoProcesso

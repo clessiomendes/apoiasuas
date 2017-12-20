@@ -49,6 +49,11 @@
 
     iniciaTimerSessaoExpirada();
 
+    //caminho para imagens a serem utilizadas em qualquer pagina
+    window.grailsSupport = {
+        iconeCalendario : "${assetPath(src: 'calendario.png')}"
+    };
+
 </script>
 
 <body>

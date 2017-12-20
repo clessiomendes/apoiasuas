@@ -10,6 +10,7 @@
 <ol class="property-list monitoramento" style="padding: 0; margin: 0;">
 
     <li class="fieldcontain">
+        <span class="property-label"></span>
         <span class="property-value">
             Definido ${localDtoMarcador.data ? "em "+localDtoMarcador.data.format("dd/MM/yyyy") : ""}
             ${localDtoMarcador.tecnico ? "por "+localDtoMarcador.tecnico.username : ""}
@@ -25,4 +26,7 @@
 
 </ol>
 
-<input type="button" id="btnCancelar" onclick="janelaModalMarcadores.cancelada();" value="Fechar" class="cancel" style="margin-top: 20px;"/>
+<fieldset class="buttons">
+    <a href="javascript:void(0)" onclick="janelaModalMarcadores.cancelada();"  id="btnCancelar" class="close">Fechar</a>
+</fieldset>
+

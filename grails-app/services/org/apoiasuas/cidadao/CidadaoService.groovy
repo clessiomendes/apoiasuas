@@ -352,7 +352,7 @@ class CidadaoService {
     @Transactional(readOnly = true)
     public boolean nomeDuplicado(Cidadao cidadao) {
         boolean result = false;
-        Cidadao.findAllByNomeCompletoIlike(cidadao.nomeCompleto).each {
+        Cidadao.findAllByNomeCompletoIlikeAndFamilia(cidadao.nomeCompleto, cidadao.familia).each {
             if (it.id != cidadao.id)
                 result = true;
         };

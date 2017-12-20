@@ -100,13 +100,6 @@
     <span class="property-value" aria-labelledby="cad-label"><g:fieldValue bean="${localDtoFamilia}" field="cad"/></span>
 </li>
 
-<g:if test="${localDtoFamilia?.tecnicoReferencia}">
-    <li class="fieldcontain">
-        <span id="tecnicoReferencia-label" class="property-label"><g:message code="familia.tecnicoReferencia.label" default="Técnico de referência" /></span>
-        <span style="color: red" class="property-value" aria-labelledby="tecnicoReferencia-label"><g:fieldValue bean="${localDtoFamilia}" field="tecnicoReferencia"/></span>
-    </li>
-</g:if>
-
 <g:if test="${localDtoFamilia?.dateCreated}">
     <li class="fieldcontain">
         <span id="dateCreated-label" class="property-label"><g:message code="familia.dateCreated.label" default="Data Cadastro" /></span>
@@ -114,50 +107,63 @@
     </li>
 </g:if>
 
+<g:if test="${localDtoFamilia?.tecnicoReferencia}">
+    <li class="fieldcontain">
+        <span id="tecnicoReferencia-label" class="property-label"><g:message code="familia.tecnicoReferencia.label" default="Técnico de referência" /></span>
+        <span style="color: red" class="property-value" aria-labelledby="tecnicoReferencia-label"><g:fieldValue bean="${localDtoFamilia}" field="tecnicoReferencia"/></span>
+    </li>
+</g:if>
+
 <g:if test="${localDtoFamilia?.endereco}">
+    <br>
+
     <li class="fieldcontain">
         <span id="endereco-label" class="property-label"><g:message code="familia.endereco.label" default="Endereço" /></span>
-        <span class="property-value" aria-labelledby="endereco-label"> ${localDtoFamilia.endereco} </span>
-        <span class="property-value" aria-labelledby="endereco-label"> ${localDtoFamilia.endereco.CEP ? "CEP "+localDtoFamilia.endereco.CEP +", " : ""}
-        ${localDtoFamilia.endereco.municipio ? localDtoFamilia.endereco.municipio +", " : ""}
-        ${localDtoFamilia.endereco.UF ? localDtoFamilia.endereco.UF : ""}
+        <span class="property-value" aria-labelledby="endereco-label">
+            ${localDtoFamilia.endereco}
+            ${localDtoFamilia.endereco.CEP ? "CEP "+localDtoFamilia.endereco.CEP +", " : ""}
+            ${localDtoFamilia.endereco.municipio ? localDtoFamilia.endereco.municipio +", " : ""}
+            ${localDtoFamilia.endereco.UF ? localDtoFamilia.endereco.UF : ""}
         </span>
     </li>
 </g:if>
 
     %{--Lista membros habilitados--}%
-    <li class="fieldcontain">
-        <span id="membros-label" class="property-label"><g:message code="familia.membros.label" default="Membros" /></span>
+    <fieldset class="embedded fieldcontain" style="padding: 0 10px; display: block">
+        <legend>Membros</legend>
+        %{--<span id="membros-label" class="property-label"><g:message code="familia.membros.label" default="Membros" /></span>--}%
         <g:each in="${localDtoFamilia.getMembrosOrdemPadrao(true)}" var="m">
-            <span class="property-value" aria-labelledby="membros-label">
+            %{--<span class="property-value">--}%
+            <span style="display: inline-block; line-height: 1.5em;">
+                ${m.parentescoReferencia ? m.parentescoReferencia + ": " : ""}
                 <g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link>
-                ${m.parentescoReferencia ? ", "+m.parentescoReferencia : ""}
                 ${m.idade ? ", "+m.idade + " anos" : ""}
             </span>
+            <br>
         </g:each>
-        <span class="property-value" aria-labelledby="membros-label">
+        <div style="margin-top: 5px">
             <sec:access acessoServico="${RecursosServico.INCLUSAO_MEMBRO_FAMILIAR}">
                 <input id="novoMembro" type="button" class="create" style="margin: 5px 5px 5px 0"
                        title="Incluir um novo cidadão como membro desta família" value="Novo membro" onclick="novoMembro();">
             </sec:access>
             <input id="trocarReferencia" type="button" class="edit" style="margin: 5px 5px 5px 0"
                    title="Alterar a referência familiar e o parentesco entre os membros" value="Trocar referência" onclick="trocaReferencia();">
-        </span>
-    </li>
+        </div>
+    </fieldset>
 
     %{--Lista membros removidos do grupo familiar--}%
     <g:set var="membrosDesabilitados" value="${localDtoFamilia?.getMembrosOrdemPadrao(false)}"/>
     <g:if test="${membrosDesabilitados}">
-        <li class="fieldcontain">
-            <span id="membros-removidos-label" class="property-label">Membros removidos</span>
+        <fieldset class="embedded fieldcontain" style="padding: 0 10px 5px 10px; display: block">
+            <legend>Membros removidos</legend>
             <g:each in="${membrosDesabilitados}" var="m">
-                <span class="property-value" aria-labelledby="membros-removidos-label">
+                <span style="display: inline-block; line-height: 1.5em;">
+                    ${m.parentescoReferencia ? m.parentescoReferencia + ": " : ""}
                     <g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link>
-                    ${m.parentescoReferencia ? ", "+m.parentescoReferencia : ""}
                     ${m.idade ? ", "+m.idade + " anos" : ""}
                 </span>
             </g:each>
-        </li>
+        </fieldset>
     </g:if>
 
 %{--

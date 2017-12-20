@@ -5,6 +5,7 @@
 
 <asset:javascript src="especificos/jquery.timepicker.js"/>
 <asset:stylesheet src="especificos/jquery.timepicker.css"/>
+<asset:javascript src="especificos/datepicker-pt-BR.js"/>
 
 <script>
 
@@ -45,6 +46,8 @@
     //# sourceURL=formCompromisso
 </script>
 
+<fieldset class="form">
+
 <f:with bean="${localDtoCompromisso}">
     <g:hiddenField name="tipo" value="${localDtoCompromisso.tipo}"/>
     <g:hiddenField name="habilitado" value="${localDtoCompromisso.habilitado}"/>
@@ -54,29 +57,29 @@
             Descrição<span class="required-indicator">*</span>
         </div>
         <div class="property-value">
-            <g:textField name="descricao" size="40" value="${localDtoCompromisso?.descricao}" />
+            <g:textField name="descricao" size="60" value="${localDtoCompromisso?.descricao}" />
         </div>
     </div>
+
+    <br>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoCompromisso, field: 'inicio', 'error')} ">
         <div class="property-label">
             de<span class="required-indicator">*</span>
         </div>
-        <div class="property-value">
-            <g:textField name="dataInicio" id="dataInicio" size="9" value="${localDtoCompromisso?.inicio?.format("dd/MM/yyyy")}" />
-            <g:textField class="timepicker-agenda" name="horaInicio" id="horaInicio" size="4" value="${localDtoCompromisso?.inicio?.format("HH:mm")}" />
-        </div>
+        <g:textField name="dataInicio" class="dateMask datepicker" id="dataInicio" size="9" value="${localDtoCompromisso?.inicio?.format("dd/MM/yyyy")}" />
+        <g:textField class="timepicker-agenda" name="horaInicio" id="horaInicio" size="4" value="${localDtoCompromisso?.inicio?.format("HH:mm")}" />
     </div>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoCompromisso, field: 'fim', 'error')} ">
         <div class="property-label">
             até<span class="required-indicator">*</span>
         </div>
-        <div class="property-value">
-            <g:textField name="dataFim" id="dataFim" size="9" value="${localDtoCompromisso?.fim?.format("dd/MM/yyyy")}" />
-            <g:textField class="timepicker-agenda" name="horaFim" id="horaFim" size="4" value="${localDtoCompromisso?.fim?.format("HH:mm")}" />
-        </div>
+        <g:textField name="dataFim" class="dateMask datepicker" id="dataFim" size="9" value="${localDtoCompromisso?.fim?.format("dd/MM/yyyy")}" />
+        <g:textField class="timepicker-agenda" name="horaFim" id="horaFim" size="4" value="${localDtoCompromisso?.fim?.format("HH:mm")}" />
     </div>
+
+    <br>
 
     <div id="divParticipantes" class="fieldcontain ${hasErrors(bean: localDtoCompromisso, field: 'participantes', 'error')} ">
         <div class="property-label">
@@ -95,3 +98,5 @@
         </div>
     </div>
 </f:with>
+
+</fieldset>

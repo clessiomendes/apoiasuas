@@ -41,6 +41,7 @@
         </g:if>
 
         <g:if test="${servicoSistemaInstance?.abrangenciaTerritorial}">
+            <br>
             <li class="fieldcontain">
                 <span id="abrangenciaTerritorial-label" class="property-label"><g:message
                         code="servicoSistema.abrangenciaTerritorial.label" default="Abrangencia Territorial"/></span>
@@ -48,6 +49,7 @@
                     <g:render template="/abrangenciaTerritorial"/>
                 </span>
             </li>
+            <br>
         </g:if>
 
         <g:if test="${servicoSistemaInstance?.site}">

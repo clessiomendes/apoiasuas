@@ -185,7 +185,7 @@ class SegurancaService {
                 if (! somenteHabilitados) {
                     operador.username = operador.username + SUFIXO_OPERADOR_EXCLUIDO
                     desabilitados << operador
-                } else if (operador.id in sempreMostrar.collect {it.id} ) {
+                } else if (operador.id in sempreMostrar.collect {it?.id} ) {
                     operador.username = operador.username + SUFIXO_OPERADOR_EXCLUIDO
                     desabilitados << operador
                 }

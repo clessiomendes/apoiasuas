@@ -29,9 +29,9 @@
 			<g:form url="[resource:familiaInstance, action:'save']">
 				<g:hiddenField name="version" value="${familiaInstance?.version}" />
 
-				<div class="fieldcontain">
-					<label>Família:</label>
-					${familiaInstance?.montaDescricao()}
+				<div class="fieldcontain" style="margin: 0 16px;">
+					<div class="property-label">Família</div>
+					<div class="property-value">${familiaInstance?.montaDescricao()}</div>
 				</div>
 
 				<fieldset class="form">

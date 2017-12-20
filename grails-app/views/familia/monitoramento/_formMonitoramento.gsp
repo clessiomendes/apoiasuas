@@ -30,26 +30,8 @@
             }
         });
         $("#checkEfetivado").change();
-
-        $.datepicker.setDefaults(
-                $.extend(
-                        {'dateFormat':'dd/MM/yyyy'},
-                        $.datepicker.regional['pt-BR']
-                )
-        );
-
-        $( ".datepicker" ).datepicker({
-            showOn: "button",
-            buttonImage: "${assetPath(src: 'calendario.png')}",
-//            dateFormat: "dd/MM/yyyy",
-            buttonImageOnly: true,
-            buttonText: "Select date"
-        });
 	});
 
-    function dateToStr(data) {
-        return data.getDate()+"/"+(data.getMonth()+1)+"/"+data.getFullYear();
-    }
     /**
     * Soma X dias à data de criação e preenche o campo de data prevista
     * @param dias
@@ -70,7 +52,7 @@
     }
 </script>
 
-<div class="fieldcontain ${hasErrors(bean: localDtoMonitoramento, field: 'memo', 'error')} ">
+<div class="tamanho-memo fieldcontain ${hasErrors(bean: localDtoMonitoramento, field: 'memo', 'error')} ">
 	<label for="memo">
         Descrição<span class="required-indicator">*</span>
         <g:helpTooltip chave="help.descricao.monitoramento" />
@@ -92,7 +74,16 @@
             <g:helpTooltip chave="help.data.criacao.monitoramento" />
         </nobr>
     </label>
-    <g:textField class="dateMask" name="dataCriacao" id="dataCriacao" size="10" maxlength="10" value="${localDtoMonitoramento?.dataCriacao?.format("dd/MM/yyyy")}"/>
+    <g:textField class="dateMask datepicker" name="dataCriacao" id="dataCriacao" size="10" maxlength="10" value="${localDtoMonitoramento?.dataCriacao?.format("dd/MM/yyyy")}"/>
+</div>
+
+<br>
+
+<div class="fieldcontain ${hasErrors(bean: localDtoMonitoramento, field: 'prioritario', 'error')} ">
+    <label>Prioritário<g:helpTooltip chave="help.prioritario.monitoramento" /></label>
+    <span class="property-value">
+        <g:checkBox id="checkPrioritario" name="prioritario" value="${localDtoMonitoramento?.prioritario}" /> sim
+    </span>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoMonitoramento, field: 'dataPrevista', 'error')} ">
@@ -105,19 +96,13 @@
     <g:textField class="dateMask datepicker" name="dataPrevista" id="dataPrevista" size="10" maxlength="10" value="${localDtoMonitoramento?.dataPrevista?.format("dd/MM/yyyy")}"/>
 </div>
 
-
-<div class="fieldcontain ${hasErrors(bean: localDtoMonitoramento, field: 'prioritario', 'error')} ">
-    <label>
-    </label>
-    <g:checkBox id="checkPrioritario" name="prioritario" value="${localDtoMonitoramento?.prioritario}" /> prioritário
-    <g:helpTooltip chave="help.prioritario.monitoramento" />
-</div>
+<br>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoMonitoramento, field: 'efetivado', 'error')} ">
-    <label>
-    </label>
-    <g:checkBox id="checkEfetivado" name="efetivado" value="${localDtoMonitoramento?.efetivado}" /> efetivado
-    <g:helpTooltip chave="help.efetivado.monitoramento" />
+    <label>Efetivado<g:helpTooltip chave="help.efetivado.monitoramento" /></label>
+    <span class="property-value">
+        <g:checkBox id="checkEfetivado" name="efetivado" value="${localDtoMonitoramento?.efetivado}" /> sim
+    </span>
 </div>
 
 <div id="divDataEfetivada" class="fieldcontain ${hasErrors(bean: localDtoMonitoramento, field: 'dataEfetivada', 'error')} ">
@@ -125,13 +110,13 @@
             <g:helpTooltip chave="help.data.efetivacao.monitoramento" />
         </nobr>
     </label>
-    <g:textField class="dateMask" name="dataEfetivada" id="dataEfetivada" size="10" maxlength="10" value="${localDtoMonitoramento?.dataEfetivada?.format("dd/MM/yyyy")}"/>
+    <g:textField class="dateMask datepicker" name="dataEfetivada" id="dataEfetivada" size="10" maxlength="10" value="${localDtoMonitoramento?.dataEfetivada?.format("dd/MM/yyyy")}"/>
 </div>
 
 <div id="divSuspenso" class="fieldcontain ${hasErrors(bean: localDtoMonitoramento, field: 'suspenso', 'error')} ">
-    <label>
-    </label>
-    <g:checkBox id="checkSuspenso" name="suspenso" value="${localDtoMonitoramento?.suspenso}" /> suspenso
-    <g:helpTooltip chave="help.suspenso.monitoramento" />
+    <label>Suspenso<g:helpTooltip chave="help.suspenso.monitoramento" /></label>
+    <span class="property-value">
+        <g:checkBox id="checkSuspenso" name="suspenso" value="${localDtoMonitoramento?.suspenso}" /> sim
+    </span>
 </div>
 

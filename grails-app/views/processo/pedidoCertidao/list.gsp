@@ -56,6 +56,8 @@
 						<g:sortableColumn property="usuarioSistema" title="Autor" />
                         <g:sortableColumn property="situacao" title="Situação atual" />  %{--Descricao da tarefa--}%
                         <g:sortableColumn property="cad" title="Cad" />
+                        <g:sortableColumn property="dadosCertidao" title="Dados do Pedido" />
+                        <g:sortableColumn property="cartorio" title="Cartório" />
 					</tr>
 				</thead>
 				<tbody>
@@ -65,6 +67,8 @@
                         <td>${processo.operadorResponsavel?.username}</td>
                         <td><g:link action="mostraProcesso" id="${processo.id}">${processo.situacaoAtual}</g:link></td>
                         <td>${processo.familia?.cad}</td>
+                        <td>${processo.dadosCertidao}</td>
+                        <td>${processo.cartorio}</td>
 					</tr>
 				</g:each>
 				</tbody>

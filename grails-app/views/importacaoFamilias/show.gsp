@@ -46,7 +46,7 @@
                 </span>
 
                 <span class="property-value" aria-labelledby="dateCreated-label">
-                    <g:formatDate format="${org.apoiasuas.util.DateUtils.FORMATO_DATA_HORA}" date="${dtoTentatviaImportacao?.dateCreated}"/>
+                    <g:formatDate format="${org.apoiasuas.util.ApoiaSuasDateUtils.FORMATO_DATA_HORA}" date="${dtoTentatviaImportacao?.dateCreated}"/>
                 </span>
 
             </li>
@@ -59,7 +59,7 @@
                 </span>
 
                 <span class="property-value" aria-labelledby="lastUpdated-label">
-                    <g:formatDate format="${org.apoiasuas.util.DateUtils.FORMATO_DATA_HORA}" date="${dtoTentatviaImportacao?.lastUpdated}"/>
+                    <g:formatDate format="${org.apoiasuas.util.ApoiaSuasDateUtils.FORMATO_DATA_HORA}" date="${dtoTentatviaImportacao?.lastUpdated}"/>
                 </span>
 
             </li>

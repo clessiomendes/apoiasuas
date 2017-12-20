@@ -33,7 +33,7 @@
     <div class="message" role="status">${flash.message}</div>
 </g:if>
 
-<ol class="property-list monitoramento" style="padding: 0; margin: 0;">
+<ol class="property-list monitoramento" style="padding: 0;">
 
     <g:if test="${localDtoMonitoramento?.memo}">
         <li class="fieldcontain">
@@ -41,6 +41,8 @@
             <span class="property-value" aria-labelledby="descricao-label"><g:fieldValue bean="${localDtoMonitoramento}" field="memo"/></span>
         </li>
     </g:if>
+
+    <br>
 
     <g:if test="${localDtoMonitoramento?.responsavel}">
         <li class="fieldcontain">
@@ -60,16 +62,17 @@
         </li>
     </g:if>
 
-    <g:if test="${localDtoMonitoramento?.prioritario == true}">
-        <li class="fieldcontain">
-            <span class="property-label"></span>
-            <span class="property-value"><b>prioritário</b></span>
-        </li>
-    </g:if>
+    <br>
 
     <li class="fieldcontain">
         <span id="situacao-label" class="property-label">Situação</span>
-        <span class="property-value" aria-labelledby="situacao-label">${localDtoMonitoramento?.situacao}</span>
+        <span class="property-value" aria-labelledby="situacao-label">
+            <input style="vertical-align: middle" type="button" class="${localDtoMonitoramento?.iconeSituacao}"/>
+            <g:if test="${localDtoMonitoramento?.prioritario == true}">
+                <b>prioritário</b> -
+            </g:if>
+            ${localDtoMonitoramento?.situacao}
+        </span>
     </li>
 
 </ol>

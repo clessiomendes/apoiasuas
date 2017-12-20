@@ -42,23 +42,25 @@
                 <g:if test="${processo.tarefas}">
                     <fieldset id="fieldsetTarefas" class="embedded"><legend>Histórico</legend>
                         <g:each in="${processo.tarefas}" var="tarefa">
-                            <li class="fieldcontain">
-                                <span class="property-label">${tarefa.descricao}</span>
-                                <span class="property-value">
                                     <g:form action="reabreTarefa" id="${tarefa.id}">
-                                            <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CONCLUIDA}">
-                                                Concluída por ${tarefa.responsavel?.username} em <g:formatDate date="${tarefa.fim}"/>
-                                                <g:submitButton showif="${processo.fim == null}" name="reabreTarefa" class="save" value="voltar" />
-                                            </g:if>
-                                            <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.PENDENTE}">
-                                                Aguardando por ${tarefa.responsavel?.username} desde <g:formatDate date="${tarefa.inicio}"/>
-                                            </g:if>
-                                            <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CANCELADA}">
-                                                Cancelada com ${tarefa.responsavel?.username} em <g:formatDate date="${tarefa.fim}"/>
-                                            </g:if>
-                                    </g:form>
+                            <li class="fieldcontain">
+                                <span class="property-value">
+                                    ${tarefa.descricao}
                                 </span>
                             </li>
+                                    <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CONCLUIDA}">
+                                        concluído por ${tarefa.responsavel?.username} em <g:formatDate date="${tarefa.fim}"/>
+                                    </g:if>
+                                    <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.PENDENTE}">
+                                        aguardando por ${tarefa.responsavel?.username} desde <g:formatDate date="${tarefa.inicio}"/>
+                                    </g:if>
+                                    <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CANCELADA}">
+                                        - cancelada por ${tarefa.responsavel?.username} - <g:formatDate date="${tarefa.fim}"/>
+                                    </g:if>
+                                <g:if test="${tarefa.situacao == TarefaDTO.SituacaoTarefa.CONCLUIDA}">
+                                        <g:submitButton showif="${processo.fim == null}" name="reabreTarefa" class="save" value="voltar" />
+                                </g:if>
+                                    </g:form>
                         </g:each>
                     </fieldset>
                 </g:if>
@@ -69,22 +71,18 @@
                             <g:form action="concluiTarefa" id="${tarefa.id}">
 
                                 <g:if test="${! tarefa.ultimaPendente}">
-                                <li class="fieldcontain">
                                     <span class="property-label">Próximo responsável</span>
                                     <span class="property-value">
                                         <g:select required="" name="proximoResponsavel" noSelection="${['':'']}" from="${ususariosDisponiveis.collect{it.username}}" keys="${ususariosDisponiveis.collect{it.id}}"/>
                                     </span>
-                                </li>
                                 </g:if>
 
-                                <li class="fieldcontain">
                                     <span class="property-label"></span>
                                     <span class="property-value">
                                         <g:submitButton name="${tarefa.proximosPassos[0]}" class="save" value="${tarefa.proximosPassos[0]}" />
                                         %{--Caso exista mais de uma proxima tarefa, exibir ao lado de cada botão a tarefa atual correspondente--}%
                                         ${processo.tarefasPendentes.size() > 1 ? "("+tarefa.descricao+")" : ""}
                                     </span>
-                                </li>
 
 
                             </g:form>

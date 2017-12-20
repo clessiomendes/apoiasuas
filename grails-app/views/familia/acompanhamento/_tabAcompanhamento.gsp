@@ -17,7 +17,7 @@
     <g:textField class="dateMask" name="acompanhamentoFamiliar.dataFim" size="10" maxlength="10" value="${localDtoAcompanhamentoFamiliar?.dataFim?.format("dd/MM/yyyy")}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: localDtoAcompanhamentoFamiliar, field: 'analiseTecnica', 'error')} ">
+<div class="tamanho-memo fieldcontain ${hasErrors(bean: localDtoAcompanhamentoFamiliar, field: 'analiseTecnica', 'error')} ">
     <label for="acompanhamentoFamiliar.analiseTecnica">
         Análise técnica
         <g:helpTooltip chave="help.analise.tecnica.acompanhamento" />
@@ -25,7 +25,7 @@
     <g:textArea name="acompanhamentoFamiliar.analiseTecnica" value="${localDtoAcompanhamentoFamiliar?.analiseTecnica}" rows="6" cols="60"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: localDtoAcompanhamentoFamiliar, field: 'resultados', 'error')} ">
+<div class="tamanho-memo fieldcontain ${hasErrors(bean: localDtoAcompanhamentoFamiliar, field: 'resultados', 'error')} ">
     <label for="acompanhamentoFamiliar.resultados">
         Resultados e aquisições
         <g:helpTooltip chave="help.resultados.acompanhamento" />

@@ -3,6 +3,7 @@
 @cor-fonte-links-e-titulos:		#48802c; //tambem é a cor dos icones de butoes
 @cor-caption-jquery-ui: 		#E1F2B6;
 @cor-fundo-paineis-e-botoes:	#efefef;
+@cor-textos-para-consulta:		#efefef;
 @cor-fundo-principal:	        #dddddd;
 @cor-sombra-principal:	        #aaaaaa;
 
@@ -25,7 +26,6 @@
 /* Espaçamentos */
 @espacamento-linhas-formulario: 	0.7em;
 
-/* Tamanhos */
 .tamanho-icones() {
   background-size: 16px 16px;
 }
@@ -276,154 +276,6 @@ img {
 .nav a.create {
   .linkNavegacao();
   background-image: url(../../images/database/add.png);
-}
-
-/* CREATE/EDIT FORMS AND SHOW PAGES */
-
-fieldset.form,
-.property-list {
-	margin: 0.5em 0.5em 0.5em 0.5em;
-	padding: 0.5em 0.5em 0.5em;
-	position: relative;
-	zoom: 1;
-	border: none;
-}
-
-//evita margens extras em formulários contidos em janelas modais do jqueryUI (classe .ui-dialog-content)
-.ui-dialog-content fieldset.form {
-	margin: 0;
-  	padding: 0;
-}
-
-.property-list .fieldcontain {
-	list-style: none;
-	overflow: visible;
-	zoom: 1;
-}
-
-//adiciona espacamento apenas aa partir do segundo elemento das classes utilizadas nos componentes de
-//formulario: .fieldcontain .property-list e .embedded
-.fieldcontain ~ .fieldcontain,
-.property-list ~ .property-list,
-.embedded ~ .embedded,
-.embedded ~ .property-list,
-.property-list ~ .embedded,
-.embedded ~ .fieldcontain,
-.fieldcontain ~ .embedded
-{
-  margin-top: @espacamento-linhas-formulario;
-}
-
-//adiciona espacamento apenas aa partir do segundo elemento da classe .property-list
-.property-list ~ .property-list {
-  margin-top: @espacamento-linhas-formulario;
-}
-
-//Como a classe fieldcontain só preve margens no topo, o ultimo elemento selecionado deve ter tambem uma margem inferior
-//.property-list li:last-of-type {
-//	margin-bottom: @espacamento-linhas-formularios;
-//}
-
-.fieldcontain label,
-.fieldcontain .property-label {
-	color: #666666;
-	text-align: right;
-	width: 25%;
-}
-
-.fieldcontain .property-label {
-	float: left;
-}
-
-.fieldcontain .property-value {
-	display: block;
-	margin-left: 27%;
-}
-
-label {
-	cursor: pointer;
-	display: inline-block;
-	margin: 0 0.25em 0 0;
-}
-
-input, select, textarea {
-	background-color: #fcfcfc;
-	border: 1px solid @cor-bordas;
-	font-size: 1em;
-	padding: 0.2em 0.4em;
-}
-
-select {
-	padding: 0.2em 0.2em 0.2em 0;
-}
-
-select[multiple] {
-	vertical-align: top;
-}
-
-textarea {
-	/*width: 250px;*/
-	/*height: 150px;*/
-	overflow: auto; /* IE always renders vertical scrollbar without this */
-	vertical-align: top;
-}
-
-input[type=checkbox], input[type=radio] {
-	background-color: transparent;
-	border: 0;
-	padding: 0;
-}
-
-input[type='text']:focus, select:focus, textarea:focus {
-	background-color: #ffffff;
-	border: 1px solid #eeeeee;
-	outline: 0;
-	   -moz-box-shadow: 0 0 0.5em #ffffff;
-	-webkit-box-shadow: 0 0 0.5em #ffffff;
-	        box-shadow: 0 0 0.5em #ffffff;
-}
-
-.required-indicator {
-	color: #48802C;
-	display: inline-block;
-	font-weight: bold;
-	margin-left: 0.3em;
-	position: relative;
-	top: 0.1em;
-}
-
-ul.one-to-many {
-	display: inline-block;
-	list-style-position: inside;
-	vertical-align: top;
-}
-
-.ie6 ul.one-to-many, .ie7 ul.one-to-many {
-	display: inline;
-	zoom: 1;
-}
-
-ul.one-to-many li.add {
-	list-style-type: none;
-}
-
-/* EMBEDDED PROPERTIES */
-
-.embedded {
-	background-color: transparent;
-	border: 1px solid @cor-bordas;
-	margin-left: 0;
-	margin-right: 4px;
-	padding-left: 4px;
-	padding-right: 4px;
-    padding-bottom: 4px;
-	   -moz-box-shadow: none;
-	-webkit-box-shadow: none;
-	        box-shadow: none;
-}
-
-.embedded legend {
-	margin: 0 1em;
 }
 
 /* MESSAGES AND ERRORS */
@@ -1120,3 +972,236 @@ nobr {
 .no-titlebar .ui-dialog-titlebar {
   display: none;
 }
+
+//						R E M O D E L A N D O    L A Y O U T    D E     F O R M U L A R I O S
+
+//Originais:
+
+/* CREATE/EDIT FORMS AND SHOW PAGES */
+
+fieldset.form, .property-list {
+	margin: 0.5em 0.5em 0.5em 0.5em;
+	padding: 0.5em 0.5em 0.5em;
+    //margin: 0;
+    //padding: 0;
+	position: relative;
+	zoom: 1;
+	border: none;
+}
+
+//evita margens extras em formulários contidos em janelas modais do jqueryUI (classe .ui-dialog-content)
+.ui-dialog-content fieldset.form {
+	margin: 0;
+  	padding: 0 5px;
+}
+
+.property-list .fieldcontain {
+	list-style: none;
+	overflow: visible;
+	zoom: 1;
+}
+
+label {
+	cursor: pointer;
+	display: inline-block;
+	margin: 0 0.25em 0 0;
+}
+
+input, select, textarea {
+	background-color: #fcfcfc;
+	border: 1px solid @cor-bordas;
+	font-size: 1em;
+	padding: 0.2em 0.4em;
+}
+
+select {
+	padding: 0.2em 0.2em 0.2em 0;
+}
+
+select[multiple] {
+	vertical-align: top;
+}
+
+textarea {
+	/*width: 250px;*/
+	/*height: 150px;*/
+	overflow: auto; /* IE always renders vertical scrollbar without this */
+	vertical-align: top;
+}
+
+input[type=checkbox], input[type=radio] {
+	background-color: transparent;
+	border: 0;
+	padding: 0;
+}
+
+input[type='text']:focus, select:focus, textarea:focus {
+	background-color: #ffffff;
+	border: 1px solid #eeeeee;
+	outline: 0;
+	   -moz-box-shadow: 0 0 0.5em #ffffff;
+	-webkit-box-shadow: 0 0 0.5em #ffffff;
+	        box-shadow: 0 0 0.5em #ffffff;
+}
+
+.required-indicator {
+	color: #48802C;
+	display: inline-block;
+	font-weight: bold;
+	margin-left: 0.3em;
+	position: relative;
+	top: 0.1em;
+}
+
+ul.one-to-many {
+	display: inline-block;
+	list-style-position: inside;
+	vertical-align: top;
+}
+
+.ie6 ul.one-to-many, .ie7 ul.one-to-many {
+	display: inline;
+	zoom: 1;
+}
+
+ul.one-to-many li.add {
+	list-style-type: none;
+}
+
+/* EMBEDDED PROPERTIES */
+
+.embedded {
+	background-color: transparent;
+	border: 1px solid @cor-bordas;
+	margin-left: 0;
+	margin-right: 4px;
+	padding-left: 4px;
+	padding-right: 4px;
+    padding-bottom: 4px;
+	   -moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	        box-shadow: none;
+}
+
+//Como a classe fieldcontain só preve margens no topo, o ultimo elemento selecionado deve ter tambem uma margem inferior
+//.property-list li:last-of-type {
+//	margin-bottom: @espacamento-linhas-formularios;
+//}
+
+/*
+//adiciona espacamento apenas aa partir do segundo elemento das classes utilizadas nos componentes de
+//formulario: .fieldcontain .property-list e .embedded
+.fieldcontain ~ .fieldcontain,
+.property-list ~ .property-list,
+.embedded ~ .embedded,
+.embedded ~ .property-list,
+.property-list ~ .embedded,
+.embedded ~ .fieldcontain,
+.fieldcontain ~ .embedded
+{
+  margin-top: @espacamento-linhas-formulario;
+}
+
+//adiciona espacamento apenas aa partir do segundo elemento da classe .property-list
+.property-list ~ .property-list {
+  margin-top: @espacamento-linhas-formulario;
+}
+
+.fieldcontain label,
+.fieldcontain .property-label {
+	color: #666666;
+	text-align: right;
+	width: 25%;
+}
+
+.fieldcontain .property-label {
+	float: left;
+}
+
+.fieldcontain .property-value {
+	display: block;
+	margin-left: 27%;
+}
+*/
+
+//Personalizacao
+
+.fieldcontain {
+	vertical-align: top;
+	display: inline-block;
+	margin-top: 0;
+  	//margin-left: 1em;
+  	margin-right: 1em;
+}
+//.fieldcontain ~ .fieldcontain {
+//}
+.fieldcontain label, .fieldcontain .property-label {
+	display: block;
+	color: #666666;
+	font-weight: bold;
+	font-size: small;
+	text-align: left;
+	width: 100%;
+	min-height: 1.3em;
+}
+.embedded legend {
+	margin: 0 1em;
+	color: #666666;
+	font-weight: bold;
+	font-size: small;
+	text-align: left;
+	/* width: 100%; */
+}
+.fieldcontain ~ .fieldcontain, .property-list ~ .property-list,
+.embedded ~ .embedded, .embedded ~ .property-list,
+.property-list ~ .embedded, .embedded ~ .fieldcontain, .fieldcontain ~ .embedded {
+	margin-top: 0;
+}
+.embedded, .fieldcontain {
+	margin-bottom: 0.7em;
+}
+.fieldcontain .property-value, span.conteudo {
+	margin-top: 2px;
+	display: block;
+	width: 100%;
+	background-color: @cor-textos-para-consulta;
+	padding: 0.2em 0.4em;
+  	border-radius: 0.3em;
+	min-height: 1.3em;
+}
+.fieldcontain input[type=checkbox] {
+	vertical-align: middle;
+}
+.fieldcontain input[type=text], .fieldcontain select {
+	box-sizing: border-box;
+	height: 1.8em;
+}
+
+/*Tamanho padrao para os campos memo (multiplas linhas)*/
+div.tamanho-memo, div.tamanho-memo textarea {
+	box-sizing: border-box;
+	width: 100%;
+}
+
+/*Formatacao para enderecos*/
+.endereco {
+	input[name='endereco.nomeLogradouro'] { width: 20em; }
+	input[name='endereco.bairro'] { width: 17em; }
+	input[name='endereco.municipio'] { width: 17em; }
+	input[name='endereco.tipoLogradouro'] { max-width: 7em; }
+	input[name='endereco.numero'] { max-width: 4em; }
+  	input[name='endereco.complemento'] { max-width: 10em; }
+  	input[name='endereco.UF'] { max-width: 3em; }
+  	input[name='endereco.CEP'] { max-width: 8em; }
+}
+// Fim da personalizacao do layout de formularios
+
+//Centraliza o icone de selecao de data em relacao aa caixa de texto que o precede
+.datepicker ~img {
+  vertical-align: middle;
+}
+
+/*
+.ui-tabs .ui-tabs-panel {
+  padding: 0;
+}*/

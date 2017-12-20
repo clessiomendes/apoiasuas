@@ -10,6 +10,7 @@ import org.apoiasuas.formulario.Formulario
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
+import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
@@ -57,8 +58,12 @@ class ApoiaSuasTagLib {
 
         //Para cada grupo encontrado...
         listaDeGrupos.each { grupo ->
-            if (grupo[0]) //se o grupo tiver nome, cria uma caixa para ele
-                out << '<fieldset class="embedded"><legend class="collapsable" style="cursor:pointer;">'+grupo[0]+'</legend>'
+            if (grupo[0]) { //se o grupo tiver nome, cria uma caixa para ele
+                String classeCSS = "embedded ";
+                if (StringUtils.contemIgnoraAcentos(grupo[0].toLowerCase(), "endereco"))
+                    classeCSS += "endereco"
+                out << '<fieldset class="'+classeCSS+'"><legend class="collapsable" style="cursor:pointer;">' + grupo[0] + '</legend>'
+            }
             grupo[1].each { item -> //imprime o corpo da tag, usando o 'item' e o contador 'i' como parametros
                 i++
                 out << body((var):item, (status): i)
@@ -117,7 +122,10 @@ class ApoiaSuasTagLib {
         String label = attrs.label
 
         if (campoFormulario) {
-            out << '<div class="fieldcontain ' + hasErrors(bean: campoFormulario, 'error') + ' ">'
+            String classeCSS = "fieldcontain " + hasErrors(bean: campoFormulario, 'error') + " ";
+            if (campoFormulario.multiplasLinhas > 1)
+                classeCSS += " tamanho-memo "
+            out << "<div class='$classeCSS'>";
             if (!label) {
 //                if (campoFormulario.descricaoI18N)
 //                    label = message(code: campoFormulario.descricaoI18N)
@@ -158,7 +166,7 @@ class ApoiaSuasTagLib {
             case [CampoFormulario.Tipo.TEXTO, CampoFormulario.Tipo.INTEIRO]:
                 if (campoFormulario.multiplasLinhas > 1)
                     return textArea(name: campoFormulario.caminhoCampo,
-                            cols: campoFormulario.tamanho,
+//                            cols: campoFormulario.tamanho,
                             rows: campoFormulario.multiplasLinhas,
                             autofocus: focoInicial,
                             value: campoFormulario.valorArmazenado)

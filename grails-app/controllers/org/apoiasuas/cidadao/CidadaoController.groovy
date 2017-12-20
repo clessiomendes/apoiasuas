@@ -167,10 +167,12 @@ class CidadaoController extends AncestralController {
         //Somente após a chamada a validate() devemos adicionar erros ao objeto
         if (! validaVersao(cidadaoInstance))
             validado = false;
+/*  Validação já feita na classe de dominio Cidadao
         if (cidadaoService.nomeDuplicado(cidadaoInstance)) {
             validado = false;
             cidadaoInstance.errors.rejectValue("nomeCompleto","","Um membro com este nome (${cidadaoInstance.nomeCompleto}) já existe na família.")
         }
+*/
         if (validado) {
             cidadaoService.grava(cidadaoInstance);
             flash.message = "Membro familiar ${cidadaoInstance.nomeCompleto} gravado com sucesso";

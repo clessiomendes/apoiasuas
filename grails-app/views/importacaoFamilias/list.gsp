@@ -37,9 +37,8 @@
 				<tbody>
 				<g:each in="${tentativasImportacao}" status="i" var="importacao">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-
 						<td>
-							<g:formatDate format="${org.apoiasuas.util.DateUtils.FORMATO_DATA_HORA}" date="${importacao.dateCreated}" />
+							<g:formatDate format="${org.apoiasuas.util.ApoiaSuasDateUtils.FORMATO_DATA_HORA}" date="${importacao.dateCreated}" />
 							(${importacao.criador})
 						</td>
 

@@ -72,7 +72,8 @@ class Cidadao implements Serializable, DominioProtegidoServico {
         referencia(nullable: false)
         criador(nullable: false)
         ultimoAlterador(nullable: false)
-        familia(nullable: false, unique: 'nomeCompleto') //Cria um índice composto e único contendo os campos familia(id) e nomeCompleto
+        nomeCompleto(nullable: false, unique: 'familia') //Cria um índice composto e único contendo os campos familia(id) e nomeCompleto
+        familia(nullable: false) //Cria um índice composto e único contendo os campos familia(id) e nomeCompleto
         servicoSistemaSeguranca(nullable: false)
     }
 

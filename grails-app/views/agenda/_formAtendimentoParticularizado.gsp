@@ -5,6 +5,8 @@
     org.apoiasuas.cidadao.Familia localFamiliaCandidata = familiaCandidata;
 %>
 
+<asset:javascript src="especificos/datepicker-pt-BR.js"/>
+
 <script>
     var janelaModalProcurarCidadao = new JanelaModalAjax();
 
@@ -110,63 +112,71 @@
     //# sourceURL=formAtendimentoParticularizado
 </script>
 
-<f:with bean="${localDtoAtendimento}">
+<g:hiddenField id="hiddenIdFamilia" name="familia.id" value="${localDtoAtendimento?.familia?.id}" />
+<g:hiddenField id="hiddenCompareceu" name="compareceu" value="${localDtoAtendimento?.compareceu}" />
 
-    <g:hiddenField id="hiddenIdFamilia" name="familia.id" value="${localDtoAtendimento?.familia?.id}" />
-    <g:hiddenField id="hiddenCompareceu" name="compareceu" value="${localDtoAtendimento?.compareceu}" />
-
-    %{--Mostrar apenas quando houver uma familia candidata (na sessao)--}%
-    <g:if test="${localFamiliaCandidata}">
-        <div id="divAgendandoAtendimento" class="fieldcontain">
-            <label></label>
-            <input type="button" class="atendimento" onclick="agendarFamiliaCandidata()" title="Clique para agendar esta família neste horário"
-                   value="Agendar ${localCidadaoCandidato ? localCidadaoCandidato.nomeCompleto + " -" : ""} cad ${localFamiliaCandidata?.cad}"/>
-        </div>
-    </g:if>
-
-    <f:field property="nomeCidadao">
-        <input type="text" id="inputNomeCidadao" name="nomeCidadao" size="40" maxlength="255" value="${localDtoAtendimento.nomeCidadao}"/>
-    </f:field>
-
-    <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'familia', 'error')} ">
-        <label>Cad</label>
-        <span id="spanCad">${localDtoAtendimento.familia?.cad}</span>
-        <input type="button" class="search field-button" value="Procurar" onclick='popupProcurarCidadao();'/>
-        &nbsp;&nbsp;<g:checkBox name="familiaSemCadastro" id="checkSemCad" checked="${localDtoAtendimento.familiaSemCadastro}" onchange="checkCadChange(this);"/>
-        <span>família sem cadastro</span>
-    </div>
-
-    <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'telefoneContato', 'error')} ">
-        <label>Telefone</label>
-        <g:textField name="telefoneContato" id="inputTelefoneContato" size="11" value="${localDtoAtendimento.telefoneContato}" />
-        &nbsp;&nbsp;<g:checkBox name="semTelefone" id="checkSemTelefone" checked="${localDtoAtendimento.semTelefone}" onchange="checkTelefoneChange(this);"/>
-        <span>sem telefone</span>
-    </div>
-
-    <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'tecnico', 'error')} ">
-        <label for="tecnico.id">
-            <nobr>Responsável<span class="required-indicator">*</span>
-            </nobr>
-        </label>
-        <g:select id="tecnico" name="tecnico.id" from="${operadores}" optionKey="id" value="${localDtoAtendimento?.tecnico?.id}" class="many-to-one" noSelection="['': '']"/>
-    </div>
-
-    <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'dataHora', 'error')} ">
-        <label>
-            Horário<span class="required-indicator">*</span>
-        </label>
-        <g:textField name="data" id="data" size="9" value="${localDtoAtendimento?.dataHora?.format("dd/MM/yyyy")}" />
-        <g:textField class="timepicker-agenda" name="hora" id="hora" size="4" value="${localDtoAtendimento?.dataHora?.format("HH:mm")}" />
-    </div>
-
-    <div class="fieldcontain">
+%{--Mostrar apenas quando houver uma familia candidata (na sessao)--}%
+<g:if test="${localFamiliaCandidata}">
+    <div id="divAgendandoAtendimento" class="fieldcontain">
         <label></label>
-        <span id="spanSituacao" style="padding: 0.5em 0.7em; display: inline-block; border-radius: 0.3em; background-color: ${localDtoAtendimento.getCor()}">
-            ${localDtoAtendimento.getTooltip()}
-            <g:if test="${localDtoAtendimento.horarioPreenchido}">
-                <input type="button" id="btnLiberar" class="speed-button-liberar" onclick="liberarClick(); return false;" title="Liberar horário"/>
-            </g:if>
-        </span>
+        <input type="button" class="atendimento" onclick="agendarFamiliaCandidata()" title="Clique para agendar esta família neste horário"
+               value="Agendar ${localCidadaoCandidato ? localCidadaoCandidato.nomeCompleto + " -" : ""} cad ${localFamiliaCandidata?.cad}"/>
     </div>
 
-</f:with>
+    <br>
+</g:if>
+
+<g:if test="${localDtoAtendimento?.id}">
+    <div class="fieldcontain">
+        <label>Nº Protocolo</label>
+        ${localDtoAtendimento.id}
+    </div>
+</g:if>
+
+<div class="tamanho-nomes fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'nomeCidadao', 'error')} ">
+    <label>Nome</label>
+    <g:textField name="nomeCidadao" maxlength="255" id="inputNomeCidadao" value="${localDtoAtendimento.nomeCidadao}" />
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'familia', 'error')} ">
+    <label>Cad</label>
+    <span id="spanCad">${localDtoAtendimento.familia?.cad}</span>
+    <input type="button" class="search field-button" value="Procurar" onclick='popupProcurarCidadao();'/>
+    &nbsp;&nbsp;<g:checkBox name="familiaSemCadastro" id="checkSemCad" checked="${localDtoAtendimento.familiaSemCadastro}" onchange="checkCadChange(this);"/>
+    <span>família sem cadastro</span>
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'telefoneContato', 'error')} ">
+    <label>Telefone</label>
+    <g:textField name="telefoneContato" id="inputTelefoneContato" size="11" value="${localDtoAtendimento.telefoneContato}" />
+    &nbsp;&nbsp;<g:checkBox name="semTelefone" id="checkSemTelefone" checked="${localDtoAtendimento.semTelefone}" onchange="checkTelefoneChange(this);"/>
+    <span>sem telefone</span>
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'tecnico', 'error')} ">
+    <label for="tecnico.id">
+        <nobr>Responsável<span class="required-indicator">*</span>
+        </nobr>
+    </label>
+    <g:select id="tecnico" name="tecnico.id" from="${operadores}" optionKey="id" value="${localDtoAtendimento?.tecnico?.id}" class="many-to-one" noSelection="['': '']"/>
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'dataHora', 'error')} ">
+    <label>
+        Horário<span class="required-indicator">*</span>
+    </label>
+    <g:textField name="data" class="dateMask datepicker" id="data" size="9" value="${localDtoAtendimento?.dataHora?.format("dd/MM/yyyy")}" />
+    <g:textField class="timepicker-agenda" name="hora" id="hora" size="4" value="${localDtoAtendimento?.dataHora?.format("HH:mm")}" />
+</div>
+
+<br>
+
+<div class="fieldcontain">
+    <label></label>
+    <span id="spanSituacao" style="padding: 0.5em 0.7em; display: inline-block; border-radius: 0.3em; background-color: ${localDtoAtendimento.getCor()}">
+        ${localDtoAtendimento.getTooltip()}
+        <g:if test="${localDtoAtendimento.horarioPreenchido}">
+            <input type="button" id="btnLiberar" class="speed-button-liberar" onclick="liberarClick(); return false;" title="Liberar horário"/>
+        </g:if>
+    </span>
+</div>

@@ -36,8 +36,18 @@ $(document).ready(function() {
 </g:javascript>
 
 <div id='${idPrincipal}' title='${tituloJanela}' style="height: auto">
+<fieldset class="form">
+
     <g:form onsubmit="return false;">
+%{--
         <span id="descricaoMarcador"></span>
+
+        <br><br>
+--}%
+
+        <div class="fieldcontain">
+            <span id="descricaoMarcador" class="property-value"></span>
+        </div>
 
         <div class="fieldcontain">
             <label for="inputObservacaoMarcador">Observacao</label>
@@ -52,7 +62,14 @@ $(document).ready(function() {
                       noSelection="['': '']"/>
         </div>
 
-        <input type="button" id="btnConfirmar" value="Confirmar" class="save" style="margin-top: 20px;"/>
-        &nbsp;&nbsp;<input type="button" id="btnCancelar" value="Cancelar" class="cancel" style="margin-top: 20px;"/>
     </g:form>
+
+</fieldset>
+
+<fieldset class="buttons">
+        <a href="javascript:void(0)" id="btnConfirmar" class="save">Confirmar</a>
+        <a href="javascript:void(0)" id="btnCancelar" class="close">Cancelar</a>
+</fieldset>
+
 </div>
+

@@ -32,7 +32,7 @@
                     <li class="fieldcontain">
                         <g:if test="${cidadaoInstance?.referencia}">
                             <span class="property-label"></span>
-                            <span class="property-value">Referência familiar</span>
+                            <span class="property-value">(referência familiar)</span>
                         </g:if>
                         <g:else>
                             <span id="parentescoReferencia-label" class="property-label"><g:message code="cidadao.parentescoReferencia.label" default="Parentesco Referencia" /></span>
@@ -41,26 +41,36 @@
                     </li>
                 </g:if>
 
+                <br>
+
+                <g:if test="${cidadaoInstance?.familia}">
+                    <li class="fieldcontain">
+                        <span id="familia-label" class="property-label"><g:message code="cidadao.familia.label" default="Familia" /></span>
+                            <span class="property-value" aria-labelledby="familia-label"><g:link controller="familia" action="show" id="${cidadaoInstance?.familia?.id}">${cidadaoInstance?.familia?.montaDescricao().encodeAsHTML()}</g:link></span>
+                    </li>
+                    <br>
+				</g:if>
+
+                <g:if test="${cidadaoInstance?.nomeMae}">
+                    <li class="fieldcontain">
+                        <span id="nomeMae-label" class="property-label"><g:message code="cidadao.nomeMae.label" default="Nome da Mãe" /></span>
+                        <span class="property-value" aria-labelledby="nomeMae-label"><g:fieldValue bean="${cidadaoInstance}" field="nomeMae"/></span>
+                    </li>
+                </g:if>
+
+                <g:if test="${cidadaoInstance?.nomePai}">
+                    <li class="fieldcontain">
+                        <span id="nomePai-label" class="property-label"><g:message code="cidadao.nomePai.label" default="Nome do Pai" /></span>
+                        <span class="property-value" aria-labelledby="nomePai-label"><g:fieldValue bean="${cidadaoInstance}" field="nomePai"/></span>
+                    </li>
+                </g:if>
+
+                <br>
+
                 <g:if test="${cidadaoInstance?.dataNascimento}">
                     <li class="fieldcontain">
                         <span id="dataNascimento-label" class="property-label"><g:message code="cidadao.dataNascimento.label" default="Data Nascimento" /></span>
                         <span class="property-value" aria-labelledby="dataNascimento-label"><g:formatDate date="${cidadaoInstance?.dataNascimento}" /> ${cidadaoInstance?.idade ? "("+cidadaoInstance?.idade+" anos)" : ""} </span>
-                    </li>
-                </g:if>
-
-                <g:if test="${cidadaoInstance?.familia}">
-				<li class="fieldcontain">
-					<span id="familia-label" class="property-label"><g:message code="cidadao.familia.label" default="Familia" /></span>
-						<span class="property-value" aria-labelledby="familia-label"><g:link controller="familia" action="show" id="${cidadaoInstance?.familia?.id}">${cidadaoInstance?.familia?.montaDescricao().encodeAsHTML()}</g:link></span>
-				</li>
-				</g:if>
-
-                <g:if test="${CidadaoController.getDocumentos(cidadaoInstance)}">
-                    <li class="fieldcontain">
-                        <span id="nis-label" class="property-label"><g:message code="cidadao.documentos.label" default="Documentos" /></span>
-                        <g:each in="${CidadaoController.getDocumentos(cidadaoInstance)}" var="documento">
-                            <span class="property-value" aria-labelledby="documento-label">${documento}</span>
-                        </g:each>
                     </li>
                 </g:if>
 
@@ -74,6 +84,8 @@
                     </li>
                 </g:if>
 
+                <br>
+
                 <g:if test="${cidadaoInstance?.estadoCivil}">
                     <li class="fieldcontain">
                         <span id="estadoCivil-label" class="property-label"><g:message code="cidadao.estadoCivil.label" default="Estado Civil" /></span>
@@ -81,17 +93,12 @@
                     </li>
                 </g:if>
 
-                <g:if test="${cidadaoInstance?.nomeMae}">
+                <g:if test="${CidadaoController.getDocumentos(cidadaoInstance)}">
                     <li class="fieldcontain">
-                        <span id="nomeMae-label" class="property-label"><g:message code="cidadao.nomeMae.label" default="Nome da Mãe" /></span>
-                        <span class="property-value" aria-labelledby="nomeMae-label"><g:fieldValue bean="${cidadaoInstance}" field="nomeMae"/></span>
-                    </li>
-                </g:if>
-
-                <g:if test="${cidadaoInstance?.nomePai}">
-                    <li class="fieldcontain">
-                        <span id="nomePai-label" class="property-label"><g:message code="cidadao.nomePai.label" default="Nome do Pai" /></span>
-                        <span class="property-value" aria-labelledby="nomePai-label"><g:fieldValue bean="${cidadaoInstance}" field="nomePai"/></span>
+                        <span id="nis-label" class="property-label"><g:message code="cidadao.documentos.label" default="Documentos" /></span>
+                        <g:each in="${CidadaoController.getDocumentos(cidadaoInstance)}" var="documento">
+                            <span class="property-value" aria-labelledby="documento-label">${documento}</span>
+                        </g:each>
                     </li>
                 </g:if>
 

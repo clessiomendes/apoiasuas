@@ -26,7 +26,7 @@
 			</g:hasErrors>
 			<g:form url="[resource:familiaInstance, action:'save']" >
 				<g:tabs id="tabs" style="margin: 5px;">
-					<g:tab id="tabEditFamilia" titulo="família" template="tabEditFamilia"/>
+					<g:tab id="tabEditFamilia" titulo="família" template="tabEditFamiliaTeste"/>
 					<g:tab id="tabReferencia" titulo="referência familiar" template="/cidadao/form" model="[prefixoEntidade: 'cidadao.']"/>
 				</g:tabs>
 				<fieldset class="buttons">

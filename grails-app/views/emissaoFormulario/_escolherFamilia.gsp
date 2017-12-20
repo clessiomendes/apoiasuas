@@ -15,34 +15,29 @@
         }
     });
 
-/**
-* Recarregar a pagina quando chegar a ela pelo botao de voltar do browser
-*/
-$(window).onpageshow = function(evt) {
-// If persisted then it is in the page cache, force a reload of the page.
-if (evt.persisted) {
-    document.body.style.display = "none";
-    location.reload();
-}
-};
+    /**
+    * Recarregar a pagina quando chegar a ela pelo botao de voltar do browser
+    */
+    $(window).onpageshow = function(evt) {
+        // If persisted then it is in the page cache, force a reload of the page.
+        if (evt.persisted) {
+            document.body.style.display = "none";
+            location.reload();
+        }
+    };
 </g:javascript>
 
     <g:formRemote name="fool" method="post" update="familiaParaSelecao" url="[controller: 'emissaoFormulario', action: 'familiaParaSelecao']"
                   onSuccess="document.getElementById('membroSelecionado').focus();">
-        <div class="fieldcontain">
-            <label>
-                <g:radio name="familiaCadastrada" value="false" onclick="limparFamilia();"/> Família sem cadastro
-            </label>
-        </div>
-        <div class="fieldcontain">
-            <label for="cad">
-                <g:radio name="familiaCadastrada" value="true" checked="true"/> Família cadastrada:
-            </label>
-            <g:textField autofocus="true" name="cad" id="cad" size="2" value="${FamiliaController.getUltimaFamilia(session)?.cad}"/>
+        <g:radio name="familiaCadastrada" value="false" onclick="limparFamilia();"/> Família sem cadastro
+        <br>
+        <g:radio name="familiaCadastrada" value="true" checked="true"/> Família cadastrada:
+        <g:textField autofocus="true" name="cad" id="cad" size="2" value="${FamiliaController.getUltimaFamilia(session)?.cad}"/>
 %{--TODO: Formatar botão ok--}%
-            <g:actionSubmit action="familiaParaSelecao" id="btnSelecionarFamilia" value="ok"/>
-        </div>
+        <g:actionSubmit action="familiaParaSelecao" id="btnSelecionarFamilia" value="ok"/>
     </g:formRemote>
+
+    <br>
 
 %{--
     Este form precisa ser "submetido" por uma chamada externa da pagina que inclui este template, por um javascript como:

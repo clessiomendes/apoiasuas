@@ -1,3 +1,21 @@
+//= require jquery-ui-1.10.4.custom
+
+$(function() {
+    $.datepicker.setDefaults(
+        $.extend(
+            {'dateFormat':'dd/MM/yyyy'},
+            $.datepicker.regional['pt-BR']
+        )
+    );
+
+    $( ".datepicker" ).datepicker({
+        showOn: "button",
+        buttonImage: window.grailsSupport.iconeCalendario,
+        buttonImageOnly: true,
+        buttonText: "selecionar data"
+    });
+});
+
 /* Brazilian initialisation for the jQuery UI date picker plugin. */
 /* Written by Leonildo Costa Silva (leocsilva@gmail.com). */
 ( function( factory ) {

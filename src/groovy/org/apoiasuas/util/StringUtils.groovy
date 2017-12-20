@@ -123,4 +123,12 @@ class StringUtils {
         int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
         return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
+
+    public static boolean contemIgnoraAcentos(String texto, String padrao) {
+        texto = Normalizer.normalize(texto, Normalizer.Form.NFD);
+        texto = texto.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        padrao = Normalizer.normalize(padrao, Normalizer.Form.NFD);
+        padrao = padrao.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        return texto.contains(padrao);
+    }
 }

@@ -356,3 +356,6 @@ INSERT into ambiente (id, descricao) values (0, );
 _log CREATE TABLE ambiente(id INT PRIMARY KEY, descricao VARCHAR(255));
 _log INSERT into ambiente (id, descricao) values (0, );
 */
+alter table cidadao rename constraint unique_familia_id to unique_nome_completo;
+DROP INDEX public.unique_familia_id CASCADE;
+CREATE UNIQUE INDEX unique_nome_completo ON cidadao (lower(nome_completo), familia_id);

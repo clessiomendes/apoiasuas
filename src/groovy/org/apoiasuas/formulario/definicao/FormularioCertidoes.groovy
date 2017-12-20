@@ -80,40 +80,42 @@ class FormularioCertidoes extends FormularioBase {
 //                origem Origem.CIDADAO
 //                codigo 'estado_civil'
 //            }
-                    campoBancoDeDados {
-                        origem Origem.ENDERECO
-                        codigo 'tipo_logradouro'
-                        obrigatorio true
-                    }
-                    campoBancoDeDados {
-                        origem Origem.ENDERECO
-                        codigo 'nome_logradouro'
-                        listaLogradourosCidadaos true
-                        obrigatorio true
-                    }
-                    campoBancoDeDados {
-                        origem Origem.ENDERECO
-                        codigo 'numero'
-                        obrigatorio true
-                    }
-                    campoBancoDeDados {
-                        origem Origem.ENDERECO
-                        codigo 'complemento'
-                    }
-                    campoBancoDeDados {
-                        origem Origem.ENDERECO
-                        codigo 'bairro'
-                    }
-                    campoBancoDeDados {
-                        origem Origem.ENDERECO
-                        codigo 'municipio'
-                        obrigatorio true
-                    }
-                    campoBancoDeDados {
-                        origem Origem.ENDERECO
-                        codigo 'UF'
-                        obrigatorio true
-                    }
+            }
+            grupo 'Endereço', {
+                campoBancoDeDados {
+                    origem Origem.ENDERECO
+                    codigo 'tipo_logradouro'
+                    obrigatorio true
+                }
+                campoBancoDeDados {
+                    origem Origem.ENDERECO
+                    codigo 'nome_logradouro'
+                    listaLogradourosCidadaos true
+                    obrigatorio true
+                }
+                campoBancoDeDados {
+                    origem Origem.ENDERECO
+                    codigo 'numero'
+                    obrigatorio true
+                }
+                campoBancoDeDados {
+                    origem Origem.ENDERECO
+                    codigo 'complemento'
+                }
+                campoBancoDeDados {
+                    origem Origem.ENDERECO
+                    codigo 'bairro'
+                }
+                campoBancoDeDados {
+                    origem Origem.ENDERECO
+                    codigo 'municipio'
+                    obrigatorio true
+                }
+                campoBancoDeDados {
+                    origem Origem.ENDERECO
+                    codigo 'UF'
+                    obrigatorio true
+                }
             }
             grupo 'Certidão de nascimento', {
                 campoAvulso {

@@ -3,14 +3,6 @@ if (typeof jQuery !== 'undefined') {
     (function($) {
         //Máscara para todos os campos de data
         $(".dateMask").mask("99/99/9999");
-
-        /*
-        $('#spinner').ajaxStart(function() {
-            $(this).fadeIn();
-        }).ajaxStop(function() {
-            $(this).fadeOut();
-        });
-        */
     })(jQuery);
 }
 
@@ -131,6 +123,12 @@ function ifNull(value, ifnull) {
     return value;
 }
 
+/**
+ * Altera (ou cria) cookies com escopo na RAIZ
+ * @param c_name nome do cookie
+ * @param value valor (string)
+ * @param exdays dias (nao obrigatorio)
+ */
 function setCookie(c_name, value, exdays) {
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + exdays);
@@ -138,6 +136,10 @@ function setCookie(c_name, value, exdays) {
     document.cookie = c_name + "=" + c_value + "; path=/";
 }
 
+/**
+ * Retorna valor de cookies com escopo na RAIZ
+ * @param c_name nome do cookie
+ */
 function getCookie(c_name) {
     var i, x, y, ARRcookies = document.cookie.split(";");
     for (i = 0; i < ARRcookies.length; i++) {
@@ -148,4 +150,16 @@ function getCookie(c_name) {
             return unescape(y);
         }
     }
+}
+
+/**
+ * Converte de data para string no formato dd/mm/yyyy
+ * @param data
+ * @returns {string}
+ */
+function dateToStr(data) {
+    var dd = data.getDate();
+    var mm = data.getMonth() + 1; // getMonth() is zero-based
+    var yyyy = data.getFullYear();
+    return (dd>9 ? '' : '0') + dd + "/" + (mm>9 ? '' : '0') + mm + "/" + yyyy;
 }

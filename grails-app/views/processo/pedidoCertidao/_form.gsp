@@ -38,6 +38,8 @@
     <br>Ex: Cartório de Registro de Pessoas Naturais, distrito de Ariranha, Pedra Azul - MG
 </div>
 
+<br>
+
 <div class="fieldcontain ${hasErrors(bean: processoDTO, field: 'numeroAR', 'error')}">
     <label for="numeroAR">
         Número AR

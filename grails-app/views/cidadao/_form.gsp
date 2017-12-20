@@ -5,27 +5,6 @@
     String prefixo = prefixoEntidade ?: "";
 %>
 
-<asset:javascript src="especificos/jquery-mask.js"/>
-<g:javascript>
-	$(function() {
-		$(".dateMask").mask("99/99/9999");
-	});
-
-/*
-	//evento onCheck para o checkbox "efetivado"
-	$("#checkReferencia").change(function() {
-		//var $dataEfetivada = $("#dataEfetivada");
-		if (this.checked) {
-			$("#divParentescoReferencia").hide()
-		} else {
-			$("#divParentescoReferencia").show();
-		}
-	});
-	$("#checkReferencia").change();
-*/
-
-</g:javascript>
-
 %{--<f:with bean="${localDtoCidadao}">--}%
 	%{--<f:field property="nomeCompleto" prefix="${prefixo}" label="Nome completo" widget-size="60"/>--}%
 
@@ -82,10 +61,12 @@
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'naturalidade', 'error')} ">
-	<label for="naturalidade">
-		<g:message code="cidadao.naturalidade.label" default="Naturalidade" />
-	</label>
+	<label for="naturalidade">Naturalidade</label>
 	<g:textField name="naturalidade" size="30" maxlength="60" value="${localDtoCidadao?.naturalidade}"/>
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'UFNaturalidade', 'error')} ">
+	<label>UF</label>
 	<g:textField name="UFNaturalidade" size="2" maxlength="2" value="${localDtoCidadao?.UFNaturalidade}"/>
 </div>
 

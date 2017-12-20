@@ -41,7 +41,7 @@ class MarcadorService {
     public List<UsuarioSistema> getTecnicosIncluiMarcadores(Familia familia) {
         List<UsuarioSistema> tecnicosSelecionados = familia.todosOsMarcadores.collect { it.tecnico };
         Papel papelTecnico = Papel.findByAuthority(DefinicaoPapeis.STR_TECNICO);
-        ArrayList<UsuarioSistema> result = segurancaService.getOperadoresOrdenados(true, familia.tecnicoReferencia).findAll { operador ->
+        ArrayList<UsuarioSistema> result = segurancaService.getOperadoresOrdenados(true, [familia.tecnicoReferencia]).findAll { operador ->
             //sempre mostrar os operadores que ja foram selecionados em algum marcador
             (operador in tecnicosSelecionados
             ||

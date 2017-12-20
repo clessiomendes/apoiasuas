@@ -45,7 +45,9 @@
                         <% CampoFormularioEmitido campoPreenchido = campoPreenchidoTemp %>
                             <li class="fieldcontain">
                                 <span id="campos-label" class="property-label">${campoPreenchido?.descricao}</span>
-						        <span class="property-value" aria-labelledby="campos-label">${campoPreenchido.conteudoImpresso }</span>
+								%{--<g:if test="${campoPreenchido.conteudoImpresso }">--}%
+						        	<span class="property-value" aria-labelledby="campos-label">${campoPreenchido.conteudoImpresso }</span>
+								%{--</g:if>--}%
                             </li>
                     </g:agrupaCampos>
 
