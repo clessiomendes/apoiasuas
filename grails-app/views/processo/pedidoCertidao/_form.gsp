@@ -46,3 +46,10 @@
     </label>
     <g:textField maxlength="20" size="10" name="numeroAR" value="${processoDTO?.numeroAR}"/>
 </div>
+
+<div class="fieldcontain tamanho-memo ${hasErrors(bean: processoDTO, field: 'observacoesInternas', 'error')}">
+    <label for="observacoesInternas">
+        Observações (internas do sistema)
+    </label>
+    <g:textArea name="observacoesInternas" rows="3" value="${processoDTO.observacoesInternas}"/>
+</div>

@@ -29,4 +29,7 @@ class PedidoCertidaoProcessoDTO extends ProcessoDTO {
     public final static String VARIABLE_NUMERO_AR = "numeroAR"
     String numeroAR
 
+    public final static String VARIABLE_OBSERVACOES_INTERNAS = "observacoes_internas"
+    String observacoesInternas
+
 }

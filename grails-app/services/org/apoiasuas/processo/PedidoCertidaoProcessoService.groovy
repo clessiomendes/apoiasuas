@@ -39,6 +39,8 @@ class PedidoCertidaoProcessoService extends ProcessoService {
 
         pedidoCertidaoProcessoDTO.numeroAR = getHistoricVariable(processInstance.id, PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR)
 
+        pedidoCertidaoProcessoDTO.observacoesInternas = getHistoricVariable(processInstance.id, PedidoCertidaoProcessoDTO.VARIABLE_OBSERVACOES_INTERNAS)
+
         return pedidoCertidaoProcessoDTO
     }
 
@@ -46,7 +48,8 @@ class PedidoCertidaoProcessoService extends ProcessoService {
     // implementa um serviço). Bug do grails, nao consegui identificar o porque ???
     public ProcessInstance novoProcesso(UsuarioSistema responsavelProximaTarefa, Long idFamilia,
                                         Long idOperadorResponsavel, String dadosCertidao,
-                                        Long idFormularioEmitido, String cartorio, String numeroAR) {
+                                        Long idFormularioEmitido, String cartorio,
+                                        String numeroAR, String observacoesInternas) {
 
         //Verifica se se trata de uma reemissao de um formulario de pedido de certidao ja emitido anteriormente e,
         //neste caso, apaga o processo gerado anteriormente
@@ -66,6 +69,7 @@ class PedidoCertidaoProcessoService extends ProcessoService {
         variables.put(PedidoCertidaoProcessoDTO.VARIABLE_CARTORIO, cartorio?.toUpperCase())
         variables.put(PedidoCertidaoProcessoDTO.VARIABLE_ID_FORMULARIO_EMTIDO, idFormularioEmitido.toString())
         variables.put(PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, numeroAR)
+        variables.put(PedidoCertidaoProcessoDTO.VARIABLE_OBSERVACOES_INTERNAS, observacoesInternas)
 
         return super._novoProcesso(responsavelProximaTarefa, variables);
     }
@@ -87,8 +91,9 @@ class PedidoCertidaoProcessoService extends ProcessoService {
 
     //Erro nullpointer do framework caso se defina @Transactional explicitamente nos metodos desta classe (que foi especializada de outra classe que
     // implementa um serviço). Bug do grails, nao consegui identificar o porque ???
-    public void gravaAR(String idProcesso, String numeroAR) {
+    public void grava(String idProcesso, String numeroAR, String observacoesInternas) {
         runtimeService.setVariable(idProcesso, PedidoCertidaoProcessoDTO.VARIABLE_NUMERO_AR, numeroAR)
+        runtimeService.setVariable(idProcesso, PedidoCertidaoProcessoDTO.VARIABLE_OBSERVACOES_INTERNAS, observacoesInternas)
     }
 
     //Erro nullpointer do framework caso se defina @Transactional explicitamente nos metodos desta classe (que foi especializada de outra classe que

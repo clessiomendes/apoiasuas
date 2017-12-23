@@ -29,12 +29,26 @@
     <span class="property-value" aria-labelledby="nomeCompleto-label">${processo.cartorio}</span>
 </li>
 
-%{--String numeroAR--}%
-<div class="fieldcontain">
-    <g:formRemote name="fool" method="post" url="[action: 'gravaAR', id: processo.id]" update="mensagemAR">
-        <label for="numeroAR">Número AR</label>
-        <g:textField name="numeroAR" value="${processo.numeroAR}"/>
-        <g:actionSubmit class="save" action="gravaAR" id="btnGravaAR" value="Alterar"/>
-        <br><div id="mensagemAR"></div>
+<fieldset id="atualizar" class="embedded"><legend>Atualizar</legend>
+
+    <g:formRemote name="fool" method="post" url="[action: 'gravar', id: processo.id]" update="mensagemGravar">
+
+        %{--String observacoes--}%
+        <div class="fieldcontain tamanho-memo" >
+                <label for="observacoesInternas">Observacoes (internas do sistema)</label>
+                <g:textArea name="observacoesInternas" rows="3" value="${processo.observacoesInternas}"/>
+        </div>
+
+        %{--String numeroAR--}%
+        <div class="fieldcontain">
+                <label for="numeroAR">Número AR</label>
+                <g:textField name="numeroAR" value="${processo.numeroAR}"/>
+        </div>
+
+        <br>
+        <g:actionSubmit class="save" action="gravar" id="btnGravar" value="Gravar"/>
+        <br><div id="mensagemGravar"></div>
+
     </g:formRemote>
-</div>
+
+</fieldset>

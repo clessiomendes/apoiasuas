@@ -188,7 +188,9 @@ class FormularioCertidoesService extends FormularioService {
             String cartorio = formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_NOME_CARTORIO) + ", " +
                     formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_BAIRRO_DISTRITO_CARTORIO) + ", " +
                     formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_MUNICIPIO_CARTORIO) + ", " +
-                    formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_UF_CARTORIO)
+                    formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_UF_CARTORIO);
+
+            String observacoesInternas = formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_OBSERVACOES_INTERNAS);
 
             CertidoesDTO dto = new CertidoesDTO(formulario)
             pedidoCertidaoProcessoService.novoProcesso(formulario.usuarioSistema,
@@ -196,7 +198,7 @@ class FormularioCertidoesService extends FormularioService {
                     formulario.usuarioSistema.id,
                     defineTipoCertidao(dto) + " em nome de " + defineConteudoCertidao(dto),
                     formulario.formularioEmitido.id,
-                    cartorio, null/*sem AR por enquanto*/)
+                    cartorio, null/*sem AR por enquanto*/, observacoesInternas)
         }
     }
 

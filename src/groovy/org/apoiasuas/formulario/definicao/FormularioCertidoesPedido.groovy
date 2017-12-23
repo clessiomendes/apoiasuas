@@ -11,6 +11,7 @@ class FormularioCertidoesPedido extends FormularioBase {
     public static final String CODIGO_BAIRRO_DISTRITO_CARTORIO = 'bairro_distrito_cartorio'
     public static final String CODIGO_MUNICIPIO_CARTORIO = 'municipio_cartorio'
     public static final String CODIGO_UF_CARTORIO = 'uf_cartorio'
+    public static final String CODIGO_OBSERVACOES_INTERNAS = 'observacoes_internas'
 
     @Override
     public Class<? extends FormularioService> classeServico() { return FormularioCertidoesService.class }
@@ -40,8 +41,14 @@ class FormularioCertidoesPedido extends FormularioBase {
             campoAvulso {
                 codigo 'observacoes'
                 tipo CampoFormulario.Tipo.TEXTO
-                multiplasLinhas 5
-                descricao 'Observações'
+                multiplasLinhas 3
+                descricao 'Observações (no formulário)'
+            }
+            campoAvulso {
+                codigo CODIGO_OBSERVACOES_INTERNAS
+                tipo CampoFormulario.Tipo.TEXTO
+                multiplasLinhas 3
+                descricao 'Observações (internas do sistema)'
             }
             grupo 'Cartório', {
                 campoAvulso {

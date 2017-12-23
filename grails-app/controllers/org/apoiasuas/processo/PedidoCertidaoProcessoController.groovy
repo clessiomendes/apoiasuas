@@ -55,14 +55,14 @@ class PedidoCertidaoProcessoController extends ProcessoController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
-    def gravaAR(String numeroAR, String id) {
+    def gravar(String numeroAR, String observacoesInternas, String id) {
         try {
-            pedidoCertidaoProcessoService.gravaAR(id, numeroAR)
+            pedidoCertidaoProcessoService.grava(id, numeroAR, observacoesInternas)
         } catch (Exception e) {
             e.printStackTrace()
-            return render(status: 200, text: '<div class="errors" role="status">Erro gravando AR: '+e.message+'</div>')
+            return render(status: 200, text: '<div class="errors" role="status">Erro atualizando dados: '+e.message+'</div>')
         }
-        render(status: 200/*success*/, text: '<div class="message" role="status">AR gravada com sucesso</div>' )
+        render(status: 200/*success*/, text: '<div class="message" role="status">Pedido atualizado com sucesso</div>' )
     }
 
     /**
@@ -98,7 +98,8 @@ class PedidoCertidaoProcessoController extends ProcessoController {
         }
         //Cria nova instancia do processo na engine BPM
         ProcessInstance novoProcesso = pedidoCertidaoProcessoService.novoProcesso(processoDTO.operadorResponsavel,
-                familia?.id, processoDTO.operadorResponsavel.id, processoDTO.dadosCertidao, null, processoDTO.cartorio, null)
+                familia?.id, processoDTO.operadorResponsavel.id, processoDTO.dadosCertidao, null, processoDTO.cartorio,
+                processoDTO.numeroAR, processoDTO.observacoesInternas)
 
         //Mostra processo recem criado
         flash.message = "Pedido registrado com sucesso"
