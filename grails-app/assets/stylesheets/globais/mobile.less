@@ -36,16 +36,25 @@
 	}
 
 	input, textarea {
-		width: 100%;
+		//width: 100%;
 		   -moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
 		    -ms-box-sizing: border-box;
 		        box-sizing: border-box;
 	}
 
+	input[type=text] {
+		max-width: 300px;
+	}
+
+	select, input[type=checkbox], input[type=radio], input[type=reset] {
+		width: auto;
+	}
+    /*
 	select, input[type=checkbox], input[type=radio], input[type=submit], input[type=button], input[type=reset] {
 		width: auto;
 	}
+    */
 
 	/* hide all but the first column of list tables */
     /*

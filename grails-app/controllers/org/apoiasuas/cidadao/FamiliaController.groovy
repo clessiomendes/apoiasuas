@@ -83,10 +83,11 @@ class FamiliaController extends AncestralController {
         familiaInstance = familiaService.obtemFamilia(familiaInstance.id, true, true, true, true);
 
         List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familiaInstance.id);
+        List<AtendimentoParticularizado> atendimentosList = agendaService.getAtendimentos(familiaInstance);
 
         guardaUltimaFamiliaSelecionada(familiaInstance)
         render view: 'show', model: [familiaInstance: familiaInstance, pedidosCertidaoPendentes: pedidosCertidaoPendentes,
-                                     telefonesList: getTodosOsTelefones(familiaInstance)];
+                                     telefonesList: getTodosOsTelefones(familiaInstance), atendimentosList: atendimentosList];
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -682,13 +683,21 @@ class FamiliaController extends AncestralController {
                            observacoes: telefone.obs])
         }
         agendaService.getAtendimentos(familiaInstance).sort { it.dataHora }.reverse().each { AtendimentoParticularizado atendimento ->
-            result.add([data  : atendimento.dataHora, numero: atendimento.telefoneContato,
+            if (atendimento.telefoneContato && telefoneNovo(atendimento.telefoneContato, result))
+                result.add([data  : atendimento.dataHora, numero: atendimento.telefoneContato,
                            origem: TELEFONES_AGENDAMENTO])
         }
 
         return result;
     }
 
+    private boolean telefoneNovo(String novo, ArrayList<Map> atuais) {
+        boolean result = true;
+        atuais.each { Map atual ->
+            result = result && ( (novo.replaceAll("[^0-9]", "") != atual.numero.replaceAll("[^0-9]", "")) );
+        }
+        return result;
+    }
 }
 
 class ProgramasCommand implements MarcadoresCommand {

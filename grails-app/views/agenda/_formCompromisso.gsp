@@ -53,12 +53,10 @@
     <g:hiddenField name="habilitado" value="${localDtoCompromisso.habilitado}"/>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoCompromisso, field: 'descricao', 'error')} ">
-        <div class="property-label">
+		<label for="descricao">
             Descrição<span class="required-indicator">*</span>
-        </div>
-        <div class="property-value">
-            <g:textField name="descricao" size="60" value="${localDtoCompromisso?.descricao}" />
-        </div>
+		</label>
+        <g:textField name="descricao" size="60" value="${localDtoCompromisso?.descricao}" />
     </div>
 
     <br>
@@ -85,7 +83,7 @@
         <div class="property-label">
             Participantes
         </div>
-        <div id="valoresParticipantes" class="property-value">
+        <div id="valoresParticipantes">
             <g:select style="display:none;" id="selectParticipanteBase" name="participantesAux" from="${operadores}" optionKey="id" class="many-to-one" noSelection="['': '']"/>
             <script>
                 %{--Cria um select para cada valor já preenchido para a colecao de participantes--}%

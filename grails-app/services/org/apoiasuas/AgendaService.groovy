@@ -289,7 +289,7 @@ class AgendaService {
     public getAtendimentos(Familia familia) {
         List<AtendimentoParticularizado> result = [];
         if (familia)
-            result = AtendimentoParticularizado.findAllByFamilia(familia);
+            result = AtendimentoParticularizado.findAllByFamilia(familia, [max: 300, sort: "dataHora", order: "desc"]);
         return result;
     }
 }

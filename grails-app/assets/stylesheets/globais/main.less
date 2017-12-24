@@ -708,6 +708,10 @@ table.tabelaListagem .even {
   background-color: @cor-fundo-paineis-e-botoes;
   width: 25px;
   height: 25px;
+  @media screen and (max-width: 700px) {
+	width: 35px;
+	height: 35px;
+  }
 }
 
 .imageTextButton(@imagem) {
@@ -1205,3 +1209,10 @@ div.tamanho-memo, div.tamanho-memo textarea {
 .ui-tabs .ui-tabs-panel {
   padding: 0;
 }*/
+
+.snackbar-agenda {
+  border-width: medium;
+  border-color: @cor-base-mensagem-info;
+  border-style: solid;
+  border-radius: 5px;
+}

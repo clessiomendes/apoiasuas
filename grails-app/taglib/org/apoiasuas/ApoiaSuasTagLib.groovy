@@ -401,9 +401,7 @@ class ApoiaSuasTagLib {
  * &lt;g:link controller="myctrl" action="myaction"&gt;link 2&lt;/gr:link&gt;<br/>
  *
  * @attr acessoServico verifica se o serviço logado tem acesso a determinada funcionalidade.
- * @attr controller The name of the controller to use in the link, if not specified the current controller will be linked
- * @attr controller The name of the controller to use in the link, if not specified the current controller will be linked
- * @attr action The name of the action to use in the link, if not specified the default action will be linked
+ * @attr imagem para exibir no botao do link
  * @attr controller The name of the controller to use in the link, if not specified the current controller will be linked
  * @attr action The name of the action to use in the link, if not specified the default action will be linked
  * @attr uri relative URI
@@ -426,7 +424,6 @@ class ApoiaSuasTagLib {
         String imagem = attrs.remove("imagem");
         if (imagem)
             attrs.put("style","background-image: url('${asset.assetPath(src: imagem)}')");
-//            attrs.put("style","background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.7) 0%,rgba(255,255,255,0.7) 100%), url('${asset.assetPath(src: imagem)}')");
 
         out << link(attrs, body)
     }

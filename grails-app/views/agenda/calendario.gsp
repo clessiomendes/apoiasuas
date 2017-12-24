@@ -20,8 +20,9 @@
     var janelaModal = new JanelaModalAjax();
     var janelaModalTipoCompromisso = new JanelaModalAjax();
     var configuracaoAgenda = ${raw(configuracao as String)};
+    var compromissoAntesMudancaHorario = null;
 
-        %{--var minhaUrl = "${createLink(action:'gravaConfiguracaoAgenda')}";--}%
+%{--var minhaUrl = "${createLink(action:'gravaConfiguracaoAgenda')}";--}%
 %{--
         $.ajax({
             type: 'POST',
@@ -55,9 +56,9 @@
             weekends: configuracaoAgenda.weekends,
             header: {
                 //left: 'prev,next today',
-                left: '',
+                left: 'prev',
                 center: 'title',
-                right: '',
+                right: 'next',
                 //right: 'month,agendaWeek,listWeek,agendaDay'
             },
             defaultDate: moment(cookieCalendario.start),
@@ -70,6 +71,10 @@
             eventResize: updateHorarioCompromisso,
             //evento acionado quando um evento é redimencionado no calendario, sinalizando uma alteração
             eventDrop: updateHorarioCompromisso,
+            //evento acionado ANTES de mover um evento pelo calendario
+            eventDragStart: guardaEstadoCompromisso,
+            //evento acionado ANTES de redimencionar um evento no calendario
+            eventResizeStart: guardaEstadoCompromisso,
             //clique num evento
             eventClick: abreCompromisso,
             editable: true,
@@ -85,9 +90,13 @@
                 cookie.set("calendario", JSON.stringify({
                         defaultView: view.name, start: view.intervalStart.format()
                 }));
+                $('#titulo').text($divCalendario.fullCalendar('getView').title);
+                //alert($divCalendario.fullCalendar('getView').title);
             }
 
         })
+
+        //$('.fc-toolbar').css('display','none')
     });
 
     /**
@@ -158,11 +167,16 @@
          janelaModal.abreJanela({titulo: tituloJanela, url: "${createLink(action:'editCompromisso')}?idCompromisso="+event.id, largura: 800});
     }
 
+    /**
+    * Chamado tanto no resize quanto no move do compromisso, para atualizar a nova informacao no banco de dados
+    */
     function updateHorarioCompromisso( event, delta, revertFunc, jsEvent, ui, view) {
+/*
         if (! confirm("Confirma alteração de '"+event.title+"' ?")) {
             revertFunc();
             return;
         }
+*/
         var strStart = event.start ? event.start.format() : "";
         var strEnd = event.end ? event.end.format() : "";
         var urlUpdate = "${createLink(action:'updateCompromissoHorario')}?idCompromisso="+event.id
@@ -176,11 +190,47 @@
                 //    null, jqXHR.responseText);
                 alert("Erro gravando alteração do compromisso ["+event.title+"] no banco de dados : "+textStatus+", "+errorThrown);
             },
-            success: function(data) { refreshEvento(data) }
+            success: function(data) {
+                refreshEvento(data);
+                //Snackbar.show({text: 'Horário de compromisso alterado'});
+                Snackbar.show({pos: 'bottom-center', duration: 0, customClass: 'snackbar-agenda',
+                    showSecondButton: true, secondButtonText: 'desfazer', secondButtonTextColor: 'red',
+                    backgroundColor: '#e3f3ff', textColor: '#006dba',
+                    actionTextColor: '#006dba', actionText: 'X',
+                    onSecondButtonClick: desfazUpdateHorarioCompromisso,
+                    text: 'Horário alterado: '+event.start.format('D/M H:mm')+' às '+event.end.format('H:mm')});
+            }
         });
     };
 
-    /*
+    /**
+     * Guarda as informações do compromisso ANTES dele ser movido ou redimencionado. (para ser possível desfazer a operação)
+     * IMPORTANTE: Somente as informações do último evento são guardadas.
+     */
+    function guardaEstadoCompromisso(event, jsEvent, ui, view) {
+        compromissoAntesMudancaHorario = Object.assign({}, event);
+    }
+
+    /**
+    * Caso o operador clique em "desfazer", após uma mudança de horário do compromisso diretamente no calendário (drag/move)
+    * @param element O div snackbar de onde o click se originou
+    */
+    function desfazUpdateHorarioCompromisso(element) {
+        //alert('voltando para '+compromissoAntesMudancaHorario.start.format('D/M H:mm'));
+        var strStart = compromissoAntesMudancaHorario.start ? compromissoAntesMudancaHorario.start.format() : "";
+        var strEnd = compromissoAntesMudancaHorario.end ? compromissoAntesMudancaHorario.end.format() : "";
+        var urlUpdate = "${createLink(action:'updateCompromissoHorario')}?idCompromisso="+compromissoAntesMudancaHorario.id
+                    +"&start="+strStart+"&end="+strEnd;
+        //Executa a chamada ajax para autalizar o compromisso no banco de dados
+        $.ajax({ url: urlUpdate,
+            success: function(data) {
+                refreshEvento(data);
+                $(element).css('opacity', 0);
+            }
+        });
+    }
+
+    /**
      * Reflete o compromisso, após gravação, no componente de calendario, para ser exibido ao operador
      */
     function refreshEvento(compromisso){
@@ -322,15 +372,15 @@
 
 <body>
 
-<div style="display: inline;">
+<div style="display: inline; text-align: center;">
     %{--<div id="divAgendandoAtendimento" style="text-align: center; margin: 5px">Agendando atendimento para <b>CRISTIANE DA SILVA (CAD 513)</b></div>--}%
 <g:form action="calendario">
+    <div style="display: inline-block">
         <div style="float: left; display: inline">
-            <input type="button" class="speed-button-voltar" title="período anterior" onclick="$('#calendar').fullCalendar('prev');"/>
             <input type="button" class="speed-button-config" title="configurações de exibição da agenda" onclick="configuracoes()"/>
             <input type="button" class="speed-button-atualizar" title="recarregar" onclick="atualiza()"/>
             <input type="button" class="speed-button-imprimir" title="imprimir" onclick="imprimirCompromissos();"/>
-            Responsável <g:select id="selectUsuarioSistema" name="idUsuarioSistema" from="${operadores}"
+            <g:select id="selectUsuarioSistema" name="idUsuarioSistema" from="${operadores}" style="max-width: 7em"
                       optionKey="id" class="many-to-one" noSelection="['': '(todos)']" onchange="atualiza();" />
             %{--<input type="button" class="speed-button-config" title="novo login" onclick="novoLogin()"/>--}%
         </div>
@@ -340,12 +390,25 @@
             <input type="button" class="speed-button-visao-semanal" title="visão semanal" onclick="$('#calendar').fullCalendar('changeView', 'agendaWeek');"/>
             <input type="button" class="speed-button-visao-diaria" title="visão diária" onclick="$('#calendar').fullCalendar('changeView', 'agendaDay');"/>
             <input type="button" class="speed-button-visao-lista" title="visão em lista" onclick="$('#calendar').fullCalendar('changeView', 'listMonth');"/>
+        </div>
+    </div>
+%{--
+
+    <br>
+    <div style="display: inline-block">
+        <div style="float: left; display: inline">
+            <input type="button" class="speed-button-voltar" title="período anterior" onclick="$('#calendar').fullCalendar('prev');"/>
+        </div>
+        <div id="titulo" style="float: left; display: inline; font-weight: bold;"></div>
+        <div style="float: right; display: inline">
             <input type="button" class="speed-button-avancar" title="próximo período" onclick="$('#calendar').fullCalendar('next')"/>
         </div>
+    </div>
+--}%
 </g:form>
 </div>
 
-<div id='calendar'></div>
+<div id='calendar' style="display: inline-block"></div>
 
 
 <div style="display: none" id='divEscolherTipoCompromisso'>

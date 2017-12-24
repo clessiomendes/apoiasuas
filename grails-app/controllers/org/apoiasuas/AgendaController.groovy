@@ -19,7 +19,7 @@ import org.springframework.security.access.annotation.Secured
 class AgendaController extends AncestralController {
 
     static defaultAction = "calendario";
-    static public final String CONFIGURACAO_CALENDARIO = "CONFIGURACAO_CALENDARIO";
+    static private final String CONFIGURACOES = "CONFIGURACOES_AGENDA";
     def agendaService;
     def usuarioSistemaService;
 
@@ -31,7 +31,7 @@ class AgendaController extends AncestralController {
 //                //Caso não haja configuração prévia guardada na sessão, usar parâmetros default e partir da data atual
 
         render view: "calendario", model: [operadores: getOperadoresOrdenadosController(true),
-                configuracao: agendaService.getConfiguracao() as JSON, idUsuarioSistema: idUsuarioSistema]
+                configuracao: getConfiguracao(), idUsuarioSistema: idUsuarioSistema]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -317,14 +317,32 @@ class AgendaController extends AncestralController {
     def configuracao() {
         LinkedHashMap<String, Integer> inicioSemana = [1: "segunda", 2: "terça", 3: "quarta", 4: "quinta",
                 5:"sexta", 6:"sábado", 0: "domingo"];
-        return render(view: "configuracao", model: [configuracao: agendaService.getConfiguracao(), inicioSemana: inicioSemana]);
+        Map definicoesAtuais = [:];
+        if (session[CONFIGURACOES])
+            definicoesAtuais = new JsonSlurper().parseText(session[CONFIGURACOES])
+        else
+            definicoesAtuais = agendaService.getConfiguracao();
+        return render(view: "configuracao", model: [configuracao: definicoesAtuais, inicioSemana: inicioSemana]);
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def saveConfiguracao(ConfiguracaoCommand configuracao) {
         agendaService.gravaConfiguracao(configuracao);
+        session[CONFIGURACOES] = (configuracao as JSON).toString();
         return render(contentType:'text/json', text: ["Configurações gravadas com sucesso."] as JSON)
 //        return render(status: 200 /*apontar sucesso*/);
+    }
+
+    private JSON getConfiguracao() {
+        if (session[CONFIGURACOES])
+            return new JsonSlurper().parseText(session[CONFIGURACOES]) as JSON
+        else {
+            Map result = agendaService.getConfiguracao();
+            result.atendimentos = true;
+            result.outrosCompromissos = true;
+            session[CONFIGURACOES] = (result as JSON).toString();
+            return result as JSON;
+        }
     }
 
 }

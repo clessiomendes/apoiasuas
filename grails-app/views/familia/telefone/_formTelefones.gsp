@@ -54,7 +54,7 @@
                 <g:textField name="numero" id="numero${i}" size="10" maxlength="40" value="${telefone?.numero}"/>
             </td>
             <td class="${hasErrors(bean: telefone, field: 'obs', 'error')}">
-                <g:textArea style="height:19px" cols="35" name="obs" class="obs" id="obs${i}" maxlength="1000" value="${telefone?.obs}"/>
+                <g:textArea style="height:19px" name="obs" class="obs" id="obs${i}" maxlength="1000" value="${telefone?.obs}"/>
             </td>
             <td>
                 <span style="font-size: 0.75em">

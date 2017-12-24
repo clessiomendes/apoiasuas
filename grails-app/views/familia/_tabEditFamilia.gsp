@@ -6,8 +6,8 @@
 
 <g:if test="${localDtoFamilia?.referencia}">
     <div class="fieldcontain">
-        <label>Referência familiar</label>
-        ${localDtoFamilia.getReferencia().nomeCompleto}
+        <div class="property-label">Referência familiar</div>
+        <div class="property-value">${localDtoFamilia.getReferencia().nomeCompleto}</div>
     </div>
 </g:if>
 

@@ -126,13 +126,6 @@
     <br>
 </g:if>
 
-<g:if test="${localDtoAtendimento?.id}">
-    <div class="fieldcontain">
-        <label>Nº Protocolo</label>
-        ${localDtoAtendimento.id}
-    </div>
-</g:if>
-
 <div class="tamanho-nomes fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'nomeCidadao', 'error')} ">
     <label>Nome</label>
     <g:textField name="nomeCidadao" maxlength="255" id="inputNomeCidadao" value="${localDtoAtendimento.nomeCidadao}" />
@@ -158,7 +151,8 @@
         <nobr>Responsável<span class="required-indicator">*</span>
         </nobr>
     </label>
-    <g:select id="tecnico" name="tecnico.id" from="${operadores}" optionKey="id" value="${localDtoAtendimento?.tecnico?.id}" class="many-to-one" noSelection="['': '']"/>
+    <g:select style="max-width: 10em" id="tecnico" name="tecnico.id" from="${operadores}" optionKey="id"
+              value="${localDtoAtendimento?.tecnico?.id}" class="many-to-one" noSelection="['': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'dataHora', 'error')} ">
@@ -168,6 +162,13 @@
     <g:textField name="data" class="dateMask datepicker" id="data" size="9" value="${localDtoAtendimento?.dataHora?.format("dd/MM/yyyy")}" />
     <g:textField class="timepicker-agenda" name="hora" id="hora" size="4" value="${localDtoAtendimento?.dataHora?.format("HH:mm")}" />
 </div>
+
+<g:if test="${localDtoAtendimento?.id}">
+    <div class="fieldcontain">
+        <div class="property-label">Nº Protocolo</div>
+        <div class="property-value">${localDtoAtendimento.id}</div>
+    </div>
+</g:if>
 
 <br>
 
@@ -180,3 +181,4 @@
         </g:if>
     </span>
 </div>
+

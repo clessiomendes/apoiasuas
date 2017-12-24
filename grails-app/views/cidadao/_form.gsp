@@ -19,7 +19,8 @@
 	<div id="divParentescoReferencia" class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'parentescoReferencia', 'error')} ">
 		<g:hiddenField name="${prefixo}referencia" value="${localDtoCidadao.referencia}"/>
 		<g:if test="${localDtoCidadao.referencia}">
-			<label></label>Referência Familiar
+			<div class="property-label"></div>
+			<div class="property-value">Referência Familiar</div>
 			<g:hiddenField name="${prefixo}parentescoReferencia" value="${localDtoCidadao.parentescoReferencia}"/>
 		</g:if>
 		<g:else>
