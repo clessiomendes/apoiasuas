@@ -15,7 +15,7 @@
 
         <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'enabled', 'error')}">
             <label><g:message code="servico.habilitado.label"/></label>
-            <span class="property-value"><g:checkBox name="habilitado" value="${localDtoServico?.habilitado}"/> sim</span>
+            <g:checkBox name="habilitado" value="${localDtoServico?.habilitado}"/> sim
         </div>
 
         <div class="tamanho-memo fieldcontain ${hasErrors(bean: localDtoServico, field: 'descricao', 'error')} ">
@@ -43,10 +43,8 @@
         <br>
 
         <div class="fieldcontain ${hasErrors(bean: localDtoServico, field: 'abrangenciaTerritorial', 'error')} required">
-            <span id="uf-label" class="property-label"><g:message code="servico.abrangenciaTerritorial.label" default="Atende *" /></span>
-            <span class="property-value" style="margin-left:25%" aria-labelledby="uf-label">
-                <g:render template="/abrangenciaTerritorial"/>
-            </span>
+            <g:message code="servico.abrangenciaTerritorial.label" default="Atende *" />
+            <g:render template="/abrangenciaTerritorial"/>
         </div>
     </g:tab>
     <g:tab id="tabEncaminhamento" titulo="encaminhamentos">

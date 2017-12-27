@@ -25,7 +25,7 @@
 					
 						<g:sortableColumn property="descricao" title="${message(code: 'formularioEmitido.descricao.label', default: 'Descricao')}" />
 					
-						<g:sortableColumn property="dataPreenchimento" title="${message(code: 'formularioEmitido.dataPreenchimento.label', default: 'Data Preenchimento')}" />
+						<g:sortableColumn property="dataPreenchimento" title="${message(code: 'formularioEmitido.dataPreenchimento.label', default: 'Emissão')}" />
 					
 						%{--<th><g:message code="formularioEmitido.responsavelPreenchimento.label" default="Responsavel Preenchimento" /></th>--}%
 

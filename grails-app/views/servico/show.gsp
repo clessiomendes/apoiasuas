@@ -58,6 +58,7 @@
                     </li>
                 </g:if>
 
+                <br>
                 <li class="fieldcontain">
                     <span id="abrangenciaTerritorial-label" class="property-label"><g:message code="servico.abrangenciaTerritorial.label" default="Atende" /></span>
                     <span class="property-value" aria-labelledby="abrangenciaTerritorial-label">
@@ -124,8 +125,11 @@
 
 			<g:form url="[resource:servicoInstance, action:'delete']">
 				<fieldset class="buttons">
-					<g:link class="edit" action="edit" resource="${servicoInstance}"><g:message code="default.button.edit.label" default="Editar" /></g:link>
-					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Remover')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Confirma remoção?')}');" />
+					<g:link class="edit" action="edit" resource="${servicoInstance}">
+                        <g:message code="default.button.edit.label" default="Editar" /></g:link>
+					<g:link class="delete" action="delete"
+                        onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Confirma remoção?')}');">
+                        <g:message code="default.button.delete.label" default="Remover"/></g:link>
 				</fieldset>
 			</g:form>
 		</div>

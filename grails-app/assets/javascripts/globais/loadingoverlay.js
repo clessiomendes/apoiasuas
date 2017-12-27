@@ -4,20 +4,20 @@
 $(document).ready(function () {
     //Interceptar todos os submits
     $('form').submit(function() {
-        console.log("LoadingOverlay.show { fade  : [4000, 0] }");
+        //console.log("LoadingOverlay.show { fade  : [4000, 0] }");
         $.LoadingOverlay("show", { fade  : [4000, 0] });
         return true; // continuar o submit após bloquear a tela
     });
 
     // every time ajax is called
     $(document).ajaxSend(function () {
-        console.log("LoadingOverlay.show { fade  : [0, 0] }");
+        //console.log("LoadingOverlay.show { fade  : [0, 0] }");
         $.LoadingOverlay("show", { fade  : [0, 0] });
     })
 
     // every time ajax is completed
     $(document).ajaxComplete(function () {
-        console.log("LoadingOverlay.hide true");
+        //console.log("LoadingOverlay.hide true");
         $.LoadingOverlay("hide", true/*force*/);
     });
 });

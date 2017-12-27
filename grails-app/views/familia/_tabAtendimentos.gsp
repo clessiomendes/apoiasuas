@@ -15,7 +15,7 @@
         <th>Data</th>
         <th>Cidadão</th>
         <th>Técnico</th>
-        <th></th>
+        <th class="hideOnMobile"></th>
     </tr></thead>
     <g:each in="${localDtoAtendimentos}" status="i" var="atendimento">
         <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
@@ -28,7 +28,7 @@
             <td>
                 ${atendimento.tecnico.username}
             </td>
-            <td>
+            <td class="hideOnMobile">
                 %{--${atendimento.getTooltip()}--}%
                 ${atendimento.compareceu == false ? "não compareceu" : ""}
             </td>

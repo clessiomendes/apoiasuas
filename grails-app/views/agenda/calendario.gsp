@@ -21,6 +21,7 @@
     var janelaModalTipoCompromisso = new JanelaModalAjax();
     var configuracaoAgenda = ${raw(configuracao as String)};
     var compromissoAntesMudancaHorario = null;
+    var miliInicial = Date.now()
 
 %{--var minhaUrl = "${createLink(action:'gravaConfiguracaoAgenda')}";--}%
 %{--
@@ -82,7 +83,7 @@
                 $(element).attr("title", event.title);
             },
             eventLimit: false, // allow "more" link when too many events
-            //eventRender: verificaConflitos,
+            //eventAfterRender: verificaConflitos,
             //eventAfterAllRender: verificaConflitos2,
             eventDataTransform: injetaMetodos,
             eventTextColor: "black",
@@ -92,8 +93,10 @@
                 }));
                 $('#titulo').text($divCalendario.fullCalendar('getView').title);
                 //alert($divCalendario.fullCalendar('getView').title);
-            }
-
+            },
+            eventRenderWait: 100,
+            loading: loading,
+            eventAfterAllRender: eventAfterAllRender
         })
 
         //$('.fc-toolbar').css('display','none')
@@ -142,6 +145,7 @@
                 },
                 success: function(data) {
                     $divCalendario.fullCalendar('renderEvent', data);
+                    verificaConflitos(data);
                 }
             });
             $('#calendar').fullCalendar('unselect');
@@ -240,8 +244,11 @@
         //Situacoes em que o evento deve ser exibido:
         if ($selectOperadores.val() == '' || //nenhum operador filtrado na tela
                     compromisso.idsParticipantes.length == 0 ||  //o compromisso nao tem nenhum participante, exibir para todos os operadores
-                    $.inArray(parseInt($selectOperadores.val()), compromisso.idsParticipantes) >= 0) //verificar se o operador filtrado na tela e um dos participantes do compromisso
+                    $.inArray(parseInt($selectOperadores.val()), compromisso.idsParticipantes) >= 0) { //verificar se o operador filtrado na tela e um dos participantes do compromisso
             $calendar.fullCalendar('renderEvent', compromisso);
+            verificaConflitos(compromisso);
+        }
+
     }
 
     function imprimirCompromissos() {
@@ -269,9 +276,40 @@
         $('#calendar').fullCalendar('removeEvents', data.id)
     }
 
+    /**
+    * Verifica se o compromisso em questao confilta com algum dos outros compromissos.
+    * 1) Verifica se o intervalo deste compromisso intersecciona o intervalo de algum outro compromisso.
+    * 2) Olha cada participante do compromisso, ve se ele ja esta presente em algum outro compromisso.
+    * 3) Exibe mensagem de alerta de cada participante no conflito de horarios
+    */
+    function verificaConflitos(evento) {
+        var compromisso1 = $('#calendar').fullCalendar('clientEvents', evento.id)[0] //retorna o primeiro elemento, embora a lista seja de apenas um elemento
+        console.log("testando evento "+compromisso1.title)
+
 /*
-    function verificaConflitos(compromisso1, element, view) {
-        console.log("testando evento "+compromisso1.toString())
+        Snackbar.show({pos: 'bottom-center', duration: 0, customClass: 'snackbar-agenda',
+                showSecondButton: true, secondButtonText: 'desfazer', secondButtonTextColor: 'red',
+                backgroundColor: '#e3f3ff', textColor: '#006dba',
+                actionTextColor: '#006dba', actionText: 'X',
+                onSecondButtonClick: desfazUpdateHorarioCompromisso,
+                text: compromisso1.toString()});
+*/
+
+        $('#calendar').fullCalendar('clientEvents').forEach(function(compromisso2) {
+            if (compromisso1.id != compromisso2.id) {
+                console.log("Testa: "+compromisso1.title+" e "+compromisso2.title)
+                //if (compromisso1.idResponsavel == compromisso2.idResponsavel) {
+                if (compromisso1.start.isBefore(compromisso2.end) && compromisso1.end.isAfter(compromisso2.start)) {
+                    //compromisso1.color = "red";
+                    //compromisso2.color = "red";
+                        console.log("Match: "+compromisso1.title+" e "+compromisso2.title)
+                    //$('#calendar').fullCalendar('updateEvents', [compromisso1, compromisso2])
+                    //element.color = "red";
+                    }
+                //}
+            }
+        });
+/*
         $('#calendar').fullCalendar('clientEvents').forEach(function(compromisso2) {
             if (compromisso1.id != compromisso2.id && compromisso1.idResponsavel && compromisso2.idResponsavel
                             && compromisso1.idResponsavel == compromisso2.idResponsavel) {
@@ -284,8 +322,9 @@
                 }
             }
         });
+*/
     }
-
+/*
     function verificaConflitos2(view) {
         //console.log("testando evento "+compromisso1.toString())
 		$('#calendar').fullCalendar('clientEvents').forEach(function(compromisso1) {
@@ -313,9 +352,13 @@
     }
 
     function atualiza() {
+        tempoDecorrido("antes removeEventSources")
         $('#calendar').fullCalendar('removeEventSources' )
+        tempoDecorrido("antes getEvents")
         var source = getEvents();
+        tempoDecorrido("antes addEventSource")
         $('#calendar').fullCalendar('addEventSource', source )
+        tempoDecorrido("após addEventSource")
     }
 
     /**
@@ -323,7 +366,7 @@
      */
     function getEvents() {
         var urlObterCompromissos = "${createLink(action:'obterCompromissos')}";
-        return {
+        var result = {
                 url: urlObterCompromissos,
                 type: 'POST',
                 data: { idUsuarioSistema: $('#selectUsuarioSistema').val(),
@@ -337,6 +380,7 @@
                         alert(jqXHR.responseText);
                 }
         }
+        return result
     }
 
     function configuracoes() {
@@ -350,6 +394,25 @@
                     window.location = destino;
                 }
          });
+    }
+
+    function loading(isLoading, view) {
+        if (isLoading)
+            console.time("tempo AJAX")
+        else
+            console.timeEnd("tempo AJAX");
+        if (isLoading)
+            tempoDecorrido("antes AJAX")
+        else
+            tempoDecorrido("depois AJAX")
+    }
+
+    function eventAfterAllRender() {
+        tempoDecorrido("depois eventAfterAllRender")
+    }
+
+    function tempoDecorrido(mensagem) {
+        console.log(mensagem + " " + (Date.now() - miliInicial) + " ms");
     }
 
     /**
@@ -373,43 +436,28 @@
 <body>
 
 <div style="display: inline; text-align: center;">
-    %{--<div id="divAgendandoAtendimento" style="text-align: center; margin: 5px">Agendando atendimento para <b>CRISTIANE DA SILVA (CAD 513)</b></div>--}%
-<g:form action="calendario">
-    <div style="display: inline-block">
-        <div style="float: left; display: inline">
-            <input type="button" class="speed-button-config" title="configurações de exibição da agenda" onclick="configuracoes()"/>
-            <input type="button" class="speed-button-atualizar" title="recarregar" onclick="atualiza()"/>
-            <input type="button" class="speed-button-imprimir" title="imprimir" onclick="imprimirCompromissos();"/>
-            <g:select id="selectUsuarioSistema" name="idUsuarioSistema" from="${operadores}" style="max-width: 7em"
-                      optionKey="id" class="many-to-one" noSelection="['': '(todos)']" onchange="atualiza();" />
-            %{--<input type="button" class="speed-button-config" title="novo login" onclick="novoLogin()"/>--}%
-        </div>
 
-        <div style="float: right; display: inline">
-            <input type="button" class="speed-button-visao-mensal" title="visão mensal" onclick="$('#calendar').fullCalendar('changeView', 'month');"/>
-            <input type="button" class="speed-button-visao-semanal" title="visão semanal" onclick="$('#calendar').fullCalendar('changeView', 'agendaWeek');"/>
-            <input type="button" class="speed-button-visao-diaria" title="visão diária" onclick="$('#calendar').fullCalendar('changeView', 'agendaDay');"/>
-            <input type="button" class="speed-button-visao-lista" title="visão em lista" onclick="$('#calendar').fullCalendar('changeView', 'listMonth');"/>
-        </div>
-    </div>
-%{--
+    <g:form action="calendario">
+        <div style="display: inline-block; margin-top: -10px">
+            <div style="float: left; display: inline; margin-top: 3px">
+                <input type="button" class="speed-button-config" title="configurações de exibição da agenda" onclick="configuracoes()"/>
+                <input type="button" class="speed-button-atualizar" title="recarregar" onclick="atualiza()"/>
+                <input type="button" class="speed-button-imprimir" title="imprimir" onclick="imprimirCompromissos();"/>
+                <g:select id="selectUsuarioSistema" name="idUsuarioSistema" from="${operadores}" style="max-width: 7em"
+                          optionKey="id" class="many-to-one" noSelection="['': '(todos)']" onchange="atualiza();" />
+            </div>
 
-    <br>
-    <div style="display: inline-block">
-        <div style="float: left; display: inline">
-            <input type="button" class="speed-button-voltar" title="período anterior" onclick="$('#calendar').fullCalendar('prev');"/>
+            <div style="float: left; display: inline; margin-top: 3px">
+                <input type="button" class="speed-button-visao-mensal" title="visão mensal" onclick="$('#calendar').fullCalendar('changeView', 'month');"/>
+                <input type="button" class="speed-button-visao-semanal" title="visão semanal" onclick="$('#calendar').fullCalendar('changeView', 'agendaWeek');"/>
+                <input type="button" class="speed-button-visao-diaria" title="visão diária" onclick="$('#calendar').fullCalendar('changeView', 'agendaDay');"/>
+                <input type="button" class="speed-button-visao-lista" title="visão em lista" onclick="$('#calendar').fullCalendar('changeView', 'listMonth');"/>
+            </div>
         </div>
-        <div id="titulo" style="float: left; display: inline; font-weight: bold;"></div>
-        <div style="float: right; display: inline">
-            <input type="button" class="speed-button-avancar" title="próximo período" onclick="$('#calendar').fullCalendar('next')"/>
-        </div>
-    </div>
---}%
-</g:form>
+    </g:form>
 </div>
 
 <div id='calendar' style="display: inline-block"></div>
-
 
 <div style="display: none" id='divEscolherTipoCompromisso'>
     <input type="button" class="speed-button-atendimento" onclick="janelaModalTipoCompromisso.createAtendimento();"/>

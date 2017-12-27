@@ -35,14 +35,11 @@
 			</g:if>
 
 			<table class="tabelaListagem">
-			<thead>
+    			<thead>
 					<tr>
 						<g:sortableColumn property="nomeCompleto" title="${message(code: 'usuarioSistema.nomeCompleto.label', default: 'Nome Completo')}" />
 						<g:sortableColumn property="username" title="${message(code: 'usuarioSistema.username.label', default: 'Nome Simplificado')}" />
                         <g:sortableColumn property="servicoSistemaSeguranca.nome" title="${message(code: 'usuarioSistema.servico.label')}" />
-%{--
-                        <g:sortableColumn property="perfil" title="${message(code: 'usuarioSistema.perfil.label', default: 'Perfil')}" />
---}%
 					</tr>
 				</thead>
 				<tbody>
@@ -51,10 +48,6 @@
 						<td><g:link action="show" id="${usuarioSistemaInstance.id}">${fieldValue(bean: usuarioSistemaInstance, field: "nomeCompleto")}</g:link></td>
 						<td>${fieldValue(bean: usuarioSistemaInstance, field: "username")}</td>
                         <td>${fieldValue(bean: usuarioSistemaInstance, field: "servicoSistemaSeguranca.nome")}</td>
-%{--
-                        <td>${message(code:'PerfilUsuarioSistema.'+fieldValue(bean: usuarioSistemaInstance, field: "perfil"))}</td>
---}%
-
 					</tr>
 				</g:each>
 				</tbody>

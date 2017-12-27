@@ -52,23 +52,23 @@
             <table class="tabelaListagem">
 			<thead>
 					<tr>
-                        <g:sortableColumn  property="criacao" title="Data" />
-						<g:sortableColumn property="usuarioSistema" title="Autor" />
+                        <g:sortableColumn property="criacao" title="Data" />
+						<g:sortableColumn class="hide-on-mobile" property="usuarioSistema" title="Autor" />
                         <g:sortableColumn property="situacao" title="Situação atual" />  %{--Descricao da tarefa--}%
-                        <g:sortableColumn property="cad" title="Cad" />
+                        <g:sortableColumn class="hide-on-mobile" property="cad" title="Cad" />
                         <g:sortableColumn property="dadosCertidao" title="Dados do Pedido" />
-                        <g:sortableColumn property="cartorio" title="Cartório" />
+                        <g:sortableColumn class="hide-on-mobile" property="cartorio" title="Cartório" />
 					</tr>
 				</thead>
 				<tbody>
 				<g:each in="${processos}" status="i" var="processo">
                     <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                         <td><g:formatDate format="dd/MM/yyyy HH:mm" date="${processo.inicio}"/></td>
-                        <td>${processo.operadorResponsavel?.username}</td>
+                        <td class="hide-on-mobile" >${processo.operadorResponsavel?.username}</td>
                         <td><g:link action="mostraProcesso" id="${processo.id}">${processo.situacaoAtual}</g:link></td>
-                        <td>${processo.familia?.cad}</td>
+                        <td class="hide-on-mobile" >${processo.familia?.cad}</td>
                         <td>${processo.dadosCertidao}</td>
-                        <td>${processo.cartorio}</td>
+                        <td class="hide-on-mobile" >${processo.cartorio}</td>
 					</tr>
 				</g:each>
 				</tbody>

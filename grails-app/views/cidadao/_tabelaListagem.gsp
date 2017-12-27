@@ -5,11 +5,11 @@
         <th><g:message code="cidadao.familia.codigoLegado.label" default="Cad"/></th>
         %{--<th><g:sortableColumn property="nomeCompleto" title="${message(code: 'cidadao.nomeCompleto.label', default: 'Nome')}" /></th>--}%
         <th><g:message code="cidadao.nomeCompleto.label" default="Nome"/></th>
-        <th><g:message code="cidadao.parentescoReferencia.label" default="Parentesco"/></th>
+        <th class="hide-on-mobile"><g:message code="cidadao.parentescoReferencia.label" default="Parentesco"/></th>
         <th><g:message code="cidadao.familia.endereco.label" default="Endereco"/></th>
         %{--Removendo telefones da tela de resultado por questão de performance (eles nao tem como ser buscado na SQL original--}%
         %{--<th><g:message code="cidadao.familia.telefones.label" default="Telefones"/></th>--}%
-        <th><g:message code="cidadao.idade.label" default="Idade"/></th>
+        <th class="hide-on-mobile"><g:message code="cidadao.idade.label" default="Idade"/></th>
     </tr></thead>
 
     <tbody>
@@ -40,7 +40,7 @@
                 </g:link></td>
             </g:else>
 
-            <td>${fieldValue(bean: cidadaoInstance, field: "parentescoReferencia")}</td>
+            <td class="hide-on-mobile">${fieldValue(bean: cidadaoInstance, field: "parentescoReferencia")}</td>
 
             <td>${raw( org.apoiasuas.util.CollectionUtils.join([
                     cidadaoInstance.familia.endereco?.tipoENomeLogradouro,
@@ -51,7 +51,7 @@
             %{--Removendo telefones da tela de resultado por questão de performance (eles nao tem como ser buscado na SQL original--}%
             %{--<td>${cidadaoInstance.familia.getTelefonesToString()}</td>--}%
 
-            <td>${cidadaoInstance.idade}</td>
+            <td class="hide-on-mobile">${cidadaoInstance.idade}</td>
 
         </tr>
     </g:each>

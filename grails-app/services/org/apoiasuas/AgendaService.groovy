@@ -54,30 +54,26 @@ class AgendaService {
      */
     public List<Compromisso> listarCompromissos(Date inicioInclusive, Date fimExclusive, Long idUsuarioSistema,
                                                 Boolean mostrarAtendimentos, Boolean mostrarOutrosCompromissos) {
-        String hql = "from Compromisso a where a.servicoSistemaSeguranca = :servicoSistema "+
+        //OTIMIZAÇÃO: "left join fecth" nas associacoes atendimentoParicularizado e participantes
+         String hqlFrom = " from Compromisso a left join fetch a.atendimentoParticularizado left join fetch a.participantes ";
+        String hqlWhere = " where a.servicoSistemaSeguranca = :servicoSistema "+
                 " and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim >= :periodoInicio and a.fim < :periodoFim)) ";
         Map filtros = [servicoSistema: segurancaService.servicoLogado, periodoInicio: inicioInclusive, periodoFim: fimExclusive]
         if (idUsuarioSistema) {
-            hql += ' and (size(a.participantes) = 0 or :responsavel in elements(a.participantes) ) ';
+            hqlWhere += ' and (size(a.participantes) = 0 or :responsavel in elements(a.participantes) ) ';
             filtros.put("responsavel", UsuarioSistema.get(idUsuarioSistema))
         }
         if (! mostrarAtendimentos) {
-            hql += " and a.tipo != :tipoAcompanahemnto ";
+            hqlWhere += " and a.tipo != :tipoAcompanahemnto ";
             filtros.put("tipoAcompanahemnto", Compromisso.Tipo.ATENDIMENTO_PARTICULARIZADO)
         }
         if (! mostrarOutrosCompromissos) {
-            hql += " and a.tipo !=  :tipoOutros ";
+            hqlWhere += " and a.tipo !=  :tipoOutros ";
             filtros.put("tipoOutros", Compromisso.Tipo.OUTROS)
         }
-        return Compromisso.executeQuery(hql, filtros, [fetch:[atentimentoParticularizado:"eager"]]);
+        return Compromisso.executeQuery(hqlFrom + hqlWhere, filtros, [fetch:[atentimentoParticularizado: 'join', participantes: 'join']]);
 /*
-        if (idUsuarioSistema)
-            return Compromisso.findAllByInicioGreaterThanEqualsAndInicioLessThanAndResponsavelAndServicoSistemaSeguranca(
-                    inicioInclusive, fimExclusive, UsuarioSistema.get(idUsuarioSistema), segurancaService.servicoLogado,
-                    [fetch:[atentimentoParticularizado:"eager"]])
-        else
-            return Compromisso.findAllByInicioGreaterThanEqualsAndInicioLessThanAndServicoSistemaSeguranca(
-                    inicioInclusive, fimExclusive, segurancaService.servicoLogado, [fetch:[atentimentoParticularizado:"eager"]])
+ from Compromisso a left join fetch a.atendimentoParticularizado left join fetch a.participantes  where a.servicoSistemaSeguranca = :servicoSistema  and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim >= :periodoInicio and a.fim < :periodoFim))
 */
     }
 
@@ -246,6 +242,9 @@ class AgendaService {
     public AtendimentoParticularizado gravaAtendimento(AtendimentoParticularizado atendimento) {
         if (! atendimento.id)
             atendimento.servicoSistemaSeguranca = segurancaService.getServicoLogado();
+
+        if (atendimento.semTelefone == true)
+            atendimento.telefoneContato = null;
 
         //Atualiza 1) o inicio, 2) o fim e 3) o responsavel do compromisso correspondente ao atendimento (caso exista)
         //para coincidir com as informações deste último

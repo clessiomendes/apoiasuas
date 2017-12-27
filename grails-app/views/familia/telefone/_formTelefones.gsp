@@ -27,7 +27,7 @@
     <tr>
         <th style="text-align: center;">DDD</th>
         <th style="text-align: center;">Numero *</th>
-        <th style="text-align: center;">
+        <th class="hide-on-mobile" style="text-align: center;">
             Observações<g:helpTooltip chave="help.telefone.obs"/>
         </th>
         <th style="text-align: center;"></th>
@@ -53,7 +53,7 @@
             <td class="${hasErrors(bean: telefone, field: 'numero', 'error')}">
                 <g:textField name="numero" id="numero${i}" size="10" maxlength="40" value="${telefone?.numero}"/>
             </td>
-            <td class="${hasErrors(bean: telefone, field: 'obs', 'error')}">
+            <td class="hide-on-mobile ${hasErrors(bean: telefone, field: 'obs', 'error')}">
                 <g:textArea style="height:19px" name="obs" class="obs" id="obs${i}" maxlength="1000" value="${telefone?.obs}"/>
             </td>
             <td>

@@ -350,6 +350,8 @@ alter table compromisso_usuario_sistema add constraint FK_yebda03yqels82367fbol1
 
 insert into compromisso_usuario_sistema select id, responsavel_id, 0 from compromisso where responsavel_id is not null;
 
+-- versao ate aqui: current (local:feito, producao: feito)
+
 /*
 CREATE TABLE ambiente(id INT PRIMARY KEY, descricao VARCHAR(255));
 INSERT into ambiente (id, descricao) values (0, );
@@ -359,3 +361,5 @@ _log INSERT into ambiente (id, descricao) values (0, );
 alter table cidadao rename constraint unique_familia_id to unique_nome_completo;
 DROP INDEX public.unique_familia_id CASCADE;
 CREATE UNIQUE INDEX unique_nome_completo ON cidadao (lower(nome_completo), familia_id);
+
+-- versao ate aqui: current (local:feito, producao: feito)

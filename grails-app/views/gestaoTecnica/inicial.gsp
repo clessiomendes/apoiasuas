@@ -31,7 +31,7 @@
 
     <div class="pure-g">
 
-        <div class="pure-u-1-2">
+        <div class="pure-u-1 pure-u-md-1-2">
             <div class="conteudos-layout-purecss">
                 <h3 class="header-gestao-tecnica">
                     <g:message code="titulo.familias.programas"/>
@@ -47,7 +47,7 @@
                 </g:spamCondicional>
             </div>
         </div>
-        <div class="pure-u-1-2">
+        <div class="pure-u-1 pure-u-md-1-2">
             <div class="conteudos-layout-purecss">
                 <h3 class="header-gestao-tecnica">
                     <g:message code="titulo.familias.acoes"/>
@@ -63,7 +63,7 @@
                 </g:spamCondicional>
             </div>
         </div>
-        <div class="pure-u-1-2">
+        <div class="pure-u-1 pure-u-md-1-2">
             <div class="conteudos-layout-purecss">
                 <h3 class="header-gestao-tecnica">
                     <g:message code="titulo.familias.outros.marcadores"/>
@@ -79,13 +79,13 @@
                 </g:spamCondicional>
             </div>
         </div>
-        <div class="pure-u-1-2">
+        <div class="pure-u-1 pure-u-md-1-2">
             <div class="conteudos-layout-purecss">
                 <g:render template="totaisMonitoramentos" model="${[idTecnico: idTecnico,
                                                                     monitoramentos: monitoramentos, totalMonitoramentos: totalMonitoramentos]}"/>
             </div>
         </div>
-        <div class="pure-u-1-1">
+        <div class="pure-u-1 pure-u-md-1-2">
             <div class="conteudos-layout-purecss">
                 <h3 class="header-gestao-tecnica">
                     <g:message code="titulo.familias.vulnerabilidades"/>
