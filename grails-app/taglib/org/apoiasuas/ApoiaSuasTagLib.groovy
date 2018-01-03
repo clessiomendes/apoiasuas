@@ -83,6 +83,7 @@ class ApoiaSuasTagLib {
      * @attr caminhoPropriedade REQUIRED o nome do campo (ou o caminho ate ele atraves das associacoes)
      * @attr label Descricao do campo (sobrepoe-se ao definido na anotacao da classe de dominio)
      */
+/*
     def divCampoFormulario = { attrs, body ->
         Object instancia = attrs.instancia
         String caminhoPropriedade = attrs.caminhoPropriedade
@@ -93,9 +94,6 @@ class ApoiaSuasTagLib {
             if (info && definicaoFormulario.campos.find { it.codigo == info.codigo() }) {
                 out << '<div class="fieldcontain ' + hasErrors(bean: instancia, field: caminhoPropriedade, 'error') + ' ">'
                 if (!label) {
-//                    if (info.descricaoI18N())
-//                        label = message(code: info.descricaoI18N())
-//                    else
                         label = info.descricao()
                 }
                 out << '<label>' + label + '</label>'
@@ -106,6 +104,7 @@ class ApoiaSuasTagLib {
             }
         }
     }
+*/
 
     /**
      * Cria um div para um novo campo numa tela de formulario APENAS se o campo estiver previsto para o formulario em questao.
@@ -115,21 +114,17 @@ class ApoiaSuasTagLib {
      * @attr focoInicial
      * @attr label Descricao do campo (sobrepoe-se ao definido na anotacao da classe de dominio)
      */
-    def divCampoFormularioCompleto = { attrs, body ->
-        //TODO: juntar divCampoFormulario e divCampoFormularioCompleto
+    def divCampoFormulario = { attrs, body ->
         CampoFormulario campoFormulario = attrs.campoFormulario
         boolean focoInicial = attrs.focoInicial
         String label = attrs.label
 
         if (campoFormulario) {
-            String classeCSS = "fieldcontain " + hasErrors(bean: campoFormulario, 'error') + " ";
+            String classeCSS = "fieldcontain " + (campoFormulario.mensagemErro ? 'error' : "") + " ";
             if (campoFormulario.multiplasLinhas > 1)
                 classeCSS += " tamanho-memo "
             out << "<div class='$classeCSS'>";
             if (!label) {
-//                if (campoFormulario.descricaoI18N)
-//                    label = message(code: campoFormulario.descricaoI18N)
-//                else
                     label = campoFormulario.descricao
             }
             if (campoFormulario.obrigatorio)
@@ -137,7 +132,6 @@ class ApoiaSuasTagLib {
             out << '<label>' + label + '</label>'
             //Gera o input para preenchimento do campo.
             //Se, no entanto, um corpo já tiver sido fornecido, este sobrescreve o comportamento padrão
-//            out << body ?: textField([
             if (body().asBoolean()) {
                 out << body()
             } else {
@@ -185,6 +179,12 @@ class ApoiaSuasTagLib {
                         size: 10,
                         autofocus: focoInicial,
                         value: ((Date)campoFormulario.valorArmazenado)?.format("dd/MM/yyyy"))
+            case CampoFormulario.Tipo.SELECAO:
+                return select(name: campoFormulario.caminhoCampo,
+                    autofocus: focoInicial,
+                    value: campoFormulario.valorArmazenado,
+                    noSelection: ['': ''],
+                    from: campoFormulario.listaOpcoes())
             default:
                 throw new RuntimeException("Impossível renderizar campo de entrada (input) para ${campoFormulario}. Tipo inesperado ${campoFormulario.tipo}".toString())
         }

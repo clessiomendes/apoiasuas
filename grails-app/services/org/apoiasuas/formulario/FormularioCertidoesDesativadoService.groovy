@@ -1,20 +1,19 @@
 package org.apoiasuas.formulario
 
+import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.formulario.definicao.FormularioCertidoes
 import org.apoiasuas.formulario.definicao.FormularioCertidoesPedido
-import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.util.StringUtils
 
 /**
  * Created by admin on 19/04/2015.
  */
-class FormularioCertidoesService extends FormularioService {
+class FormularioCertidoesDesativadoService extends FormularioService {
 
     public static final String NACIONALIDADE_PADRAO = "brasileira"
     def pedidoCertidaoProcessoService
 
-/*
     class CertidoesDTO {
         Formulario formulario
         CampoFormulario nomeNascimento
@@ -54,14 +53,18 @@ class FormularioCertidoesService extends FormularioService {
             return StringUtils.isNotBlank(nomeFalecido?.valorArmazenado?.toString()) && ! tipoNascimento && ! tipoCasamento
         }
     }
-*/
-
+    
     @Override
     Formulario preparaPreenchimentoFormulario(Long idFormulario, Long idFamilia, Long idCidadao) {
         Formulario formulario = super.preparaPreenchimentoFormulario(idFormulario, idFamilia, idCidadao)
+        CertidoesDTO dto = new CertidoesDTO(formulario)
 
         //Atribui valores default para alguns campos
-        formulario.getCampoAvulso(FormularioCertidoes.CODIGO_NACIONALIDADE).setValorArmazenado(NACIONALIDADE_PADRAO);
+        dto.nomeNascimento.valorArmazenado = formulario.cidadao.nomeCompleto
+        dto.dataNascimento.valorArmazenado = formulario.cidadao.dataNascimento
+        dto.maeNascimento.valorArmazenado = formulario.cidadao.nomeMae
+        dto.paiNascimento.valorArmazenado = formulario.cidadao.nomePai
+        dto.nacionalidade.valorArmazenado = NACIONALIDADE_PADRAO
         return formulario
     }
 
@@ -73,7 +76,6 @@ class FormularioCertidoesService extends FormularioService {
 
     @Override
     protected void transfereConteudo(Formulario formulario, ReportDTO reportDTO) {
-/*
         CertidoesDTO dto = new CertidoesDTO(formulario)
         Cidadao cidadao = formulario.cidadao
 
@@ -104,12 +106,10 @@ class FormularioCertidoesService extends FormularioService {
         String conteudoCertidao = defineConteudoCertidao(dto)
         if (conteudoCertidao)
             reportDTO.context.put(CampoFormulario.Origem.AVULSO.toCamelCase() + "." + FormularioCertidoes.CODIGO_DADOS_CERTIDAO, conteudoCertidao)
-*/
 
         super.transfereConteudo(formulario, reportDTO)
     }
 
-/*
     private String defineTipoCertidao(CertidoesDTO dto) {
         String tipoCertidao = dto.tipoNascimento ? "Certidão de Nascimento" :
                               dto.tipoCasamento ? "Certidão de Casamento" :
@@ -117,9 +117,7 @@ class FormularioCertidoesService extends FormularioService {
                               null
         return tipoCertidao
     }
-*/
 
-/*
     private String defineConteudoCertidao(CertidoesDTO dto) {
         String lDataNascimento = ((Date) dto.dataNascimento?.valorArmazenado)?.format("dd/MM/yyyy")
         String lDataCasamento = ((Date) dto.dataCasamento?.valorArmazenado)?.format("dd/MM/yyyy")
@@ -145,9 +143,7 @@ class FormularioCertidoesService extends FormularioService {
         }
         return conteudoCertidao
     }
-*/
 
-/*
     private String filiacao(CampoFormulario mae, CampoFormulario pai) {
         String result = ""
         if (mae.valorArmazenado)
@@ -161,7 +157,6 @@ class FormularioCertidoesService extends FormularioService {
         }
         result
     }
-*/
 
     /**
      * Gera um processo de pedido de certidao de nascimento.
@@ -176,12 +171,11 @@ class FormularioCertidoesService extends FormularioService {
 
             String observacoesInternas = formulario.getConteudoCampo(FormularioCertidoesPedido.CODIGO_OBSERVACOES_INTERNAS);
 
-//            CertidoesDTO dto = new CertidoesDTO(formulario)
-            //TODO: definir tipo de certidão
+            CertidoesDTO dto = new CertidoesDTO(formulario)
             pedidoCertidaoProcessoService.novoProcesso(formulario.usuarioSistema,
                     formulario.cidadao?.familia?.id,
                     formulario.usuarioSistema.id,
-                    /*defineTipoCertidao(dto) +*/ "Certidão em nome de " + formulario.getCampoAvulso(FormularioCertidoes.CODIGO_NOME_REGISTRO),
+                    defineTipoCertidao(dto) + " em nome de " + defineConteudoCertidao(dto),
                     formulario.formularioEmitido.id,
                     cartorio, null/*sem AR por enquanto*/, observacoesInternas)
         }

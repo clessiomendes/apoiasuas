@@ -13,6 +13,8 @@ import org.apoiasuas.util.ApoiaSuasDateUtils
 import org.apoiasuas.util.StringUtils
 import org.springframework.security.access.annotation.Secured
 
+import java.awt.Color
+
 //import fr.opensagres.xdocreport.samples.docxandvelocity.model.Developer;
 //import fr.opensagres.xdocreport.samples.docxandvelocity.model.Project;
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
@@ -56,6 +58,8 @@ class AgendaController extends AncestralController {
 
         Compromisso novoCompromisso = agendaService.criaCompromissoAtendimento(tecnico,  ApoiaSuasDateUtils.stringToDateTimeIso8601(inicio),
                 ApoiaSuasDateUtils.stringToDateTimeIso8601(fim));
+        agendaService.sinalizaConflitos(novoCompromisso);
+
         render compromissoToEvent(novoCompromisso) as JSON;
     }
 
@@ -91,6 +95,7 @@ class AgendaController extends AncestralController {
         compromisso.inicio = ApoiaSuasDateUtils.stringToDateTimeIso8601(start);
         compromisso.fim = ApoiaSuasDateUtils.stringToDateTimeIso8601(end);
         agendaService.gravaCompromisso(compromisso);
+        agendaService.sinalizaConflitos(compromisso);
         return render(compromissoToEvent(compromisso) as JSON);
 //        render(['success': true] as JSON);
     }
@@ -134,6 +139,7 @@ class AgendaController extends AncestralController {
 
         if (validado) {
             agendaService.gravaCompromisso(compromissoInstance);
+            agendaService.sinalizaConflitos(compromissoInstance)
             flash.message = "Compromisso gravado com sucesso"
             return render(compromissoToEvent(compromissoInstance) as JSON);
         } else {
@@ -252,6 +258,7 @@ class AgendaController extends AncestralController {
 
         if (validado) {
             agendaService.gravaAtendimento(atendimentoInstance);
+            agendaService.sinalizaConflitos(atendimentoInstance.compromisso)
             flash.message = "Atendimento gravado com sucesso"
             return render(compromissoToEvent(atendimentoInstance.compromisso) as JSON);
         } else {
@@ -306,11 +313,12 @@ class AgendaController extends AncestralController {
                 title: titulo,
                 start: ApoiaSuasDateUtils.dateTimeToStringIso8601(compromisso.inicio),
                 end: ApoiaSuasDateUtils.dateTimeToStringIso8601(compromisso.fim),
-                color: compromisso.cor,
+                className: compromisso.cor,
                 //Personalizados:
                 tipoAtendimento: compromisso.tipo.atendimento,
                 tooltip: compromisso.tooltip,
-                idsParticipantes: compromisso.participantes.collect { it.id } ]
+                idsParticipantes: compromisso.participantes.collect { it.id },
+                mensagem: compromisso.mensagem]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])

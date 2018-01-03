@@ -1,24 +1,40 @@
 package org.apoiasuas.formulario.definicao
 
 import groovy.transform.TypeChecked
-
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.FormularioBeneficioEventualService
+import org.apoiasuas.formulario.FormularioCarretoService
 import org.apoiasuas.formulario.FormularioService
 
-class FormularioIdentidade extends FormularioBase {
+class FormularioCarreto extends FormularioBase {
+
+    public static final String CODIGO_ORIGEM = "origem"
+    public static final String CODIGO_DESTINO = "destino"
 
     @Override
-    public Class<? extends FormularioService> classeServico() { return FormularioBeneficioEventualService.class }
+    public Class<? extends FormularioService> classeServico() { return FormularioCarretoService.class }
 
     @TypeChecked
     Closure run() {
         formulario {
-
-            nome 'Guia de identidade'
+            nome 'Guia de carreto'
             tipo 'Benefícios Eventuais'
-            descricao 'Formulário de gratuidade para segunda via de identidade'
-            template "Identidade-Template.docx"
+            descricao 'Formulário de concessão de benefício de carreto para mudança'
+            template 'Carreto-Template.docx'
+            campoAvulso {
+                codigo CODIGO_ORIGEM
+                tipo CampoFormulario.Tipo.TEXTO
+                tamanho 100
+                descricao 'Endereço e referências da origem'
+                obrigatorio true
+            }
+            campoAvulso {
+                codigo CODIGO_DESTINO
+                tipo CampoFormulario.Tipo.TEXTO
+                tamanho 100
+                descricao 'Endereço e referências do destino'
+                obrigatorio true
+            }
             campoBancoDeDados {
                 origem CampoFormulario.Origem.CIDADAO
                 codigo 'nome_completo'
@@ -30,32 +46,7 @@ class FormularioIdentidade extends FormularioBase {
             }
             campoBancoDeDados {
                 origem CampoFormulario.Origem.CIDADAO
-                codigo 'data_nascimento'
-                obrigatorio true
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.CIDADAO
-                codigo 'nome_mae'
-                obrigatorio true
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.CIDADAO
-                codigo 'nome_pai'
-                obrigatorio true
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.CIDADAO
                 codigo 'identidade'
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.CIDADAO
-                codigo 'naturalidade'
-                obrigatorio true
-            }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.CIDADAO
-                codigo 'UF_naturalidade'
-                obrigatorio true
             }
             grupo 'Endereço', {
                 campoBancoDeDados {
@@ -65,8 +56,8 @@ class FormularioIdentidade extends FormularioBase {
                 campoBancoDeDados {
                     origem CampoFormulario.Origem.ENDERECO
                     codigo 'nome_logradouro'
-                    obrigatorio true
                     listaLogradourosCidadaos true
+                    obrigatorio true
                 }
                 campoBancoDeDados {
                     origem CampoFormulario.Origem.ENDERECO
@@ -86,16 +77,19 @@ class FormularioIdentidade extends FormularioBase {
                     codigo 'CEP'
                 }
             }
+            campoBancoDeDados {
+                origem CampoFormulario.Origem.FAMILIA
+                codigo 'telefone'
+            }
             campoAvulso {
                 codigo CampoFormulario.CODIGO_DATA_PREENCHIMENTO
                 tipo CampoFormulario.Tipo.DATA
-                obrigatorio true
                 descricao 'Data (preenchimento)'
+                obrigatorio true
             }
             campoAvulso {
                 codigo CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO
                 tipo CampoFormulario.Tipo.TEXTO
-                obrigatorio true
                 descricao 'Responsável (preenchimento)'
                 obrigatorio true
             }

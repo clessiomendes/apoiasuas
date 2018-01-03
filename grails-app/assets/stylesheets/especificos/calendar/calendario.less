@@ -89,6 +89,17 @@
   margin-top: 8px;
 }
 
+.fc-div-eventos(@light-color, @dark-color) {
+  color: black;
+  border-width: 2px;
+  background-color: @light-color;
+  border-color: @dark-color;
+}
+.fc-amarelo { .fc-div-eventos(#F9E79F, #CCBD83); }
+.fc-verde { .fc-div-eventos(#A9DFBF, #88B399); }
+.fc-vermelho { .fc-div-eventos(#FA5858, #B34040); }
+.fc-azul { .fc-div-eventos(#AED6F1, #829FB3); }
+
 //            MOBILE
 @media screen and (max-width: 700px) {
   .fc-center h2 {

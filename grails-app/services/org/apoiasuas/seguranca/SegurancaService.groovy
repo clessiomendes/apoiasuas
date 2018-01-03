@@ -52,6 +52,8 @@ class SegurancaService {
         try {
             //Primeiro precisamos construir um "user detail" aa partir do login
             UsuarioSistema user = UsuarioSistema.findByUsername(login)
+            if (! user)
+                return null
             ApoiaSuasUser apoiaSuasUser = userDetailsService.createUserDetails(user, [])
             //passamos o "user detail" (do nosso tipo especializado ApoiaSuasUser) para o mecanismo de autenticacao do spring
             Authentication token = new UsernamePasswordAuthenticationToken(apoiaSuasUser, senha);

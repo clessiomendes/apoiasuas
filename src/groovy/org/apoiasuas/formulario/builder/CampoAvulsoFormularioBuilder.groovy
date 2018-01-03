@@ -1,5 +1,7 @@
 package org.apoiasuas.formulario.builder
 
+import grails.converters.JSON
+import groovy.json.JsonSlurper
 import org.apoiasuas.formulario.CampoFormulario
 
 class CampoAvulsoFormularioBuilder {
@@ -23,6 +25,8 @@ class CampoAvulsoFormularioBuilder {
     void multiplasLinhas(int valor) { campoFormulario.multiplasLinhas = valor }
 
     void tamanho(Integer valor) { campoFormulario.tamanhoPersonalizado = valor }
+
+    void opcoes(String[] opcoes) { campoFormulario.opcoes = (opcoes as JSON).toString() }
 
     void exibirParaPreenchimento(Boolean valor) { campoFormulario.exibirParaPreenchimento = valor }
 

@@ -4,9 +4,9 @@ import fr.opensagres.xdocreport.document.registry.XDocReportRegistry
 import fr.opensagres.xdocreport.template.TemplateEngineKind
 import grails.transaction.Transactional
 import org.apoiasuas.cidadao.Cidadao
-import org.apoiasuas.cidadao.CidadaoService
 import org.apoiasuas.cidadao.Endereco
 import org.apoiasuas.cidadao.Familia
+import org.apoiasuas.cidadao.FamiliaService
 import org.apoiasuas.formulario.builder.FormularioBuilder
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
@@ -19,14 +19,11 @@ import org.hibernate.Hibernate
 @Transactional(readOnly = true)
 class FormularioService {
 
-    public static final Date ANO_CEM = Date.parse("dd/MM/yyyy", "01/01/100")
-
-    CidadaoService cidadaoService
     SegurancaService segurancaService
-    def familiaService
+    FamiliaService familiaService
 
     public List<Formulario> getFormulariosDisponiveis() {
-        return Formulario.list().findAll({it.formularioPreDefinido.habilitado}).sort({ it.nome })
+        return Formulario.list().findAll({it.formularioPreDefinido?.habilitado});//.sort({ it.nome })
     }
 
     public Formulario getFormulario(Long id, boolean carregaCampos = false) {
@@ -42,18 +39,19 @@ class FormularioService {
         formulario.nomeEquipamento = segurancaService.servicoLogado?.nome
         formulario.enderecoEquipamento = segurancaService.servicoLogado?.endereco?.enderecoCompleto
         formulario.telefoneEquipamento = segurancaService.servicoLogado?.telefone
+        formulario.emailEquipamento = segurancaService.servicoLogado?.email
+        formulario.cidadeEquipamento = segurancaService.servicoLogado?.endereco?.municipio
+        formulario.ufEquipamento = segurancaService.servicoLogado?.endereco?.UF
     }
 
     @Transactional
-    public ReportDTO prepararImpressao(Formulario formulario) {
-//        Hibernate.initialize(formulario.template)
-//        Hibernate.initialize(formulario.campos)
+    public ReportDTO prepararImpressao(Formulario formulario, Long idModelo) {
 
         ReportDTO result = new ReportDTO()
         result.nomeArquivo = formulario.geraNomeArquivo()
 
 // 1) Load doc file and set Velocity template engine and cache it to the registry
-        InputStream template = new ByteArrayInputStream(formulario.template);
+        InputStream template = new ByteArrayInputStream(formulario.modelos.find {it.id == idModelo}.arquivo );
         result.report = XDocReportRegistry.getRegistry().loadReport(template, TemplateEngineKind.Velocity);
 
 // 2) Create Java model context
@@ -172,29 +170,6 @@ class FormularioService {
         log.debug(formulario)
     }
 
-    /**
-     * Verifica se todos os campos obrigatorios foram preenchidos
-     */
-    public boolean validarPreenchimento(Formulario formulario) {
-        formulario.validate()
-        Set<String> mensagensErro = new HashSet()
-        formulario.campos.each { campo ->
-            campo.validate()
-            if (!campo.valorArmazenado && campo.obrigatorio) {
-                campo.errors.reject(null)
-                mensagensErro << "Campo obrigatório"
-            }
-            if (CampoFormulario.Tipo.DATA == campo.tipo) {
-                if (((Date) campo.valorArmazenado)?.before(ANO_CEM)) {
-                    campo.errors.reject(null)
-                    mensagensErro.add("O ano deve ser preenchido com quatro dígitos")
-                }
-            }
-        }
-        mensagensErro.each { formulario.errors.reject(null, it) }
-        return mensagensErro.size() == 0
-    }
-
     @Transactional
     def inicializaFormularios(UsuarioSistema usuarioSistema) {
 
@@ -207,14 +182,6 @@ class FormularioService {
                 if (formulario) { //atualiza formulário existente
                     formulario.campos?.each { it.delete() } //Apagar todos os filhos
                     formulario.campos?.clear()
-/*
-                    manterIdAntigo: {//sobrescreve todas as informacoes no BD exceto, obviamente, o id e a versao
-                        //Mantendo o id (e a versao) para preservar eventuais relacionamentos com a instância anterior:
-                        transiente.id = formulario.id
-                        transiente.version = formulario.version
-                        formulario = transiente.merge()
-                    }
-*/
                     criarComNovoId: {
                         formulario.delete(flush: true)
                         formulario = transiente.save()
@@ -226,6 +193,17 @@ class FormularioService {
                 } else {
                     log.debug("Formulário " + enumForm + " mantido sem alteracoes")
                 }
+/*
+                ModeloFormulario modeloPadrao = ModeloFormulario.findByFormularioAndPadrao(formulario, true);
+                if (! modeloPadrao) {
+                    modeloPadrao = new ModeloFormulario(descricao: ModeloFormulario.DESCRICAO_PADRAO, formulario: formulario,
+                            padrao: true, arquivo: transiente.template);
+                    formulario.modelos << modeloPadrao;
+                } else {
+                    modeloPadrao.arquivo = transiente.template;
+                }
+                modeloPadrao.save();
+*/
                 formulario.campos.each { it.save() }
                 enumForm.instanciaPersistida = formulario
                 //grava os campos gerando novos ids, mesmo que o formulario já exista
@@ -234,17 +212,6 @@ class FormularioService {
             }
         }
     }
-
-/*
-    public Formulario getFormularioPreDefinidoECampos(PreDefinidos codigo) {
-        Formulario result = null
-        if (codigo) {
-            result = Formulario.findByFormularioPreDefinido(codigo)//Carrega colecao de campos
-            Hibernate.initialize(result.campos)
-        }
-        return result
-    }
-*/
 
     public Formulario getFormularioPreDefinido(PreDefinidos codigo) {
         return Formulario.findByFormularioPreDefinido(codigo)

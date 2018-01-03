@@ -362,4 +362,13 @@ alter table cidadao rename constraint unique_familia_id to unique_nome_completo;
 DROP INDEX public.unique_familia_id CASCADE;
 CREATE UNIQUE INDEX unique_nome_completo ON cidadao (lower(nome_completo), familia_id);
 
+CREATE INDEX inicio_index ON public.compromisso (inicio);
+CREATE INDEX fim_index ON public.compromisso (fim);
+create table modelo_formulario (id int8 not null, version int8 not null, arquivo bytea, descricao varchar(255), formulario_id int8, padrao boolean not null, primary key (id));
+alter table modelo_formulario add constraint FK_il6iv2mtvadvdfm83wyd171h4 foreign key (formulario_id) references formulario;
+create sequence sq_modelo_formulario;
+alter table servico_sistema add column email varchar(255);
+
 -- versao ate aqui: current (local:feito, producao: feito)
+
+alter table campo_formulario add column opcoes varchar(4096);

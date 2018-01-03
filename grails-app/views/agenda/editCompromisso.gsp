@@ -2,6 +2,18 @@
 <%
 	org.apoiasuas.agenda.Compromisso localDtoCompromisso = compromissoInstance
 %>
+<style>
+#btnApagarCompromisso {
+	display: none;
+}
+</style>
+
+<script>
+    function apagarCompromisso() {
+        if (confirm("Confirma remoção deste compromisso?"))
+            btnApagarCompromisso.click();
+    }
+</script>
 
 <div id="edit-compromisso" class="content scaffold-create" role="main">
 	<g:if test="${flash.message}">
@@ -24,8 +36,13 @@
 	%{--o parametro oculto "data" contem o retorno do post (no nosso caso, um array json contendo o compromisso recem gravado--}%
 		<g:submitToRemote url="[action:'saveCompromisso',id:localDtoCompromisso?.id]" onSuccess="sucessoSave(data);" onFailure="janelaModal.loadHTML(XMLHttpRequest.responseText);"
 						  class="save" value="Gravar"/>
+
+		%{--O botão btnApagarCompromisso, do tipo submitToRemote, está invisível para ser substituido na tela pelo botão abaixo, que chama uma função javascript
+		 antes de fazer o submit do form--}%
+        <input type="button" class="delete" value="Apagar" onclick="apagarCompromisso();"/>
 		<g:submitToRemote url="[action:'deleteCompromisso',id:localDtoCompromisso?.id]" onSuccess="sucessoDelete(data);" onFailure="janelaModal.loadHTML(XMLHttpRequest.responseText);"
-						  class="delete" value="Apagar" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Confirma remoção?')}');"/>
+						  id="btnApagarCompromisso"/>
+
 		<input type="button" class="close" onclick="janelaModal.cancelada();" value="Fechar" />
 	</g:form>
 </div>

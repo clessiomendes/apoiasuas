@@ -27,6 +27,13 @@
             <g:textField name="site" size="60" maxlength="80" value="${servicoSistema?.site}"/>
         </div>
 
+        <div class="fieldcontain ${hasErrors(bean: servicoSistema, field: 'email', 'error')}">
+            <label for="email">
+                <g:message code="servico.email.label" default="Endereço de email" />
+            </label>
+            <g:textField name="email" size="60" maxlength="80" value="${servicoSistema?.email}"/>
+        </div>
+
         <br>
 
         <div class="fieldcontain">

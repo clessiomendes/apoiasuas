@@ -4,29 +4,29 @@ import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.FullTextSearchUtils
 
+import java.text.ParseException
+
 class Formulario implements Serializable {
     public static final String EXTENSAO_ARQUIVO = ".docx"
-
-    private static final int MEGABYTES = 1024 * 1024
-    private static final int TEMPLATE_SIZE = 10 * MEGABYTES
 
     String nome
     String descricao
     String tipo //para agrupar as opções de formulário apresentadas ao operador
     PreDefinidos formularioPreDefinido
     Set<CampoFormulario> campos = []
-    //utilizado eventualmente para designar relatorio com tratamento específico no sistema
-    byte[] template
+    Set<ModeloFormulario> modelos = []
 
     //Campos transientees
+    byte[] template
     Cidadao cidadao
     UsuarioSistema usuarioSistema //Campo transiente para armazenar um usuarioResponsavel (caso ele exista no formulario)
     boolean atualizarPersistencia
     FormularioEmitido formularioEmitido
     static transients = ['formularioEmitido', 'cidadao', 'usuarioSistema', 'dataPreenchimento',
                          'nomeEquipamento', 'enderecoEquipamento', 'telefoneEquipamento',
+                         'emailEquipamento', 'cidadeEquipamento', 'ufEquipamento',
                          /*'nomeResponsavelPreenchimento', 'camposAvulsos',*/ 'atualizarPersistencia',
-                        'camposOrdenados', 'campoAvulso', 'conteudoCampo'
+                        'camposOrdenados', 'campoAvulso', 'conteudoCampo', 'modeloPadrao'
     ]
 
     static searchable = {                           // <-- elasticsearch plugin
@@ -35,53 +35,91 @@ class Formulario implements Serializable {
         descricao alias:FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:5
     }
 
-    static hasMany = [campos: CampoFormulario]
+    static hasMany = [campos: CampoFormulario, modelos: ModeloFormulario]
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_formulario']
     }
 
+    static constraints = {
+        nome(nullable: false, unique: true)
+        descricao(nullable: true)
+        formularioPreDefinido(nullable: true, unique: true)
+    }
+
     /**
      * Atribui a cada campo avulso previsto no formulario, o correspondente valor obtido do request
      * @param params O "recorte" do request correspondente aos conteudos avulsos
+     * @return Retorna uma lista de erros de conversão (ou vazia, se não houve nenhum erro)
      */
-    void setCamposAvulsos(Map params) {
+//    public List<String> setCamposAvulsos(Map params) {
+    public void setCamposAvulsos(Map params) {
+//        List<String> result = [];
         //Filtra, de todos os campos, apenas aqueles do tipo AVULSO e itera sobre eles
         campos.findAll { it.origem?.avulso }*.each { campo ->
-            campo.valorArmazenado = params.get(campo.codigo)
+//            try {
+                campo.valorArmazenado = params.get(campo.codigo)
+//        } catch (ParseException e) {
+//                result << "Erro em ${campo.descricao}: ${e.message}";
+//            }
         }
+//        return result;
     }
 
-    void setDataPreenchimento(Date date) {
+    public void setDataPreenchimento(Date date) {
         campos.find{ it.codigo == CampoFormulario.CODIGO_DATA_PREENCHIMENTO }?.valorArmazenado = date
     }
 
-    Date getDataPreenchimento() {
+    public Date getDataPreenchimento() {
         return campos.find{ it.codigo == CampoFormulario.CODIGO_DATA_PREENCHIMENTO }?.valorArmazenado
     }
 
-    void setNomeEquipamento(String nomeEquipamento) {
+    public void setNomeEquipamento(String nomeEquipamento) {
         campos.find{ it.codigo == CampoFormulario.CODIGO_NOME_EQUIPAMENTO }?.valorArmazenado = nomeEquipamento
     }
 
-    Date getNomeEquipamento() {
+    public Date getNomeEquipamento() {
         return campos.find{ it.codigo == CampoFormulario.CODIGO_NOME_EQUIPAMENTO }?.valorArmazenado
     }
 
-    void setEnderecoEquipamento(String enderecoEquipamento) {
+    public void setEnderecoEquipamento(String enderecoEquipamento) {
         campos.find{ it.codigo == CampoFormulario.CODIGO_ENDERECO_EQUIPAMENTO }?.valorArmazenado = enderecoEquipamento
     }
 
-    Date getEnderecoEquipamento() {
+    public Date getEnderecoEquipamento() {
         return campos.find{ it.codigo == CampoFormulario.CODIGO_ENDERECO_EQUIPAMENTO }?.valorArmazenado
     }
 
-    void setTelefoneEquipamento(String telefoneEquipamento) {
+    public void setTelefoneEquipamento(String telefoneEquipamento) {
         campos.find{ it.codigo == CampoFormulario.CODIGO_TELEFONE_EQUIPAMENTO }?.valorArmazenado = telefoneEquipamento
     }
 
-    Date getTelefoneEquipamento() {
+    public Date getTelefoneEquipamento() {
         return campos.find{ it.codigo == CampoFormulario.CODIGO_TELEFONE_EQUIPAMENTO }?.valorArmazenado
+    }
+
+    public void setEmailEquipamento(String emailEquipamento) {
+        campos.find{ it.codigo == CampoFormulario.CODIGO_EMAIL_EQUIPAMENTO }?.valorArmazenado = emailEquipamento
+    }
+
+    public Date getEmailEquipamento() {
+        return campos.find{ it.codigo == CampoFormulario.CODIGO_EMAIL_EQUIPAMENTO }?.valorArmazenado
+    }
+
+    public void setUfEquipamento(String ufEquipamento) {
+        campos.find{ it.codigo == CampoFormulario.CODIGO_UF_EQUIPAMENTO }?.valorArmazenado = ufEquipamento
+    }
+
+    public Date getUfEquipamento() {
+        return campos.find{ it.codigo == CampoFormulario.CODIGO_UF_EQUIPAMENTO }?.valorArmazenado
+    }
+
+    public void setCidadeEquipamento(String cidadeEquipamento) {
+        campos.find{ it.codigo == CampoFormulario.CODIGO_CIDADE_EQUIPAMENTO }?.valorArmazenado = cidadeEquipamento
+    }
+
+    public Date getCidadeEquipamento() {
+        return campos.find{ it.codigo == CampoFormulario.CODIGO_CIDADE_EQUIPAMENTO }?.valorArmazenado
     }
 
 //    String getNomeResponsavelPreenchimento() {
@@ -106,18 +144,11 @@ class Formulario implements Serializable {
         return result.valorArmazenado
     }
 
-    static constraints = {
-        nome(nullable: false, unique: true)
-        descricao(nullable: true)
-        formularioPreDefinido(nullable: true, unique: true)
-        template(nullable: true, size: 0..TEMPLATE_SIZE)
-    }
-
-    String geraNomeArquivo() {
+    public String geraNomeArquivo() {
         return nome ? nome.replaceAll("\\W+", "_") + EXTENSAO_ARQUIVO : nome //substitui caracteres que nao sejam alfanumericos
     }
 
-    String toString() {
+    public String toString() {
         String result = nome + ', ' + descricao + '['
         campos?.each {
             result += it.ordem + ', ' + it.codigo
@@ -128,12 +159,12 @@ class Formulario implements Serializable {
     /**
      * Ordena primeiro pelo campo "ordem" e depois pela sequencia de insercao
      */
-    ArrayList<CampoFormulario> getCamposOrdenados(boolean somenteCamposParaPreenchimento) {
+    public ArrayList<CampoFormulario> getCamposOrdenados(boolean somenteCamposParaPreenchimento) {
         ArrayList<CampoFormulario> temp = campos?.sort { [it.ordem ?: 9999 /*nulos no final*/, it.id] }
         return somenteCamposParaPreenchimento ? temp.findAll { it.exibirParaPreenchimento } : temp
     }
 
-    ArrayList<ArrayList<CampoFormulario>> getCamposAgrupados(boolean somenteCamposParaPreenchimento) {
+    public ArrayList<ArrayList<CampoFormulario>> getCamposAgrupados(boolean somenteCamposParaPreenchimento) {
 
         String ultimoGrupo = ""
         ArrayList result = []
@@ -150,6 +181,10 @@ class Formulario implements Serializable {
         result.add(listaTemp)
         log.debug(result)
         return result
+    }
+
+    public ModeloFormulario getModeloPadrao() {
+        return modelos?.find { it.padrao }
     }
 
 }

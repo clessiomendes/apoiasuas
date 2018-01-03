@@ -35,7 +35,7 @@ class EmissaoFormularioController extends AncestralController {
         else
             formulariosDisponiveis = servico(null).getFormulariosDisponiveis();
         Map<String, List<Formulario>> tiposFormulario = formulariosDisponiveis.sort {
-            [it.tipo, it.descricao]
+            [it.id, it.tipo]
         }.groupBy { it.tipo ?: "Outros" }
         render view: 'escolherFamilia', model: [formulariosDisponiveis: tiposFormulario]
     }
@@ -63,7 +63,7 @@ class EmissaoFormularioController extends AncestralController {
     /**
      * Define eventuais templates customizados para exibição dos campos a serem preenchidos
      */
-    String getTemplateCamposCustomizados(Formulario formulario) {
+    private String getTemplateCamposCustomizados(Formulario formulario) {
         switch (formulario.formularioPreDefinido) {
             case PreDefinidos.ENCAMINHAMENTO: return "formularioEncaminhamento"
             default: return null
@@ -78,11 +78,12 @@ class EmissaoFormularioController extends AncestralController {
 */
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def imprimirFormulario(Long idFormulario) {
+    def imprimirFormulario(Long idFormulario, Long idModelo) {
         Formulario formulario
 
-        instanciamento_dos_objetos: try { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
+        instanciamento_dos_objetos: { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
             formulario = servico(Formulario.get(idFormulario)).getFormulario(idFormulario, true)
+
             String idUsuarioSistema = params.avulso?.get(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
             if (idUsuarioSistema)
                 formulario.usuarioSistema = UsuarioSistema.get(idUsuarioSistema.toLong())
@@ -93,21 +94,19 @@ class EmissaoFormularioController extends AncestralController {
             }
             if (params.endereco)
                 formulario.cidadao.familia.endereco = new Endereco(params.endereco)
+
             formulario.formularioEmitido = FormularioEmitido.get(params.formularioEmitido.id)
-            formulario.setCamposAvulsos(params.avulso)
-        } catch (ParseException e) {
-            //TODO: Identificar exatamente o(s) campo(s) com erro de conversão e informar ao operador com precisão (vai dar trabalho. teremos que abrir mão do bind automático do Grails)
-            formulario.errors.reject(null, "Erro de conversão. Conteúdo fornecido inválido em algum dos campos")
-            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, tecnicos: getTecnicosOrdenadosController(true) ])
+
+            //Validacao dos campos obrigatorios e dos formatos
+            if (! validarPreenchimento(formulario, params))
+                return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
+                                                                   dtoFormulario: formulario, tecnicos: getTecnicosOrdenadosController(true) ]);
+
+//            formulario.setCamposAvulsos(params.avulso)
         }
 
-        boolean validacaoPreenchimento = servico(formulario).validarPreenchimento(formulario)
-        boolean validacaoDatas = validaFormatoDatas(formulario, params)
-        if (! validacaoPreenchimento || ! validacaoDatas) //exibe o formulario novamente em caso de problemas na validacao
-            return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario), dtoFormulario: formulario, tecnicos: getTecnicosOrdenadosController(true) ])
-
         geraFormularioPreenchidoEgrava: {
-            ReportDTO reportDTO = servico(formulario).prepararImpressao(formulario)
+            ReportDTO reportDTO = servico(formulario).prepararImpressao(formulario, idModelo)
             if (verificaPermissao(DefinicaoPapeis.STR_USUARIO))
                 servico(formulario).gravarAlteracoes(formulario)
 
@@ -123,22 +122,51 @@ class EmissaoFormularioController extends AncestralController {
         }
     }
 
-    private boolean validaFormatoDatas(Formulario formulario, GrailsParameterMap params) {
-        Set<String> mensagensErro = new HashSet()
-        formulario.campos.each { campo ->
-            final conteudoFornecido = params.get(campo.caminhoCampo)?.toString()
-            if (campo.tipo?.data && conteudoFornecido) {
-                try {
-                    new SimpleDateFormat("dd/MM/yyyy").parse(conteudoFornecido)
-                } catch (ParseException e) {
-                    campo.errors.reject(null)
-                    mensagensErro << "Erro interpretando informação ${conteudoFornecido}. Formato esperado: dd/mm/yyyy"
+    /**
+     * Verifica se todos os campos foram preenchidos com valores validos ou obrigatorios
+     */
+    private boolean validarPreenchimento(Formulario formulario, GrailsParameterMap params) {
+        boolean result = true;
+        formulario.campos.each { CampoFormulario campo ->
+            final conteudoFornecido = params.get(campo.caminhoCampo)?.toString();
+            //Campo obrigatorio
+            if (! conteudoFornecido && campo.obrigatorio) {
+                campo.mensagemErro = "O campo '${campo.descricao}' é obrigatório"
+                result = false;
+            }
+            if (conteudoFornecido) {
+                //Formato de data
+                if (CampoFormulario.Tipo.DATA == campo.tipo) {
+                    try {
+                        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                        df.setLenient(false);
+                        df.parse(conteudoFornecido);
+                        //re-armazenao valor preenchido na tela para uma eventual
+                        campo.valorArmazenado = conteudoFornecido;
+                    } catch (ParseException e) {
+                        result = false;
+                        campo.mensagemErro = "Data inválida '${conteudoFornecido}' em '${campo.descricao}'. Formato esperado: dd/mm/yyyy"
+                    }
+                //Formato de número inteiro
+                } else if (CampoFormulario.Tipo.INTEIRO == campo.tipo) {
+                    try {
+                        Integer.parseInt(conteudoFornecido)
+                        //re-armazenao valor preenchido na tela para uma eventual
+                        campo.valorArmazenado = conteudoFornecido;
+                    } catch (ParseException e) {
+                        result = false;
+                        campo.mensagemErro = "Número inválido '${conteudoFornecido}' em '${campo.descricao}'."
+                    }
+                //os outros tipos nao precisam de validacao
+                } else {
+                    //re-armazenao valor preenchido na tela para uma eventual
+                    campo.valorArmazenado = conteudoFornecido;
                 }
             }
         }
-        mensagensErro.each { formulario.errors.reject(null, it) }
-        return mensagensErro.size() == 0
+        return result;
     }
+
 /**
      * Infere, à partir do formulário sendo gerado, o serviço correspondente
      */
@@ -149,13 +177,6 @@ class EmissaoFormularioController extends AncestralController {
         else
             f = FormularioBase.newInstance().classeServico();
         return grailsApplication.mainContext.getBean(StringUtils.firstLowerCase(f.simpleName))
-/*
-        switch (formulario?.formularioPreDefinido) {
-            case [PreDefinidos.CERTIDOES, PreDefinidos.CERTIDOES_E_PEDIDO]: return grailsApplication.mainContext.getBean(StringUtils.firstLowerCase(FormularioCertidoesService.simpleName))
-            case [PreDefinidos.IDENTIDADE, PreDefinidos.FOTOS, PreDefinidos.IDENTIDADE_FOTO]: return grailsApplication.mainContext.getBean(StringUtils.firstLowerCase(FormularioBeneficioEventualService.simpleName))
-            default: return grailsApplication.mainContext.getBean(StringUtils.firstLowerCase(FormularioService.simpleName))
-        }
-*/
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])

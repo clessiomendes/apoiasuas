@@ -9,24 +9,8 @@ import org.apoiasuas.formulario.FormularioService
 
 class FormularioCertidoes extends FormularioBase {
 
-    public static final String CODIGO_NOME_NASCIMENTO = 'nome_nascimento'
-    public static final String CODIGO_DATA_NASCIMENTO = 'data_nascimento'
-    public static final String CODIGO_MAE_NASCIMENTO = 'mae_nascimento'
-    public static final String CODIGO_PAI_NASCIMENTO = 'pai_nascimento'
-    public static final String CODIGO_DATA_CASAMENTO = 'data_casamento'
-    public static final String CODIGO_CONJUGE_1 = 'conjuge_um'
-    public static final String CODIGO_CONJUGE_2 = 'conjuge_dois'
-    public static final String CODIGO_NOME_FALECIDO = 'nome_falecido'
-    public static final String CODIGO_DATA_FALECIMENTO = 'data_falecimento'
-    public static final String CODIGO_MAE_OBITO = 'mae_obito'
-    public static final String CODIGO_PAI_OBITO = 'pai_obito'
+    public static final String CODIGO_NOME_REGISTRO = "nome_registro"
     public static final String CODIGO_DATA_REGISTRO = "data_registro"
-    public static final String CODIGO_FILIACAO_CONJUGE = "filiacao_conjuge"
-    public static final String CODIGO_DADOS_CERTIDAO = "dados_certidao"
-    public static final String CODIGO_TIPO_CERTIDAO = "tipo_certidao"
-    public static final String CODIGO_IS_NASCIMENTO = "xn"
-    public static final String CODIGO_IS_CASAMENTO = "xc"
-    public static final String CODIGO_IS_OBITO = "xo"
     public static final String CODIGO_NACIONALIDADE = "nacionalidade"
 
     @Override
@@ -52,18 +36,6 @@ class FormularioCertidoes extends FormularioBase {
                     descricao 'Identidade'
                     codigo 'identidade'
                 }
-//            grupo 'ou Carteira de Trabalho', {
-//                campoBancoDeDados {
-//                    origem Origem.CIDADAO
-//                    descricao 'Número'
-//                    codigo 'numero_ctps'
-//                }
-//                campoBancoDeDados {
-//                    origem Origem.CIDADAO
-//                    descricao 'Série'
-//                    codigo 'serie_ctps'
-//                }
-//            }
                 campoBancoDeDados {
                     origem Origem.CIDADAO
                     codigo 'cpf'
@@ -71,15 +43,37 @@ class FormularioCertidoes extends FormularioBase {
                 campoAvulso {
                     descricao 'Nacionalidade'
                     codigo CODIGO_NACIONALIDADE
+                    tamanho 20
                 }
                 campoAvulso {
-                    descricao 'Profissão'
                     codigo 'profissao'
+                    descricao 'Profissão'
+                    tamanho 20
                 }
-//            campoBancoDeDados {
-//                origem Origem.CIDADAO
-//                codigo 'estado_civil'
-//            }
+                campoBancoDeDados {
+                    origem CampoFormulario.Origem.CIDADAO
+                    codigo 'nome_mae'
+                    obrigatorio true
+                }
+                campoBancoDeDados {
+                    origem CampoFormulario.Origem.CIDADAO
+                    codigo 'nome_pai'
+                    obrigatorio true
+                }
+                campoBancoDeDados {
+                    origem Origem.CIDADAO
+                    codigo 'estado_civil'
+                }
+                campoAvulso {
+                    codigo 'uniao_estavel'
+                    descricao 'Possui união estável?'
+                    tipo CampoFormulario.Tipo.SELECAO
+                    opcoes 'sim', 'não'
+                }
+                campoAvulso {
+                    codigo 'nome_convivente'
+                    descricao 'Nome convivente'
+                }
             }
             grupo 'Endereço', {
                 campoBancoDeDados {
@@ -116,84 +110,70 @@ class FormularioCertidoes extends FormularioBase {
                     codigo 'UF'
                     obrigatorio true
                 }
+                campoBancoDeDados {
+                    origem CampoFormulario.Origem.FAMILIA
+                    codigo 'telefone'
+                }
             }
-            grupo 'Certidão de nascimento', {
+            grupo 'Dados da certidão', {
                 campoAvulso {
-                    codigo CODIGO_NOME_NASCIMENTO
+                    codigo 'tipo_certidao'
+                    descricao 'Tipo de certidão'
+                    tipo CampoFormulario.Tipo.SELECAO
+                    obrigatorio true
+                    opcoes 'nascimento', 'casamento', 'óbito'
+                }
+                campoAvulso {
+                    codigo CODIGO_NOME_REGISTRO
                     descricao 'Nome no registro'
+                    obrigatorio true
                 }
                 campoAvulso {
-                    codigo CODIGO_DATA_NASCIMENTO
-                    descricao 'Data do nascimento'
+                    codigo CODIGO_DATA_REGISTRO
+                    descricao 'Data do registro'
                     tipo CampoFormulario.Tipo.DATA
                 }
                 campoAvulso {
-                    codigo CODIGO_MAE_NASCIMENTO
-                    descricao 'Mãe no registro'
+                    codigo 'livro'
+                    descricao 'Livro'
+                    tamanho 5
                 }
                 campoAvulso {
-                    codigo CODIGO_PAI_NASCIMENTO
-                    descricao 'Pai no registro'
-                }
-            }
-            grupo 'ou Certidão de casamento', {
-                campoAvulso {
-                    codigo CODIGO_CONJUGE_1
-                    descricao 'Cônjuge'
+                    codigo 'folha'
+                    descricao 'Folha'
+                    tamanho 5
                 }
                 campoAvulso {
-                    codigo CODIGO_CONJUGE_2
-                    descricao 'Cônjuge'
+                    codigo 'termo'
+                    descricao 'Termo'
+                    tamanho 5
                 }
-                campoAvulso {
-                    codigo CODIGO_DATA_CASAMENTO
-                    descricao 'Data do casamento'
-                    tipo CampoFormulario.Tipo.DATA
-                }
-            }
-            grupo 'ou Certidão de óbito', {
-                campoAvulso {
-                    codigo CODIGO_NOME_FALECIDO
-                    descricao 'Nome do falecido'
-                }
-                campoAvulso {
-                    codigo CODIGO_DATA_FALECIMENTO
-                    descricao 'Data do óbito'
-                    tipo CampoFormulario.Tipo.DATA
-                }
-                campoAvulso {
-                    codigo CODIGO_MAE_OBITO
-                    descricao 'Mãe do falecido'
-                }
-                campoAvulso {
-                    codigo CODIGO_PAI_OBITO
-                    descricao 'Pai do falecido'
-                }
-            }
-            campoAvulso {
-                codigo 'naturalidade'
-                descricao 'Naturalidade'
-            }
-            campoAvulso {
-                codigo 'livro'
-                descricao 'Livro'
-                tamanho 5
-            }
-            campoAvulso {
-                codigo 'termo'
-                descricao 'Termo'
-                tamanho 5
-            }
-            campoAvulso {
-                codigo 'folha'
-                descricao 'Folha'
-                tamanho 5
             }
             campoAvulso {
                 codigo CampoFormulario.CODIGO_DATA_PREENCHIMENTO
                 tipo CampoFormulario.Tipo.DATA
                 descricao 'Data (preenchimento)'
+                obrigatorio true
             }
+            campoAvulso {
+                codigo CampoFormulario.CODIGO_EMAIL_EQUIPAMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                exibirParaPreenchimento false
+                descricao 'Email'
+            }
+            campoAvulso {
+                codigo CampoFormulario.CODIGO_CIDADE_EQUIPAMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                exibirParaPreenchimento false
+                descricao 'Cidade'
+            }
+            campoAvulso {
+                codigo CampoFormulario.CODIGO_UF_EQUIPAMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                exibirParaPreenchimento false
+                descricao 'UF'
+            }
+
         }
     }
 }

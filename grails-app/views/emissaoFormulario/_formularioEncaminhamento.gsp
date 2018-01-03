@@ -56,7 +56,7 @@
         <fieldset class="embedded"><legend class="collapsable" style="cursor:pointer;">${grupo[0].grupo}</legend>
     </g:if>
     <g:each in="${grupo}" var="campo" status="j"> %{-- lista os campos do grupo --}%
-        <g:divCampoFormularioCompleto campoFormulario="${campo}" focoInicial="${i*j == 1}"/>
+        <g:divCampoFormulario campoFormulario="${campo}" focoInicial="${i*j == 1}"/>
     </g:each>
     <g:if test="${grupo[0].grupo}">
         </fieldset>

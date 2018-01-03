@@ -8,13 +8,6 @@ import org.apoiasuas.seguranca.UsuarioSistema
 
 class AtendimentoParticularizado implements DominioProtegidoServico {
 
-    //TEXTO PRETO
-    public static final String AMARELO = "#F9E79F"
-    public static final String VERMELHO = "#FA5858"
-    public static final String VERDE = "#A9DFBF"
-    //    public static final String MARROM = "#EDBB99"
-//    public static final String ROXO = "#D2B4DE"
-//    public static final String ROSA = "#ff4dd2"
 
     public static final String COMPARECEU = "atendimento (compareceu) - "
     public static final String NAO_COMPARECEU = "atendimento (NÂO compareceu) - "
@@ -58,18 +51,18 @@ class AtendimentoParticularizado implements DominioProtegidoServico {
         String result = null
         use (TimeCategory) {
             if (compareceu == true)
-                result = AMARELO //MARROM
+                result = Compromisso.CSS_AMARELO
             else if (compareceu == false)
-                result = AMARELO //ROXO
+                result = Compromisso.CSS_AMARELO
             else if (horarioPreenchido) { //horario preenchido
                 if ((dataHora > (new Date() - 1.hours)))
-                    result = AMARELO
+                    result = Compromisso.CSS_AMARELO
                 else
-                    result = VERMELHO
+                    result = Compromisso.CSS_VERMELHO
             } else if (! horarioPreenchido && dataHora < (new Date() - 1.hours)) //horario livre mas ja no passado (nao tem como ser utilizado mais)
-                result = AMARELO
+                result = Compromisso.CSS_AMARELO
         }
-        result = result ? result : VERDE;
+        result = result ? result : Compromisso.CSS_VERDE;
         return result;
     }
 
@@ -93,7 +86,6 @@ class AtendimentoParticularizado implements DominioProtegidoServico {
         }
         result = result ? result : LIVRE //marrom
         return result;
-//        "#ff4dd2" //rosa
     }
 
 }

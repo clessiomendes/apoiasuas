@@ -17,7 +17,7 @@ class FormularioController extends AncestralController {
 
     @Transactional(readOnly = true)
     def list(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
+        params.max = Math.min(max ?: 30, 100)
         render view: 'list', model: [formularioInstanceList: Formulario.listOrderByNome(params), formularioInstanceCount: Formulario.count()]
     }
 

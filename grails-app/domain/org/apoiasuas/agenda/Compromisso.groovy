@@ -8,6 +8,11 @@ import org.apoiasuas.seguranca.UsuarioSistema
 
 class Compromisso implements DominioProtegidoServico {
 
+    public static final String CSS_AMARELO = "fc-amarelo"
+    public static final String CSS_VERMELHO = "fc-vermelho"
+    public static final String CSS_VERDE = "fc-verde"
+    public static final String CSS_AZUL = "fc-azul"
+
     public static enum Tipo {
         ATENDIMENTO_PARTICULARIZADO("atendimento particularizado"),
         ATIVIDADE_COLETIVA("atividade coletiva"),
@@ -29,10 +34,10 @@ class Compromisso implements DominioProtegidoServico {
     AtendimentoParticularizado atendimentoParticularizado
     Tipo tipo
     ServicoSistema servicoSistemaSeguranca
-//    UsuarioSistema responsavel
     List<UsuarioSistema> participantes = []
+    String mensagem
 
-    static transients = ['cor','tooltip']
+    static transients = ['cor','tooltip','mensagem']
 
     static hasMany = [participantes: UsuarioSistema]
 
@@ -60,7 +65,7 @@ class Compromisso implements DominioProtegidoServico {
         if (tipo && tipo.atendimento)
             return atendimentoParticularizado.cor
         else
-            return "#AED6F1";
+            return CSS_AZUL;
     }
 
     public String getTooltip() {

@@ -1,4 +1,3 @@
-@echo off
 @setlocal
 
 if "%1"=="" (
@@ -65,11 +64,8 @@ echo Proxy options: %PROXY_OPTIONS%
 if not "%SERVIDOR_PROXY%"=="" set "PROXY=--proxy %SERVIDOR_PROXY% %PROXY_OPTIONS%"
 echo Proxy: %PROXY%
 
-@set "URL=%URL_APOIACRAS%?user=%USUARIO_APOIACRAS%^&pass=%SENHA_APOIACRAS%"
+@set "URL=%URL_APOIACRAS%?user=%USUARIO_APOIACRAS%&pass=%SENHA_APOIACRAS%"
 echo Url completa: %URL%
-
-rem @set "LINHA_COMANDO_COMPLETO=""%CURLPATH%"" %PROXY%  -k ""%URL%"" -F ""qqfile=@%NOME_ARQUIVO_INTERMEDIARIO%x"" ^> resultado.html"
-rem echo Linha de comando completa: %LINHA_COMANDO_COMPLETO%
 
 echo Todos os parâmetros foram definidos corretamente
 
@@ -81,11 +77,16 @@ if errorlevel 500 set ENVIA=true
 rem call %LINHA_COMANDO_COMPLETO%
 rem if errorlevel 500 call %LINHA_COMANDO_COMPLETO%
 if "%2" == "reenvia" (
-    echo Enviando mesmo que não haja mudanças no arquivo
+    @echo Enviando mesmo que não haja mudanças no arquivo
     set ENVIA=true
 )
 
-if "%ENVIA%" == "true" call "%CURLPATH%" %PROXY%  -k "%URL%" -F "qqfile=@%NOME_ARQUIVO_INTERMEDIARIO%x" > resultado.html
+if "%ENVIA%" == "true" (
+	@echo on
+	rem use -v para detalhar o processamento do comando curl:
+	call "%CURLPATH%" %PROXY% -k "%URL%" -F "qqFile=@%NOME_ARQUIVO_INTERMEDIARIO%x" > resultado.html
+	@echo off
+)
 
 @type resultado.html
 pause

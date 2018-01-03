@@ -20,6 +20,7 @@ class ServicoSistema {
     String nome
     String telefone
     String site
+    String email
     Endereco endereco
     AbrangenciaTerritorial abrangenciaTerritorial
     Boolean habilitado
@@ -34,6 +35,7 @@ class ServicoSistema {
         nome length: 80
         telefone length: 30
         site length: 80
+        email length: 80
     }
     static constraints = {
         endereco(nullable: true)

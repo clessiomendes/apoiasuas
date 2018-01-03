@@ -56,7 +56,7 @@ class Endereco  implements Serializable {
     String getEnderecoCompleto() {
         return CollectionUtils.join([
                 getTipoENomeLogradouro(),
-                numero, complemento, bairro, municipio, UF, "CEP "+CEP], ", ") ?: ""
+                numero, complemento, bairro, municipio, UF, CEP ? "CEP "+CEP : null], ", ") ?: ""
     }
 
     String getTipoENomeLogradouro() {

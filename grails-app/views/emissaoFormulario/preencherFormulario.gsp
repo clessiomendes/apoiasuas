@@ -33,6 +33,8 @@
     <div class="message" role="status">${flash.message}</div>
 </g:if>
 
+
+%{--
 <g:hasErrors bean="${dtoFormulario}">
     <ul class="errors" role="alert">
         <g:eachError bean="${dtoFormulario}" var="error">
@@ -40,6 +42,14 @@
         </g:eachError>
     </ul>
 </g:hasErrors>
+--}%
+
+<g:each in="${dtoFormulario.campos.sort { it.id } .findAll { it.mensagemErro }}" var="campo">
+    <ul class="errors" role="alert">
+        %{--<li><g:message error="${mensagemErro}"/></li>--}%
+        <li><g:message error="${campo.mensagemErro}"/></li>
+    </ul>
+</g:each>
 
 <g:form>
 
@@ -55,10 +65,22 @@
         </g:if>
         <g:else>
             <g:agrupaCampos lista="${dtoFormulario.getCamposOrdenados(true)}" campoGrupo="grupo" status="i" var="campo">
-                    <g:divCampoFormularioCompleto campoFormulario="${campo}" focoInicial="${i == 1}"/>
+                    <g:divCampoFormulario campoFormulario="${campo}" focoInicial="${i == 1}"/>
             </g:agrupaCampos>
         </g:else>
 
+        %{--Varias opcoes de modelo: abre para escolha do operador--}%
+        <g:if test="${dtoFormulario.modelos.size() > 1}">
+            <div class="fieldcontain">
+                <label>Modelo</label>
+                <g:select style="max-width: 20em" id="idModelo" name="idModelo" from="${dtoFormulario.modelos.sort{it.id}}" optionKey="id"
+                          optionValue="descricao" value="${dtoFormulario.modeloPadrao.id}" class="many-to-one"/>
+            </div>
+        </g:if>
+        %{--modelo unico:--}%
+        <g:else>
+            <input type="hidden" id="idModelo" name="idModelo" value="${dtoFormulario.modeloPadrao.id}">
+        </g:else>
     </ol>
 
     <fieldset class="buttons">

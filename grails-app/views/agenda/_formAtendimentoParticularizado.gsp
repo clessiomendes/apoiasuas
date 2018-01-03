@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.cidadao.Familia; org.apoiasuas.cidadao.Cidadao; org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado" %>
+<%@ page import="org.apoiasuas.agenda.Compromisso; org.apoiasuas.cidadao.Familia; org.apoiasuas.cidadao.Cidadao; org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado" %>
 <%
     org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado localDtoAtendimento = atentimentoParticularizadoInstance;
     org.apoiasuas.cidadao.Cidadao localCidadaoCandidato = cidadaoCandidato;
@@ -65,7 +65,7 @@
         $('#inputTelefoneContato').val('');
         $('#checkSemTelefone').prop('checked', false).change();
 
-        $('#spanSituacao').text("${AtendimentoParticularizado.LIVRE}").css("background-color","${AtendimentoParticularizado.VERDE}");
+        $('#spanSituacao').text("${AtendimentoParticularizado.LIVRE}").css("background-color","${org.apoiasuas.agenda.Compromisso.CSS_VERDE}");
         $('#hiddenCompareceu').val('');
 
         $('#btnLimpar').hide();

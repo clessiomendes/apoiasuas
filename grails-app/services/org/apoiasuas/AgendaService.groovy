@@ -17,13 +17,15 @@ import org.apache.xmlbeans.XmlOptions
 import org.apoiasuas.agenda.Compromisso
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado
-import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody
 
 @Transactional(readOnly = true)
 class AgendaService {
+
+    private static final String FILTRO_COMPROMISSOS_PERIODO = " where a.servicoSistemaSeguranca = :servicoSistema "+
+            " and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim > :periodoInicio and a.fim < :periodoFim)) ";
 
     def segurancaService
     def usuarioSistemaService
@@ -55,9 +57,8 @@ class AgendaService {
     public List<Compromisso> listarCompromissos(Date inicioInclusive, Date fimExclusive, Long idUsuarioSistema,
                                                 Boolean mostrarAtendimentos, Boolean mostrarOutrosCompromissos) {
         //OTIMIZAÇÃO: "left join fecth" nas associacoes atendimentoParicularizado e participantes
-         String hqlFrom = " from Compromisso a left join fetch a.atendimentoParticularizado left join fetch a.participantes ";
-        String hqlWhere = " where a.servicoSistemaSeguranca = :servicoSistema "+
-                " and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim >= :periodoInicio and a.fim < :periodoFim)) ";
+        String hqlFrom = "select distinct a from Compromisso a left join fetch a.atendimentoParticularizado left join fetch a.participantes ";
+        String hqlWhere = FILTRO_COMPROMISSOS_PERIODO;
         Map filtros = [servicoSistema: segurancaService.servicoLogado, periodoInicio: inicioInclusive, periodoFim: fimExclusive]
         if (idUsuarioSistema) {
             hqlWhere += ' and (size(a.participantes) = 0 or :responsavel in elements(a.participantes) ) ';
@@ -71,7 +72,7 @@ class AgendaService {
             hqlWhere += " and a.tipo !=  :tipoOutros ";
             filtros.put("tipoOutros", Compromisso.Tipo.OUTROS)
         }
-        return Compromisso.executeQuery(hqlFrom + hqlWhere, filtros, [fetch:[atentimentoParticularizado: 'join', participantes: 'join']]);
+        return Compromisso.executeQuery(hqlFrom + hqlWhere, filtros);
 /*
  from Compromisso a left join fetch a.atendimentoParticularizado left join fetch a.participantes  where a.servicoSistemaSeguranca = :servicoSistema  and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim >= :periodoInicio and a.fim < :periodoFim))
 */
@@ -290,5 +291,56 @@ class AgendaService {
         if (familia)
             result = AtendimentoParticularizado.findAllByFamilia(familia, [max: 300, sort: "dataHora", order: "desc"]);
         return result;
+    }
+
+    /**
+     * Verifica no banco de dados se um dado compromisso conflita com um ou mais outros compromissos
+     * pré-existentes e sinaliza com uma mensagem em compromisso.mensagem.
+     * O conflito se baseia nos participantes de cada compromisso e nos horários de início e fim
+     */
+    public void sinalizaConflitos(Compromisso compromissoAlterado) {
+        if (! compromissoAlterado)
+            return;
+        String hqlFrom = "select distinct a from Compromisso a left join fetch a.participantes ";
+        String hqlWhere = FILTRO_COMPROMISSOS_PERIODO + " and a.id != :idCompromisso ";
+        Map filtros = [servicoSistema: segurancaService.servicoLogado, idCompromisso: compromissoAlterado.id,
+                       periodoInicio: compromissoAlterado.inicio, periodoFim: compromissoAlterado.fim]
+
+        //Compromissos do periodo - aqueles que tem alguma intercecao com o horario do compromisso sendo alterado
+        List<Compromisso> compromissosPeriodo = Compromisso.executeQuery(hqlFrom + hqlWhere, filtros);
+
+        //nomesConflito - Armazenara apenas os nomes de participantes que entraram em conflito, ou "todos", na situacao A) abaixo
+        Set<String> nomesConflito = [];
+
+        //Verifica cada compromisso da intercecao a fim de detectar algum conflito entre os respectivos participantes
+        compromissosPeriodo.each { compromissoPeriodo ->
+
+            //A) os dois compromissos estao previstos para todos participarem
+            if (compromissoPeriodo.participantes.size() == 0 && compromissoAlterado.participantes.size() == 0)
+                nomesConflito.add("todos")
+            //B) o compromisso sendo alterado é para todos e o do periodo, so para alguns
+            else if (compromissoAlterado.participantes.size() == 0)
+                nomesConflito.addAll(compromissoPeriodo.participantes.collect {it.username})
+            //C) o compromisso no periodo é para todos e o que esta sendo alterado, so para alguns
+            else if (compromissoPeriodo.participantes.size() == 0) //todos participam desse compromisso
+                nomesConflito.addAll(compromissoAlterado.participantes.collect {it.username})
+            //D) os dois compromissos teem participantes especificos
+            else {
+                //Para cada participante no compromisso sendo alterado, verifica se coincide com algum participante do compromisso no periodo
+                compromissoAlterado.participantes.each { participanteCompromisso ->
+                    compromissoPeriodo.participantes.each { participanteCompromissoPeriodo ->
+                        if (participanteCompromisso.id == participanteCompromissoPeriodo.id)
+                            nomesConflito.add(participanteCompromisso.username)
+                    }
+                }
+            }
+        }
+
+        if (nomesConflito.size() > 0) {
+            if (nomesConflito.contains("todos"))
+                compromissoAlterado.mensagem = "Conflito de agenda para todos.";
+            else
+                compromissoAlterado.mensagem = "Conflito de agenda para "+nomesConflito.join(", ")+".";
+        }
     }
 }

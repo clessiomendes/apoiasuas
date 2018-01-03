@@ -95,6 +95,7 @@ class FormularioBase {
             }
             campoAvulso {
                 codigo CampoFormulario.CODIGO_DATA_PREENCHIMENTO
+                obrigatorio true
                 tipo CampoFormulario.Tipo.DATA
                 descricao 'Data (preenchimento)'
             }
@@ -112,6 +113,11 @@ class FormularioBase {
                 codigo CampoFormulario.CODIGO_TELEFONE_EQUIPAMENTO
                 tipo CampoFormulario.Tipo.TEXTO
                 descricao 'Telefone(s) do equipamento'
+            }
+            campoAvulso {
+                codigo CampoFormulario.CODIGO_EMAIL_EQUIPAMENTO
+                tipo CampoFormulario.Tipo.TEXTO
+                descricao 'Email do equipamento'
             }
             campoAvulso {
                 codigo CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO

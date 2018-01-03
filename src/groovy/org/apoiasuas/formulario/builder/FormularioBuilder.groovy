@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.Formulario
+import org.apoiasuas.formulario.ModeloFormulario
 import org.apoiasuas.formulario.template.FoolTemplate
 
 abstract class BaseFormularioBuilder {
@@ -76,12 +77,25 @@ class FormularioBuilder extends BaseFormularioBuilder {
 
     void descricao(String valor) { formulario.descricao = valor }
 
-//    void formularioPreDefinido(PreDefinidos valor) { formulario.formularioPreDefinido = valor }
+//    void template(Map valor) {
+    void template(String[] valor) {
+        valor.eachWithIndex { String nomeArquivo, Integer i ->
+            InputStream stream = FoolTemplate.class.getResourceAsStream(nomeArquivo)
+            if (stream) {
+                //Exclui a extensao do arquivo da descricao
+                final int fim = nomeArquivo.indexOf(".") == -1 ? nomeArquivo.length()-1 : nomeArquivo.indexOf(".");
+                ModeloFormulario modelo = new ModeloFormulario(descricao: nomeArquivo.substring(0, fim),
+                        padrao: i==0, arquivo: IOUtils.toByteArray(stream), formulario: formulario);
+                formulario.modelos << modelo
+            } else {
+                System.out.println("Atenção! Template do formulário ${formulario.nome} não encontrado (${nomeArquivo})")
+            }
+        }
+//        System.out.println("valor2 "+valor2);
+/*
+*/
 
-    void template(String valor) {
-        InputStream stream = FoolTemplate.class.getResourceAsStream(valor)
-        if (stream)
-            formulario.template = IOUtils.toByteArray(stream)
+
 //        else
 //            log.debug("template do formulário ${formulario.nome} não encontrado (${valor})")
     }

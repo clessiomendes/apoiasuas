@@ -77,15 +77,6 @@ function JanelaModalAjax() {
             width: $(window).width() > largura ? largura : 'auto'
         }).dialog('open');
 
-        //$divModal.html(conteudoHTML ? conteudoHTML : '<asset:image src="loading.gif"/> carregando...').dialog({
-        //    position:  {my: "center", at: "center", of: window},
-        //    resizable: false,
-        //    modal: true,
-        //    title: titulo,
-        //    width: $(window).width() > largura ? largura : 'auto'
-        //}).dialog('open');
-
-
         //Executa a chamada ajax para preencher a janela com o resultado retornado do servidor
         if (parametros.url)
             $.ajax({
@@ -118,7 +109,8 @@ function JanelaModalAjax() {
      * Chamar quando se quiser fechar a janela considerando a ação como confirmada
      */
     this.confirmada = function () {
-        $divModal.dialog('close');
+        if ($divModal.dialog('isOpen'))
+            $divModal.dialog('close');
         if (refreshFunction !== undefined && refreshFunction !== null)
             refreshFunction();
     }

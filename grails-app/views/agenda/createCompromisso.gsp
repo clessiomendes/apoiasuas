@@ -9,7 +9,8 @@
 	 */
 	function sucesso(data) {
 		janelaModal.confirmada(); //fecha a janela modal
-		$('#calendar').fullCalendar('renderEvent', data);
+		refreshEvento(data);
+//		$('#calendar').fullCalendar('renderEvent', data);
 	}
 //# sourceURL=createCompromisso
 </script>

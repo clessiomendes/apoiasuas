@@ -79,27 +79,17 @@
             //clique num evento
             eventClick: abreCompromisso,
             editable: true,
-            eventRender: function(event, element) {
-                $(element).attr("title", event.title);
-            },
+            eventRender: eventRender,
             eventLimit: false, // allow "more" link when too many events
-            //eventAfterRender: verificaConflitos,
-            //eventAfterAllRender: verificaConflitos2,
             eventDataTransform: injetaMetodos,
             eventTextColor: "black",
             viewRender: function( view ) {     //Evento acionado após cada mudança na página para gravar em um cookie a visão atual
                 cookie.set("calendario", JSON.stringify({
                         defaultView: view.name, start: view.intervalStart.format()
                 }));
-                $('#titulo').text($divCalendario.fullCalendar('getView').title);
-                //alert($divCalendario.fullCalendar('getView').title);
             },
-            eventRenderWait: 100,
-            loading: loading,
-            eventAfterAllRender: eventAfterAllRender
+            eventRenderWait: 100
         })
-
-        //$('.fc-toolbar').css('display','none')
     });
 
     /**
@@ -144,8 +134,7 @@
                     alert("Erro criando atendimento no banco de dados : "+textStatus+", "+errorThrown);
                 },
                 success: function(data) {
-                    $divCalendario.fullCalendar('renderEvent', data);
-                    verificaConflitos(data);
+                    refreshEvento(data);
                 }
             });
             $('#calendar').fullCalendar('unselect');
@@ -175,12 +164,6 @@
     * Chamado tanto no resize quanto no move do compromisso, para atualizar a nova informacao no banco de dados
     */
     function updateHorarioCompromisso( event, delta, revertFunc, jsEvent, ui, view) {
-/*
-        if (! confirm("Confirma alteração de '"+event.title+"' ?")) {
-            revertFunc();
-            return;
-        }
-*/
         var strStart = event.start ? event.start.format() : "";
         var strEnd = event.end ? event.end.format() : "";
         var urlUpdate = "${createLink(action:'updateCompromissoHorario')}?idCompromisso="+event.id
@@ -195,10 +178,8 @@
                 alert("Erro gravando alteração do compromisso ["+event.title+"] no banco de dados : "+textStatus+", "+errorThrown);
             },
             success: function(data) {
-                refreshEvento(data);
-                //Snackbar.show({text: 'Horário de compromisso alterado'});
-                Snackbar.show({pos: 'bottom-center', duration: 0, customClass: 'snackbar-agenda',
-                    showSecondButton: true, secondButtonText: 'desfazer', secondButtonTextColor: 'red',
+                refreshEvento(data, {pos: 'bottom-center', duration: 0, customClass: 'snackbar-agenda',
+                    showSecondButton: true, secondButtonText: 'desfazer', secondButtonTextColor: '#cc0000',
                     backgroundColor: '#e3f3ff', textColor: '#006dba',
                     actionTextColor: '#006dba', actionText: 'X',
                     onSecondButtonClick: desfazUpdateHorarioCompromisso,
@@ -234,10 +215,14 @@
         });
     }
 
+    //var snackbarMudancaHorario = {}
+    //var snackbarConflito = {}
+
     /**
      * Reflete o compromisso, após gravação, no componente de calendario, para ser exibido ao operador
+     * snackbarOptions - uma mensagem pre-definida a ser apresentada na parte de baixo da tela
      */
-    function refreshEvento(compromisso){
+    function refreshEvento(compromisso, snackbarOptions){
         var $calendar = $('#calendar')
         $calendar.fullCalendar('removeEvents', compromisso.id)
         var $selectOperadores = $('#selectUsuarioSistema')
@@ -245,10 +230,23 @@
         if ($selectOperadores.val() == '' || //nenhum operador filtrado na tela
                     compromisso.idsParticipantes.length == 0 ||  //o compromisso nao tem nenhum participante, exibir para todos os operadores
                     $.inArray(parseInt($selectOperadores.val()), compromisso.idsParticipantes) >= 0) { //verificar se o operador filtrado na tela e um dos participantes do compromisso
-            $calendar.fullCalendar('renderEvent', compromisso);
-            verificaConflitos(compromisso);
-        }
 
+            $calendar.fullCalendar('renderEvent', compromisso);
+
+            if (compromisso.mensagem) {
+                if (snackbarOptions) {
+                    snackbarOptions.text = compromisso.mensagem + '<br>'  + snackbarOptions.text;
+                } else {
+                    snackbarOptions = {pos: 'bottom-center', duration: 0, customClass: 'snackbar-agenda',
+                        actionText: 'X', text: compromisso.mensagem};
+                }
+                snackbarOptions.backgroundColor = '#fff5f5';
+                snackbarOptions.textColor = '#cc0000';
+                snackbarOptions.actionTextColor = '#cc0000';
+            }
+            if (snackbarOptions)
+                Snackbar.show(snackbarOptions);
+        }
     }
 
     function imprimirCompromissos() {
@@ -282,67 +280,19 @@
     * 2) Olha cada participante do compromisso, ve se ele ja esta presente em algum outro compromisso.
     * 3) Exibe mensagem de alerta de cada participante no conflito de horarios
     */
-    function verificaConflitos(evento) {
+    function verificaConflitos_DESATIVADO(evento) {
         var compromisso1 = $('#calendar').fullCalendar('clientEvents', evento.id)[0] //retorna o primeiro elemento, embora a lista seja de apenas um elemento
         console.log("testando evento "+compromisso1.title)
-
-/*
-        Snackbar.show({pos: 'bottom-center', duration: 0, customClass: 'snackbar-agenda',
-                showSecondButton: true, secondButtonText: 'desfazer', secondButtonTextColor: 'red',
-                backgroundColor: '#e3f3ff', textColor: '#006dba',
-                actionTextColor: '#006dba', actionText: 'X',
-                onSecondButtonClick: desfazUpdateHorarioCompromisso,
-                text: compromisso1.toString()});
-*/
 
         $('#calendar').fullCalendar('clientEvents').forEach(function(compromisso2) {
             if (compromisso1.id != compromisso2.id) {
                 console.log("Testa: "+compromisso1.title+" e "+compromisso2.title)
-                //if (compromisso1.idResponsavel == compromisso2.idResponsavel) {
                 if (compromisso1.start.isBefore(compromisso2.end) && compromisso1.end.isAfter(compromisso2.start)) {
-                    //compromisso1.color = "red";
-                    //compromisso2.color = "red";
-                        console.log("Match: "+compromisso1.title+" e "+compromisso2.title)
-                    //$('#calendar').fullCalendar('updateEvents', [compromisso1, compromisso2])
-                    //element.color = "red";
-                    }
-                //}
-            }
-        });
-/*
-        $('#calendar').fullCalendar('clientEvents').forEach(function(compromisso2) {
-            if (compromisso1.id != compromisso2.id && compromisso1.idResponsavel && compromisso2.idResponsavel
-                            && compromisso1.idResponsavel == compromisso2.idResponsavel) {
-                if (compromisso1.start.isBefore(compromisso2.end) && compromisso1.end.isAfter(compromisso2.start)) {
-                    //compromisso1.color = "red";
-                    //compromisso2.color = "red";
-                    console.log("Match: "+compromisso1.toString()+" e "+compromisso2.toString())
-                    //$('#calendar').fullCalendar('updateEvents', [compromisso1, compromisso2])
-                    element.color = "red";
+                    console.log("Match: "+compromisso1.title+" e "+compromisso2.title)
                 }
             }
         });
-*/
     }
-/*
-    function verificaConflitos2(view) {
-        //console.log("testando evento "+compromisso1.toString())
-		$('#calendar').fullCalendar('clientEvents').forEach(function(compromisso1) {
-            $('#calendar').fullCalendar('clientEvents').forEach(function(compromisso2) {
-                if (compromisso1.id != compromisso2.id && compromisso1.idResponsavel && compromisso2.idResponsavel
-                                && compromisso1.idResponsavel == compromisso2.idResponsavel) {
-                    if (compromisso1.start.isBefore(compromisso2.end) && compromisso1.end.isAfter(compromisso2.start)) {
-                        compromisso1.color = "red";
-                        compromisso2.color = "red";
-                        console.log("Match: "+compromisso1.toString()+" e "+compromisso2.toString())
-		                //$('#calendar').fullCalendar('updateEvents', [compromisso1, compromisso2])
-                        //element.color = "red";
-                    }
-                }
-            });
-        });
-    }
-*/
 
     function injetaMetodos(eventData ) {
         eventData.toString = function() {
@@ -352,13 +302,9 @@
     }
 
     function atualiza() {
-        tempoDecorrido("antes removeEventSources")
         $('#calendar').fullCalendar('removeEventSources' )
-        tempoDecorrido("antes getEvents")
         var source = getEvents();
-        tempoDecorrido("antes addEventSource")
         $('#calendar').fullCalendar('addEventSource', source )
-        tempoDecorrido("após addEventSource")
     }
 
     /**
@@ -396,40 +342,9 @@
          });
     }
 
-    function loading(isLoading, view) {
-        if (isLoading)
-            console.time("tempo AJAX")
-        else
-            console.timeEnd("tempo AJAX");
-        if (isLoading)
-            tempoDecorrido("antes AJAX")
-        else
-            tempoDecorrido("depois AJAX")
+    function eventRender(event, element) {
+        $(element).attr("title", event.title);
     }
-
-    function eventAfterAllRender() {
-        tempoDecorrido("depois eventAfterAllRender")
-    }
-
-    function tempoDecorrido(mensagem) {
-        console.log(mensagem + " " + (Date.now() - miliInicial) + " ms");
-    }
-
-    /**
-     * This monitors all AJAX calls that have an error response. If a user's
-     * session has expired, then the system will return a 401 status,
-     * "Unauthorized", which will trigger this listener and so prompt the user if
-     * they'd like to be redirected to the login page.
-     */
-/*
-    $(document).ajaxError(function(event, jqxhr, settings, exception) {
-        if (jqxhr.status = 401) {
-        //if (exception == 'Unauthorized') {
-            alert("Favor efetuar novo login antes de prosseguir")
-            window.location = location.pathname;
-        }
-    });
-*/
 
 </g:javascript>
 

@@ -13,7 +13,7 @@ class FormularioEncaminhamento extends FormularioBase {
         formulario {
             nome 'Encaminhamento'
             descricao 'Encaminhamentos de prósito geral para a rede de serviços sócio-assistenciais'
-            template 'Encaminhamento-Template.docx'
+            template 'Encaminhamento-2009.docx', 'Encaminhamento-2017.docx'
             campoBancoDeDados {
                 origem CampoFormulario.Origem.CIDADAO
                 codigo 'nome_completo'
@@ -36,12 +36,14 @@ class FormularioEncaminhamento extends FormularioBase {
             campoAvulso {
                 codigo 'descricao_encaminhamento'
                 tipo CampoFormulario.Tipo.TEXTO
+                obrigatorio true
                 multiplasLinhas 8
                 descricao 'Detalhamento'
             }
             campoAvulso {
                 codigo CampoFormulario.CODIGO_DATA_PREENCHIMENTO
                 tipo CampoFormulario.Tipo.DATA
+                obrigatorio true
                 descricao 'Data (preenchimento)'
             }
             campoAvulso {
@@ -74,6 +76,12 @@ class FormularioEncaminhamento extends FormularioBase {
                     tipo CampoFormulario.Tipo.TEXTO
                     exibirParaPreenchimento false
                     descricao 'Telefone(s)'
+                }
+                campoAvulso {
+                    codigo CampoFormulario.CODIGO_EMAIL_EQUIPAMENTO
+                    tipo CampoFormulario.Tipo.TEXTO
+                    exibirParaPreenchimento false
+                    descricao 'Email'
                 }
             }
         }

@@ -64,6 +64,14 @@
         Snackbar.snackbar = document.createElement('div');
         Snackbar.snackbar.className = 'snackbar-container ' + options.customClass;
         Snackbar.snackbar.style.width = options.width;
+
+//  ========>  Customização ApoiaSUAS
+
+        Snackbar.snackbar.style.border = '2px solid '+options.textColor;
+        Snackbar.snackbar.style.borderRadius = '7px';
+
+//  ========>  Fim da Customização
+
         var $p = document.createElement('p');
         $p.style.margin = 0;
         $p.style.padding = 0;

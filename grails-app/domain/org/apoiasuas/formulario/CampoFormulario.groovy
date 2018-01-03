@@ -1,5 +1,7 @@
 package org.apoiasuas.formulario
 
+import grails.converters.JSON
+import groovy.json.JsonSlurper
 import org.apoiasuas.anotacoesDominio.InfoDominioUtils
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
 import org.apoiasuas.cidadao.Cidadao
@@ -12,14 +14,17 @@ import java.text.SimpleDateFormat
 
 class CampoFormulario {
 
-    public static String CODIGO_DATA_PREENCHIMENTO = "data_preenchimento"
-    public static String CODIGO_NOME_EQUIPAMENTO = "nome_equipamento"
-    public static String CODIGO_ENDERECO_EQUIPAMENTO = "endereco_equipamento"
-    public static String CODIGO_TELEFONE_EQUIPAMENTO = "telefone_equipamento"
-    public static String CODIGO_RESPONSAVEL_PREENCHIMENTO = "responsavel_preenchimento"
-    public static String CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO = "matricula"
+    public static final String CODIGO_DATA_PREENCHIMENTO = "data_preenchimento"
+    public static final String CODIGO_NOME_EQUIPAMENTO = "nome_equipamento"
+    public static final String CODIGO_ENDERECO_EQUIPAMENTO = "endereco_equipamento"
+    public static final String CODIGO_TELEFONE_EQUIPAMENTO = "telefone_equipamento"
+    public static final String CODIGO_EMAIL_EQUIPAMENTO = "email_equipamento"
+    public static final String CODIGO_CIDADE_EQUIPAMENTO = "cidade_equipamento"
+    public static final String CODIGO_UF_EQUIPAMENTO = "uf_equipamento"
+    public static final String CODIGO_RESPONSAVEL_PREENCHIMENTO = "responsavel_preenchimento"
+    public static final String CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO = "matricula"
 
-    public static enum Tipo { TEXTO, INTEIRO, DATA, TELEFONE, SELECAO
+    public static enum Tipo { TEXTO, INTEIRO, DATA, TELEFONE, SELECAO, BOOL
         boolean isData() { return this == DATA }
         boolean isTexto() { return this == TEXTO }
     }
@@ -49,16 +54,24 @@ class CampoFormulario {
     //Campos usados somente para origem do tipo AVULSO (pois nao ha como obte-los da anotacao do campo de BD)
     Tipo tipoPersonalizado
     int tamanhoPersonalizado
+    String opcoes
     boolean exibirParaPreenchimento = true
 
 //Propriedades transientes
     Field propriedadeDominioField = null
     InfoPropriedadeDominio propriedadeDominioInfo = null
     private Object valorAvulso
+    public String mensagemErro
 
-    static transients = ['propriedadeDominioField','propriedadeDominioInfo', 'valorArmazenado']
+    static transients = ['propriedadeDominioField','propriedadeDominioInfo', 'valorArmazenado', 'mensagemErro']
 
     static belongsTo = [formulario: Formulario]
+
+    static mapping = {
+        obrigatorio defaultValue: false
+        id generator: 'native', params: [sequence: 'sq_campo_formulario']
+    }
+
 
     /**
      * Validação de obrigatoriedade a ser aplicada nas propriedades descricao, tipo e tamanho personalizado de campos avulsos
@@ -110,21 +123,22 @@ class CampoFormulario {
         exibirParaPreenchimento(nullable: true)
     }
 
-    static mapping = {
-        obrigatorio defaultValue: false
-        id generator: 'native', params: [sequence: 'sq_campo_formulario']
-    }
-
     void setValorArmazenado(Object valor) {
-        if (tipo == Tipo.DATA)
+        if (tipo == Tipo.DATA) {
             if (valor instanceof String)
                 valor = valor ? new SimpleDateFormat("dd/MM/yyyy").parse(valor) : null
+        }
+/*
+        else if (tipo == Tipo.BOOL)
+            if (valor instanceof Boolean)
+                valor = valor ? new SimpleDateFormat("dd/MM/yyyy").parse(valor) : null
+*/
         switch (origem) {
             case Origem.AVULSO: valorAvulso = valor; break
             case Origem.CIDADAO: formulario.cidadao?."${nomeCampoPersistente}" = valor; break
             case Origem.FAMILIA: formulario.cidadao?.familia?."${nomeCampoPersistente}" = valor; break
             case Origem.ENDERECO: formulario.cidadao?.familia?.endereco?."${nomeCampoPersistente}" = valor; break
-            default: throw new RuntimeException("Origem não tratada: ${origem}")
+            default: throw new RuntimeException("Origem não tratada: ${origem}");
         }
         log.debug getValorArmazenado()
     }
@@ -174,7 +188,7 @@ class CampoFormulario {
      * Carrega informacoes transientes em propriedadeDominioField e propriedadeDominioInfo
      */
     def afterLoad() {
-        origem?.classeDominio?.getDeclaredFields().each {
+        origem?.classeDominio?.getDeclaredFields()?.each {
             InfoPropriedadeDominio info = it.getAnnotation(InfoPropriedadeDominio.class)
             if (info?.codigo() == codigo) {
                 propriedadeDominioField = it
@@ -182,6 +196,10 @@ class CampoFormulario {
                 return
             }
         }
+    }
+
+    public List<String> listaOpcoes() {
+        return opcoes ? new JsonSlurper().parseText(opcoes) : [];
     }
 
 }
