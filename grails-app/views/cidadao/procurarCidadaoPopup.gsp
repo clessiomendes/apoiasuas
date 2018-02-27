@@ -24,7 +24,9 @@
 <div id="list-cidadao" class="content scaffold-list" role="main" style="overflow-y: scroll; overflow-x: hidden; max-height: 400px;">
     <g:if test="${cidadaoInstanceCount}">
         <g:render template="/cidadao/tabelaListagem" model="[popup: true]" />
-        <g:spamCondicional showif="${cidadaoInstanceCount > cidadaoInstanceList.size()}">obs: exibindo apenas os ${cidadaoInstanceList.size()} primeiros registros de um total de ${cidadaoInstanceCount}. Refine sua busca.</g:spamCondicional>
+        <g:custom elemento="spam" showif="${cidadaoInstanceCount > cidadaoInstanceList.size()}">
+            obs: exibindo apenas os ${cidadaoInstanceList.size()} primeiros registros de um total de ${cidadaoInstanceCount}. Refine sua busca.
+        </g:custom>
     </g:if>
     <g:else>
         <div style="margin: 10px">Nenhum resultado encontrado.</div>

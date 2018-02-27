@@ -5,13 +5,15 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'familia.label', default: 'Familia')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
-		<asset:javascript src="especificos/marcadores.js"/>
+		<asset:javascript src="familia/marcador/marcadores.js"/>
+		<asset:javascript src="familia/telefone/formTelefones.js"/>
+		<asset:stylesheet src="familia/telefone/formTelefones.less"/>
 	</head>
 	<body>
 		<a href="#edit-familia" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-                <li><g:link class="list" controller="cidadao" action="procurarCidadao"><g:message message="Procurar"/></g:link></li>
+                <li><g:link class="search" controller="cidadao" action="procurarCidadao"><g:message message="Procurar"/></g:link></li>
 				%{--<li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>--}%
 				%{--<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>--}%
 			</ul>
@@ -33,13 +35,13 @@
 				%{--<fieldset class="form">--}%
                     <g:tabs id="tabs" style="margin: 5px;">
                         <g:tab id="tabEditFamilia" titulo="família" template="tabEditFamilia"/>
-                        <g:tab id="tabMarcadores" titulo="programas, ações..." template="marcador/tabMarcadores" model="[permiteInclusao: 'true']"/>
+                        <g:tab id="tabMarcadores" titulo="vulnerabilidades, programas, etc" template="marcador/tabMarcadores" model="[permiteInclusao: 'true']"/>
                     </g:tabs>
                 %{--</fieldset>--}%
 
 				<fieldset class="buttons">
 					<g:actionSubmit action="save" id="${familiaInstance.id}" class="save" value="${message(code: 'default.button.update.label', default: 'Gravar')}"/>
-					<g:actionSubmit action="show" id="${familiaInstance.id}" class="cancel" value="Cancelar"/>
+					%{--<g:actionSubmit action="show" id="${familiaInstance.id}" class="cancel" value="Cancelar"/>--}%
 				</fieldset>
 			</g:form>
 		</div>

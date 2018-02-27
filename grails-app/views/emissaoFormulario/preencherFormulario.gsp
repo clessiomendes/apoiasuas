@@ -83,7 +83,7 @@
         </g:else>
     </ol>
 
-    <fieldset class="buttons">
+    <fieldset class="buttons sticky-footer">
         <g:actionSubmit class="save" action="imprimirFormulario" value="Gerar formulário"/>
     </fieldset>
     </div>

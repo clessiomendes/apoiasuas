@@ -42,7 +42,7 @@ class ServicoController extends AncestralServicoController {
             Familia familia = familiaService.obtemFamilia(idFamilia)
             servico.encaminhamentoPadrao = servico.encaminhamentoPadrao
                     .replaceAll("(?i)%nome%", cidadao?.getNomeCompleto() ?: "")
-                    .replaceAll("(?i)%endereco%", familia?.endereco?.enderecoCompleto ?: "")
+                    .replaceAll("(?i)%endereco%", familia?.endereco.obtemEnderecoCompleto() ?: "")
                     .replaceAll("(?i)%telefone%", familia?.getTelefonesToString() ?: "")
                     .replaceAll("(?i)%nis%", cidadao?.getNis() ?: "")
         }

@@ -3,7 +3,7 @@
 <head>
     <meta name='layout' content='main'/>
     <title><g:message code="springSecurity.login.title"/></title>
-    <asset:stylesheet src="especificos/login.less"/>
+    <asset:stylesheet src="login/login.less"/>
 </head>
 
 <body>

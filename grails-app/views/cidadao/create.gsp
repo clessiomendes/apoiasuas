@@ -1,3 +1,4 @@
+%{--FIXME: página substituída por familia.detalhes.cidadao.*--}%
 <!DOCTYPE html>
 <html>
 	<head>
@@ -9,7 +10,7 @@
 		<a href="#create-cidadao" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><g:link class="list" action="procurarCidadao"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+				<li><g:link class="search" action="procurarCidadao"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
 			</ul>
 		</div>
 		<div id="create-cidadao" class="content scaffold-create" role="main">

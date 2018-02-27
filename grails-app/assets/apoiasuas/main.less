@@ -1,0 +1,1039 @@
+/* Cores */
+@cor-principal:					#abbf78;
+@cor-fonte-links-e-titulos:		#48802c; //tambem é a cor dos icones de butoes
+@cor-caption-jquery-ui: 		#E1F2B6;
+@cor-fundo-paineis-e-botoes:	#efefef;
+@cor-textos-para-consulta:		#efefef;
+@cor-fundo-principal:	        #dddddd;
+@cor-sombra-principal:	        #aaaaaa;
+@cor-texto-secundario:	        #666666;
+@cor-tabela-linha-impar:		#f7f7f7;
+@cor-tabela-linha-par:			#ffffff;
+
+@cor-fundo-corpo:	        white;
+@cor-texto-corpo:	        #333333;
+@cor-sombra-corpo:	        #255b17;
+@cor-bordas:	            #CCCCCC;
+
+@lighten-fundo:			58%;
+@lighten-borda:			40%;
+@lighten-sombra:			50%;
+@cor-base-mensagem-info:	#006dba;
+@cor-base-mensagem-erro:	#cc0000;
+
+@cor-marcadores-programa:       	#E1F2B6;
+@cor-marcadores-acao:		    	#BBF2B6;
+@cor-marcadores-vulnerabilidade:	#7BF2B6;
+@cor-marcadores-outros-marcadores:	#7BFB90;
+
+/* Espaçamentos */
+@espacamento-linhas-formulario: 	0.7em;
+
+/* z-index */
+@z-index-sticky-header:				1000;
+@z-index-notificacao-familia:		@z-index-sticky-header + 100; //notify.js: 1050 - notificacoes da familia do lado direito do cabecalho do sistema
+@z-index-tooltip:					@z-index-notificacao-familia + 100;
+@z-index-snackbar: 					@z-index-tooltip + 100;
+
+.tamanho-icones() {
+  background-size: 16px 16px;
+}
+
+.fontes() {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+/* FONT STACK */
+body,
+input, select, textarea {
+  .fontes;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	line-height: 1.1;
+}
+
+/* BASE LAYOUT */
+
+html {
+	background-color: @cor-fundo-principal;
+	background-image: -moz-linear-gradient(center top, @cor-sombra-principal, @cor-fundo-principal);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, @cor-sombra-principal), color-stop(1, @cor-fundo-principal));
+	background-image: linear-gradient(top, @cor-sombra-principal, @cor-fundo-principal);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#aaaaaa', EndColorStr = '#dddddd');
+	background-repeat: no-repeat;
+	height: 100%;
+	/* change the box model to exclude the padding from the calculation of 100% height (IE8+) */
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+	        box-sizing: border-box;
+}
+
+html.no-cssgradients {
+	background-color: @cor-sombra-principal;
+}
+
+.ie6 html {
+	height: 100%;
+}
+
+html * {
+	margin: 0;
+}
+
+body {
+	background: @cor-fundo-corpo;
+	color: @cor-texto-corpo;
+	margin: 0 auto;
+	max-width: 960px;
+	overflow-x: hidden; /* prevents box-shadow causing a horizontal scrollbar in firefox when viewport < 960px wide */
+	   -moz-box-shadow: 0 0 0.3em @cor-sombra-corpo;
+	-webkit-box-shadow: 0 0 0.3em @cor-sombra-corpo;
+	        box-shadow: 0 0 0.3em @cor-sombra-corpo;
+}
+
+#grailsLogoProd {
+	background-color: @cor-principal;
+}
+
+#grailsLogoValid {
+    background-color: #bf5858;
+}
+
+#grailsLogoLocal {
+    background-color: #7e80bf;
+}
+
+/* replace with .no-boxshadow body if you have modernizr available */
+.ie6 body,
+.ie7 body,
+.ie8 body {
+	border-color: @cor-sombra-corpo;
+	border-style: solid;
+	border-width: 0 1px;
+}
+
+.ie6 body {
+	height: 100%;
+}
+
+a:link, a:visited, a:hover {
+	color: @cor-fonte-links-e-titulos;
+}
+
+a:hover, a:active {
+	outline: none; /* prevents outline in webkit on active links but retains it for tab focus */
+}
+
+h1 {
+	color: @cor-fonte-links-e-titulos;
+	font-weight: normal;
+	font-size: 1.25em;
+	margin: 0.8em 0 0.3em 1em;
+}
+
+ul {
+	padding: 0;
+}
+
+img {
+	border: 0;
+}
+
+/* GENERAL */
+
+#grailsLogo a {
+	display: inline-block;
+	margin: 1em;
+}
+
+.content {
+}
+
+.content h1 {
+	border-bottom: 1px solid @cor-bordas;
+	margin: 0.8em 1em 0.3em;
+	padding: 0 0.25em;
+}
+
+.scaffold-list h1 {
+	border: none;
+}
+
+.footerProd {
+    background: @cor-principal;
+    color: white;
+    clear: both;
+    font-size: 0.8em;
+    margin-top: 1.5em;
+    padding: 1em;
+    min-height: 1em;
+}
+
+.footerValid {
+    background: #bf5858;
+    color: #000;
+    clear: both;
+    font-size: 0.8em;
+    margin-top: 1.5em;
+    padding: 1em;
+    min-height: 1em;
+}
+
+.footerLocal {
+    background: #7e80bf;
+    color: #000;
+    clear: both;
+    font-size: 0.8em;
+    margin-top: 1.5em;
+    padding: 1em;
+    min-height: 1em;
+}
+
+.footer a {
+	color: #255b17;
+}
+
+.spinner {
+	background: url(../images/spinner.gif) 50% 50% no-repeat transparent;
+	height: 16px;
+	width: 16px;
+    padding: 0.5em;
+    position: absolute;
+    right: 0;
+	top: 0;
+	text-indent: -9999px;
+}
+
+/* NAVIGATION MENU */
+
+.nav {
+  .painelNavegacaoOuBotoes();
+  padding: 0.5em 0.75em;
+  zoom: 1;
+}
+
+.nav ul {
+	overflow: hidden;
+	padding-left: 0;
+	zoom: 1;
+//alinha os elementos verticalmente - DA ERRO SE OS ELEMENTOS OCUPAREM MAIS DE UMA LINHA
+//	display: flex;
+//	align-items: center;
+}
+
+.nav li {
+	display: block;
+	float: left;
+	list-style-type: none;
+	margin-right: 0.2em;
+	padding: 0;
+}
+
+.nav a {
+	color: @cor-texto-secundario;
+	display: block;
+	padding: 0.25em 0.25em;
+	margin: 3px;
+  	text-decoration: none;
+	   -moz-border-radius: 0.3em;
+	-webkit-border-radius: 0.3em;
+	        border-radius: 0.3em;
+}
+
+.nav a:active, .nav a:visited {
+	color: @cor-texto-secundario;
+}
+
+.nav a:focus, .nav a:hover {
+  .hoverBotoes();
+}
+
+.no-borderradius .nav a:focus, .no-borderradius .nav a:hover {
+	background-color: transparent;
+	color: #444444;
+	text-decoration: underline;
+}
+
+/* MESSAGES AND ERRORS */
+.caixaTexto(@cor, @imagem) {
+  font-size: 0.8em;
+  line-height: 2;
+  margin: 0 0 1em 0;
+  padding: 0;
+  //  padding: 0.25em;
+  text-indent: 2.2em;
+  background: lighten(@cor, @lighten-fundo) @imagem 0.5em 50% no-repeat;
+  border: 1px solid lighten(@cor,@lighten-borda);
+  color: @cor;
+  -moz-box-shadow: 0 0 0.25em lighten(@cor,@lighten-sombra);
+  -webkit-box-shadow: 0 0 0.25em lighten(@cor,@lighten-sombra);
+  box-shadow: 0 0 0.25em lighten(@cor,@lighten-sombra);
+}
+
+.message {
+  .caixaTexto(@cor-base-mensagem-info, url(../images/information.png));
+}
+
+.errors {
+  list-style: none;
+  .caixaTexto(@cor-base-mensagem-erro, url(../images/exclamation.png));
+}
+
+/* form fields with errors */
+
+.error input, .error select, .error textarea, .error input[type=checkbox] + *, .error .field-button {
+  //background: lighten(@cor-base-mensagem-erro, @lighten-fundo);
+  background-color: lighten(@cor-base-mensagem-erro, @lighten-fundo) !important;
+  border-color: lighten(@cor-base-mensagem-erro, @lighten-borda) !important;
+  color: @cor-base-mensagem-erro !important;
+}
+
+.error input:focus, .error input[type='text']:focus, .error select:focus, .error textarea:focus {
+	   -moz-box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
+	-webkit-box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
+	        box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
+  background-color: lighten(@cor-base-mensagem-erro, @lighten-fundo) !important;
+  border-color: lighten(@cor-base-mensagem-erro, @lighten-borda) !important;
+  color: @cor-base-mensagem-erro !important;
+}
+
+/* same effects for browsers that support HTML5 client-side validation (these have to be specified separately or IE will ignore the entire rule) */
+
+input:invalid, select:invalid, textarea:invalid {
+  background: lighten(@cor-base-mensagem-erro, @lighten-fundo);
+  border-color: lighten(@cor-base-mensagem-erro, @lighten-borda);
+  color: @cor-base-mensagem-erro;
+}
+
+input:invalid:focus, select:invalid:focus, textarea:invalid:focus {
+  -moz-box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
+  -webkit-box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
+  box-shadow: 0 0 0.5em lighten(@cor-base-mensagem-erro, @lighten-sombra);
+}
+
+/* TABLES */
+
+table {
+	border-top: 1px solid #DFDFDF;
+	border-collapse: collapse;
+	width: 100%;
+	margin-bottom: 1em;
+}
+
+.tabelaListagem tr:hover {
+  background: @cor-caption-jquery-ui;
+}
+
+tr {
+	border: 0;
+}
+
+tr>td:first-child, tr>th:first-child {
+	padding-left: 1.25em;
+}
+
+tr>td:last-child, tr>th:last-child {
+	padding-right: 1.25em;
+}
+
+td, th {
+	line-height: 1.5em;
+	padding: 0.5em 0.6em;
+	text-align: left;
+	vertical-align: top;
+}
+
+th {
+	background-color: @cor-fundo-paineis-e-botoes;
+	background-image: -moz-linear-gradient(top, #ffffff, #eaeaea);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #eaeaea));
+	    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#ffffff', EndColorStr = '#eaeaea');
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#eaeaea')";
+	color: @cor-texto-secundario;
+	font-weight: bold;
+	line-height: 1.7em;
+	padding: 0.2em 0.6em;
+}
+
+thead th {
+	white-space: nowrap;
+}
+
+th a {
+	display: block;
+	text-decoration: none;
+}
+
+th a:link, th a:visited {
+	color: @cor-texto-secundario;
+}
+
+th a:hover, th a:focus {
+	color: #333333;
+}
+
+th.sortable a {
+	background-position: right;
+	background-repeat: no-repeat;
+	padding-right: 1.1em;
+}
+
+th.asc a {
+	background-image: url(../images/sorted_asc.gif);
+}
+
+th.desc a {
+	background-image: url(../images/sorted_desc.gif);
+}
+
+.odd {
+	background: @cor-tabela-linha-impar;
+}
+
+.even {
+    background: @cor-tabela-linha-par;
+}
+
+.tecnicoReferencia {
+    background: #ffe6e5;
+}
+
+/* PAGINATION */
+
+.pagination {
+	border-top: 0;
+	margin: 0;
+	padding: 0.3em 0.2em;
+	text-align: center;
+	   -moz-box-shadow: 0 0 3px 1px @cor-sombra-principal;
+	-webkit-box-shadow: 0 0 3px 1px @cor-sombra-principal;
+	        box-shadow: 0 0 3px 1px @cor-sombra-principal;
+	background-color: @cor-fundo-paineis-e-botoes;
+}
+
+.pagination a,
+.pagination .currentStep {
+	color: @cor-texto-secundario;
+	display: inline-block;
+	margin: 0 0.1em;
+	padding: 0.25em 0.7em;
+	text-decoration: none;
+	   -moz-border-radius: 0.3em;
+	-webkit-border-radius: 0.3em;
+	        border-radius: 0.3em;
+}
+
+.pagination a:hover, .pagination a:focus,
+.pagination .currentStep {
+	background-color: #999999;
+	color: #ffffff;
+	outline: none;
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+.no-borderradius .pagination a:hover, .no-borderradius .pagination a:focus,
+.no-borderradius .pagination .currentStep {
+	background-color: transparent;
+	color: #444444;
+	text-decoration: underline;
+}
+
+/* ACTION BUTTONS */
+
+.painelNavegacaoOuBotoes() {
+  background-color: @cor-fundo-paineis-e-botoes;
+  -moz-box-shadow: 0 0 3px 1px @cor-sombra-principal;
+  -webkit-box-shadow: 0 0 3px 1px @cor-sombra-principal;
+  box-shadow: 0 0 3px 1px @cor-sombra-principal;
+}
+
+.buttons {
+  .painelNavegacaoOuBotoes();
+  overflow: hidden;
+  padding: 0.3em;
+  margin: @espacamento-linhas-formulario 0 0 0;
+  border: none;
+}
+
+.buttons span {
+	display:inline-block;
+}
+
+.buttons input {
+	margin: 3px; //efeito de espaçamento entre linhas
+	border: 1px solid @cor-bordas;
+	font-size: 1em;
+	padding: 0.2em 0.4em;
+	border-radius: 0;
+	cursor: auto;
+}
+
+.buttons input[type=button], .buttons input[type=submit], .buttons a, .botao-independente {
+	border: 0;
+  	background-color: transparent;
+	color: @cor-texto-secundario;
+	cursor: pointer;
+	display: inline-block;
+	//margin: 0 0.25em 0;
+  	padding: 0.3em 0.7em;
+    margin: 0.25em;
+    //padding: 0.25em;
+	overflow: visible;
+	text-decoration: none;
+
+	   -moz-border-radius: 0.3em;
+	-webkit-border-radius: 0.3em;
+	        border-radius: 0.3em;
+}
+
+.hoverBotoes() {
+  background-color: #999999;
+  color: #ffffff;
+  outline: none;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.buttons input[type=button]:hover, .buttons input[type=button]:focus, .buttons input[type=submit]:hover, .buttons input[type=submit]:focus,
+.buttons a:hover, .buttons a:focus {
+  .hoverBotoes();
+}
+
+.no-borderradius .buttons input:hover, .no-borderradius .buttons input:focus,
+.no-borderradius .buttons a:hover, .no-borderradius .buttons a:focus {
+	background-color: transparent;
+	color: #444444;
+	text-decoration: underline;
+}
+
+/*
+.ie6 .buttons input.search, .ie6 .buttons input.delete, .ie6 .buttons input.edit, .ie6 .buttons input.save, .ie6 .buttons input.add, .ie6 .buttons input.list,
+.ie7 .buttons input.search, .ie7 .buttons input.delete, .ie7 .buttons input.edit, .ie7 .buttons input.save, .ie7 .buttons input.add, .ie7 .buttons input.list
+{
+	padding-left: 36px;
+}
+*/
+
+a.skip {
+	position: absolute;
+	left: -9999px;
+}
+
+.hidden {
+	display: none !important;
+}
+
+/* pesquisas */
+
+table.parametrosPesquisa {
+  .painelNavegacaoOuBotoes();
+  border-collapse: initial;
+  padding: 0.5em 0.75em;
+  zoom: 1;
+  tr:hover { background: none; }
+  td { padding: 0; }
+  div {	text-indent: 0;  }
+  input { margin: 3px; } //efeito de espaçamento entre linhas
+}
+
+.marcadores {
+  border-radius: 3px;
+  display: inline-table;
+  font-size: 0.9em;
+  margin: 2px;
+  padding: 3px;
+  color: @cor-texto-corpo;
+  float: left; //remove os espacos gerados automaticamente a cada novo marcador
+}
+
+.ui-widget {
+  .fontes();
+  font-size: 1em;
+}
+
+.marcadores-similares {
+  .marcadores();
+  background-color: @cor-fundo-principal;
+}
+
+.marcadores-acao {
+  .marcadores();
+  background-color: @cor-marcadores-acao;
+}
+
+.marcadores-outro-marcador {
+  .marcadores();
+  background-color: @cor-marcadores-outros-marcadores;
+}
+
+.marcadores-vulnerabilidade {
+  .marcadores();
+  background-color: @cor-marcadores-vulnerabilidade;
+}
+
+.marcadores-programa {
+  .marcadores();
+  background-color: @cor-marcadores-programa;
+}
+
+.input-search {
+  background-image: url(../images/search-cinza.png);
+  background-position: 2px center;
+  //margin: auto auto;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  padding: 0 0 0 25px;
+  //height:18px;
+}​
+
+.check-marcadores {
+  transform: scale(0.9);
+  vertical-align: top;
+  margin-top: 2px; /* change to center it */
+}
+
+.fieldsetMarcadores {
+  .embedded();
+  margin: 0.5em 0.5em 0.5em 0.5em;
+  padding: 0.5em 0.5em 0.5em;
+  //redimenciona de acordo com o conteudo
+  height: 100%;
+  .rolagem {
+    max-height: 5.5em;
+    overflow: auto;
+  }
+}
+
+
+/**
+ * CSS para tooltips ou popups. Uso:
+
+<div class="help-tooltip">Hover over me
+  <span class="help-tooltip-text">Tooltip text</span>
+</div>
+
+ */
+
+.help-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.help-tooltip img {
+  width: 13px;
+  height: 13px;
+  vertical-align: top;
+  margin-left: 3px;
+}
+
+.help-tooltip .help-tooltip-text {
+  display: inline-block;
+  visibility: hidden;
+  width: 350px;
+  background-color: @cor-principal;
+  color: white;
+  text-align: justify;
+  border-radius: 6px;
+  box-shadow: 3px 3px @cor-sombra-principal;
+  padding: 5px;
+  position: absolute;
+  z-index: @z-index-tooltip;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+  white-space: normal; //permite quebra de linhas no meio do texto
+  line-height: 1.2em;
+
+  /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.help-tooltip:hover .help-tooltip-text {
+  visibility: visible;
+  opacity: 1;
+  font-size: medium;
+  font-weight: normal;
+}
+
+*:focus {
+  outline: none;
+}
+
+input::-moz-focus-inner {
+  border: 0;
+}
+
+nobr {
+  display: inline-block;
+}
+
+//Situações de monitoramento
+.situacao-monitoramento(@imagem) {
+  cursor: pointer;
+  background: @imagem no-repeat center;
+  border: hidden;
+  width: 25px;
+  height: 25px;
+  background-size: 25px 25px;
+}
+.monitoramento-efetivado { .situacao-monitoramento(url(../images/monitoramento/done.png)); }
+.monitoramento-suspenso { .situacao-monitoramento(url(../images/monitoramento/suspended.png)); }
+.monitoramento-pendente { .situacao-monitoramento(url(../images/monitoramento/pending.png)); }
+.monitoramento-prioritario { .situacao-monitoramento(url(../images/monitoramento/important.png)); }
+
+//Necessarios para customizar as caixas de dialogo modais do JQuery UI
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
+.no-titlebar .ui-dialog-titlebar {
+  display: none;
+}
+
+//						R E M O D E L A N D O    L A Y O U T    D E     F O R M U L A R I O S
+
+//Originais:
+
+/* CREATE/EDIT FORMS AND SHOW PAGES */
+
+fieldset.form, .property-list {
+	margin: 0.5em 0.5em 0.5em 0.5em;
+	padding: 0.5em 0.5em 0.5em;
+    //margin: 0;
+    //padding: 0;
+    position: relative;
+	zoom: 1;
+	border: none;
+}
+
+//evita margens extras em formulários contidos em janelas modais do jqueryUI (classe .ui-dialog-content)
+.ui-dialog-content fieldset.form {
+	margin: 0;
+  	padding: 0 5px;
+}
+
+.property-list .fieldcontain {
+	list-style: none;
+	overflow: visible;
+	zoom: 1;
+}
+
+label {
+	cursor: pointer;
+	display: inline-block;
+	margin: 0 0.25em 0 0;
+}
+
+input, select, textarea {
+	background-color: #fcfcfc;
+	border: 1px solid @cor-bordas;
+	font-size: 1em;
+	padding: 0.2em 0.4em;
+}
+
+select {
+	padding: 0.2em 0.2em 0.2em 0;
+}
+
+select[multiple] {
+	vertical-align: top;
+}
+
+textarea {
+	/*width: 250px;*/
+	/*height: 150px;*/
+	overflow: auto; /* IE always renders vertical scrollbar without this */
+	vertical-align: top;
+}
+
+input[type=checkbox], input[type=radio] {
+	background-color: transparent;
+	border: 0;
+	padding: 0;
+}
+
+input[type='text']:focus, select:focus, textarea:focus {
+	background-color: #ffffff;
+	border: 1px solid #eeeeee;
+	outline: 0;
+	   -moz-box-shadow: 0 0 0.5em #ffffff;
+	-webkit-box-shadow: 0 0 0.5em #ffffff;
+	        box-shadow: 0 0 0.5em #ffffff;
+}
+
+.required-indicator {
+	color: #48802C;
+	display: inline-block;
+	font-weight: bold;
+	margin-left: 0.3em;
+	position: relative;
+	top: 0.1em;
+}
+
+ul.one-to-many {
+	display: inline-block;
+	list-style-position: inside;
+	vertical-align: top;
+}
+
+.ie6 ul.one-to-many, .ie7 ul.one-to-many {
+	display: inline;
+	zoom: 1;
+}
+
+ul.one-to-many li.create {
+	list-style-type: none;
+}
+
+/* EMBEDDED PROPERTIES */
+
+.embedded {
+	background-color: transparent;
+	border: 1px solid @cor-bordas;
+	margin-left: 0;
+	margin-right: 4px;
+	padding-left: 4px;
+	padding-right: 4px;
+    padding-bottom: 4px;
+	   -moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	        box-shadow: none;
+}
+
+//Como a classe fieldcontain só preve margens no topo, o ultimo elemento selecionado deve ter tambem uma margem inferior
+//.property-list li:last-of-type {
+//	margin-bottom: @espacamento-linhas-formularios;
+//}
+
+/*
+//adiciona espacamento apenas aa partir do segundo elemento das classes utilizadas nos componentes de
+//formulario: .fieldcontain .property-list e .embedded
+.fieldcontain ~ .fieldcontain,
+.property-list ~ .property-list,
+.embedded ~ .embedded,
+.embedded ~ .property-list,
+.property-list ~ .embedded,
+.embedded ~ .fieldcontain,
+.fieldcontain ~ .embedded
+{
+  margin-top: @espacamento-linhas-formulario;
+}
+
+//adiciona espacamento apenas aa partir do segundo elemento da classe .property-list
+.property-list ~ .property-list {
+  margin-top: @espacamento-linhas-formulario;
+}
+
+.fieldcontain label,
+.fieldcontain .property-label {
+	color: @cor-texto-secundario;
+	text-align: right;
+	width: 25%;
+}
+
+.fieldcontain .property-label {
+	float: left;
+}
+
+.fieldcontain .property-value {
+	display: block;
+	margin-left: 27%;
+}
+*/
+
+//Personalizacao
+
+.fieldcontain {
+	vertical-align: top;
+	display: inline-block;
+	margin-top: 0;
+  	//margin-left: 1em;
+  	margin-right: 1em;
+    page-break-inside: avoid;
+}
+//.fieldcontain ~ .fieldcontain {
+//}
+.fieldcontain label, .fieldcontain .property-label {
+	display: block;
+	color: @cor-texto-secundario;
+	font-weight: bold;
+	font-size: small;
+	text-align: left;
+	width: 100%;
+	min-height: 1.3em;
+}
+.embedded legend {
+	margin: 0 1em;
+	color: @cor-texto-secundario;
+	font-weight: bold;
+	font-size: small;
+	text-align: left;
+	/* width: 100%; */
+}
+.fieldcontain ~ .fieldcontain, .property-list ~ .property-list,
+.embedded ~ .embedded, .embedded ~ .property-list,
+.property-list ~ .embedded, .embedded ~ .fieldcontain, .fieldcontain ~ .embedded {
+	margin-top: 0;
+}
+.embedded, .fieldcontain {
+	margin-bottom: 0.7em;
+}
+.fieldcontain .property-value, span.conteudo {
+	margin-top: 2px;
+	display: block;
+	width: 100%;
+	background-color: @cor-textos-para-consulta;
+	padding: 0.2em 0.4em;
+  	border-radius: 0.3em;
+	min-height: 1.3em;
+}
+.fieldcontain input[type=checkbox] {
+	vertical-align: middle;
+}
+.fieldcontain input[type=text], .fieldcontain select {
+	box-sizing: border-box;
+	height: 1.8em;
+}
+
+/*Tamanho padrao para os campos memo (multiplas linhas)*/
+div.tamanho-memo, div.tamanho-memo textarea {
+	box-sizing: border-box;
+	width: 100%;
+}
+
+/*Formatacao para enderecos*/
+.endereco {
+  	.fieldcontain { min-width: inherit }
+	input[name='endereco.tipoLogradouro'] { width: 7em; }
+	input[name='endereco.nomeLogradouro'] { width: 20em; }
+	input[name='endereco.numero'] { width: 4em; }
+  	input[name='endereco.complemento'] { width: 10em; }
+	input[name='endereco.bairro'] { width: 17em; }
+  	input[name='endereco.CEP'] { width: 8em; }
+	input[name='endereco.municipio'] { width: 17em; }
+  	input[name='endereco.UF'] { width: 3em; }
+}
+// Fim da personalizacao do layout de formularios
+
+//Centraliza o icone de selecao de data em relacao aa caixa de texto que o precede
+.datepicker ~img {
+  vertical-align: middle;
+}
+
+/*
+.ui-tabs .ui-tabs-panel {
+  padding: 0;
+}*/
+
+@media (min-width: 640px) {
+  .sticky-header {
+    position: -webkit-sticky; /* Safari */
+	position: sticky;
+	top: 0;
+	z-index: @z-index-sticky-header;
+  }
+  .sticky-footer {
+    position: -webkit-sticky; /* Safari */
+	position: sticky;
+	bottom: 0;
+	z-index: @z-index-sticky-header;
+  }
+}
+
+//      Animação para o label de Procura (info especifica)
+@animation-delay: 0.3s;
+@animation-duration: 2s;
+@altura-label-procurar: 26px;
+.label-procurar {
+  height: @altura-label-procurar;
+  line-height: @altura-label-procurar;
+  position: relative;
+  margin: 0 1.2em 0 0;
+  background-color: @cor-principal;
+  padding-left: 30px;
+  padding-right: 5px;
+  color: white;
+  display: inline-block;
+
+  //imagem:
+  background-position: 8px center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  background-image: url(../images/search-branco.png);
+
+  //configs:
+  animation-duration: @animation-duration !important;
+  -webkit-animation-delay: @animation-delay;
+  -moz-animation-delay: @animation-delay;
+  -o-animation-delay: @animation-delay;
+  -ms-animation-delay: @animation-delay;
+
+  /*
+  //seta de trás
+  &:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: (@altura-label-procurar/2) solid white;
+  border-top: (@altura-label-procurar/2) solid transparent;
+  border-bottom: (@altura-label-procurar/2) solid transparent;
+  }
+  */
+
+  //seta da frente
+  &:before {
+    content: "";
+    position: absolute;
+    right: -(@altura-label-procurar/2);
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-left: (@altura-label-procurar/2) solid @cor-principal;
+    border-top: (@altura-label-procurar/2) solid transparent;
+    border-bottom: (@altura-label-procurar/2) solid transparent;
+  }
+
+}
+
+.nova-linha {
+  clear: both;
+}
+
+.opcao-multi-lookup {
+   	display: block;
+    //white-space: nowrap;
+    > span {
+		//display: inline-block;
+		vertical-align: top;
+		//font-size: 1em;
+		margin-left: 0.2em;
+		margin-right: 1em;
+	    //max-width: 15em;
+	}
+    > input[type="checkbox"] {
+	    margin-top: -5px;
+	}
+}
+
+//Customizando aparência do autocomplete no JQuery UI
+.ui-autocomplete {
+  cursor:pointer;
+  height:10em;
+  overflow-y:scroll;
+
+  .ui-menu-item a{
+    font-size: 0.8em;
+  }
+}
+
+//Força as notificações de familia (amarelas, no canto superior direito da tela) a seguirem a hierarquia de prioridade de exibição da aplicação
+.z-index-notificacao-familia {
+  z-index: @z-index-notificacao-familia !important; //!important necessário porque o codigo notify.js declara a propriedade z-index como "style" no elemento
+}
+

@@ -25,7 +25,8 @@ _assert(_isVisible(_textbox("inputObservacaoMarcador")));
 var $observacao = "observacao teste " + new Date();
 _setValue(_textbox("inputObservacaoMarcador"), $observacao);
 
-_click(_button("Confirmar"));
+//_click(_button("Confirmar"));
+_click(_link("Confirmar"));
 
 _click(_submit("Gravar"));
 

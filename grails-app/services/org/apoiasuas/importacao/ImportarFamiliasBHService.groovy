@@ -1,5 +1,6 @@
 package org.apoiasuas.importacao
 
+import net.didion.jwnl.data.Exc
 import org.apoiasuas.util.SafeMap
 
 /**
@@ -24,12 +25,18 @@ class ImportarFamiliasBHService extends ImportarFamiliasService {
             it.each {
                 if (camposPreenchidosInvertido.get(it.key))
                     result.put("coluna" + camposPreenchidosInvertido.get(it.key), it.value)
-                if (it.key == "Dia")
-                    dia = it.value ? Integer.valueOf(it.value) : null;
-                if (it.key == "Mês")
-                    mes = it.value ? Integer.valueOf(it.value) : null;
-                if (it.key == "Ano")
-                    ano = it.value ? Integer.valueOf(it.value) : null;
+
+                //confere campos separados contendo a data de nascimento (ignora eventuais erros de conversao)
+                try {
+                    if (it.key == "Dia" && it.value)
+                        dia = it.value ? Integer.valueOf(it.value) : null;
+                    if (it.key == "Mês" && it.value)
+                        mes = it.value ? Integer.valueOf(it.value) : null;
+                    if (it.key == "Ano" && it.value)
+                        ano = it.value ? Integer.valueOf(it.value) : null;
+                } catch (Exception e) {
+                    log.error("Erro obtendo data da planilha "+e.message);
+                }
             }
         }
         // Ao final, se os campos dia, mes e ano (da data de nascimento) estiverem todos preenchidos, sobrescrever a coluna
@@ -38,7 +45,11 @@ class ImportarFamiliasBHService extends ImportarFamiliasService {
             if (ano < 100)
                 ano = ano + 1900;
             //antes de armazenar no mapa, converter a data para o formato esperado como vindo do excel
-            result.put("colunaDataNascimento", org.apache.poi.ss.usermodel.DateUtil.getExcelDate(new GregorianCalendar(ano, mes-1, dia).time));
+            try {
+                result.put("colunaDataNascimento", org.apache.poi.ss.usermodel.DateUtil.getExcelDate(new GregorianCalendar(ano, mes-1, dia).time));
+            } catch (Exception e) {
+                log.error("Erro obtendo data da planilha "+e.message);
+            }
         }
 
         return result

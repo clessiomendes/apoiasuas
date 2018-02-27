@@ -11,7 +11,7 @@
 }
 </style>
 
-<asset:javascript src="especificos/datepicker-pt-BR.js"/>
+<asset:javascript src="datepicker-pt-BR.js"/>
 
 <script>
 	$(function() {

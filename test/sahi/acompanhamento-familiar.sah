@@ -11,5 +11,5 @@ _setValue(_textarea("acompanhamentoFamiliar.analiseTecnica"), "analise teste" + 
 _setValue(_textarea("acompanhamentoFamiliar.resultados"), "resultado teste" + new Date());
 _click(_link("programas, ações..."));
 
-_click(_submit("gravar e emitir plano"));
+_click(_submit("emitir plano"));
 _assertExists(_div("As informações da família e do acompanhamento foram atualizados"));

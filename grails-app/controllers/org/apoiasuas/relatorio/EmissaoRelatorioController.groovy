@@ -90,40 +90,44 @@ class EmissaoRelatorioController extends AncestralController {
     private List<GroovyRowResult> listagem(DefinicaoListagemCommand definicao, ProgramasCommand programasCommand,
                      VulnerabilidadesCommand vulnerabilidadesCommand, AcoesCommand acoesCommand,
                      OutrosMarcadoresCommand outrosMarcadoresCommand) {
-        if(! definicao.validate())
-            return render(view: 'definirListagem', model: getModel(definicao))
+//        if(! definicao.validate())
+//            return render(view: 'definirListagem', model: getModel(definicao))
 
-        log.debug("Listar membros? ${definicao.membros}")
-        log.debug("Tecnico de referencia: ${definicao.tecnicoReferencia}");
-        org.joda.time.LocalDate dataNascimentoInicial, dataNascimentoFinal;
-        if (definicao.idadeFinal)
-            dataNascimentoInicial = new org.joda.time.LocalDate().minusYears(definicao.idadeFinal+1)
-        if (definicao.idadeInicial)
-            dataNascimentoFinal = new org.joda.time.LocalDate().minusYears(definicao.idadeInicial)
-        log.debug("Data de nascimento entre ${dataNascimentoInicial} e ${dataNascimentoFinal}")
+        //Relatorio de BD
+        if (definicao.relatorio == RelatorioService.DEFINICAO_CAMPOS.BD_BH.toString()) {
+            return relatorioService.processaConsultaBDBH(definicao.idFamilia, servicoCorrente);
+        } else { //Relatorios de membros e de referencias
+            org.joda.time.LocalDate dataNascimentoInicial, dataNascimentoFinal;
+            if (definicao.idadeFinal)
+                dataNascimentoInicial = new org.joda.time.LocalDate().minusYears(definicao.idadeFinal+1)
+            if (definicao.idadeInicial)
+                dataNascimentoFinal = new org.joda.time.LocalDate().minusYears(definicao.idadeInicial)
 
-        //Converte e filtra apenas os marcadores selecionados
-        List<Programa> programasSelecionados = filtraSelecionados(programasCommand, Programa.class);
-        List<Vulnerabilidade> vulnerabilidadesSelecionadas = filtraSelecionados(vulnerabilidadesCommand, Vulnerabilidade.class);
-        List<Acao> acoesSelecionadas = filtraSelecionados(acoesCommand, Acao.class);
-        List<OutroMarcador> outrosMarcadoresSelecionados = filtraSelecionados(outrosMarcadoresCommand, OutroMarcador.class);
+            //Converte e filtra apenas os marcadores selecionados
+            List<Programa> programasSelecionados = filtraSelecionados(programasCommand, Programa.class);
+            List<Vulnerabilidade> vulnerabilidadesSelecionadas = filtraSelecionados(vulnerabilidadesCommand, Vulnerabilidade.class);
+            List<Acao> acoesSelecionadas = filtraSelecionados(acoesCommand, Acao.class);
+            List<OutroMarcador> outrosMarcadoresSelecionados = filtraSelecionados(outrosMarcadoresCommand, OutroMarcador.class);
 
-        return relatorioService.processaConsulta(dataNascimentoInicial, dataNascimentoFinal,
-                definicao.membros, definicao.tecnicoReferencia, programasSelecionados, vulnerabilidadesSelecionadas,
-                acoesSelecionadas, outrosMarcadoresSelecionados, servicoCorrente);
+            return relatorioService.processaConsulta(dataNascimentoInicial, dataNascimentoFinal,
+                    definicao.relatorio, definicao.tecnicoReferencia, programasSelecionados, vulnerabilidadesSelecionadas,
+                    acoesSelecionadas, outrosMarcadoresSelecionados, servicoCorrente);
+        }
     }
 }
 
 class DefinicaoListagemCommand implements Serializable {
 //    boolean planilhaParaDownload
-    String membros
+    String relatorio
+    Long idFamilia
     Long tecnicoReferencia
     Integer idadeInicial
     Integer idadeFinal
     static constraints = {
         idadeInicial(nullable: true, range: 0..200)
         idadeFinal(nullable: true, range: 0..200)
-        membros(nullable: true)
+        relatorio(nullable: true)
         tecnicoReferencia(nullable: true)
+        idFamilia(nullable: true)
     }
 }

@@ -31,13 +31,13 @@ descrição da familia: Familita.getCad()
     <g:select id="tecnicoReferencia" name="tecnicoReferencia.id" from="${operadores}" optionKey="id" value="${localDtoFamilia?.tecnicoReferencia?.id}" class="many-to-one" noSelection="['': '']"/>
 </div>
 
-<fieldset class="embedded"><legend><g:message code="familia.endereco.label" default="Endereço" /></legend>
+<fieldset class="embedded endereco"><legend><g:message code="familia.endereco.label" default="Endereço" /></legend>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'endereco.tipoLogradouro', 'error')} ">
         <label for="endereco.tipoLogradouro">
             <g:message code="familia.endereco.tipoLogradouro.label" default="Tipo Logradouro" />
         </label>
-        <g:textField name="endereco.tipoLogradouro" size="15" maxlength="15" value="${enderecoInstance?.tipoLogradouro}"/>
+        <g:textField name="endereco.tipoLogradouro" size="5" maxlength="15" value="${enderecoInstance?.tipoLogradouro}"/>
     </div>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'endereco.nomeLogradouro', 'error')} required">
@@ -52,7 +52,7 @@ descrição da familia: Familita.getCad()
         <label for="endereco.numero">
             <g:message code="familia.endereco.numero.label" default="Numero" />
         </label>
-        <g:textField name="endereco.numero" size="5" maxlength="5" value="${enderecoInstance?.numero}"/>
+        <g:textField name="endereco.numero" size="5" maxlength="7" value="${enderecoInstance?.numero}"/>
     </div>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'endereco.complemento', 'error')} ">
@@ -92,6 +92,6 @@ descrição da familia: Familita.getCad()
 
 </fieldset>
 
-<fieldset class="embedded"><legend>Telefones</legend>
+%{--<fieldset class="embedded"><legend>Telefones</legend>--}%
     <g:render template="telefone/formTelefones" model="${[localDtoFamilia: localDtoFamilia]}"/>
-</fieldset>
+%{--</fieldset>--}%

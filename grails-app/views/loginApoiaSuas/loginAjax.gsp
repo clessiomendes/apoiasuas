@@ -5,7 +5,7 @@ Com base na proposta em http://grails-plugins.github.io/grails-spring-security-c
 
 --}%
 
-<asset:stylesheet src="especificos/login.less"/>
+<asset:stylesheet src="login/login.less"/>
 
 <script type='text/javascript'>
     <!--

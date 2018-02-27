@@ -6,7 +6,6 @@ class Telefone implements Serializable {
 
     String DDD
     String numero
-//    TipoTelefone tipoTelefone
 //    boolean origemImportacaoAutomatica
 //    UsuarioSistema criador, ultimoAlterador;
     Date dateCreated, lastUpdated, dataUltimaImportacao;

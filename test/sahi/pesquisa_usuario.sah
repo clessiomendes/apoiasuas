@@ -22,7 +22,7 @@ _assertExists(_link("ANA MARIA DE SOUZA"));
 
 //pesquisa por idade
 _setValue(_textbox("nomeOuCad"), "ana");
-_setValue(_textbox("idade"), "20");
+_setValue(_textbox("idade"), "21");              //obs: a cada ano este teste vai falhar, porque a idade do usuario vai ter aumentado
 _click(_button("btnProcurarCidadao"));
 _assertExists(_link("ANA MARIA DE SOUZA"));
 

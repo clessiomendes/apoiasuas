@@ -1,0 +1,187 @@
+@import (reference) "../../main.less";
+@import (reference) "../../buttons-links.less";
+
+.nav a.familia-detalhada {
+  .linkNavegacao();
+  margin: 3px;
+  background-image: url(../../../images/usecases/casa.png);
+}
+.nav a.cidadao-detalhado {
+  .linkNavegacao();
+  margin: 3px;
+  background-image: url(../../../images/usecases/cidadao.png);
+}
+
+.btn-adicionar-cidadao {
+  padding: 0.25em 0.7em !important;
+  .buttonsFooter();
+  webkit-box-shadow: 0 0 3px 1px #aaaaaa;
+  box-shadow: 0 0 3px 1px #aaaaaa;
+  margin: 3px;
+  background-image: url(../../../images/database/add-alone.png);
+  &:hover {
+    .hoverBotoes();
+  }
+}
+
+.btn-marcadores {
+  padding: 0.25em 0.7em !important;
+  .buttonsFooter();
+  webkit-box-shadow: 0 0 3px 1px #aaaaaa;
+  box-shadow: 0 0 3px 1px #aaaaaa;
+  margin: 3px;
+  background-image: url(../../../images/checkbox.png);
+  &:hover {
+    .hoverBotoes();
+  }
+}
+
+.btn-concluir {
+  padding: 0.25em 0.7em !important;
+  .buttonsFooter();
+  webkit-box-shadow: 0 0 3px 1px #aaaaaa;
+  box-shadow: 0 0 3px 1px #aaaaaa;
+  margin: 3px;
+  background-image: url(../../../images/checked.png);
+}
+
+.speed-button-sugestao {
+  vertical-align: middle;
+  .speedButton(url(../../../images/double_left.png));
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.sugestao-preenchimento {
+  color: @cor-texto-secundario;
+}
+
+.cabecalho-sessao {
+  display: block;
+  background: @cor-principal;
+  color: white;
+  text-align: left;
+  text-transform: uppercase;
+  font-weight: bold;
+  line-height: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding: 0.5em;
+  //Garante que a barra ira para uma linha abaixo do ultimo elemento e ocupara a linha inteira
+  clear: both;
+
+  &:link, &:visited, .left {
+    color: white;
+    text-decoration: none;
+  }
+  .left {
+    padding: 15px 50px 15px 0; //aumenta a área clicável do link de expansao da sessao
+    img {
+      vertical-align:middle;
+      margin-right: 5px;
+    }
+  }
+  .right {
+    float: right;
+    padding: 8px 10px; //aumenta a área clicável do link de expansao da sessao
+    background-image: url(../../../images/double-down-w.png);
+    background-position: center;
+    width: 16px;
+    height: 16px;
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    //esconder o texto
+    overflow:hidden;
+    text-indent:100%;
+    white-space:nowrap;
+    //img {
+    //  vertical-align:middle;
+    //}
+  }
+}
+
+//Acrescenta a propriedade aa classe de mesmo nome em main.less.
+//TODO: aplicar a todos os layouts do sistema e substituir eventuais <br> por clear: both ?
+.fieldcontain {
+  float: left;
+  min-width: 250px;
+  select {
+    width: 12em;
+  }
+  .select-sim-nao {
+    width: inherit;
+  }
+}
+
+.nav .link-selecionado, .nav a.link-selecionado:active, .nav a.link-selecionado:focus, .nav a.link-selecionado:visited {
+  //color: red !important;
+  //background-color: yellow !important;
+  background-color: #999999;
+  color: #ffffff;
+  outline: none;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+//TAG customizada para palavras chaves (metadados) usados no mecanismo de pesquisa da tela.
+//Pode estar contida em uma sessao, fieldset ou fieldcontain para acrescentar matches para uma busca
+palavra-chave {
+    display: none;
+}
+
+.conteudo-sessao {
+    display: none;
+}
+
+//customização do autocomplete da jQuery UI
+.ui-widget-content .ui-state-focus {
+  border: 0;
+  border-radius: 0;
+  background: @cor-sombra-principal;
+  margin: 0;
+  padding: 0;
+  //font-weight: normal;
+  color: white;
+}
+
+.opcao-publico-prioritario {
+  .opcao-multi-lookup();
+  margin-top: 10px;
+  > span {
+    font-size: 1em;
+  }
+}
+
+.nav a.aba-erro {
+  border: 1px solid @cor-base-mensagem-erro;
+  background-color: lighten(@cor-base-mensagem-erro, @lighten-fundo);
+}
+
+.sessao-detalhes {
+  page-break-inside: avoid;
+}
+
+/*
+label::before {
+  content:'';
+  background-image: url(../../../images/usecases/casa.png);
+  background-size: 16px 16px;
+  display: block;
+}
+*/
+
+/*
+label:before {
+    content: url(../../../images/information.png);
+    //width: 20px;
+    //height: 20px;
+}
+*/
+
+.importante-vazio, .importante-vazio:focus {
+  background-color: lighten(#fffd00, 40%) !important;
+  border-color: darken(#fffd00, 10%) !important;
+  color: darken(#fffd00, 20%) !important;
+}

@@ -8,14 +8,13 @@ class LoggingFilters {
     def logEstatisticaService
 
     def filters = {
-        all(controller:'*', action:'*') {
+        all(controller:'*', action:'*', invert: true /*desabilitando o filtro*/) {
             before = {
                 final String username = request.userPrincipal?.name
                 final String sessionId = request.requestedSessionId
                 final String novoRequest = request.servletPath?.replaceAll('.dispatch','');
                 final String parametros = request.getParameterMap() ? (request.getParameterMap().keySet().join(",")) : "";
                 final String valoresParametros = request.getParameterMap() ? (request.getParameterMap().toString()) : "";
-//                final String queryString = request.getQueryString() ? (" - " + request.getQueryString()) : "";
 
                 MDC.put('username', username ?: 'N/A');
                 MDC.put('requestedSessionId', sessionId ? sessionId.substring(0, Math.min(sessionId.size(), 5)) : null ?: 'N/A');

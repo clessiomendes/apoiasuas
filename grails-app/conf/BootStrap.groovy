@@ -1,6 +1,8 @@
 import apoiasuas.ImportacaoJob
 import org.apoiasuas.ApoiaSuasService
+import org.apoiasuas.DetalheService
 import org.apoiasuas.FullTextSearchService
+import org.apoiasuas.LookupService
 import org.apoiasuas.ProgramaService
 import org.apoiasuas.cidadao.MarcadorService
 import org.apoiasuas.fileStorage.FileStorageService
@@ -34,10 +36,12 @@ class BootStrap {
     ProgramaService programaService
     ServicoSistemaService servicoSistemaService
     AbrangenciaTerritorialService abrangenciaTerritorialService
+    DetalheService detalheService
     GrailsApplication grailsApplication
     FullTextSearchService fullTextSearchService
     FileStorageService fileStorageService
-    MarcadorService marcadorService;
+    MarcadorService marcadorService
+    LookupService lookupService
 
     public final String VW_REFERENCIAS = "create view vw_referencias as select min(id) as referencia_id, familia_id " +
             " from cidadao where habilitado = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+" and referencia = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+
@@ -72,10 +76,11 @@ class BootStrap {
         inicializacoesDiversas(admin)
 
         abrangenciaTerritorialService.registraJSON()
+//        detalheService.registraJSON()
 
         addPersistenceListener()
 
-//        if (AmbienteExecucao.isProducao())
+        if (AmbienteExecucao.isProducao())
             fullTextSearchService.index()
 
         RecursosServico.initTest();
@@ -134,6 +139,19 @@ class BootStrap {
                     else
                         throw t
                 }
+
+                try {
+                    //Alimenta tabelas lookup aa partir dos respectivos arquivos txt de configuracao
+//                    if (AmbienteExecucao.servidorPrimario)
+                    lookupService.inicializaLookups();
+                } catch (Throwable t) {
+                    if (AmbienteExecucao.desenvolvimento)
+                        t.printStackTrace()
+                    else
+                        throw t
+                }
+
+
                 ImportacaoJob.schedule(ImportacaoJob.CRON_DEFINITION);
 
             } catch (Throwable t) {

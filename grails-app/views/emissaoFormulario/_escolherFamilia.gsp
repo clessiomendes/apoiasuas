@@ -10,7 +10,8 @@
     */
     $(document).ready(function() {
         if (document.getElementById("cad").value != '') {
-            ${remoteFunction(controller: 'emissaoFormulario', action: 'familiaParaSelecao', method: "post", update: "familiaParaSelecao", params: [cad: org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)?.cad])}
+            ${remoteFunction(controller: 'emissaoFormulario', action: 'familiaParaSelecao', method: "post", update: "familiaParaSelecao",
+                    params: [cad: org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)?.cad])};
             document.getElementById("cad").select();
         }
     });
@@ -25,16 +26,22 @@
             location.reload();
         }
     };
+
+    function ajaxSuccess(data) {
+        $('#membroSelecionado').focus();
+        //document.getElementById('membroSelecionado').focus();
+    }
 </g:javascript>
 
     <g:formRemote name="fool" method="post" update="familiaParaSelecao" url="[controller: 'emissaoFormulario', action: 'familiaParaSelecao']"
-                  onSuccess="document.getElementById('membroSelecionado').focus();">
+                  onSuccess="ajaxSuccess();">
         <g:radio name="familiaCadastrada" value="false" onclick="limparFamilia();"/> Família sem cadastro
         <br>
         <g:radio name="familiaCadastrada" value="true" checked="true"/> Família cadastrada:
         <g:textField autofocus="true" name="cad" id="cad" size="2" value="${FamiliaController.getUltimaFamilia(session)?.cad}"/>
 %{--TODO: Formatar botão ok--}%
-        <g:actionSubmit action="familiaParaSelecao" id="btnSelecionarFamilia" value="ok"/>
+        <g:actionSubmit action="familiaParaSelecao" id="btnSelecionarFamilia" value="ok"
+                        onclick="noOverlay = true; return true;" />
     </g:formRemote>
 
     <br>

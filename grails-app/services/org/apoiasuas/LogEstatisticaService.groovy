@@ -14,6 +14,8 @@ import java.lang.management.MemoryPoolMXBean
 @Transactional(readOnly = true)
 class LogEstatisticaService {
 
+    static transactional = false;
+
     //todo: testar se OperatingSystemMXBean e Runtime são threadsafe
     private final OperatingSystemMXBean operatingSystemMXBean = (com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
     private final Runtime runtime = Runtime.getRuntime();

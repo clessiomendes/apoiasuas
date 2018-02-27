@@ -30,6 +30,8 @@ class RelatorioService {
     public static final String LABEL_NUMERO_TELEFONE = "numero"
     public static final String LABEL_SIGLA_PROGRAMA = "sigla"
 
+    public static final enum DEFINICAO_CAMPOS { REFERENCIA, MEMBROS, BD_BH }
+
     def groovySql
     def segurancaService
 
@@ -77,7 +79,7 @@ class RelatorioService {
      * Executa uma consulta SQL (Ansi92) com os parametros escolhidos e disponibiliza uma planilha csv em outputStream
      */
     public List<GroovyRowResult> processaConsulta(LocalDate dataNascimentoInicial, LocalDate dataNascimentoFinal,
-                             String membros, Long idTecnicoReferencia, List<Programa> programasSelecionados,
+                             String relatorio, Long idTecnicoReferencia, List<Programa> programasSelecionados,
                              List<Vulnerabilidade> vulnerabilidadesSelecionadas, List<Acao> acoesSelecionadas,
                              List<OutroMarcador> outrosMarcadoresSelecionados, ServicoSistema servicoSistema) {
 
@@ -100,11 +102,11 @@ class RelatorioService {
         sqlPrincipalFrom += 'familia f ' +
                 ' left join usuario_sistema u on f.tecnico_referencia_id = u.id '
 
-        if (membros) {
+        if (relatorio == DEFINICAO_CAMPOS.MEMBROS.toString()) {
             sqlPrincipalSelect += ', c.nome_completo as "'+LABEL_NOME+'", c.parentesco_referencia as "'+ LABEL_PARENTESCO+'"';
             sqlPrincipalFrom += " left join cidadao c on f.id = c.familia_id and c.habilitado = ${AmbienteExecucao.SqlProprietaria.getBoolean(true)} ";
             sqlPrincipalOrder += ', c.nome_completo';
-        } else {
+        } else if (relatorio == DEFINICAO_CAMPOS.REFERENCIA.toString()) {
             sqlPrincipalSelect += ', c.nome_completo as "'+LABEL_REFERENCIA+'"';
 
             sqlPrincipalFrom += ' left join vw_referencias r on f.id = r.familia_id ' +
@@ -281,5 +283,60 @@ class RelatorioService {
                 result += "\t"
         }
         return result;
+    }
+
+    public List<GroovyRowResult> processaConsultaBDBH(Long idFamilia, ServicoSistema servicoSistema) {
+
+        String sqlPrincipalSelect = "select distinct "
+        String sqlPrincipalFrom = "from "
+        String sqlPrincipalWhere = "where 1=1 "
+        String sqlPrincipalOrder = "order by "
+
+        String sqlTelefonesSelect = "select "
+        String sqlTelefonesFrom = "from familia f join telefone t "
+
+        sqlPrincipalSelect += AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado') + ' as "Nº do Cadastro" '
+        sqlPrincipalOrder +=  'f.id';
+
+        sqlPrincipalFrom += 'familia f ';
+
+        sqlPrincipalSelect += ', '+AmbienteExecucao.SqlProprietaria.dateToString('f.date_created')+ ' as "Data do Cadastro", ' +
+                'c.nome_completo as "Nome da referência", ' +
+                'c.nis as "NIS da referência", null as "Código Familiar no CAD ÚNICO", f.endereco_tipo_logradouro as "Logradouro", ' +
+                'f.endereco_nome_logradouro as "Nome do logradouro", f.endereco_numero as "Nº", f.endereco_complemento as "Complemento", ' +
+                'f.endereco_bairro as "Bairro", f.id as "'+LABEL_CAD+'", c.id ';
+        sqlPrincipalFrom += " left join cidadao c on f.id = c.familia_id ";
+        sqlPrincipalOrder += ', c.id';
+
+/*
+        sqlPrincipalSelect += ', c.nis, c.identidade, c.cpf, ' +
+                AmbienteExecucao.SqlProprietaria.dateToString('c.data_nascimento')+ ' as "' + LABEL_NASCIMENTO + '", ' +
+                AmbienteExecucao.SqlProprietaria.idade('c.data_nascimento')+ ' as "' + LABEL_IDADE + '", ' +
+                AmbienteExecucao.SqlProprietaria.concat("f.endereco_tipo_logradouro", "' '", "f.endereco_nome_logradouro", "', '",
+                        "f.endereco_numero", "' '", "f.endereco_complemento")+ ' as "' + LABEL_ENDERECO + '", ' +
+                ' f.endereco_bairro as "' + LABEL_BAIRRO + '", f.endereco_cep as "' + LABEL_CEP + '", ' +
+                ' u.username as "' + LABEL_TECNICO + '"';
+*/
+
+        def filtros = []
+
+        if (servicoSistema) {
+            sqlPrincipalWhere += ' and f.servico_sistema_seguranca_id = ? '
+            filtros << servicoSistema.id
+        }
+
+        if (idFamilia) {
+            sqlPrincipalWhere += ' and f.id = ? '
+            filtros << idFamilia
+        } else {
+            sqlPrincipalWhere += ' and f.codigo_legado is null '
+        }
+
+        try {
+            log.debug("SQL listagem  (filtros - $filtros):" +"\n" + sqlPrincipalSelect + '\n' + sqlPrincipalFrom + '\n ' + sqlPrincipalWhere + '\n' + sqlPrincipalOrder)
+            return groovySql.rows(sqlPrincipalSelect + ' ' + sqlPrincipalFrom + ' ' + sqlPrincipalWhere + ' ' + sqlPrincipalOrder, filtros)
+        } finally {
+            groovySql.close()
+        }
     }
 }

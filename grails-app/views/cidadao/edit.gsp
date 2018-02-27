@@ -1,3 +1,4 @@
+%{--FIXME: página substituída por familia.detalhes.cidadao.*--}%
 <%@ page import="org.apoiasuas.cidadao.Cidadao" %>
 <!DOCTYPE html>
 <html>
@@ -10,7 +11,7 @@
 		<a href="#edit-cidadao" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><g:link class="list" action="procurarCidadao"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+				<li><g:link class="search" action="procurarCidadao"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
 				%{--<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>--}%
 			</ul>
 		</div>
@@ -20,11 +21,11 @@
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<g:hasErrors bean="${cidadaoInstance}">
-			<ul class="errors" role="alert">
-				<g:eachError bean="${cidadaoInstance}" var="error">
-				<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-				</g:eachError>
-			</ul>
+                <ul class="errors" role="alert">
+                    <g:eachError bean="${cidadaoInstance}" var="error">
+                        <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+                    </g:eachError>
+                </ul>
 			</g:hasErrors>
 			<g:form controller="cidadao" id="${cidadaoInstance.id}" method="PUT" >
 				<g:hiddenField name="version" value="${cidadaoInstance?.version}" />

@@ -1,0 +1,53 @@
+@import (reference) "../../main.less";
+@import (reference) "../../buttons-links.less";
+
+//Cria uma regra do tipo "input.list" para image buttons (corpo)
+input.btn-copy-antes {
+  .imageButton();
+  background-color: @cor-fundo-paineis-e-botoes;
+  background-image: url(../../../images/export.png);
+  background-repeat: no-repeat;
+  background-position: 5px 5px;
+  padding-left: 30px;
+  margin-bottom: 6px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.btn-copy-depois {
+  .imageButton();
+  background-color: @cor-fundo-paineis-e-botoes;
+  background-image: url(../../../images/checked.png);
+  background-repeat: no-repeat;
+  background-position: 5px 5px;
+  padding-left: 30px;
+  margin-bottom: 6px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+td {
+  vertical-align: middle;
+}
+
+tr:hover {
+	background: none;
+	//background-color: @cor-fundo-paineis-e-botoes;
+}
+tr.odd:hover {
+	background: @cor-tabela-linha-impar;
+}
+tr.even:hover {
+    background: @cor-tabela-linha-par;
+}
+.tabelaListagem td:hover {
+  background: @cor-caption-jquery-ui;
+}
+tr>td:first-child, tr>th:first-child {
+	padding-left: 0.6em;
+}
+tr>td:last-child, tr>th:last-child {
+	padding-right: 0.6em;
+}

@@ -10,7 +10,7 @@
 <head>
     <title>Status</title>
     <meta name="layout" content="main" />
-    <asset:stylesheet src="especificos/status.less"/>
+    <asset:stylesheet src="inicio/status.less"/>
 </head>
 
 <body>

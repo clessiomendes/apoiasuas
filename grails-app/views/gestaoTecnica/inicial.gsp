@@ -5,15 +5,15 @@
     <g:set var="entityName" value="${message(code: 'familia.label', default: 'Familia')}" />
     <title>Gestão Técnica</title>
 
-    <asset:stylesheet src="especificos/pure-css/base.css"/>
-    <asset:stylesheet src="especificos/pure-css/grids.css"/>
+    <asset:stylesheet src="pure-css/base.css"/>
+    <asset:stylesheet src="pure-css/grids.css"/>
     <!--[if lte IE 8]>
-        <asset:stylesheet src="especificos/pure-css/grids-responsive-old-ie.css"/>
+        <asset:stylesheet src="pure-css/grids-responsive-old-ie.css"/>
     <![endif]-->
     <!--[if gt IE 8]><!-->
-        <asset:stylesheet src="especificos/pure-css/grids-responsive.css"/>
+        <asset:stylesheet src="pure-css/grids-responsive.css"/>
     <!--<![endif]-->
-    <asset:stylesheet src="especificos/gestao-tecnica.less"/>
+    <asset:stylesheet src="gestaoTecnica/gestao-tecnica.less"/>
 </head>
 <body>
 
@@ -42,9 +42,9 @@
                         helpTotal: "como uma mesma família pode estar em mais de um programa, o total não é necessariamente a soma das famílias em cada programa",
                         actionListagem: "listarFamiliasProgramas"
                 ]}"/>
-                <g:spamCondicional showif="${idTecnico}" style="font-size: 0.7em;">
+                <g:custom elemento="spam" showif="${idTecnico}" style="font-size: 0.7em;">
                     obs: Contabilizando apenas famílias referenciadas ao técnico escolhido.
-                </g:spamCondicional>
+                </g:custom>
             </div>
         </div>
         <div class="pure-u-1 pure-u-md-1-2">
@@ -58,9 +58,9 @@
                                                                         helpTotal: "como uma mesma família pode ter mais de uma ação proposta, o total não é necessariamente a soma das famílias em cada ação",
                                                                         actionListagem: "listarFamiliasAcoes"
                 ]}"/>
-                <g:spamCondicional showif="${idTecnico}" style="font-size: 0.7em;">
+                <g:custom elemento="spam" showif="${idTecnico}" style="font-size: 0.7em;">
                     obs: Contabilizando ações selecionadas pelo técnico escolhido
-                </g:spamCondicional>
+                </g:custom>
             </div>
         </div>
         <div class="pure-u-1 pure-u-md-1-2">
@@ -74,9 +74,9 @@
                                                                         helpTotal: "como uma mesma família pode ter mais de uma sinalização, o total não é necessariamente a soma das famílias em cada sinalização",
                                                                         actionListagem: "listarFamiliasOutrosMarcadores"
                 ]}"/>
-                <g:spamCondicional showif="${idTecnico}" style="font-size: 0.7em;">
+                <g:custom elemento="spam" showif="${idTecnico}" style="font-size: 0.7em;">
                     obs: Contabilizando sinalizações selecionadas pelo técnico escolhido
-                </g:spamCondicional>
+                </g:custom>
             </div>
         </div>
         <div class="pure-u-1 pure-u-md-1-2">
@@ -96,9 +96,9 @@
                        helpTotal: "como uma mesma família pode ter mais de uma vulnerabilidade, o total não é necessariamente a soma das famílias em cada vulnerabilidade",
                        actionListagem: "listarFamiliasVulnerabilidades"
                 ]}"/>
-                <g:spamCondicional showif="${idTecnico}" style="font-size: 0.7em;">
+                <g:custom elemento="spam" showif="${idTecnico}" style="font-size: 0.7em;">
                     obs: Contabilizando vulnerabilidades selecionadas pelo técnico escolhido
-                </g:spamCondicional>
+                </g:custom>
             </div>
         </div>
 

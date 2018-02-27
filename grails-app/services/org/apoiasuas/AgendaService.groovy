@@ -29,6 +29,7 @@ class AgendaService {
 
     def segurancaService
     def usuarioSistemaService
+    ApoiaSuasService apoiaSuasService
 
     @Transactional
     public Compromisso gravaCompromisso(Compromisso compromisso) {
@@ -96,7 +97,7 @@ class AgendaService {
 
         //FIXME try catch e close para todos os streams criados
 
-        append(out, agendasPreenchidas)
+        apoiaSuasService.append(out, agendasPreenchidas)
 //        out.close();
     }
 
@@ -115,46 +116,6 @@ class AgendaService {
         };
         //Se não houver compromissos nesta data - preencheAgenda() retornou false - nao produzir um pipe para entrar no arquivo final
         return pipeStream //.result ? pipeStream : null;
-    }
-
-    public static void append(OutputStream dest, List<InputStream> documentos) throws Exception {
-//        documentos = documentos.removeAll { it == null };
-        InputStream primeiroInputStream = documentos[0]
-        documentos.remove(0);
-        OPCPackage primeiroPackage = OPCPackage.open(primeiroInputStream);
-        XWPFDocument primeiroDocument = new XWPFDocument(primeiroPackage);
-        CTBody primeiroBody = primeiroDocument.getDocument().getBody();
-        documentos.each { InputStream proximoInputStream ->
-            OPCPackage proximoPackage = OPCPackage.open(proximoInputStream);
-    /*
-            XWPFParagraph paragraph = src1Document.createParagraph();
-            paragraph.setPageBreak(true);
-    */
-            XWPFDocument proximoDocument = new XWPFDocument(proximoPackage);
-
-            List<XWPFParagraph> paragraphs = proximoDocument.getParagraphs();
-            paragraphs[0].setPageBreak(true);
-
-            CTBody proximoBody = proximoDocument.getDocument().getBody();
-
-            //adiciona o proximo no primeiro. o primeiro passa a conter a soma dos dois.
-            appendBody(primeiroBody, proximoBody);
-        }
-        primeiroDocument.write(dest);
-
-    }
-
-    private static void appendBody(CTBody src, CTBody append) throws Exception {
-        XmlOptions optionsOuter = new XmlOptions();
-        optionsOuter.setSaveOuter();
-        String appendString = append.xmlText(optionsOuter);
-        String srcString = src.xmlText();
-        String prefix = srcString.substring(0,srcString.indexOf(">")+1);
-        String mainPart = srcString.substring(srcString.indexOf(">")+1,srcString.lastIndexOf("<"));
-        String sufix = srcString.substring( srcString.lastIndexOf("<") );
-        String addPart = appendString.substring(appendString.indexOf(">") + 1, appendString.lastIndexOf("<"));
-        CTBody makeBody = CTBody.Factory.parse(prefix+mainPart+addPart+sufix);
-        src.set(makeBody);
     }
 
     private void preencheAgenda(List<AtendimentoParticularizado> atendimentos, Date dia, OutputStream out) {

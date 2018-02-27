@@ -5,8 +5,9 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Apoia SUAS</title>
-    <asset:stylesheet src="especificos/menu.css"/>
-    <asset:javascript src="especificos/procurarCidadao.js"/>
+    <asset:stylesheet src="menu/menu.less"/>
+    <asset:javascript src="cidadao/procurarCidadao.js"/>
+    <asset:stylesheet src="animate.css"/>
 </head>
 
 <body>
@@ -44,8 +45,46 @@
 
     <g:render template="anuncioRedeSocioAssistencial"/>
 
+%{--
+    <input type="button" value="teste flip" onclick=" $('#card').flip('toggle'); "/>
+
+    <script>
+        $(document).ready(inicializa);
+
+        function inicializa() {
+            var card = $('#card')
+
+            card.flip({
+                axis: 'x',
+                speed: 1000,
+                autoSize: false,
+//                forceWidth: true,
+//                forceHeight: true,
+                trigger: 'manual'
+            });
+
+//            $("#card").on('flip:done',function(){
+//                console.log('flip done');
+//                $(this).flip('false');
+//            });
+
+            var delay;
+            clearTimeout(delay);
+            delay = setTimeout(function () {
+                card.flip('toggle');
+            }, 1000);
+
+            clearTimeout(delay);
+            delay = setTimeout(function () {
+                card.flip('toggle');
+            }, 3000);
+
+        }
+    </script>
+--}%
 
     <div id="menu">
+
             <g:linkMenu title="Formulários emitidos on-line com preenchimento automático à partir do banco de dados de cidadãos (quando disponíveis)"
                         imagem="usecases/formulario-w.png"
                         class="verde_oliva" controller="emissaoFormulario" action="escolherFamilia">Emissão de Formulários</g:linkMenu>
@@ -53,9 +92,10 @@
                         imagem="usecases/procurar-usuario-w.png"
                         class="laranja" controller="cidadao" action="procurarCidadao">Pesquisa de Usuários</g:linkMenu>
             <g:linkMenu title="Cadastra uma nova família no banco de dados"
-                        acessoServico="${RecursosServico.INCLUSAO_FAMILIA}"
                         imagem="usecases/cadastrar-familia-w.png"
-                        class="rosa" controller="familia" action="create">Cadastrar família</g:linkMenu>
+                        class="rosa novo-recurso" controller="familiaDetalhado" action="create">Cadastrar família
+                <asset:image src="novo-recurso.png" class="animated flash"/>
+            </g:linkMenu>
             <g:linkMenu title="Serviços, programas, projetos e ações disponíveis na rede sócio-assistencial"
                         imagem="usecases/rede-socio-assistencial-w.png"
                         class="verde_agua" controller="servico">Rede sócio-assistencial</g:linkMenu>

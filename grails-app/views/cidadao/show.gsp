@@ -11,7 +11,15 @@
 		<a href="#show-cidadao" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-				<li><g:link class="list" action="procurarCidadao"><g:message message="Procurar"/></g:link></li>
+				<li><g:link class="search" action="procurarCidadao"><g:message message="Procurar"/></g:link></li>
+                <li><g:link class="edit" controller="familiaDetalhado" action="edit" params="[id: cidadaoInstance.familia.id, idCidadao: cidadaoInstance.id]"
+                            title="Ver (ou alterar) o cadastro completo deste membro familiar">Cadastro completo</g:link></li>
+                <li><g:link class="formulario" controller="emissaoFormulario" action="escolherFamilia"
+                        title="Preencher um formulário para um membro desta família">Emitir formulário</g:link></li>
+				<li><g:link class="atendimento" controller="agenda" action="calendario"
+							title="Abre a agenda de atendimentos para escolha de um horário">Agendar atendimento</g:link></li>
+                <li><g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosCidadao" params="[idCidadao: cidadaoInstance.id]"
+							title="Permite ver todos os formulários já emitidos para esta pessoa">Formulários emitidos</g:link></li>
 			</ul>
 		</div>
 		<div id="show-cidadao" class="content scaffold-show" role="main">
@@ -86,12 +94,14 @@
 
                 <br>
 
+%{--
                 <g:if test="${cidadaoInstance?.estadoCivil}">
                     <li class="fieldcontain">
                         <span id="estadoCivil-label" class="property-label"><g:message code="cidadao.estadoCivil.label" default="Estado Civil" /></span>
                         <span class="property-value" aria-labelledby="estadoCivil-label"><g:fieldValue bean="${cidadaoInstance}" field="estadoCivil"/></span>
                     </li>
                 </g:if>
+--}%
 
                 <g:if test="${CidadaoController.getDocumentos(cidadaoInstance)}">
                     <li class="fieldcontain">
@@ -104,9 +114,6 @@
 
             </ol>
             <fieldset class="buttons">
-                <g:link class="add" controller="emissaoFormulario" action="escolherFamilia">Emitir formulário</g:link>
-                <g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosCidadao" params="[idCidadao: cidadaoInstance.id]" >Formulários emitidos</g:link>
-                <g:link class="edit" action="edit" resource="${cidadaoInstance}">Alterar dados</g:link>
                 %{--Só permite remover se não for a ÚNICA referência--}%
                 <g:if test="${podeExcluir}">
                     <g:link class="export" action="desabilitar" resource="${cidadaoInstance}"
@@ -114,9 +121,9 @@
                             onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Deseja remover este membro da família? (obs: se necessario, ele poderá ser reintegrado no futuro)')}');">Remover</g:link>
                 </g:if>
                 <g:if test="${! cidadaoInstance.habilitado}">
-                    <g:link class="import" action="reabilitar" title="Reintegrar este cidadão ao grupo familiar de ${cidadaoInstance.familia.referencia.nomeCompleto}" resource="${cidadaoInstance}">Reintegrar</g:link>
+                    <g:link class="import" action="reabilitar" resource="${cidadaoInstance}"
+                            title="Reintegrar este cidadão ao grupo familiar de ${cidadaoInstance.familia.referencia.nomeCompleto}">Reintegrar</g:link>
                 </g:if>
-                <g:link class="atendimento" controller="agenda" action="calendario">Atendimento</g:link>
             </fieldset>
 		</div>
 	</body>

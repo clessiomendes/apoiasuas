@@ -44,7 +44,7 @@ class UsuarioSistema {
         servicoSistemaSeguranca(nullable: false)
 		username(nullable: false, unique: true)
 //		perfil(nullable: false)
-		password(nullable: false)
+		password(nullable: false, bindable: false) //segurança - impede que se tente passar uma mudanca de senha no usuario diretamente como parametro de request
 		accountExpired(nullable: false)
 		accountLocked(nullable: false)
 		passwordExpired(nullable: false)

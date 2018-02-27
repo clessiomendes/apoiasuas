@@ -372,3 +372,22 @@ alter table servico_sistema add column email varchar(255);
 -- versao ate aqui: current (local:feito, producao: feito)
 
 alter table campo_formulario add column opcoes varchar(4096);
+ALTER TABLE public.cidadao ALTER COLUMN nome_completo SET NOT NULL;
+alter table cidadao add column detalhes varchar(1000000);
+alter table familia add column detalhes varchar(1000000);
+alter table cidadao add column data_nascimento_aproximada timestamp;
+CREATE INDEX data_nascimento_index ON public.cidadao (data_nascimento);
+CREATE INDEX data_nascimento_aprox_index ON public.cidadao (data_nascimento_aproximada);
+alter table abrangencia_territorial add column codigo_customizacoes varchar(255);
+--CUIDADO: confirmar os ids em cada ambiente
+update abrangencia_territorial set codigo_customizacoes = 'BELO_HORIZONTE' where id =; --2;
+update abrangencia_territorial set codigo_customizacoes = 'BELO_HORIZONTE_HAVAI_VENTOSA' where id =; --4;
+update abrangencia_territorial set codigo_customizacoes = 'BELO_HORIZONTE_VISTA_ALEGRE' where id =; --5;
+alter table cidadao add column nome_social varchar(255);
+alter table cidadao add column analfabeto boolean;
+alter table cidadao add column escolaridade varchar(255);
+alter table cidadao add column sexo varchar(20);
+alter table familia add constraint unique_codigo_legado  unique (servico_sistema_seguranca_id, codigo_legado);
+alter table familia add column bolsa_familia boolean;
+alter table familia add column ex_bolsa_familia boolean;
+alter table familia add column bpc boolean;

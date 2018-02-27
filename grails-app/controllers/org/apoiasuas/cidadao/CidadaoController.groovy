@@ -118,6 +118,7 @@ class CidadaoController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def create(Long idFamilia) {
+//FIXME: substituído em FamiliaDetalhadoController
         if (! segurancaService.acessoRecursoServico(RecursosServico.INCLUSAO_MEMBRO_FAMILIAR))
             throw new ApoiaSuasException("O recurso de inclusão de membro familiar não está habilitado para este serviço")
         if (! idFamilia) {
@@ -146,21 +147,20 @@ class CidadaoController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def edit(Cidadao cidadaoInstance) {
+//FIXME: substituído em FamiliaDetalhadoController
         render view: 'edit', model: getEditCreateModel(cidadaoInstance);
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def save(Cidadao cidadaoInstance) {
+//FIXME: substituído em FamiliaDetalhadoController
         if (! cidadaoInstance)
             return notFound()
 
         boolean modoCriacao = cidadaoInstance.id == null;
 
-        if (modoCriacao) {
-            cidadaoInstance.servicoSistemaSeguranca = segurancaService.servicoLogado;
-            cidadaoInstance.criador = segurancaService.usuarioLogado;
-            cidadaoInstance.habilitado = true;
-        }
+        if (modoCriacao)
+            cidadaoInstance = cidadaoServico.novoCidadao(cidadaoInstance);
         cidadaoInstance.ultimoAlterador = segurancaService.usuarioLogado;
 
         boolean validado = cidadaoInstance.validate();

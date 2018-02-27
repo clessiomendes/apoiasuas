@@ -11,6 +11,7 @@ class AbrangenciaTerritorial {
     String nome
     boolean habilitado
     AbrangenciaTerritorial mae
+    String codigoCustomizacoes
 
     //transientes
     private List<AbrangenciaTerritorial> filhos = []

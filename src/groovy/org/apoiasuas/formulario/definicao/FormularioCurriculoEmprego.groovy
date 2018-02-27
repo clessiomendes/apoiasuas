@@ -28,10 +28,10 @@ class FormularioCurriculoEmprego extends FormularioBase {
                 codigo 'data_nascimento'
                 obrigatorio true
             }
-            campoBancoDeDados {
-                origem CampoFormulario.Origem.CIDADAO
+            campoAvulso {
                 codigo 'estado_civil'
-                obrigatorio true
+                descricao 'Estado Civil'
+                tamanho 20
             }
             grupo 'Endereço', {
                 campoBancoDeDados {

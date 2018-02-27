@@ -34,7 +34,7 @@ class Endereco  implements Serializable {
     String UF //importado
 
     //atributos transientes (calculados)
-    static transients = ['tipoENomeLogradouro', 'enderecoCompleto']
+//    static transients = ['tipoENomeLogradouro', 'enderecoCompleto']
     static constraints = {
         CEP(nullable: true)
         tipoLogradouro (nullable: true)
@@ -47,20 +47,24 @@ class Endereco  implements Serializable {
         UF (nullable: true)
     }
 
-    String toString() {
+    public String toString() {
         return CollectionUtils.join([
-                getTipoENomeLogradouro(),
+                obtemTipoENomeLogradouro(),
                 numero, complemento, bairro], ", ") ?: ""
     }
 
-    String getEnderecoCompleto() {
+    public String obtemEnderecoCompleto() {
         return CollectionUtils.join([
-                getTipoENomeLogradouro(),
+                obtemTipoENomeLogradouro(),
                 numero, complemento, bairro, municipio, UF, CEP ? "CEP "+CEP : null], ", ") ?: ""
     }
 
-    String getTipoENomeLogradouro() {
+    public String obtemTipoENomeLogradouro() {
         return nomeLogradouro ? (tipoLogradouro ? tipoLogradouro + " ": "") + nomeLogradouro : null
+    }
+
+    public String obtemEnderecoBasico() {
+        return CollectionUtils.join([obtemTipoENomeLogradouro(), numero, complemento], ", ") ?: ""
     }
 
 }

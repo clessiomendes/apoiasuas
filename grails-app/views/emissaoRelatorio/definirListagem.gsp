@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.util.StringUtils" %>
+<%@ page import="org.apoiasuas.CustomizacoesService; org.apoiasuas.util.StringUtils" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,6 +10,15 @@
 
 <div id="edit-fool" class="content scaffold-edit" role="main">
     <h1>Emissão de Listagens</h1>
+
+    <sec:access showto="${CustomizacoesService.Codigos.BELO_HORIZONTE}">
+		<div class="nav" role="navigation">
+			<ul>
+                <li><g:link class="list" controller="familiaDetalhado" action="familiasSemCad">Famílias sem Cad</g:link></li>
+			</ul>
+		</div>
+    </sec:access>
+
     <g:if test="${flash.message}">
         <div class="message" role="status">${flash.message}</div>
     </g:if>

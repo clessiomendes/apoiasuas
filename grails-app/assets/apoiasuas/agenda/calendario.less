@@ -1,0 +1,113 @@
+//usado apenas no caso de uso agenda
+@import (reference) "../main.less";
+@import (reference) "../buttons-links.less";
+
+.speed-button-liberar {
+  vertical-align: middle;
+  .speedButton(url(../../images/cancel.png));
+  margin-left: 5px;
+}
+
+.speed-button-imprimir {
+  vertical-align: middle;
+  .speedButton(url(../../images/print.png));
+  margin-left: 5px;
+}
+
+.speed-button-voltar {
+  vertical-align: middle;
+  .speedButton(url(../../images/double_left.png));
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: 5px;
+  margin-right: 20px;
+}
+
+.speed-button-avancar {
+  vertical-align: middle;
+  .speedButton(url(../../images/double_right.png));
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-right: 5px;
+  margin-left: 20px;
+}
+
+.speed-button-config {
+  vertical-align: middle;
+  .speedButton(url(../../images/config.png));
+  margin-left: 5px;
+}
+
+.speed-button-atualizar {
+  vertical-align: middle;
+  .speedButton(url(../../images/refresh.png));
+  margin-left: 5px;
+}
+
+.speed-button-visao-mensal {
+  vertical-align: middle;
+  .speedButton(url(../../images/calendario/month_calendar.png));
+  margin-left: 5px;
+}
+
+.speed-button-visao-semanal {
+  vertical-align: middle;
+  .speedButton(url(../../images/calendario/week_calendar.png));
+  margin-left: 5px;
+}
+
+.speed-button-visao-diaria {
+  vertical-align: middle;
+  .speedButton(url(../../images/calendario/day_calendar.png));
+  margin-left: 5px;
+}
+
+.speed-button-visao-lista {
+  vertical-align: middle;
+  .speedButton(url(../../images/database/table.png));
+  margin-left: 5px;
+}
+
+.speed-button-atendimento {
+  vertical-align: middle;
+  .speedButton(url(../../images/usecases/atendimento.png));
+  width: 50px;
+  height: 50px;
+  background-size: 45px 45px;
+  margin: 10px
+}
+
+.speed-button-compromisso {
+  vertical-align: middle;
+  .speedButton(url(../../images/usecases/compromisso.png));
+  width: 50px;
+  height: 50px;
+  background-size: 45px 45px;
+  margin: 10px
+}
+
+.fc-center h2 {
+  margin-top: 8px;
+}
+
+.fc-div-eventos(@light-color, @dark-color) {
+  color: black;
+  border-width: 2px;
+  background-color: @light-color;
+  border-color: @dark-color;
+}
+.fc-amarelo { .fc-div-eventos(#F9E79F, #CCBD83); }
+.fc-verde { .fc-div-eventos(#A9DFBF, #88B399); }
+.fc-vermelho { .fc-div-eventos(#FA5858, #B34040); }
+.fc-azul { .fc-div-eventos(#AED6F1, #829FB3); }
+
+//            MOBILE
+@media screen and (max-width: 700px) {
+  .fc-center h2 {
+    font-size: 1em;
+  }
+
+  .fc table {
+    font-size: 0.8em;
+  }
+}

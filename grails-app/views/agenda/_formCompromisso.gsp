@@ -3,9 +3,7 @@
     org.apoiasuas.agenda.Compromisso localDtoCompromisso = compromissoInstance
 %>
 
-<asset:javascript src="especificos/jquery.timepicker.js"/>
-<asset:stylesheet src="especificos/jquery.timepicker.css"/>
-<asset:javascript src="especificos/datepicker-pt-BR.js"/>
+<asset:javascript src="datepicker-pt-BR.js"/>
 
 <script>
 

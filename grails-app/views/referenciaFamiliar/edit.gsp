@@ -4,7 +4,7 @@
 	<head>
 		<meta name="layout" content="main">
 		<title>Troca da referência familiar</title>
-		<asset:stylesheet src="especificos/pure-css/tables.css"/>
+		<asset:stylesheet src="pure-css/tables.css"/>
 	</head>
 	<body>
 
@@ -51,7 +51,7 @@
 							%{--<span class="property-value" aria-labelledby="membros-label" style="display: block; margin: 5px">--}%
 							<td>${m.referencia ? raw("<b>Referência</b>") : m.parentescoReferencia }</td>
 							<td>${m.nomeCompleto }</td>
-							<td>${m.idade ? m.idade + " anos" : ""}</td>
+							<td style="width: 4em">${m.idade ? m.idade + " anos" : ""}</td>
 							%{--</span>--}%
 						</tr>
 					</g:each>
@@ -89,7 +89,7 @@
 								<g:helpTooltip>Grau de parentesco deste membro (${m.nomeCompleto}) em relação à referência (${novaReferencia?.nomeCompleto})</g:helpTooltip>
 							</td>
 							<td>${m.nomeCompleto }</td>
-							<td>${m.idade ? m.idade + " anos" : ""}</td>
+							<td style="width: 4em">${m.idade ? m.idade + " anos" : ""}</td>
 							%{--</span>--}%
 						</tr>
 					</g:each>

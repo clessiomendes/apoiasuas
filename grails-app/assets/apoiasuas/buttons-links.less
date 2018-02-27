@@ -1,0 +1,250 @@
+@import (reference) "main.less";
+
+.button-link(search, url(../images/search.png));
+.button-link(delete, url(../images/database/delete.png));
+.button-link(import, url(../images/import.png));
+.button-link(export, url(../images/export.png));
+.button-link(edit, url(../images/database/edit.png));
+.button-link(atendimento, url(../images/usecases/atendimento.png));
+.button-link(check, url(../images/checked.png));
+.button-link(save, url(../images/database/save.png));
+.button-link(print, url(../images/print.png));
+.button-link(cancel, url(../images/cancel.png));
+.button-link(acompanhamento, url(../images/usecases/acompanhamento.png));
+.button-link(formulario, url(../images/usecases/formulario.png));
+.button-link(close, url(../images/close.png));
+.button-link(create, url(../images/database/add.png));
+.button-link(list, url(../images/database/table.png));
+
+//Uma estrutura única para gerar links de navegação (topo), botões de ação (rodapé) e image buttons (corpo).
+//Usa mixins para gerar 3 regras para cada chamada, todas com o mesmo nome de classe e imagem, mas com atributos específicos
+.button-link(@classeCss, @imagem) {
+  //Cria uma regra do tipo ".nav a.list" para links de navegacao (topo)
+  .nav a.@{classeCss} {
+    .linkNavegacao();
+    background-image: @imagem;
+  }
+  //Cria uma regra do tipo ".buttons .list" para botões de ação (rodapé)
+  .buttons .@{classeCss} {
+    .buttonsFooter();
+    background-image: @imagem;
+  }
+  //Cria uma regra do tipo "input.list" para image buttons (corpo)
+  input.@{classeCss} {
+    .imageButton();
+    background-color: @cor-fundo-paineis-e-botoes;
+    background-image: @imagem;
+    background-repeat: no-repeat;
+    background-position: 5px 5px;
+    padding-left: 30px;
+  }
+}
+
+.linkNavegacao() {
+//.nav a.search, .nav a.list, .nav a.create {
+	background-position: 3px center;
+	background-repeat: no-repeat;
+	padding-left: 25px;
+    .tamanho-icones();
+}
+
+.buttonsFooter() {
+//.buttons .search, .buttons .delete, .buttons .edit, .buttons .save, .buttons .add, .buttons .list {
+	background-position: 7px center;
+	background-repeat: no-repeat;
+	text-indent: 20px;
+    .tamanho-icones();
+}
+
+.imageButton() {
+  .painelNavegacaoOuBotoes();
+  .botao-independente();
+  .tamanho-icones();
+  &:hover {
+	.hoverBotoes();
+  }
+  margin: 0;
+}
+
+.speedButton(@imagem) {
+  background: @imagem no-repeat center;
+  .imageButton();
+  background-color: @cor-fundo-paineis-e-botoes;
+  width: 25px;
+  height: 25px;
+  @media screen and (max-width: 700px) {
+	width: 35px;
+	height: 35px;
+  }
+}
+
+.speed-button-exportar {
+  .speedButton(url(../images/export.png));
+}
+
+.speed-button-irpara {
+  .speedButton(url(../images/go-to.png));
+}
+
+.speed-button-procurar {
+  .speedButton(url(../images/search.png));
+}
+
+.speed-button-adicionar {
+  .speedButton(url(../images/database/add.png));
+}
+
+.speed-button-adicionar-marcador {
+  .speedButton(url(../images/database/add.png));
+}
+
+.speed-button-editar {
+  .speedButton(url(../images/database/edit.png));
+}
+
+.speed-button-expandir {
+  .speedButton(url(../images/slidedown.png));
+}
+
+.speed-button-remover {
+  .speedButton(url(../images/database/delete.png));
+}
+
+/*
+.buttons .search {
+  .buttonsFooter();
+  background-image: url(../images/search.png);
+}
+
+.buttons .delete {
+    .buttonsFooter();
+	background-image: url(../images/database/delete.png);
+}
+
+.buttons .import {
+  .buttonsFooter();
+  background-image: url(../images/import.png);
+}
+
+.buttons .export {
+  .buttonsFooter();
+  background-image: url(../images/export.png);
+}
+
+.buttons .edit {
+  .buttonsFooter();
+  background-image: url(../images/database/edit.png);
+}
+
+.buttons .atendimento {
+  .buttonsFooter();
+  background-image: url(../images/usecases/atendimento.png);
+}
+
+.buttons .check {
+  .buttonsFooter();
+  background-image: url(../images/checked.png);
+}
+
+.buttons .save {
+  .buttonsFooter();
+  background-image: url(../images/database/save.png);
+}
+
+.buttons .print {
+  .buttonsFooter();
+  background-image: url(../images/print.png);
+}
+
+.buttons .cancel {
+  .buttonsFooter();
+  background-image: url(../images/cancel.png);
+}
+
+.buttons .acompanhamento {
+  .buttonsFooter();
+  background-image: url(../images/usecases/acompanhamento.png);
+}
+
+.buttons .formulario {
+  .buttonsFooter();
+  background-image: url(../images/usecases/formulario.png);
+}
+
+.buttons .close {
+  .buttonsFooter();
+  background-image: url(../images/close.png);
+}
+
+.nav a.edit {
+  .linkNavegacao();
+  background-image: url(../images/database/edit.png);
+}
+
+.nav a.search {
+  .linkNavegacao();
+  background-image: url(../images/search.png);
+}
+
+.nav a.create {
+  .linkNavegacao();
+  background-image: url(../images/database/add.png);
+}
+
+.buttons .add {
+  .buttonsFooter();
+  background-image: url(../images/database/add.png);
+}
+
+.buttons .list {
+  .buttonsFooter();
+  background-image: url(../images/database/table.png);
+}
+
+.nav a.list {
+  .linkNavegacao();
+  background-image: url(../images/database/table.png);
+}
+
+input.search {
+  .imageTextButton(url(../images/search.png));
+}
+
+input.atendimento {
+  .imageTextButton(url(../images/usecases/atendimento.png));
+}
+
+input.close {
+  .imageTextButton(url(../images/close.png));
+}
+
+input.create {
+  .imageTextButton(url(../images/database/add.png));
+}
+
+input.save {
+  .imageTextButton(url(../images/database/save.png));
+}
+
+input.print {
+  .imageTextButton(url(../images/print.png));
+}
+
+input.delete {
+  .imageTextButton(url(../images/database/delete.png));
+}
+
+input.edit {
+  .imageTextButton(url(../images/database/edit.png));
+}
+
+input.cancel {
+  .imageTextButton(url(../images/cancel.png));
+}
+
+input.check {
+  .imageTextButton(url(../images/checked.png));
+}
+
+*/
+

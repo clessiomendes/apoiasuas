@@ -33,7 +33,7 @@
             <g:render template="formCompromisso"/>
 		</fieldset>
 		<fieldset class="buttons">
-	%{--o parametro oculto "data" contem o retorno do post (no nosso caso, um array json contendo o compromisso recem gravado--}%
+		%{--o parametro oculto "data" contem o retorno do post (no nosso caso, um array json contendo o compromisso recem gravado--}%
 		<g:submitToRemote url="[action:'saveCompromisso',id:localDtoCompromisso?.id]" onSuccess="sucessoSave(data);" onFailure="janelaModal.loadHTML(XMLHttpRequest.responseText);"
 						  class="save" value="Gravar"/>
 

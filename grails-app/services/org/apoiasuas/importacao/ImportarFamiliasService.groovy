@@ -417,11 +417,13 @@ class ImportarFamiliasService {
                 novoCidadao = true
                 //se nao encontrar, insere novo
                 cidadaoPersistido = Cidadao.novaInstancia()
-                cidadaoPersistido.nomeCompleto = nomeCidadao
                 cidadaoPersistido.familia = familiaPersistida
                 cidadaoPersistido.criador = usuarioSistema
+                cidadaoPersistido.ultimoAlterador = usuarioSistema
                 cidadaoPersistido.servicoSistemaSeguranca = servicoSistema
                 cidadaoPersistido.habilitado = true
+
+                cidadaoPersistido.nomeCompleto = nomeCidadao
             }
 
             if (novoCidadao || !cidadaoPersistido.alteradoAposImportacao()) {

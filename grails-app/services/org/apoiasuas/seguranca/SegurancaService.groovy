@@ -10,6 +10,7 @@ import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.util.AmbienteExecucao
+import org.hibernate.Hibernate
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Propagation
 
 @Transactional(readOnly = true)
 class SegurancaService {
+
+    static transactional = false;
 
     public static final String LOGIN_AMD = "admin"
     public static final int MIN_TAMANHO_SENHA = 4
@@ -138,14 +141,14 @@ class SegurancaService {
     public String getMunicipio() {
         ServicoSistema servicoLogado = getServicoLogado()
         servicoLogado.merge();
-        return servicoLogado.endereco.municipio
+        return servicoLogado.endereco?.municipio
     }
 
     @Transactional(readOnly = true)
     public String getUF() {
         ServicoSistema servicoLogado = getServicoLogado()
         servicoLogado.merge();
-        return servicoLogado.endereco.UF
+        return servicoLogado.endereco?.UF
     }
 
     @Transactional(readOnly = true)
@@ -292,6 +295,7 @@ class SegurancaService {
      * @param recurso verifica se o serviço logado tem acesso a determinada funcionalidade.
      * Ex: acessoServico='inclusaoMembroFamiliar' (todas as opções disponíveis são obtidas de AcessoSeguranca em ServicoSistema)
      */
+    @NotTransactional
     public boolean acessoRecursoServico(RecursosServico recurso) {
 
         if (recurso && ! recurso.propriedade.trim().isEmpty()) {

@@ -36,7 +36,6 @@
                     </td>
                     <td>
                         <div>
-                            %{--<input type="button" id="adicionarArquivo" name="adicionarArquivo" class="botaoIndependente" onclick="adicionarArquivoClick();" title="escolher um arquivo em seu computador"/>--}%
                             <input type="button" class="speed-button-expandir" title="mais opções" onclick="expandePesquisa();"/>
                             <g:submitButton formaction="list" name="list" id="search" class="search" value="Procurar"/>
                         </div>

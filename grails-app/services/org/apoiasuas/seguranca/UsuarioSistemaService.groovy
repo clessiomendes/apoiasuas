@@ -34,7 +34,7 @@ class UsuarioSistemaService {
             usuarioSistema.criador = segurancaService.getUsuarioLogado()
             usuarioSistema.servicoSistemaSeguranca = segurancaService.getServicoLogado()
             if (! senha)
-                erroSenha = "Senha é ogragatória"
+                erroSenha = "Senha é obrigatória"
         }
 
         usuarioSistema.ultimoAlterador = segurancaService.getUsuarioLogado()

@@ -1,5 +1,8 @@
 <%@ page import="org.apoiasuas.marcador.Marcador" %>
-<asset:javascript src="especificos/marcadores.js"/>
+<asset:javascript src="familia/marcador/marcadores.js"/>
+<asset:stylesheet src="jquery.clearField/jquery.clearField.css"/>
+<asset:javascript src="jquery.clearField/jquery.clearField.js"/>
+<asset:stylesheet src="animate.css"/>
 
 %{--Associa os eventos de busca incremental no input de pesquisa e do botao expandir--}%
 <g:javascript>
@@ -10,15 +13,15 @@
         inicializaEventosTabMarcadores(fieldsetOutrosMarcadores);
 
         // Stop user to press enter in textbox
-        $(".input-search").keypress(function(event) {
+        $("#txtProcurar").keypress(function(event) {
             if (event.keyCode == 13) {
                 event.preventDefault();
                 return false;
             }
         });
 
-        //onkeyup - pesquisa incremental à partir do input de busca
-        $(".input-search").keyup( function() {
+        //pesquisa incremental à partir do input de busca
+        $("#txtProcurar").on('input', function() {
             filtraMarcadores(this)
         } );
 
@@ -81,13 +84,13 @@
     }
 </g:javascript>
 
-Procurar: <input type="text" class="input-search"
+<h4 class="animated bounceInLeft label-procurar pointer">info específica:</h4> <input id="txtProcurar" type="text" size="15" class="clear-field"
        title="Digite uma ou mais palavras chaves para procurar uma sinalização (programa, vulnerabilidade, ação ou outras) já definida.">
 
 <fieldset id="fieldsetProgramas" class="fieldsetMarcadores">
     <legend>Programas <g:helpTooltip chave="help.marcador.programas"/>
         <g:if test="${permiteInclusao == 'true'}">
-            &nbsp;<input type="button" class="btn-adicionar-marcador" onclick="novoMarcadorPrograma(updateListProgramas);"
+            &nbsp;<input type="button" class="speed-button-adicionar-marcador" onclick="novoMarcadorPrograma(updateListProgramas);"
                          title="Caso ainda não exista, você pode definir um novo programa em execução no seu território">
         </g:if>
     &nbsp;<input type="button" class="speed-button-expandir"
@@ -105,7 +108,7 @@ Procurar: <input type="text" class="input-search"
 <fieldset id="fieldsetVulnerabilidades" class="fieldsetMarcadores">
     <legend>Vulnerabilidades <g:helpTooltip chave="help.marcador.vulnerabilidades"/>
         <g:if test="${permiteInclusao == 'true'}">
-            &nbsp;<input type="button" class="btn-adicionar-marcador" onclick="novoMarcadorVulnerabilidade(updateListVulnerabilidades);"
+            &nbsp;<input type="button" class="speed-button-adicionar-marcador" onclick="novoMarcadorVulnerabilidade(updateListVulnerabilidades);"
                          title="Caso ainda não exista, você pode definir uma nova categoria de vulnerabilidades">
         </g:if>
     &nbsp;<input type="button" class="speed-button-expandir"
@@ -123,7 +126,7 @@ Procurar: <input type="text" class="input-search"
 <fieldset id="fieldsetAcoes" class="fieldsetMarcadores">
     <legend>Ações <g:helpTooltip chave="help.marcador.acoes"/>
         <g:if test="${permiteInclusao == 'true'}">
-            &nbsp;<input type="button" class="btn-adicionar-marcador" onclick="novoMarcadorAcao(updateListAcoes);"
+            &nbsp;<input type="button" class="speed-button-adicionar-marcador" onclick="novoMarcadorAcao(updateListAcoes);"
                          title="Caso ainda não exista, você pode definir uma nova categoria de ações previstas para serem executadas com as famílias">
         </g:if>
     &nbsp;<input type="button" class="speed-button-expandir"
@@ -141,7 +144,7 @@ Procurar: <input type="text" class="input-search"
 <fieldset id="fieldsetOutrosMarcadores" class="fieldsetMarcadores">
     <legend>Outros tipos de sinalização <g:helpTooltip chave="help.marcador.outros.marcadores"/>
         <g:if test="${permiteInclusao == 'true'}">
-            &nbsp;<input type="button" class="btn-adicionar-marcador" onclick="novoMarcadorOutroMarcador(updateListOutrosMarcadores);"
+            &nbsp;<input type="button" class="speed-button-adicionar-marcador" onclick="novoMarcadorOutroMarcador(updateListOutrosMarcadores);"
                          title="Caso ainda não exista, você pode definir um novo tipo de sinalização para as famílias">
         </g:if>
     &nbsp;<input type="button" class="speed-button-expandir"

@@ -31,7 +31,7 @@ class LocalFSService implements FileStorageService {
 //            erro += " bucket nao pode ser nulo para armazenamento do file "
 //        if (! file)
 //            erro += " file nao pode ser nulo para armazenamento de file "
-//        if (! erro.isEmpty())
+//        if (! erro.notEmpty())
 //            throw ApoiaSuasException(erro)
 
         //gerando indice no banco de dados
@@ -68,7 +68,7 @@ class LocalFSService implements FileStorageService {
 //            erro += " bucket nao pode ser nulo para obtencao de file "
 //        if (! chave)
 //            erro += " chave nao pode ser nula para obtencao de file "
-//        if (! erro.isEmpty())
+//        if (! erro.notEmpty())
 //            throw ApoiaSuasException(erro)
 
         //obtem indice do banco de dados

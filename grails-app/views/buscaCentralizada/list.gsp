@@ -13,7 +13,7 @@
             <g:form action="list">
                 <ul>
                     <li><g:textField name="palavraChave" size="40" autofocus="" value="${filtro?.palavraChave}"/></li>
-                    <li><g:submitButton name="list" class="list" value="Procurar"/></li>
+                    <li><g:submitButton name="list" class="search" value="Procurar"/></li>
                 </ul>
             </g:form>
         </div>

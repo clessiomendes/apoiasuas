@@ -9,18 +9,18 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title><g:layoutTitle default="Grails"/></title>
+    <title><g:layoutTitle default="Apoia CRAS"/></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon">
     <link rel="apple-touch-icon" href="${assetPath(src: 'apple-touch-icon.png')}">
     <link rel="apple-touch-icon" sizes="114x114" href="${assetPath(src: 'apple-touch-icon-retina.png')}">
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
-    <asset:javascript src="especificos/notify.js"/>
-    <asset:stylesheet src="especificos/notificacoes.less"/>
-    <asset:stylesheet src="especificos/header.less"/>
+    <asset:javascript src="notify.js"/>
+    <asset:stylesheet src="notificacoes-familia.less"/>
+    <asset:stylesheet src="header.less"/>
     <g:if env="development">
-        <asset:stylesheet src="globais/development-utils.less"/>
+        <asset:stylesheet src="development-utils.less"/>
     </g:if>
 
     <g:layoutHead/>
@@ -58,7 +58,7 @@
 
 <body>
 
-    <g:render template="/layouts/notificacoes"></g:render>
+    <g:render template="/layouts/notificacoesFamilia"></g:render>
 
     %{--   Muda a cor do banner de acordo com o ambiente:   --}%
     <div role="banner" id= "grailsLogoProd"}>

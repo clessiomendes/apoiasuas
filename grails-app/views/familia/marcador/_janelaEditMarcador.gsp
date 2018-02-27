@@ -1,5 +1,5 @@
 <%@ page import="org.apoiasuas.marcador.Marcador" %>
-<asset:javascript src="especificos/marcadores.js"/>
+<asset:javascript src="familia/marcador/marcadores.js"/>
 
 <g:javascript>
 /**
@@ -46,12 +46,8 @@ $(document).ready(function() {
 --}%
 
         <div class="fieldcontain">
+            <label>Descrição</label>
             <span id="descricaoMarcador" class="property-value"></span>
-        </div>
-
-        <div class="fieldcontain">
-            <label for="inputObservacaoMarcador">Observacao</label>
-            <g:textField name="inputObservacaoMarcador" id="inputObservacaoMarcador" size="40" maxlength="255"/>
         </div>
 
         <div class="fieldcontain">
@@ -60,6 +56,13 @@ $(document).ready(function() {
             </label>
             <g:select name="inputTecnicoMarcador" from="${operadores}" optionKey="id" class="many-to-one"
                       noSelection="['': '']"/>
+        </div>
+
+        <div class="nova-linha"></div>
+
+        <div class="fieldcontain">
+            <label for="inputObservacaoMarcador">Observacao</label>
+            <g:textField name="inputObservacaoMarcador" id="inputObservacaoMarcador" size="40" maxlength="255"/>
         </div>
 
     </g:form>

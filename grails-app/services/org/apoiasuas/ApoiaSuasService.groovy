@@ -1,7 +1,13 @@
 package org.apoiasuas
 
+import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import groovy.sql.Sql
+import org.apache.commons.io.IOUtils
+import org.apache.poi.openxml4j.opc.OPCPackage
+import org.apache.poi.xwpf.usermodel.XWPFDocument
+import org.apache.poi.xwpf.usermodel.XWPFParagraph
+import org.apache.xmlbeans.XmlOptions
 import org.apoiasuas.util.AmbienteExecucao
 import org.hibernate.Session
 import org.hibernate.SessionFactory
@@ -9,11 +15,16 @@ import org.hibernate.cfg.Configuration
 import org.hibernate.dialect.PostgreSQL81Dialect
 import org.hibernate.tool.hbm2ddl.DatabaseMetadata
 import org.hibernate.transform.AliasToEntityMapResultTransformer
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody
+import org.springframework.core.io.Resource
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver
+import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder
 
 @Transactional(readOnly = true)
 class ApoiaSuasService {
 
+    static transactional = false;
     def grailsApplication
 //    SessionFactory sessionFactory
 
@@ -51,11 +62,69 @@ class ApoiaSuasService {
     }
 
     @Transactional(readOnly = true)
-    long ocupacaoBD() {
+    public long ocupacaoBD() {
 //        def result = groovySql.firstRow("select 0").get(0)
 //        def result = groovySql.firstRow("select pg_database_size('bcck9gsbpzsnf7y')").getAt(0)
 //        return (result instanceof Number) ? result.longValue() : null;
         return 0
 //        select pg_size_pretty(pg_database_size('bcck9gsbpzsnf7y'));
     }
+
+    @NotTransactional
+    public Resource obtemArquivo(String nomeArquivo) throws Exception {
+        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(this.getClass().getClassLoader());
+//        Resource[] resources = resolver.getResources("classpath*:/**/teste-multi.docx");
+        Resource[] resources = resolver.getResources("classpath*:/**/$nomeArquivo");
+        if (! resources)
+            throw new RuntimeException("Arquivo não encontrado: ($nomeArquivo)")
+        else {
+            if (resources.size() > 1)
+                //TODO: listar os diferentes locais do resource no classpath usando resources[*].getDescription()
+                log.warn("Atenção! Encontradas mais de uma referência a $nomeArquivo no classpath")
+            return resources[0];
+        }
+    }
+
+    @NotTransactional
+    public void append(OutputStream dest, List<InputStream> documentos) throws Exception {
+//        documentos = documentos.removeAll { it == null };
+        InputStream primeiroInputStream = documentos[0]
+        documentos.remove(0);
+        OPCPackage primeiroPackage = OPCPackage.open(primeiroInputStream);
+        XWPFDocument primeiroDocument = new XWPFDocument(primeiroPackage);
+        CTBody primeiroBody = primeiroDocument.getDocument().getBody();
+        documentos.each { InputStream proximoInputStream ->
+            OPCPackage proximoPackage = OPCPackage.open(proximoInputStream);
+            /*
+                    XWPFParagraph paragraph = src1Document.createParagraph();
+                    paragraph.setPageBreak(true);
+            */
+            XWPFDocument proximoDocument = new XWPFDocument(proximoPackage);
+
+            List<XWPFParagraph> paragraphs = proximoDocument.getParagraphs();
+            paragraphs[0].setPageBreak(true);
+
+            CTBody proximoBody = proximoDocument.getDocument().getBody();
+
+            //adiciona o proximo no primeiro. o primeiro passa a conter a soma dos dois.
+            appendBody(primeiroBody, proximoBody);
+        }
+        primeiroDocument.write(dest);
+    }
+
+    private void appendBody(CTBody src, CTBody append) throws Exception {
+        XmlOptions optionsOuter = new XmlOptions();
+        optionsOuter.setSaveOuter();
+        String appendString = append.xmlText(optionsOuter);
+        String srcString = src.xmlText();
+        String prefix = srcString.substring(0,srcString.indexOf(">")+1);
+        String mainPart = srcString.substring(srcString.indexOf(">")+1,srcString.lastIndexOf("<"));
+        String sufix = srcString.substring( srcString.lastIndexOf("<") );
+        String addPart = appendString.substring(appendString.indexOf(">") + 1, appendString.lastIndexOf("<"));
+        CTBody makeBody = CTBody.Factory.parse(prefix+mainPart+addPart+sufix);
+        src.set(makeBody);
+    }
+
+
+
 }

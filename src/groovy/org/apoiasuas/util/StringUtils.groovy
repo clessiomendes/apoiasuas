@@ -131,4 +131,23 @@ class StringUtils {
         padrao = padrao.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         return texto.contains(padrao);
     }
+
+    /**
+     * Concatena uma lista de objetos (convertidos para String), desprezando nulos e vazios, e utilizando o separador
+     * passado por parametro entre cada dois objetos concatenados
+     */
+    public static String concatena(String separador, Object... params) {
+        return params.findAll{(it)}.join(separador);
+    }
+
+    /**
+     * Concatena uma lista de objetos. Se algum deles for nulo, retorna nulo
+     */
+    public static String concatenaNulo(Object... params) {
+        if (params.find{ it == null })
+            return null
+        else
+            return params.join('');
+    }
+
 }

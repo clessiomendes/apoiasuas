@@ -5,7 +5,7 @@
     org.apoiasuas.cidadao.Familia localFamiliaCandidata = familiaCandidata;
 %>
 
-<asset:javascript src="especificos/datepicker-pt-BR.js"/>
+<asset:javascript src="datepicker-pt-BR.js"/>
 
 <script>
     var janelaModalProcurarCidadao = new JanelaModalAjax();
@@ -107,7 +107,7 @@
         var url = "${createLink(controller: 'cidadao', action:'procurarCidadaoPopup')}";
         if ($('#inputNomeCidadao').val())
             url += "?nomeOuCad="+$('#inputNomeCidadao').val();
-        janelaModalProcurarCidadao.abreJanela({ titulo: "passo 1", largura: 900, url: url })
+        janelaModalProcurarCidadao.abreJanela({ titulo: "Pesquisa no Banco de Dados", largura: 900, url: url })
     }
     //# sourceURL=formAtendimentoParticularizado
 </script>
@@ -174,7 +174,7 @@
 
 <div class="fieldcontain">
     <label></label>
-    <span id="spanSituacao" style="padding: 0.5em 0.7em; display: inline-block; border-radius: 0.3em; background-color: ${localDtoAtendimento.getCor()}">
+    <span id="spanSituacao" class="${localDtoAtendimento.getCor()}" style="padding: 0.5em 0.7em; display: inline-block; border-radius: 0.3em;">
         ${localDtoAtendimento.getTooltip()}
         <g:if test="${localDtoAtendimento.horarioPreenchido}">
             <input type="button" id="btnLiberar" class="speed-button-liberar" onclick="liberarClick(); return false;" title="Liberar horário"/>

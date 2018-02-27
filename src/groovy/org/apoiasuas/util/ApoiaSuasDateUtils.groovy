@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 class ApoiaSuasDateUtils {
     public static final String FORMATO_DATA_HORA = 'dd/MM/yyyy H:mm'   
 
-    public static boolean momentosProximos(Date momento0, Date momento1, proximidadeMillis = TimeUnit.SECONDS.toMillis(10)) {
+    public static boolean momentosProximos(Date momento0, Date momento1, long proximidadeMillis = TimeUnit.SECONDS.toMillis(10)) {
         return Math.abs(momento1.time - momento0.time) < proximidadeMillis
     }
 
@@ -33,5 +33,16 @@ class ApoiaSuasDateUtils {
             return new DateTime(date).toString()
         else
             return null;
+    }
+
+    /**
+     * Retorna a diferença aproximada, em anos e em valor absoluto, entre duas datas
+     */
+    public static Integer yearsBetween(Date date1, Date date2) {
+        if (! date1 || ! date2)
+            return null;
+        int days = Math.abs(Math.round(date1 - date2))
+        int years = Math.round(days / 365.2422)
+        return years
     }
 }

@@ -5,12 +5,27 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'familia.label', default: 'Familia')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
+		<asset:javascript src="familia/telefone/formTelefones.js"/>
+		<asset:stylesheet src="familia/telefone/formTelefones.less"/>
 	</head>
 	<body>
 
 		<div class="nav" role="navigation">
 			<ul>
-                <li><g:link class="list" controller="cidadao" action="procurarCidadao"><g:message message="Procurar"/></g:link></li>
+                <li><g:link class="search" controller="cidadao" action="procurarCidadao"
+							title="Procurar outra família/usuário"><g:message message="Procurar"/></g:link></li>
+				<li><g:link class="edit" controller="familiaDetalhado" action="edit" id="${familiaInstance.id}"
+							title="Ver (ou alterar) o cadastro familiar completo">Cadastro completo</g:link></li>
+				<li><g:link class="formulario" controller="emissaoFormulario" action="escolherFamilia"
+							title="Preencher um formulário para um membro desta família">Emitir formulário</g:link></li>
+				<li><g:link class="edit" controller="familia" action="editMarcadoresApenas" id="${familiaInstance.id}"
+							title="Definir programas, vulnerabilidades e ações para esta família">Alterar indicadores</g:link></li>
+				<li><g:link class="acompanhamento" controller="familia" action="editAcompanhamentoFamilia" id="${familiaInstance.id}"
+							title="Alterar os dados de acompanhamento desta família">Acompanhamento</g:link></li>
+				<li><g:link class="atendimento" controller="agenda" action="calendario"
+							title="Abre a agenda de atendimentos para escolha de um horário">Agendar atendimento</g:link></li>
+				<li><g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosFamilia" params="[idFamilia: familiaInstance.id]"
+							title="Permite ver todos os formulários já emitidos para esta família">Formulários emitidos</g:link></li>
 			</ul>
 		</div>
 

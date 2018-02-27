@@ -15,11 +15,11 @@
     function eventoSelecaoTipo() {
         var radioValue = $("input[name='tipo']:checked").val();
         if (radioValue == "${Link.Tipo.FILE.toString()}") {
-            $('#tipoFile').slideDown(500);
-            $('#tipoUrl').hide();
+            $('#tipoFile').removeClass('hidden');
+            $('#tipoUrl').addClass('hidden');
         } else if (radioValue == "${Link.Tipo.URL.toString()}") {
-            $('#tipoFile').hide();
-            $('#tipoUrl').slideDown(500);
+            $('#tipoFile').addClass('hidden');
+            $('#tipoUrl').removeClass('hidden');
         }
     }
 
@@ -27,9 +27,9 @@
         var checked = $(this).prop('checked')
         console.log(checked);
         if (checked == true) {
-            $('#compartilhadoCom').slideDown(500);
+            $('#compartilhadoCom').removeClass('hidden');
         } else {
-            $('#compartilhadoCom').slideUp(500);
+            $('#compartilhadoCom').addClass('hidden');
             //$('#compartilhadoCom').hide();
         }
     }
@@ -46,14 +46,14 @@
 
 <br>
 
-<div id="tipoUrl" style="display: none" class="fieldcontain ${linkDTO.tipo?.isUrl() ? '' : 'hidden'} ${hasErrors(bean: linkDTO, field: 'url', 'error')} ">
+<div id="tipoUrl" class="fieldcontain ${linkDTO.tipo?.isUrl() ? '' : 'hidden'} ${hasErrors(bean: linkDTO, field: 'url', 'error')} ">
     <label for="url">
         <g:message code="link.URL.label" default="Url" />
     </label>
     <g:textField maxlength="250" size="60" name="url" value="${linkDTO?.url}"/>
 </div>
 
-<div id="tipoFile" style="display: none" class="fieldcontain ${linkDTO.tipo?.isFile() ? '' : 'hidden'} ${hasErrors(bean: linkDTO, field: 'file', 'error')} ">
+<div id="tipoFile" class="fieldcontain ${linkDTO.tipo?.isFile() ? '' : 'hidden'} ${hasErrors(bean: linkDTO, field: 'file', 'error')} ">
     <label>Arquivo</label>
     <g:render template="/fileStorage" model="[fileName: linkDTO.fileName]"/>
 </div>
@@ -81,7 +81,7 @@
 
 <br>
 
-<div id="compartilhadoCom" style="display: none" class="fieldcontain ${linkDTO.compartilhar ? '' : 'hidden'} class="fieldcontain ${hasErrors(bean: linkDTO, field: 'compartilhadoCom', 'error')}">
+<div id="compartilhadoCom" class="fieldcontain ${linkDTO.compartilhar ? '' : 'hidden'} class="fieldcontain ${hasErrors(bean: linkDTO, field: 'compartilhadoCom', 'error')}">
     <span id="uf-label" class="property-label"><g:message code="link.compartilhadoCom.label"/></span>
     <span class="property-value" style="margin-left:25%" aria-labelledby="uf-label">
         <g:render template="/abrangenciaTerritorial"/>

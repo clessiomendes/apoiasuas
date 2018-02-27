@@ -35,7 +35,7 @@
 				<g:hiddenField name="version" value="${familiaInstance?.version}" />
 
 				<g:tabs id="tabs" style="margin: 5px;">
-					<g:tab id="tabEditFamilia" titulo="família" template="tabEditFamiliaTeste"/>
+					<g:tab id="tabEditFamilia" titulo="família" template="tabEditFamilia"/>
 					<g:tab id="tabMarcadores" titulo="programas, ações..." template="marcador/tabMarcadores" model="[permiteInclusao: 'true']"/>
 					<g:tab id="tabMonitoramento" titulo="monitoramento" template="monitoramento/tabMonitoramentos"/>
 					<g:tab id="tabAcompanhamento" titulo="plano de acompanhamento" template="acompanhamento/tabAcompanhamento"/>
@@ -44,7 +44,7 @@
 
 				<fieldset class="buttons">
                     <g:actionSubmit class="save" value="gravar" action="saveAcompanhamento"/>
-                    <g:actionSubmit class="save" value="gravar e emitir plano" action="saveAndDownloadAcompanhamento"/>
+                    <g:actionSubmit class="print" value="emitir plano" action="saveAndDownloadAcompanhamento"/>
                     %{--<g:submitButton name="gravaAcompanhamento" class="save" value="gravar e emitir plano" />--}%
 				</fieldset>
 			</g:form>

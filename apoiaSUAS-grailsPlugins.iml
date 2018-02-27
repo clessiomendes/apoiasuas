@@ -338,12 +338,17 @@
           <root url="jar://$MAVEN_REPOSITORY$/commons-codec/commons-codec/1.9/commons-codec-1.9.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/apache/poi/poi/3.11/poi-3.11.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/net/sf/jsignature/io-tools/easystream/1.2.15/easystream-1.2.15.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/xmlbeans/xmlbeans/2.3.0/xmlbeans-2.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
           <root url="jar://$USER_HOME$/.ideaLibSources/hibernate-core-4.3.5.Final-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/grails-datastore-gorm-3.1.2.RELEASE-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/joda-time-2.3-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/fr.opensagres.xdocreport.document-1.0.4-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/fr.opensagres.xdocreport.template-1.0.4-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/fr.opensagres.xdocreport.template.velocity-1.0.4-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/ooxml-schemas-1.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

@@ -17,7 +17,6 @@ import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.util.ApoiaSuasException
 import org.apoiasuas.util.StringUtils
 import org.hibernate.Hibernate
@@ -91,19 +90,6 @@ class FamiliaController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
-    def create() {
-        if (! segurancaService.acessoRecursoServico(RecursosServico.INCLUSAO_FAMILIA))
-            throw new ApoiaSuasException("O recurso de inclusão de família não está habilitado para este serviço")
-
-        //passa para o modelo da view DUAS novas instâncias: uma para a família e outra para a referência familiar
-        Cidadao referenciaFamiliar = new Cidadao();
-        referenciaFamiliar.referencia = true;
-        referenciaFamiliar.parentescoReferencia = cidadaoService.PARENTESCO_REFERENCIA;
-        Familia novaFamilia = new Familia();
-        render view: "create", model: getEditCreateModel(novaFamilia)+[cidadaoInstance: referenciaFamiliar];
-    }
-
-    @Secured([DefinicaoPapeis.STR_USUARIO])
     def save(Familia familiaInstance, ProgramasCommand programasCommand, AcoesCommand acoesCommand,
              VulnerabilidadesCommand vulnerabilidadesCommand, OutrosMarcadoresCommand outrosMarcadoresCommand) {
         if (! familiaInstance)
@@ -117,19 +103,11 @@ class FamiliaController extends AncestralController {
             //inicializando a referencia familiar
             if (! params.cidadao)
                 throw new ApoiaSuasException("Faltando informações da referência familiar na criação de uma nova família.")
-            novaReferenciaFamiliar = new Cidadao(params.cidadao);
-            novaReferenciaFamiliar.familia = familiaInstance;
-            novaReferenciaFamiliar.servicoSistemaSeguranca = segurancaService.servicoLogado;
-            novaReferenciaFamiliar.criador = segurancaService.usuarioLogado;
-            novaReferenciaFamiliar.habilitado = true;
-            novaReferenciaFamiliar.ultimoAlterador = segurancaService.usuarioLogado;
+            novaReferenciaFamiliar = cidadaoService.novoCidadao(new Cidadao(params.cidadao), familiaInstance);
             validado = novaReferenciaFamiliar.validate() && validado;
 
             //inicializando a familia
-            familiaInstance.criador = usuarioLogado;
-            familiaInstance.ultimoAlterador = usuarioLogado;
-            familiaInstance.situacaoFamilia = SituacaoFamilia.CADASTRADA;
-            familiaInstance.servicoSistemaSeguranca = servicoCorrente;
+            familiaInstance = familiaService.novaFamilia(familiaInstance);
         }
 
         //Validacao: se estiver gravando também uma referencia familiar, é preciso validá-la também
@@ -146,11 +124,11 @@ class FamiliaController extends AncestralController {
             return show(familiaInstance)
         } else {
             //exibe o formulario novamente em caso de problemas na validacao
-            return render(view: modoCriacao ? "create" : "edit" , model: getEditCreateModel(familiaInstance)+[cidadaoInstance: novaReferenciaFamiliar]);
+            return render(view: modoCriacao ? "detalhes/create" : "edit" , model: getEditCreateModel(familiaInstance)+[cidadaoInstance: novaReferenciaFamiliar]);
         }
     }
 
-    private Map getEditCreateModel(Familia familiaInstance) {
+    protected Map getEditCreateModel(Familia familiaInstance) {
         Hibernate.initialize(familiaInstance.membros);
         Hibernate.initialize(familiaInstance.monitoramentos);
 
@@ -160,7 +138,7 @@ class FamiliaController extends AncestralController {
         List<OutroMarcador> outrosMarcadoresDisponiveis = marcadoresDisponiveis(familiaInstance.outrosMarcadores, marcadorService.getOutrosMarcadoresDisponiveis() );
         preparaTelefonesParaEdicao(familiaInstance);
         return [familiaInstance: familiaInstance,
-                operadores: marcadorService.getTecnicosIncluiMarcadores(familiaInstance),
+                operadores: marcadorService.getTecnicosIncluiMarcadores(familiaInstance) as Set,
                 outrosMarcadoresDisponiveis: outrosMarcadoresDisponiveis, programasDisponiveis: programasDisponiveis,
                 acoesDisponiveis: acoesDisponiveis, vulnerabilidadesDisponiveis: vulnerabilidadesDisponiveis]
     }
@@ -197,6 +175,8 @@ class FamiliaController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def edit(Familia familiaInstance) {
+        if (! familiaInstance)
+            return notFound()
         render view: 'edit', model: getEditCreateModel(familiaInstance);
     }
 
@@ -605,10 +585,15 @@ class FamiliaController extends AncestralController {
         Hibernate.initialize(familia.telefones);
         familia.discard();
 
-//        familia.telefones = new LinkedHashSet<>(familia.telefones);
-        for (int i = familia.telefones.size(); i < TELEFONES_POR_FAMILIA - 1; i++)
+        //Sempre abre 5 telefones no mínimo, e sempre pelo menos um extra vazio
+//        for (int i = familia.telefones.size(); i < TELEFONES_POR_FAMILIA - 1; i++)
+//            familia.telefones.add(new Telefone(familia));
+//        familia.telefones.add(new Telefone(familia)); //Sempre adicionar um em branco
+
+        //Se ainda não houver nenhum telefone, abre um em branco
+        if (! familia.telefones)
             familia.telefones.add(new Telefone(familia));
-        familia.telefones.add(new Telefone(familia)); //Sempre adicionar um em branco
+
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
@@ -643,7 +628,7 @@ class FamiliaController extends AncestralController {
      * do dominio (e falso caso pelo menos um deles não tenha passado. Neste caso, cada objeto telefone carrega os seus
      * erros de validacao)
      */
-    private boolean telefonesFromRequest(Familia familia) {
+    protected boolean telefonesFromRequest(Familia familia) {
         boolean result = true;
         request.getParameterValues("numero").eachWithIndex { fool, i ->
             String idTelefone = request.getParameterValues("idTelefone")[i];

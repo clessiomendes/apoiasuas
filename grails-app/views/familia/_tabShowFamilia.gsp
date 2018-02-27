@@ -131,21 +131,14 @@
     %{--Lista membros habilitados--}%
     <fieldset class="embedded fieldcontain" style="padding: 0 10px; display: block">
         <legend>Membros</legend>
-        %{--<span id="membros-label" class="property-label"><g:message code="familia.membros.label" default="Membros" /></span>--}%
-        <g:each in="${localDtoFamilia.getMembrosOrdemPadrao(true)}" var="m">
-            %{--<span class="property-value">--}%
-            <span style="display: inline-block; line-height: 1.5em;">
-                ${m.parentescoReferencia ? m.parentescoReferencia + ": " : ""}
-                <g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link>
-                ${m.idade ? ", "+m.idade + " anos" : ""}
-            </span>
-            <br>
-        </g:each>
+        <g:render template="membro" collection="${localDtoFamilia.getMembrosOrdemPadrao(true)}"/>
         <div style="margin-top: 5px">
+%{--  Novos cidadãos são criados apenas na tela completa de cadastro familiar
             <sec:access acessoServico="${RecursosServico.INCLUSAO_MEMBRO_FAMILIAR}">
                 <input id="novoMembro" type="button" class="create" style="margin: 5px 5px 5px 0"
                        title="Incluir um novo cidadão como membro desta família" value="Novo membro" onclick="novoMembro();">
             </sec:access>
+--}%
             <input id="trocarReferencia" type="button" class="edit" style="margin: 5px 5px 5px 0"
                    title="Alterar a referência familiar e o parentesco entre os membros" value="Trocar referência" onclick="trocaReferencia();">
         </div>
@@ -156,35 +149,18 @@
     <g:if test="${membrosDesabilitados}">
         <fieldset class="embedded fieldcontain" style="padding: 0 10px 5px 10px; display: block">
             <legend>Membros removidos</legend>
-            <g:each in="${membrosDesabilitados}" var="m">
-                <span style="display: inline-block; line-height: 1.5em;">
-                    ${m.parentescoReferencia ? m.parentescoReferencia + ": " : ""}
-                    <g:link controller="cidadao" action="show" id="${m.id}">${m?.nomeCompleto }</g:link>
-                    ${m.idade ? ", "+m.idade + " anos" : ""}
-                </span>
-            </g:each>
+            <g:render template="membro" collection="${membrosDesabilitados}"/>
         </fieldset>
     </g:if>
 
-%{--
-    <li class="fieldcontain">
-        <span id="telefones-label" class="property-label"><g:message code="familia.telefones.label" default="Telefones" /></span>
-        <span class="property-value" aria-labelledby="telefones-label">
-            <span id="divTelefones">
-                <g:include controller="familia" action="getTelefones" id="${localDtoFamilia?.id}"/>
-            </span>
-            <input id="editarTelefones" type="button" class="speed-button-editar" style="transform: scale(0.8); vertical-align: middle"
-                   title="Clique para incluir, remover ou alterar telefones." onclick="editTelefones();">
-        </span>
-    </li>
---}%
 </ol>
 
+%{--
 <fieldset class="buttons">
     <g:link class="formulario" controller="emissaoFormulario" action="escolherFamilia">Emitir formulário</g:link>
     <g:link class="formulario" controller="emissaoFormulario" action="listarFormulariosEmitidosFamilia" params="[idFamilia: familiaInstance.id]" >Formulários emitidos</g:link>
     <g:link class="edit" action="edit" resource="${familiaInstance}">Alterar dados</g:link>
     <g:link class="acompanhamento" controller="familia" action="editAcompanhamentoFamilia" id="${familiaInstance.id}">Acompanhamento</g:link>
     <g:link class="atendimento" controller="agenda" action="calendario">Agendar atendimento</g:link>
-    %{--<g:link class="atendimento" controller="agenda" action="calendario">Histórico de atendimentos</g:link>--}%
 </fieldset>
+--}%

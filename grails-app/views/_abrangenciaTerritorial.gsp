@@ -1,3 +1,6 @@
+<asset:javascript src="jstree/jstree.js"/>
+<asset:stylesheet src="jstree/themes/default/style.css"/>
+
 %{--Javascript para a selecao de abrangencia territorial--}%
 <g:javascript>
 

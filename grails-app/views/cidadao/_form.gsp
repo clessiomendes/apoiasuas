@@ -1,3 +1,4 @@
+%{--FIXME: página substituída por familia.detalhes.cidadao.*--}%
 <%@ page import="org.apoiasuas.cidadao.Cidadao" %>
 
 <%
@@ -8,30 +9,30 @@
 %{--<f:with bean="${localDtoCidadao}">--}%
 	%{--<f:field property="nomeCompleto" prefix="${prefixo}" label="Nome completo" widget-size="60"/>--}%
 
-	<div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'nomeCompleto', 'error')} ">
-		<label for="nomeCompleto">
-			<g:message code="cidadao.nomeCompleto.label" default="Nome Completo" />
-		</label>
-		<g:textField name="${prefixo}nomeCompleto" size="60" maxlength="60" value="${localDtoCidadao?.nomeCompleto}"/>
-	</div>
+<div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'nomeCompleto', 'error')} ">
+	<label for="nomeCompleto">
+		<g:message code="cidadao.nomeCompleto.label" default="Nome Completo" />
+	</label>
+	<g:textField name="${prefixo}nomeCompleto" size="60" maxlength="60" value="${localDtoCidadao?.nomeCompleto}"/>
+</div>
 
 %{--Só permite alterar se não for a referência--}%
-	<div id="divParentescoReferencia" class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'parentescoReferencia', 'error')} ">
-		<g:hiddenField name="${prefixo}referencia" value="${localDtoCidadao.referencia}"/>
-		<g:if test="${localDtoCidadao.referencia}">
-			<div class="property-label"></div>
-			<div class="property-value">Referência Familiar</div>
-			<g:hiddenField name="${prefixo}parentescoReferencia" value="${localDtoCidadao.parentescoReferencia}"/>
-		</g:if>
-		<g:else>
-			<label for="parentescoReferencia">
-				<nobr>
-					Parentesco <g:helpTooltip chave="cidadao.parentesco.referencia" args="[localDtoCidadao.familia?.referencia?.nomeCompleto]"/>
-				</nobr>
-			</label>
-			<g:textField name="${prefixo}parentescoReferencia" value="${localDtoCidadao?.parentescoReferencia}"/>
-		</g:else>
-	</div>
+<div id="divParentescoReferencia" class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'parentescoReferencia', 'error')} ">
+	<g:hiddenField name="${prefixo}referencia" value="${localDtoCidadao.referencia}"/>
+	<g:if test="${localDtoCidadao.referencia}">
+		<div class="property-label"></div>
+		<div class="property-value">Referência Familiar</div>
+		<g:hiddenField name="${prefixo}parentescoReferencia" value="${localDtoCidadao.parentescoReferencia}"/>
+	</g:if>
+	<g:else>
+		<label for="parentescoReferencia">
+			<nobr>
+				Parentesco <g:helpTooltip chave="cidadao.parentesco.referencia" args="[localDtoCidadao.familia?.referencia?.nomeCompleto ?: '']"/>
+			</nobr>
+		</label>
+		<g:textField name="${prefixo}parentescoReferencia" value="${localDtoCidadao?.parentescoReferencia}"/>
+	</g:else>
+</div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'dataNascimento', 'error')} ">
 	<label for="dataNascimento">
@@ -71,12 +72,14 @@
 	<g:textField name="UFNaturalidade" size="2" maxlength="2" value="${localDtoCidadao?.UFNaturalidade}"/>
 </div>
 
+%{--
 <div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'estadoCivil', 'error')} ">
 	<label for="naturalidade">
 		<g:message code="cidadao.estadoCivil.label" default="Estado Civil" />
 	</label>
 	<g:textField name="estadoCivil" size="10" maxlength="20" value="${localDtoCidadao?.estadoCivil}"/>
 </div>
+--}%
 
 <div class="fieldcontain ${hasErrors(bean: localDtoCidadao, field: 'nomeMae', 'error')} ">
 	<label for="nomeMae">

@@ -5,6 +5,8 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'abrangenciaTerritorial.label')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
+		<asset:javascript src="jstree/jstree.js"/>
+		<asset:stylesheet src="jstree/themes/default/style.css"/>
     </head>
 
 <g:javascript>

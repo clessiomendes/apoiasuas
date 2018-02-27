@@ -23,8 +23,9 @@
                     ${fieldValue(bean: cidadaoInstance, field: "familia.cad")}
                 </g:link></td>
                 <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
+                            style="${cidadaoInstance.desabilitado ? 'text-decoration: line-through' : ''}"
                             onclick="selecionaPopup(event, {idFamilia: ${cidadaoInstance.familia.id}, cad: '${cidadaoInstance.familia.cad}'})">
-                    ${raw(cidadaoInstance.nomeCompleto)}
+                    ${raw(cidadaoInstance.nomeCompleto + (cidadaoInstance.desabilitado ? ' (removido)' : ''))}
                 </g:link></td>
             </g:if>
 
@@ -36,14 +37,14 @@
 
                 <td><g:link title="${cidadaoInstance?.familia?.tecnicoReferencia ? "Referência: "+cidadaoInstance.familia.tecnicoReferencia : null}"
                             controller="${controllerLinkCidadao}" action="${actionLinkCidadao}" id="${cidadaoInstance.id}">
-                    ${raw(cidadaoInstance.nomeCompleto)}
+                    ${raw(cidadaoInstance.nomeCompleto + (cidadaoInstance.desabilitado ? ' (removido)' : ''))}
                 </g:link></td>
             </g:else>
 
             <td class="hide-on-mobile">${fieldValue(bean: cidadaoInstance, field: "parentescoReferencia")}</td>
 
             <td>${raw( org.apoiasuas.util.CollectionUtils.join([
-                    cidadaoInstance.familia.endereco?.tipoENomeLogradouro,
+                    cidadaoInstance.familia.endereco?.obtemTipoENomeLogradouro(),
                     cidadaoInstance.familia.endereco?.numero,
                     cidadaoInstance.familia.endereco?.complemento,
                     cidadaoInstance.familia.endereco?.bairro], ", ") ?: "" )}</td>

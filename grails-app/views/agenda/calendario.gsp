@@ -3,17 +3,19 @@
 <head>
     <meta name="layout" content="main">
     <title>Agenda</title>
-    <asset:stylesheet src="especificos/calendar/fullcalendar"/>
-    <asset:stylesheet src="especificos/calendar/calendario.less"/>
-    <asset:javascript src="especificos/calendar/moment.js"/>
-    <asset:javascript src="especificos/calendar/fullcalendar.js"/>
-    <asset:javascript src="especificos/calendar/locale-all.js"/>
-    <asset:javascript src="especificos/cookie.js"/>
-    <asset:javascript src="especificos/jquery.timepicker.js"/>
-    <asset:stylesheet src="especificos/jquery.timepicker.css"/>
 
-    %{--<asset:javascript src="especificos/loadingoverlay.js"/>--}%
-    <asset:javascript src="especificos/procurarCidadao.js"/>
+    <asset:javascript src="moment.js"/>
+
+    <asset:stylesheet src="fullcalendar/fullcalendar.css"/>
+    <asset:javascript src="fullcalendar/fullcalendar.js"/>
+    <asset:javascript src="fullcalendar/locale-all.js"/>
+
+    <asset:stylesheet src="agenda/calendario.less"/>
+    <asset:javascript src="cookie.js"/>
+    <asset:javascript src="jquery.timepicker/jquery.timepicker.js"/>
+    <asset:stylesheet src="jquery.timepicker/jquery.timepicker.css"/>
+
+    <asset:javascript src="cidadao/procurarCidadao.js"/>
 </head>
 
 <g:javascript>

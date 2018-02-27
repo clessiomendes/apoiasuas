@@ -60,9 +60,10 @@ class FormularioCertidoes extends FormularioBase {
                     codigo 'nome_pai'
                     obrigatorio true
                 }
-                campoBancoDeDados {
-                    origem Origem.CIDADAO
+                campoAvulso {
                     codigo 'estado_civil'
+                    descricao 'Estado Civil'
+                    tamanho 20
                 }
                 campoAvulso {
                     codigo 'uniao_estavel'
@@ -125,7 +126,7 @@ class FormularioCertidoes extends FormularioBase {
                 }
                 campoAvulso {
                     codigo CODIGO_NOME_REGISTRO
-                    descricao 'Nome no registro'
+                    descricao 'Nome'
                     obrigatorio true
                 }
                 campoAvulso {

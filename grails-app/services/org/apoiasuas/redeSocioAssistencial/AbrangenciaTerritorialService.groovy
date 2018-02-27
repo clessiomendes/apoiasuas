@@ -138,5 +138,4 @@ class AbrangenciaTerritorialService {
         return result
     }
 
-
 }

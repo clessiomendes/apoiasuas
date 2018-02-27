@@ -14,6 +14,7 @@
 			<ul>
 				<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
 				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+				<li><g:link class="edit" action="edit" resource="${linkInstance}"><g:message code="default.button.edit.label" default="Editar" /></g:link></li>
 			</ul>
 		</div>
 		<div id="show-link" class="content scaffold-show" role="main">
@@ -70,7 +71,6 @@
             </ol>
 			<g:form url="[resource:linkInstance, action:'delete']">
 				<fieldset class="buttons">
-					<g:link class="edit" action="edit" resource="${linkInstance}"><g:message code="default.button.edit.label" default="Editar" /></g:link>
 					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Apagar')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Confirma remoção?')}');" />
 				</fieldset>
 			</g:form>

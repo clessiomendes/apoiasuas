@@ -130,8 +130,9 @@ class EmissaoFormularioController extends AncestralController {
         formulario.campos.each { CampoFormulario campo ->
             final conteudoFornecido = params.get(campo.caminhoCampo)?.toString();
             //Campo obrigatorio
+            String descricaoCampo = campo.descricao + (campo.grupo ? " - " + campo.grupo : "");
             if (! conteudoFornecido && campo.obrigatorio) {
-                campo.mensagemErro = "O campo '${campo.descricao}' é obrigatório"
+                campo.mensagemErro = "O campo '${descricaoCampo}' é obrigatório"
                 result = false;
             }
             if (conteudoFornecido) {
@@ -145,7 +146,7 @@ class EmissaoFormularioController extends AncestralController {
                         campo.valorArmazenado = conteudoFornecido;
                     } catch (ParseException e) {
                         result = false;
-                        campo.mensagemErro = "Data inválida '${conteudoFornecido}' em '${campo.descricao}'. Formato esperado: dd/mm/yyyy"
+                        campo.mensagemErro = "Data inválida '${conteudoFornecido}' em '${descricaoCampo}'. Formato esperado: dd/mm/yyyy"
                     }
                 //Formato de número inteiro
                 } else if (CampoFormulario.Tipo.INTEIRO == campo.tipo) {
@@ -155,7 +156,7 @@ class EmissaoFormularioController extends AncestralController {
                         campo.valorArmazenado = conteudoFornecido;
                     } catch (ParseException e) {
                         result = false;
-                        campo.mensagemErro = "Número inválido '${conteudoFornecido}' em '${campo.descricao}'."
+                        campo.mensagemErro = "Número inválido '${conteudoFornecido}' em '${descricaoCampo}'."
                     }
                 //os outros tipos nao precisam de validacao
                 } else {

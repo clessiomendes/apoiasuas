@@ -2,23 +2,30 @@ package org.apoiasuas.cidadao
 
 import org.apoiasuas.anotacoesDominio.InfoClasseDominio
 import org.apoiasuas.anotacoesDominio.InfoPropriedadeDominio
-
+import org.apoiasuas.cidadao.detalhe.CampoDetalhe
 import org.apoiasuas.formulario.CampoFormulario
+import org.apoiasuas.lookup.DetalhesJSON
+import org.apoiasuas.lookup.Escolaridade
+import org.apoiasuas.lookup.Sexo
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.DominioProtegidoServico
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasDateUtils
+import org.apoiasuas.DetalheService
 import org.grails.databinding.BindingFormat
 import org.joda.time.Period
 import org.joda.time.DateTime
 
 @InfoClasseDominio(codigo=CampoFormulario.Origem.CIDADAO)
-class Cidadao implements Serializable, DominioProtegidoServico {
+class Cidadao implements Serializable, DominioProtegidoServico, DetalhesJSON {
 
     //TODO: internacionalizar todas as descricoes de campo das annotations InfoPropriedadeDominio
     @InfoPropriedadeDominio(codigo='nome_completo', descricao = 'Nome completo', tamanho = 60)
     String nomeCompleto //importado
+
+    //FIXME: implementar busca por nomeCompleto OU nomeSocial. Usar nome social nos encaminhamentos (mantendo o nome oficial nas guias de documentação)
+    String nomeSocial
 
     @InfoPropriedadeDominio(codigo='parentesco_referencia', descricao = 'Parentesco (referência)', tamanho = 20)
     String parentescoReferencia //importado
@@ -26,6 +33,8 @@ class Cidadao implements Serializable, DominioProtegidoServico {
     @BindingFormat('dd/MM/yyyy')
     @InfoPropriedadeDominio(codigo='data_nascimento', descricao = 'Data de nascimento', tipo = CampoFormulario.Tipo.DATA)
     Date dataNascimento //importado
+
+    Date dataNascimentoAproximada //importado
 
     @InfoPropriedadeDominio(codigo='nis', descricao = 'NIS', tamanho = 20)
     String nis //importado
@@ -39,17 +48,8 @@ class Cidadao implements Serializable, DominioProtegidoServico {
     @InfoPropriedadeDominio(codigo='identidade', descricao = 'Nº Identidade', tamanho = 20)
     String identidade
 
-    @InfoPropriedadeDominio(codigo='numero_ctps', descricao = 'Nº CTPS', tamanho = 20)
-    String numeroCTPS
-
-    @InfoPropriedadeDominio(codigo='serie_ctps', descricao = 'Série CTPS', tamanho = 20)
-    String serieCTPS
-
     @InfoPropriedadeDominio(codigo='cpf', descricao = 'CPF', tamanho = 20)
     String cpf
-
-    @InfoPropriedadeDominio(codigo='estado_civil', descricao = 'Estado Civil', tamanho = 20)
-    String estadoCivil
 
     @InfoPropriedadeDominio(codigo='naturalidade', descricao = 'Naturalidade', tamanho = 60)
     String naturalidade
@@ -57,24 +57,38 @@ class Cidadao implements Serializable, DominioProtegidoServico {
     @InfoPropriedadeDominio(codigo='UF_naturalidade', descricao = 'UF da naturalidade', tamanho = 2)
     String UFNaturalidade
 
+    Boolean analfabeto
+    Escolaridade escolaridade
+    Sexo sexo
+
     boolean referencia //importado
     UsuarioSistema criador, ultimoAlterador;
     ServicoSistema servicoSistemaSeguranca
 
     Date dateCreated, lastUpdated, dataUltimaImportacao;
     boolean habilitado;
+    String detalhes;
+
+//CAMPOS TRANSIENTES
+    Integer ord
+    Integer idadeAproximada
+    Map<String, CampoDetalhe> mapaDetalhes = [:]
+    static transients = ['ord', 'mapaDetalhes', 'idadeAproximada', 'desabilitado'];
 
     static belongsTo = [familia: Familia] //importado
 
     static constraints = {
-        id(bindable: true)
-        nomeCompleto(nullable: false, maxSize: 255)
+        id(bindable: true) //permite que uma propriedade transiente seja alimentada automaticamente pelo construtor
+//        nomeCompleto(nullable: false, maxSize: 255)
         referencia(nullable: false)
         criador(nullable: false)
         ultimoAlterador(nullable: false)
-        nomeCompleto(nullable: false, unique: 'familia') //Cria um índice composto e único contendo os campos familia(id) e nomeCompleto
+        nomeCompleto(nullable: false, maxSize: 255, unique: 'familia') //Cria um índice composto e único contendo os campos familia(id) e nomeCompleto
         familia(nullable: false) //Cria um índice composto e único contendo os campos familia(id) e nomeCompleto
         servicoSistemaSeguranca(nullable: false)
+        ord(bindable: true) //permite que uma propriedade transiente seja alimentada automaticamente pelo construtor
+        idadeAproximada(bindable: true) //permite que uma propriedade transiente seja alimentada automaticamente pelo construtor
+        desabilitado(bindable: true) //permite que uma propriedade transiente seja alimentada automaticamente pelo construtor
     }
 
     static mapping = {
@@ -84,6 +98,7 @@ class Cidadao implements Serializable, DominioProtegidoServico {
 //        familia column:'familia', index:'Cidadao_Familia_Idx'
 //        nomeCompleto column:'nomeCompleto', index:'Cidadao_Nome_Idx'
         servicoSistemaSeguranca fetch: 'join' //por questoes de seguranca, sempre que um cidadao eh obtido do banco de dados, o servicoSistema precisara ser consultado
+        detalhes length: 1000000
     }
 
     static Cidadao novaInstancia() {
@@ -99,4 +114,30 @@ class Cidadao implements Serializable, DominioProtegidoServico {
     public Integer getIdade() {
         return dataNascimento ? new Period(new DateTime(dataNascimento), new DateTime()).years : null
     }
+
+    public Integer idadeOuAprox() {
+        log.debug('idade aprox')
+        Date base = dataNascimento ?: dataNascimentoAproximada;
+        return base ? new Period(new DateTime(base), new DateTime()).years : null
+    }
+
+    @Override
+    public void setDetalhes(String detalhes) {
+        this.detalhes = detalhes;
+        DetalheService.parseDetalhes(this, detalhes)
+    }
+
+    def afterLoad() {
+        //calcula o campo derivado "idadeAproximada"
+        this.idadeAproximada = ApoiaSuasDateUtils.yearsBetween(this.dataNascimentoAproximada, new Date())
+    }
+
+    public void setDesabilitado(boolean desabilitado) {
+        habilitado = ! desabilitado;
+    }
+
+    public boolean getDesabilitado() {
+        return ! habilitado;
+    }
+
 }

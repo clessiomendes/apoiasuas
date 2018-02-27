@@ -13,6 +13,8 @@ import org.apoiasuas.seguranca.ItemMenuDTO
 import org.apoiasuas.util.AmbienteExecucao
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
+import org.springframework.http.ResponseEntity
+import org.springframework.web.client.RestTemplate
 
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class InicioController extends AncestralController {
@@ -26,6 +28,8 @@ class InicioController extends AncestralController {
     def servicoService
     def dataSource
     def fileStorageService
+    def lookupService
+    def detalheService
 
     static defaultAction = "actionInicial"
 
@@ -155,6 +159,11 @@ class InicioController extends AncestralController {
             render "esquema de banco de dados atualizado <br> ok"
 
 //        render ([mensagem: atualizacoesPendentes]);
+    }
+
+    def inicializaLookup() {
+        lookupService.inicializaLookups();
+        render "ok";
     }
 
 }

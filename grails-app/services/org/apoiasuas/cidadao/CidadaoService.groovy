@@ -6,10 +6,8 @@ import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.StringUtils
-import org.codehaus.groovy.grails.orm.hibernate.HibernateSession
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.apoiasuas.util.HqlPagedResultList
-import org.hibernate.Query
 import org.hibernate.SQLQuery
 import org.hibernate.Session
 
@@ -386,13 +384,26 @@ class CidadaoService {
             return false;
         Familia familia = cidadao.familia
         //se for o ultimo cidadão habilitado, não permite excluir
-        if (familia.getMembrosOrdemPadrao().size() == 1)
+        if (familia.getMembrosOrdemPadrao(true).size() == 1)
             return false;
         //se for uma referencia familiar, so pode excluir se houver outra referencia
         if (cidadao.referencia)
             return (familia.membros.count { (it.habilitado == true) && (it.referencia == true) } > 1 )
         else
             return true;
+    }
+
+    @Transactional(readOnly = true)
+    public Cidadao novoCidadao(Cidadao cidadao = new Cidadao(), Familia familia = null) {
+        if (familia) {
+            cidadao.familia = familia;
+            familia.membros << cidadao;
+        }
+        cidadao.servicoSistemaSeguranca = segurancaService.servicoLogado;
+        cidadao.criador = segurancaService.usuarioLogado;
+        cidadao.ultimoAlterador = segurancaService.usuarioLogado;
+        cidadao.habilitado = true;
+        return cidadao;
     }
 
 }
