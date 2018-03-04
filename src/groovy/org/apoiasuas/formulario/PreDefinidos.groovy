@@ -21,26 +21,32 @@ enum PreDefinidos {
     //em producao que tenham o tipo de formulario sendo excluido gerem erros em tempo de execucao ao tentar instanciar
     //uma instancia de FormularioEmitido cujo formulario pre-definido ja nao consta mais neste enum.
     //Para desabilitar o formulario da tela de tipos de formularios a serem definidos, mude o atributo "habilitado" para false
-    IDENTIDADE_FOTO(FormularioIdentidadeFoto.class),
-    IDENTIDADE(FormularioIdentidade.class),
-    FOTOS(FormularioFotos.class),
-    CERTIDOES(FormularioCertidoes.class),
-    CERTIDOES_E_PEDIDO(FormularioCertidoesPedido.class),
-    ENCAMINHAMENTO(FormularioEncaminhamento.class),
-    PLANO_ACOMPANHAMENTO(FormularioAcompanhamento.class, false), //DESATIVADO
+    IDENTIDADE(FormularioIdentidade.class, 1),
+    FOTOS(FormularioFotos.class, 2),
+    IDENTIDADE_FOTO(FormularioIdentidadeFoto.class, 3),
+    CARRETO(FormularioCarreto.class, 4),
+    SEPULTAMENTO(FormularioSepultamento.class, 5),
+    CERTIDOES(FormularioCertidoes.class, 6),
+    CERTIDOES_E_PEDIDO(FormularioCertidoesPedido.class, 7),
+    ENCAMINHAMENTO(FormularioEncaminhamento.class, 8),
+    CURRICULO_EMPREGO(FormularioCurriculoEmprego.class, 9),
     //GENERICO(FormularioBase.class),
-    CURRICULO_EMPREGO(FormularioCurriculoEmprego.class),
-    CARRETO(FormularioCarreto.class),
-    SEPULTAMENTO(FormularioSepultamento.class)
+    PLANO_ACOMPANHAMENTO(FormularioAcompanhamento.class, 999, false) //DESATIVADO
 
     Class<FormularioBase> definicaoFormulario
     boolean habilitado
+    int ordem
 
     Formulario instanciaPersistida
 
-    PreDefinidos(Class definicaoFormulario, boolean habilitado = true) {
+    PreDefinidos(Class definicaoFormulario, int ordem, boolean habilitado = true) {
         this.definicaoFormulario = definicaoFormulario
         this.habilitado = habilitado
+        this.ordem = ordem;
+    }
+
+    int getOrdem() {
+        return ordem;
     }
 
 }

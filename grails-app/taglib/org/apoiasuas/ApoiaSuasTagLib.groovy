@@ -1,5 +1,6 @@
 package org.apoiasuas
 
+import asset.pipeline.grails.AssetsTagLib
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apoiasuas.cidadao.detalhe.CampoDetalhe
 import org.apoiasuas.util.SimNao
@@ -183,23 +184,33 @@ class ApoiaSuasTagLib {
 */
 
     /**
-    * @attr formulario
+    * Gera um botão específico para o caso de uso de Emissão de Formulário
     */
     Closure actionSubmitOpcaoFomulario = { attrs, body ->
+        //Eh preciso buscar a tag original antes de executa-la, pois ela foi sobrescrita
+        AssetsTagLib assetsTagLib = grailsAttributes.applicationContext.getBean(AssetsTagLib.name)
         Formulario formulario = attrs.formulario
-        out << submitButton([value: formulario.nome, name: 'foo', onclick: "document.getElementById('preencherFormulario').idFormulario.value = '${formulario.id}'; document.getElementById('preencherFormulario').submit(); return true"])
+        String caminhoImagem = 'formulario/'+formulario.formularioPreDefinido?.toString()?.toLowerCase() + '.png';
+        log.debug(caminhoImagem);
+        String estilo = ' ';
+        if (assetsTagLib.isAssetPath(caminhoImagem))
+            estilo = " background-image: url(${assetPath(src: caminhoImagem)}) ";
+        log.debug(estilo);
+        out << submitButton([value: formulario.nome, name: 'foo', class: 'image-button-formulario', style: estilo,
+                             onclick: "document.getElementById('preencherFormulario').idFormulario.value = '${formulario.id}'; document.getElementById('preencherFormulario').submit(); return true"
+        ])
     }
 
-/**
- * Cria um icone de ajuda com um texto suspenso a ser exibido quando o mouse passar por ele. O texto a ser
- * exibido pode ser 1) passado como uma chave de internacionalizacao pelo parametro message ou 2) no corpo
- * da tag e, neste caso, algumas formatações basicas de HTML são suportadas como <br>, <b>, etc. 1) tem
- * prioridade sobre 2).
- *
- * @attr chave chave do arquivo de internacionalização. Se ausente ou não encontrada, utiliza-se o corpo da tag como fonte para o texto de ajuda
- * @attr args A list of argument values to apply to the message, when chave is used.
- */
-    def helpTooltip = { attrs, body ->
+    /**
+     * Cria um icone de ajuda com um texto suspenso a ser exibido quando o mouse passar por ele. O texto a ser
+     * exibido pode ser 1) passado como uma chave de internacionalizacao pelo parametro message ou 2) no corpo
+     * da tag e, neste caso, algumas formatações basicas de HTML são suportadas como <br>, <b>, etc. 1) tem
+     * prioridade sobre 2).
+     *
+     * @attr chave chave do arquivo de internacionalização. Se ausente ou não encontrada, utiliza-se o corpo da tag como fonte para o texto de ajuda
+     * @attr args A list of argument values to apply to the message, when chave is used.
+     */
+     def helpTooltip = { attrs, body ->
         String mensagem = body();
         if (attrs.chave && message(code: attrs.chave, args: attrs.args))
             mensagem = message(code: attrs.chave, args: attrs.args)

@@ -14,7 +14,7 @@
     <sec:access showto="${CustomizacoesService.Codigos.BELO_HORIZONTE}">
 		<div class="nav" role="navigation">
 			<ul>
-                <li><g:link class="list" controller="familiaDetalhado" action="familiasSemCad">Famílias sem Cad</g:link></li>
+                <li><g:link class="list novo-recurso" controller="familiaDetalhado" action="familiasSemCad">Famílias sem Cad</g:link></li>
 			</ul>
 		</div>
     </sec:access>

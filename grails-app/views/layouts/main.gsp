@@ -54,6 +54,11 @@
         iconeCalendario : "${assetPath(src: 'calendario.png')}"
     };
 
+    $(document).ready(function(){
+        var imgNovoRecurso = '${assetPath(src: 'novo-recurso.png')}'
+        $('.novo-recurso').after($( '<img src="'+imgNovoRecurso+'" class="animmated flash"/>' ));
+    });
+
 </script>
 
 <body>

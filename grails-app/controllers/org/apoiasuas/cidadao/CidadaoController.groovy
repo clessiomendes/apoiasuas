@@ -49,8 +49,8 @@ class CidadaoController extends AncestralController {
             result << "CPF: "+cidadao.cpf
         if (cidadao.identidade)
             result << "Identidade: "+cidadao.identidade
-        if (cidadao.numeroCTPS)
-            result << "CTPS: nº "+cidadao.numeroCTPS + (cidadao.serieCTPS ? " série " + cidadao.serieCTPS : "")
+//        if (cidadao.numeroCTPS)
+//            result << "CTPS: nº "+cidadao.numeroCTPS + (cidadao.serieCTPS ? " série " + cidadao.serieCTPS : "")
         return result
     }
 

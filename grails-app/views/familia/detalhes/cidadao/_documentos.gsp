@@ -1,6 +1,6 @@
 <div class="sessao-detalhes">
 
-    <div class="cabecalho-sessao">
+    <div class="cabecalho-sessao" align="documentos">
         <a href="javascript:void(0)" class="left" onclick="foldSessao(this);">
             <asset:image src="usecases/documento-w.png" width="32" height="32"/>
             Documentos
@@ -13,7 +13,7 @@
 
         <g:fieldcontain bean="${localDtoCidadao}" field="identidade">
             <label>Identidade</label>
-            <g:textField name="${prefixo}identidade" class="integerMask importante" size="15" maxlength="20" value="${localDtoCidadao?.identidade}"/>
+            <g:textField name="${prefixo}identidade" class="importante" size="15" maxlength="20" value="${localDtoCidadao?.identidade}"/>
         </g:fieldcontain>
 
         <g:fieldcontain bean="${localDtoCidadao}" field="detalhe.emissorIdentidade">
@@ -37,7 +37,7 @@
 
         <g:fieldcontain bean="${localDtoCidadao}" field="cpf">
             <label>CPF</label>
-            <g:textField name="${prefixo}cpf" class="cpfMask" size="15" maxlength="20" value="${localDtoCidadao?.cpf}"/>
+            <g:textField name="${prefixo}cpf" class="cpfMask importante" size="15" maxlength="20" value="${localDtoCidadao?.cpf}"/>
         </g:fieldcontain>
 
         <div class="nova-linha"></div>

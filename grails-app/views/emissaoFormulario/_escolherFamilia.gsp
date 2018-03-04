@@ -9,11 +9,11 @@
     * Sempre que carregar a página, submete a chamada ajax identica ao click do botao de procurar familia
     */
     $(document).ready(function() {
-        if (document.getElementById("cad").value != '') {
-            ${remoteFunction(controller: 'emissaoFormulario', action: 'familiaParaSelecao', method: "post", update: "familiaParaSelecao",
-                    params: [cad: org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)?.cad])};
-            document.getElementById("cad").select();
-        }
+        %{--if (document.getElementById("cad").value != '') {--}%
+            %{--${remoteFunction(controller: 'emissaoFormulario', action: 'familiaParaSelecao', method: "post", update: "familiaParaSelecao",--}%
+                    %{--params: [cad: org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)?.cad])};--}%
+            $("#cad").select();
+        //}
     });
 
     /**
@@ -35,13 +35,11 @@
 
     <g:formRemote name="fool" method="post" update="familiaParaSelecao" url="[controller: 'emissaoFormulario', action: 'familiaParaSelecao']"
                   onSuccess="ajaxSuccess();">
-        <g:radio name="familiaCadastrada" value="false" onclick="limparFamilia();"/> Família sem cadastro
-        <br>
         <g:radio name="familiaCadastrada" value="true" checked="true"/> Família cadastrada:
-        <g:textField autofocus="true" name="cad" id="cad" size="2" value="${FamiliaController.getUltimaFamilia(session)?.cad}"/>
-%{--TODO: Formatar botão ok--}%
-        <g:actionSubmit action="familiaParaSelecao" id="btnSelecionarFamilia" value="ok"
+        <g:textField autofocus="autofocus" name="cad" id="cad" size="3" value="${FamiliaController.getUltimaFamilia(session)?.cad}"/>
+        <g:actionSubmit action="familiaParaSelecao" id="btnSelecionarFamilia" class="speed-button-procurar" value="ok"
                         onclick="noOverlay = true; return true;" />
+        <g:radio style="margin-left: 20px" name="familiaCadastrada" value="false" onclick="limparFamilia();"/> Família sem cadastro
     </g:formRemote>
 
     <br>
@@ -53,5 +51,7 @@
     <g:form id="preencherFormulario" name="preencherFormulario" controller="emissaoFormulario" action="preencherFormulario" >
         <g:hiddenField name="idFormulario"/>
         <g:hiddenField name="idServico"/>
-        <div id="familiaParaSelecao" style="display:inline"></div>
+        <div id="familiaParaSelecao" style="display:inline">
+            <g:render template="/emissaoFormulario/escolherFamilia-Selecionar" model="${[dtoFamiliaSelecionada: FamiliaController.getUltimaFamiliaAtualizaMembros(session)]}"/>
+        </div>
     </g:form>

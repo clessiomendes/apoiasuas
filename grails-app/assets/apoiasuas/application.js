@@ -14,3 +14,5 @@
 //= require loadingoverlay.js
 //= require snackbar/snackbar.js
 //= require utils.js
+//= require main.js
+

@@ -374,6 +374,8 @@ class CidadaoService {
 
     @Transactional
     public Cidadao grava(Cidadao cidadao) {
+        if (cidadao.referencia)
+            cidadao.parentescoReferencia = CidadaoService.PARENTESCO_REFERENCIA;
         return cidadao.save()
     }
 

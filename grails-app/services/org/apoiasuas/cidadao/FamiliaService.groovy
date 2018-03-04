@@ -27,9 +27,7 @@ import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.marcador.ProgramaFamilia
-import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.CollectionUtils
 import org.apoiasuas.util.SimNao
 import org.apoiasuas.util.StringUtils
@@ -49,6 +47,7 @@ class FamiliaService {
     public static final String TEMPLATE_CADASTRO_FAMILIAR_MEMBRO = "TemplateCadastroFamiliar-Membro.docx";
 
     def segurancaService
+    def cidadaoService
     def pedidoCertidaoProcessoService
     def messageSource
     def marcadorService
@@ -88,6 +87,7 @@ class FamiliaService {
         familia.acompanhamentoFamiliar?.save();
 //        familia.errors.reject("some.error.code");
         familia.save();
+        familia.membros?.each { cidadaoService.grava(it) };
         gravaTelefones(familia);
         return familia;
     }
@@ -395,7 +395,7 @@ class FamiliaService {
                           //Deficiente na família?;Em serviço de Acolhimento?;Família em Acompanhamento;Data de inserção no Acompanhamento;Data de encerramento do Acompanhamento;
                           familiasSemCad.contemMembro(familia, "deficiencia"), familiasSemCad.contemMembro(familia, "institucionalizado"), "", "", "",
                           //Renda per capta;
-                          familiasSemCad.calculaRendaPerCapita(familia)
+                          getRendaPerCapita(familia)
             ];
             //Gera, para cada membro, as planilhas definitivas (a primeira ate a data de nascimento e a segunda depois da data de nascimento)
             familia.getMembrosOrdemPadrao(true).each { Cidadao cidadao ->
@@ -433,15 +433,6 @@ class FamiliaService {
                     total += Integer.parseInt(cidadao.mapaDetalhes['rendaMensal'].toString());
             }
             return total + "";
-        }
-
-        private String calculaRendaPerCapita(Familia familia) {
-            Integer total = 0;
-            familia.getMembrosOrdemPadrao(true).each { Cidadao cidadao ->
-                if (cidadao.mapaDetalhes['rendaMensal']?.notEmpty() && cidadao.mapaDetalhes['rendaMensal']?.toString()?.isNumber())
-                    total += Integer.parseInt(cidadao.mapaDetalhes['rendaMensal'].toString());
-            }
-            return Math.round(total / familia.getMembrosOrdemPadrao(true).size()) + "";
         }
 
         private String publicoPrioritario(Familia familia, String codigo) {
@@ -488,17 +479,23 @@ class FamiliaService {
             alimentaContextoReport(context, familia);
 
             if (tecnico)
-                tecnicoReferencia = tecnico.nomeCompleto + (tecnico.matricula ? " ($tecnico.matricula)" : "")
+                tecnicoReferencia = tecnico.nomeCompleto + (tecnico.matricula ? " ($tecnico.matricula)" : "");
+
             //define um mapa de pares chave/conteudo cujas CHAVES são buscadas como FIELDS no template do word e substiuídas
             // pelo conteúdo correspondente. Esse mapa é transferido na sequência para o CONTEXTO do mecanismo de geração do .doc
             [
-                    codigoLegado            : familia.cad == "S/C" ? '' : familia.cad,
+                    codigoLegado            : familia.cad == Familia.NOVO_CAD ? '' : familia.cad,
                     referenciaFamiliar      : familia.getReferencia()?.nomeCompleto,
                     enderecoBasico          : familia.endereco.obtemEnderecoBasico(),
                     bairro                  : familia.endereco?.bairro,
                     municipioUF             : StringUtils.concatena(" - ", familia.endereco?.municipio, familia.endereco?.UF),
                     CEP                     : familia.endereco?.CEP,
-                    publicoPrioritario      : '', //FIXME: obter público prioritario dos campos segregados???
+                    bolsaFamilia            : boolToStr(familia.bolsaFamilia),
+                    exBolsaFamilia          : boolToStr(familia.exBolsaFamilia),
+                    bpc                     : boolToStr(familia.bpc),
+                    despesaTotal            : roundDoubleToStr(getDespesaTotal(familia)),
+                    rendaTotal              : roundDoubleToStr(getRendaTotal(familia)),
+                    rendaPerCapita          : roundDoubleToStr(getRendaPerCapita(familia)),
                     telefones               : familia.telefonesToString,
                     //ignora quando o criador for o administrador
                     responsavelCadastro     : familia.criador?.id == segurancaService.admin?.id ? '' : StringUtils.concatena(' / ', familia.criador.nomeCompleto, familia.criador.matricula),
@@ -512,7 +509,7 @@ class FamiliaService {
             //mesmo processo para cada membro familiar
             List membros = []
             metadata.addFieldAsList("membros");
-            familia.getMembrosOrdemPadrao().each { Cidadao cidadao ->
+            familia.getMembrosOrdemPadrao(true).each { Cidadao cidadao ->
                 Map membro = [:];
     //            metadata.addFieldAsList("membros.nomeCompleto");
                 membro.nomeCompleto = cidadao.nomeCompleto ?: '';
@@ -526,7 +523,14 @@ class FamiliaService {
             return new ReportDTO(report: report, context: context);
         }
 
-        protected String vulnerabilidadesMembro(Cidadao cidadao) {
+        /**
+         * arredonda e converte para string. se nulo, converte para uma string vazia ''
+         */
+        private String roundDoubleToStr(Double aDouble) {
+            return aDouble == null ? '' : new Long(Math.round(aDouble)).toString();
+        }
+
+        private String vulnerabilidadesMembro(Cidadao cidadao) {
             List vulnerabilidades = []
             vulnerabilidades << (cidadao.mapaDetalhes['deficiencia']?.asBoolean() ? 'deficiência' : null);
             vulnerabilidades << (cidadao.mapaDetalhes['doencaGrave']?.asBoolean() ? 'doença grave' : null);
@@ -577,8 +581,7 @@ class FamiliaService {
                     tituloEleitor           : getTituloEleitor(cidadao),
                     certidao                : getCertidao(cidadao),
                     estudando               : getEstudando(cidadao),
-                    analfabeto              : cidadao.analfabeto == true ? SimNao.SIM.descricao :
-                            cidadao.analfabeto == false ? SimNao.NAO.descricao : null,
+                    analfabeto              : boolToStr(cidadao.analfabeto),
                     escolaridade            : cidadao.escolaridade?.descricao,
                     doencaGrave             : getDoencaGrave(cidadao),
                     naturalidadeUF          : StringUtils.concatena(" - ", cidadao.naturalidade, cidadao.UFNaturalidade),
@@ -589,6 +592,10 @@ class FamiliaService {
                 context.put(chave, conteudo);
             }
             return new ReportDTO(report: report, context: context);
+        }
+
+        private String boolToStr(Boolean b) {
+             return b == true ? SimNao.SIM.descricao : b == false ? SimNao.NAO.descricao : '';
         }
 
         private String getDoencaGrave(Cidadao cidadao) {
@@ -673,7 +680,56 @@ class FamiliaService {
             return pais.join(", ");
         }
 
+    }
 
+    /**
+     * Calcula a renda total da família, somando a renda de cada membro ativo, e considerando "sem renda" como zero.
+     * Obs: Caso não haja nenhuma informação registrada para nenhum dos membros, retorna null e não zero.
+     */
+    public Double getRendaTotal(Familia familia) {
+        Double total = 0;
+        boolean semInformacao = true;
+        familia.getMembrosOrdemPadrao(true).each { Cidadao cidadao ->
+            if (cidadao.mapaDetalhes['semRenda']?.asBoolean()) {
+                semInformacao = false;
+            } else if (cidadao.mapaDetalhes['rendaMensal']?.notEmpty() && cidadao.mapaDetalhes['rendaMensal'].toString().isNumber() ) {
+                semInformacao = false;
+                total += Double.parseDouble(cidadao.mapaDetalhes['rendaMensal'].toString());
+            }
+        }
+        return semInformacao ? null : total;
+    }
+
+    /**
+     * Calcula a despesa total da família, somando as despesas detalhadas.
+     * Obs: Caso não haja nenhuma informação registrada de despesa, retorna null e não zero.
+     */
+    public Double getDespesaTotal(Familia familia) {
+        Double total = 0;
+        boolean semInformacao = true;
+        List despesas = ['despesaAluguel','despesaAgua','despesaGas','despesaEnergia','despesaTransporte','despesaMedicamentos',
+                           'despesaSupermercado','despesaOutras'];
+        despesas.each {
+            if (familia.mapaDetalhes[it]?.notEmpty()) {
+                semInformacao = false;
+                total += Double.parseDouble(familia.mapaDetalhes[it].toString())
+            }
+        }
+        return semInformacao ? null : total;
+    }
+
+     /**
+     * Calcula a renda per capita da família.
+     * Obs: Caso não haja nenhuma informação registrada de renda, retorna null e não zero.
+     */
+   public Double getRendaPerCapita(Familia familia) {
+       Double rendaTotal = getRendaTotal(familia);
+       if (rendaTotal == null)
+           return null;
+        int numeroMembros = familia.getMembrosOrdemPadrao(true).size();
+        if (numeroMembros == 0) //evita erro de divisão por zero, partindo do pressuposto que toda familia tem pelo menos um membro
+            numeroMembros = 1;
+        return rendaTotal / numeroMembros;
     }
 
 }

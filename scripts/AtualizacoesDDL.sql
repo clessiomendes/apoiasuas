@@ -391,3 +391,6 @@ alter table familia add constraint unique_codigo_legado  unique (servico_sistema
 alter table familia add column bolsa_familia boolean;
 alter table familia add column ex_bolsa_familia boolean;
 alter table familia add column bpc boolean;
+
+-- versao ate aqui: current (local:feito, producao: feito)
+

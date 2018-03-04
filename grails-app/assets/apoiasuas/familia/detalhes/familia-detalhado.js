@@ -59,10 +59,10 @@ function showForm(div, linkClicado) {
 var delayProcura;
 function delayProcurarCampoDetalhe(txtProcura) {
     clearTimeout(delayProcura);
-    if (txtProcura == '')
+    if (txtProcura == '') //restaura a tela rapidamente quando limpar o campo de procura
         procurarCampoDetalhe(txtProcura)
     else
-        delayProcura = setTimeout(function () {
+        delayProcura = setTimeout(function () { //enquanto o operador estiver digitando (aguarda meio segundo) não aplica o filtro nos campos
             procurarCampoDetalhe(txtProcura);
         }, 500);
 };
@@ -75,11 +75,13 @@ function procurarCampoDetalhe(txtProcura) {
     if (textoBuscado.length > 0 && textoBuscado.length < 3)
         return;
 
-    //Volta ao estado original da tela: Mostra tudo e faz um refresh completo dos vinculos
+    //Volta ao estado original da tela: Mostra tudo
     $('.forms-detalhados .sessao-detalhes, .forms-detalhados .conteudo-sessao, ' +
         '.forms-detalhados fieldset, .forms-detalhados .fieldcontain').show(0);
+    //como esta exibindo todas as sessoes, tem que mudar o icone em cada uma delas para "esconder"    
     $('.sessao-detalhes .imagem-fold').attr('src', imgVerMenos);
     $('.sessao-detalhes .right').css('background-image', imgVerMenosTodos);
+    //faz um refresh completo dos vinculos
     vinculosCamposDetalhados();
 
     //encerra. não é uma busca
@@ -89,7 +91,8 @@ function procurarCampoDetalhe(txtProcura) {
     //varre cada div de formulario fazendo uma busca (recursiva) na sua arvore de campos e grupos de campos
     $('.forms-detalhados').each(function () {
         var $divForm = $(this);
-        proximoNo($divForm);
+        if ($divForm.attr('id') != 'divNovoMembro') //ignora o form auxiliar usado como modelo para novos membros
+            proximoNo($divForm);
     });
 
     /**
@@ -101,26 +104,27 @@ function procurarCampoDetalhe(txtProcura) {
         //assume inicialmente que nenhuma ocorrencia foi encontrada
         var result = false;
 
-        //procurar tanto nos campos filhos, quanto em possiveis subgrupos de campos (fieldset ou sessao)
-        $elementoPai.children('fieldset, .sessao-detalhes, .fieldcontain').each(function () {
+        //procurar tanto nos campos descendentes, quanto em possiveis subgrupos de campos (fieldset ou sessao)
+        $elementoPai.find('fieldset, .sessao-detalhes, .fieldcontain').each(function () {
             var $divElementoFilho = $(this);
 
             //teste de campos (último nível da recursão)
             if ($divElementoFilho.is('.fieldcontain')) {
                 //tenta buscar o texto digitado em qualquer elemento contido no div do campo (label, palavra-chave, check-box, etc)
                 if (match(textoBuscado, $divElementoFilho))
-                    result = result || $divElementoFilho.is(':visible'); //informa para o nivel superior da recursao que uma ocorrencia foi encontrada
+                    //informa para o nivel superior da recursao que PELO MENOS uma ocorrencia foi encontrada nesta sessao (desde que ela não seja em um campo que não será exibido)
+                    result = result || ! $divElementoFilho.is('.sempre-escondido')
                 else
                     $divElementoFilho.hide(0); //se nao encontrar a palavra chave, esconde o campo inteiro
 
                 //teste de subgrupos de campos
             } else if ($divElementoFilho.is('fieldset, .sessao-detalhes')) {
                 //tenta encontrar o texto na legenda do subgrupo (legend para fieldset, .cabecalho-sessao para sessao, palavra-chave para ambos)
-                if (match(textoBuscado, $divElementoFilho.children('legend, .cabecalho-sessao, palavra-chave'))) {
+                if (match(textoBuscado, $divElementoFilho.find('legend, .cabecalho-sessao, palavra-chave'))) {
                     result = true; //informa para o nivel superior da recursao que uma ocorrencia foi encontrada
                 } else {
                     //se nao encontrar, continua tentando no nivel inferior da arvore do subgrupo
-                    if (proximoNo($divElementoFilho.is('.sessao-detalhes') ? $divElementoFilho.children('.conteudo-sessao') : $divElementoFilho))
+                    if (proximoNo($divElementoFilho.is('.sessao-detalhes') ? $divElementoFilho.find('.conteudo-sessao') : $divElementoFilho))
                         result = true; //informa para o nivel superior da recursao que uma ocorrencia foi encontrada
                     else
                         $divElementoFilho.hide(0); //se nao encontrou nos niveis inferiores, esconder o subgrupo inteiro
@@ -242,7 +246,7 @@ function vinculosCamposFamilia(componenteForm) {
     if (todos || $componenteForm.is($('#selectBolsaFamilia'))) {
         $('.pbf-sim,.pbf-nao').hide(0); //pra evitar efeitos visuais estranhos, esconde os dois selects antes
         mostraSe($('#selectBolsaFamilia').val() == "true", $('.pbf-sim'), tempoAnimacao);
-        mostraSe($('#selectBolsaFamilia').val() == "false", $('.pbf-nao'), tempoAnimacao);
+        mostraSe($('#selectBolsaFamilia').val() != "true", $('.pbf-nao'), tempoAnimacao);
     }
 
 
@@ -254,11 +258,13 @@ function vinculosCamposFamilia(componenteForm) {
      * @param $div
      */
     function mostraSe(condicao, $div, tempoAnimacao) {
-        if (condicao) {
+        if (condicao) { //exibir
             $div.fadeIn(tempoAnimacao);
-        } else {
+            $div.removeClass('sempre-escondido');
+        } else { //esconder
             $div.limpaConteudo();
             $div.fadeOut(tempoAnimacao);
+            $div.addClass('sempre-escondido');
         }
     }
 
@@ -320,10 +326,12 @@ function vinculosCamposCidadao(componenteForm) {
      */
     function mostraSe(divMae, condicao, classeCss, tempoAnimacao) {
         var $elementos = $(divMae).divFormMae().find('.' + classeCss)
-        if (condicao) {
+        if (condicao) { //exibir
             $elementos.fadeIn(tempoAnimacao);
-        } else {
+            $elementos.removeClass('sempre-escondido');
+        } else { //esconder
             $elementos.fadeOut(tempoAnimacao);
+            $elementos.addClass('sempre-escondido');
             $elementos.limpaConteudo();
         }
     }
@@ -442,9 +450,10 @@ function foldSessao(elementoSessao) {
     var $mae = $(elementoSessao).closest('.sessao-detalhes');
 
     //todos os filhos imediatos de sessao-detalhes que nao sao cabecalho-sessao
-    var $irmaos = $mae.children(':not(.cabecalho-sessao)');
+    //var $conteudoSessao = $mae.children(':not(.cabecalho-sessao)');
+    var $conteudoSessao = $mae.children('.conteudo-sessao');
     //determina se a sessao estava visivel antes do cabecalho dela ser clicado
-    var visiveis = $($irmaos[0]).is(':visible')
+    var visiveis = $conteudoSessao.is(':visible')
 
     //troca o icone de seta pra baixo/cima, tanto icone simples (img) quanto do icone duplo (a background-image)
     var $imagem = $mae.find('.imagem-fold');
@@ -453,7 +462,7 @@ function foldSessao(elementoSessao) {
     $link.css('background-image', visiveis ? imgVerMaisTodos : imgVerMenosTodos);
 
     //mostra ou esconde a sessao
-    $irmaos.toggle(500);
+    $conteudoSessao.toggle(500);
 }
 
 /**

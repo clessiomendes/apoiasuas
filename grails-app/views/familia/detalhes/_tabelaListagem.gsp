@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.cidadao.Cidadao" %>
+<%@ page import="org.apoiasuas.cidadao.FamiliaController; org.apoiasuas.cidadao.Cidadao" %>
 
 <%
     List<org.apoiasuas.cidadao.Familia> familiaInstanceList = familiaInstanceList;
@@ -47,7 +47,11 @@
             <g:form action="gravaCodigoLegado" id="${familia.id}" >
                 <td rowspan="${familia.getMembrosOrdemPadrao(true).size()}"><g:formatDate date="${familia?.dateCreated}" /></td>
                 <td rowspan="${familia.getMembrosOrdemPadrao(true).size()}">${familia.endereco}</td>
-                <td class="${(++corMembro % 2) == 0 ? 'even' : 'odd'}">${familia.referencia?.nomeCompleto}</td>
+                <td class="${(++corMembro % 2) == 0 ? 'even' : 'odd'}">
+                    <g:link title="ir para o cadastro da família" controller="familia" action="show" id="${familia.id}">
+                        ${familia.referencia?.nomeCompleto}
+                    </g:link>
+                </td>
                 <td class="${(corMembro % 2) == 0 ? 'even' : 'odd'}">
                     <input type="button" value="Copiar 1" class="btn-copy-antes" onclick="btnCopyClick(this, '${familia.referencia?.copyPaste1}');"/>
                 </td>

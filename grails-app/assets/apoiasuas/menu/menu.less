@@ -24,6 +24,8 @@
     background-position: 50% 80%;
     background-repeat: no-repeat;
     background-size: 90px;
+
+
 }
 
 #menu a.verde_oliva {
@@ -139,18 +141,18 @@
     float: left;
 }
 
-#menu .novo-recurso {
+.novo-recurso-menu {
     position: relative;
-    img {
+    img { //obs: o elemento imagem é iserido pela rotina jQuery em menu.gsp
+	    @media screen and (max-width: 700px) {
+            width:40px;
+            height:40px;
+	    }
         width:50px;
         height:50px;
-        animation-duration: 2s !important;
-        -webkit-animation-delay: 1s;
-        -moz-animation-delay: 1s;
-        -o-animation-delay: 1s;
-        -ms-animation-delay: 1s;
         position: absolute;
         right: 0px;
         bottom: 0px;
+        .animacao-novo-recurso();
     }
 }

@@ -22,12 +22,23 @@
 </g:javascript>
 
 <div class="nav" role="navigation">
-    <ul><li><g:link class="create" action="escolherFamilia">
-            <g:message code="formulario.iniciar.outro" default="Novo"/>
+    <ul><li><g:link class="formulario" action="escolherFamilia">
+            Voltar
     </g:link></li></ul>
 </div>
 
-<h1>${dtoFormulario.nome}</h1>
+<style>
+    .icone-formulario {
+        vertical-align: middle;
+        width: 50px;
+        height: 50px;
+    }
+</style>
+
+<h1>
+    <asset:image src="formulario/${dtoFormulario.formularioPreDefinido?.toString()?.toLowerCase()}.png" class="icone-formulario" />
+    <span style="vertical-align: middle">${dtoFormulario.nome}</span>
+</h1>
 
 <g:if test="${flash.message}">
     <div class="message" role="status">${flash.message}</div>

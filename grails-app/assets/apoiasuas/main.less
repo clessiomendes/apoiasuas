@@ -1,6 +1,6 @@
 /* Cores */
 @cor-principal:					#abbf78;
-@cor-fonte-links-e-titulos:		#48802c; //tambem é a cor dos icones de butoes
+@cor-fonte-links-e-titulos:		#48802c; //ou 72 128 44 em HSL. obs: tambem é a cor dos icones de botoes
 @cor-caption-jquery-ui: 		#E1F2B6;
 @cor-fundo-paineis-e-botoes:	#efefef;
 @cor-textos-para-consulta:		#efefef;
@@ -214,7 +214,8 @@ img {
 }
 
 .nav ul {
-	overflow: hidden;
+	//overflow: hidden;
+	overflow: visible;
 	padding-left: 0;
 	zoom: 1;
 //alinha os elementos verticalmente - DA ERRO SE OS ELEMENTOS OCUPAREM MAIS DE UMA LINHA
@@ -223,8 +224,11 @@ img {
 }
 
 .nav li {
-	display: block;
-	float: left;
+	display: inline-block;
+	//float: left;
+    //* {
+     // float: inherit;
+    //}
 	list-style-type: none;
 	margin-right: 0.2em;
 	padding: 0;
@@ -232,7 +236,8 @@ img {
 
 .nav a {
 	color: @cor-texto-secundario;
-	display: block;
+	//display: block;
+	display: inline-block;
 	padding: 0.25em 0.25em;
 	margin: 3px;
   	text-decoration: none;
@@ -1037,3 +1042,28 @@ div.tamanho-memo, div.tamanho-memo textarea {
   z-index: @z-index-notificacao-familia !important; //!important necessário porque o codigo notify.js declara a propriedade z-index como "style" no elemento
 }
 
+.animacao-novo-recurso() {
+    animation-duration: 2s !important;
+    -webkit-animation-delay: 1s;
+    -moz-animation-delay: 1s;
+    -o-animation-delay: 1s;
+    -ms-animation-delay: 1s;
+}
+
+.novo-recurso {
+    & + img { //obs: o elemento imagem é iserido automaticamente em todas as paginas pela rotina jQuery em main.js
+        width: 40px;
+        height: 25px;
+        vertical-align: top;
+        .animacao-novo-recurso();
+    }
+    .nav a& + img { //recuo para sobrepor links de menu superior
+        margin-left: -20px;
+        margin-top: -5px;
+        //overflow: visible;
+    }
+    input& + img, input& + img { //recuo para sobrepor botões de ação
+        margin-left: -30px;
+        margin-top: -5px;
+    }
+}

@@ -761,5 +761,6 @@ class ImportarFamiliasService {
         result.atrasada = result.valor ? new Date() - result.valor > ALARME_IMPORTACAO_ATRASADA : null
         return result
     }
+
 }
 

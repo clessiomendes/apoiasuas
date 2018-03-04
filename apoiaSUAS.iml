@@ -124,7 +124,6 @@
           <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/dataformat/jackson-dataformat-smile/2.6.2/jackson-dataformat-smile-2.6.2.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.6.2/jackson-core-2.6.2.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/com/vividsolutions/jts/1.13/jts-1.13.jar!/" />
-          <root url="jar://$MAVEN_REPOSITORY$/com/bertramlabs/plugins/asset-pipeline-core/2.1.1/asset-pipeline-core-2.1.1.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/com/twitter/jsr166e/1.1.0/jsr166e-1.1.0.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/commons-cli/commons-cli/1.3.1/commons-cli-1.3.1.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/hdrhistogram/HdrHistogram/2.1.6/HdrHistogram-2.1.6.jar!/" />
@@ -328,6 +327,7 @@
           <root url="jar://$MAVEN_REPOSITORY$/org/apache/poi/poi/3.11/poi-3.11.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/net/sf/jsignature/io-tools/easystream/1.2.15/easystream-1.2.15.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/apache/xmlbeans/xmlbeans/2.3.0/xmlbeans-2.3.0.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/com/bertramlabs/plugins/asset-pipeline-core/2.2.5/asset-pipeline-core-2.2.5.jar!/" />
         </CLASSES>
         <JAVADOC>
           <root url="jar://$MAVEN_REPOSITORY$/net/arnx/wmf2svg/0.9.0/wmf2svg-0.9.0-javadoc.jar!/" />
@@ -498,6 +498,8 @@
           <root url="jar://$USER_HOME$/.ideaLibSources/fr.opensagres.xdocreport.template-1.0.4-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/fr.opensagres.xdocreport.template.velocity-1.0.4-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/ooxml-schemas-1.1-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/asset-pipeline-core-2.1.1-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/asset-pipeline-core-2.2.5-sources.jar!/" />
         </SOURCES>
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>

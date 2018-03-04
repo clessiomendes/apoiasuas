@@ -385,7 +385,7 @@ class ImportacaoFamiliasController extends AncestralController {
 //        ImportacaoJob.schedule("0 35 16 ? * *")
         ImportacaoJob.triggerNow();
         System.sleep(1000)//1s
-        redirect(action: 'list')
+        forward(action: 'list')
     }
 
 }

@@ -19,4 +19,3 @@
 <g:render template="/familia/detalhes/cidadao/vulnerabilidades" model="${[localDtoCidadao: localDtoCidadao, prefixo: prefixo]}"/>
 <g:render template="/familia/detalhes/cidadao/violacoes" model="${[localDtoCidadao: localDtoCidadao, prefixo: prefixo]}"/>
 <g:render template="/familia/detalhes/cidadao/outros" model="${[localDtoCidadao: localDtoCidadao, prefixo: prefixo]}"/>
-

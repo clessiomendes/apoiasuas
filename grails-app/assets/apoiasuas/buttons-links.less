@@ -31,12 +31,7 @@
   }
   //Cria uma regra do tipo "input.list" para image buttons (corpo)
   input.@{classeCss} {
-    .imageButton();
-    background-color: @cor-fundo-paineis-e-botoes;
-    background-image: @imagem;
-    background-repeat: no-repeat;
-    background-position: 5px 5px;
-    padding-left: 30px;
+    .text-image-button(@imagem);
   }
 }
 
@@ -54,6 +49,15 @@
 	background-repeat: no-repeat;
 	text-indent: 20px;
     .tamanho-icones();
+}
+
+.text-image-button(@imagem) {
+    .imageButton();
+    background-color: @cor-fundo-paineis-e-botoes;
+    background-image: @imagem;
+    background-repeat: no-repeat;
+    background-position: 5px 5px;
+    padding-left: 30px;
 }
 
 .imageButton() {
@@ -75,6 +79,14 @@
   @media screen and (max-width: 700px) {
 	width: 35px;
 	height: 35px;
+  }
+
+  //esconde um eventual texto do botão
+  color: transparent;
+  text-shadow: none;
+  &:hover {
+    color: transparent;
+    text-shadow: none;
   }
 }
 
@@ -109,142 +121,3 @@
 .speed-button-remover {
   .speedButton(url(../images/database/delete.png));
 }
-
-/*
-.buttons .search {
-  .buttonsFooter();
-  background-image: url(../images/search.png);
-}
-
-.buttons .delete {
-    .buttonsFooter();
-	background-image: url(../images/database/delete.png);
-}
-
-.buttons .import {
-  .buttonsFooter();
-  background-image: url(../images/import.png);
-}
-
-.buttons .export {
-  .buttonsFooter();
-  background-image: url(../images/export.png);
-}
-
-.buttons .edit {
-  .buttonsFooter();
-  background-image: url(../images/database/edit.png);
-}
-
-.buttons .atendimento {
-  .buttonsFooter();
-  background-image: url(../images/usecases/atendimento.png);
-}
-
-.buttons .check {
-  .buttonsFooter();
-  background-image: url(../images/checked.png);
-}
-
-.buttons .save {
-  .buttonsFooter();
-  background-image: url(../images/database/save.png);
-}
-
-.buttons .print {
-  .buttonsFooter();
-  background-image: url(../images/print.png);
-}
-
-.buttons .cancel {
-  .buttonsFooter();
-  background-image: url(../images/cancel.png);
-}
-
-.buttons .acompanhamento {
-  .buttonsFooter();
-  background-image: url(../images/usecases/acompanhamento.png);
-}
-
-.buttons .formulario {
-  .buttonsFooter();
-  background-image: url(../images/usecases/formulario.png);
-}
-
-.buttons .close {
-  .buttonsFooter();
-  background-image: url(../images/close.png);
-}
-
-.nav a.edit {
-  .linkNavegacao();
-  background-image: url(../images/database/edit.png);
-}
-
-.nav a.search {
-  .linkNavegacao();
-  background-image: url(../images/search.png);
-}
-
-.nav a.create {
-  .linkNavegacao();
-  background-image: url(../images/database/add.png);
-}
-
-.buttons .add {
-  .buttonsFooter();
-  background-image: url(../images/database/add.png);
-}
-
-.buttons .list {
-  .buttonsFooter();
-  background-image: url(../images/database/table.png);
-}
-
-.nav a.list {
-  .linkNavegacao();
-  background-image: url(../images/database/table.png);
-}
-
-input.search {
-  .imageTextButton(url(../images/search.png));
-}
-
-input.atendimento {
-  .imageTextButton(url(../images/usecases/atendimento.png));
-}
-
-input.close {
-  .imageTextButton(url(../images/close.png));
-}
-
-input.create {
-  .imageTextButton(url(../images/database/add.png));
-}
-
-input.save {
-  .imageTextButton(url(../images/database/save.png));
-}
-
-input.print {
-  .imageTextButton(url(../images/print.png));
-}
-
-input.delete {
-  .imageTextButton(url(../images/database/delete.png));
-}
-
-input.edit {
-  .imageTextButton(url(../images/database/edit.png));
-}
-
-input.cancel {
-  .imageTextButton(url(../images/cancel.png));
-}
-
-input.check {
-  .imageTextButton(url(../images/checked.png));
-}
-
-*/
-

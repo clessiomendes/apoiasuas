@@ -24,6 +24,7 @@ import org.apoiasuas.DetalheService;
 
 @InfoClasseDominio(codigo=CampoFormulario.Origem.FAMILIA)
 class Familia implements Serializable, DominioProtegidoServico, DetalhesJSON {
+    public static String NOVO_CAD = "(novo)";
 
     //Necessario acesso ao servico para definir se o ServicoSistema logado faz uso ou nao de codigo legado
     def segurancaService;
@@ -118,9 +119,9 @@ class Familia implements Serializable, DominioProtegidoServico, DetalhesJSON {
             return cad
         try {
             if (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO))
-                return codigoLegado ?: "S/C"
+                return codigoLegado ?: NOVO_CAD
             else
-                return id ?: "S/C";
+                return id ?: NOVO_CAD;
         } catch (Exception e) {
             //ignora eventual erro de acesso ao servico "segurancaService" e exibe id ou codigoLegado
             log.error(e);

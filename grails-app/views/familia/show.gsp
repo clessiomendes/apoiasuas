@@ -14,7 +14,7 @@
 			<ul>
                 <li><g:link class="search" controller="cidadao" action="procurarCidadao"
 							title="Procurar outra família/usuário"><g:message message="Procurar"/></g:link></li>
-				<li><g:link class="edit" controller="familiaDetalhado" action="edit" id="${familiaInstance.id}"
+				<li><g:link class="edit novo-recurso" controller="familiaDetalhado" action="edit" id="${familiaInstance.id}"
 							title="Ver (ou alterar) o cadastro familiar completo">Cadastro completo</g:link></li>
 				<li><g:link class="formulario" controller="emissaoFormulario" action="escolherFamilia"
 							title="Preencher um formulário para um membro desta família">Emitir formulário</g:link></li>

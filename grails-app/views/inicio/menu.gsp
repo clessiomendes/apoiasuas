@@ -7,7 +7,7 @@
     <title>Apoia SUAS</title>
     <asset:stylesheet src="menu/menu.less"/>
     <asset:javascript src="cidadao/procurarCidadao.js"/>
-    <asset:stylesheet src="animate.css"/>
+    %{--<asset:stylesheet src="animate.css"/>--}%
 </head>
 
 <body>
@@ -45,43 +45,12 @@
 
     <g:render template="anuncioRedeSocioAssistencial"/>
 
-%{--
-    <input type="button" value="teste flip" onclick=" $('#card').flip('toggle'); "/>
-
     <script>
-        $(document).ready(inicializa);
-
-        function inicializa() {
-            var card = $('#card')
-
-            card.flip({
-                axis: 'x',
-                speed: 1000,
-                autoSize: false,
-//                forceWidth: true,
-//                forceHeight: true,
-                trigger: 'manual'
-            });
-
-//            $("#card").on('flip:done',function(){
-//                console.log('flip done');
-//                $(this).flip('false');
-//            });
-
-            var delay;
-            clearTimeout(delay);
-            delay = setTimeout(function () {
-                card.flip('toggle');
-            }, 1000);
-
-            clearTimeout(delay);
-            delay = setTimeout(function () {
-                card.flip('toggle');
-            }, 3000);
-
-        }
+        $(document).ready(function(){
+            var imgNovoRecurso = '${assetPath(src: 'novo-recurso-menu.png')}'
+            $('.novo-recurso-menu').append($( '<img src="'+imgNovoRecurso+'" class="animmated flash"/>' ));
+        });
     </script>
---}%
 
     <div id="menu">
 
@@ -93,9 +62,7 @@
                         class="laranja" controller="cidadao" action="procurarCidadao">Pesquisa de Usuários</g:linkMenu>
             <g:linkMenu title="Cadastra uma nova família no banco de dados"
                         imagem="usecases/cadastrar-familia-w.png"
-                        class="rosa novo-recurso" controller="familiaDetalhado" action="create">Cadastrar família
-                <asset:image src="novo-recurso.png" class="animated flash"/>
-            </g:linkMenu>
+                        class="rosa novo-recurso-menu" controller="familiaDetalhado" action="create">Cadastrar família</g:linkMenu>
             <g:linkMenu title="Serviços, programas, projetos e ações disponíveis na rede sócio-assistencial"
                         imagem="usecases/rede-socio-assistencial-w.png"
                         class="verde_agua" controller="servico">Rede sócio-assistencial</g:linkMenu>

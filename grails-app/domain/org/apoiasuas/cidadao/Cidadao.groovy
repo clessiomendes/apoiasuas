@@ -66,7 +66,7 @@ class Cidadao implements Serializable, DominioProtegidoServico, DetalhesJSON {
     ServicoSistema servicoSistemaSeguranca
 
     Date dateCreated, lastUpdated, dataUltimaImportacao;
-    boolean habilitado;
+    boolean habilitado = true;
     String detalhes;
 
 //CAMPOS TRANSIENTES

@@ -34,9 +34,15 @@ class EmissaoFormularioController extends AncestralController {
             formulariosDisponiveis << servico(null).getFormulario(params.idFormulario.toLong())
         else
             formulariosDisponiveis = servico(null).getFormulariosDisponiveis();
-        Map<String, List<Formulario>> tiposFormulario = formulariosDisponiveis.sort {
-            [it.id, it.tipo]
-        }.groupBy { it.tipo ?: "Outros" }
+        //Mapa ordenado, para preservar a ordem definida para os formulários durante a exibicao na tela
+        SortedMap<String, List<Formulario>> tiposFormulario = new TreeMap<String, List<Formulario>>();
+        //Agrupa os formularios por tipo e os insere em um mapa ordenado
+        formulariosDisponiveis.sort { [it.formularioPreDefinido?.ordem, it.id] }.each {
+            String tipo = it.tipo ?: "Outros";
+            if (! tiposFormulario.containsKey(tipo))
+                tiposFormulario.put(tipo, [])
+            tiposFormulario[tipo].add(it);
+        }
         render view: 'escolherFamilia', model: [formulariosDisponiveis: tiposFormulario]
     }
 
@@ -183,13 +189,16 @@ class EmissaoFormularioController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def familiaParaSelecao(String cad) {
         Familia familiaSelecionada = null
-        boolean familiaEncontrada = false
+//        boolean familiaEncontrada = false
         if (cad) {
             familiaSelecionada = cidadaoService.obtemFamiliaPeloCad(cad, true)
-            if (familiaSelecionada)
-                familiaEncontrada = true
+//            if (familiaSelecionada)
+//                familiaEncontrada = true
         }
-        render(template:'escolherFamilia-Selecionar', model:[dtoFamiliaSelecionada: familiaSelecionada, familiaEncontrada: familiaEncontrada])
+        if (familiaSelecionada)
+            render(template:'escolherFamilia-Selecionar', model:[dtoFamiliaSelecionada: familiaSelecionada/*, familiaEncontrada: familiaEncontrada*/])
+        else
+            render(template: 'familiaNaoEncontrada');
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])

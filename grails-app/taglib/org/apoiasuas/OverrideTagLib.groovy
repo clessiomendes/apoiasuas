@@ -10,7 +10,7 @@ import org.codehaus.groovy.grails.plugins.web.taglib.JavascriptTagLib
 /**
  * Reescrevendo algumas taglibs padroes do grails
  */
-class OverrydeTagLib {
+class OverrideTagLib {
 
     /**
      * Sobrescreve JavascriptTagLib.submitToRemote, basicamente para expor todos os atributos passados para o input button criado

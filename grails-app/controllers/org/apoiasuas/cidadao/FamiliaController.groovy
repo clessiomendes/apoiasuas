@@ -3,6 +3,7 @@ package org.apoiasuas.cidadao
 import grails.converters.JSON
 import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Holders
 import org.apoiasuas.AncestralController
 import org.apoiasuas.marcador.Acao
 import org.apoiasuas.marcador.AcaoFamilia
@@ -20,6 +21,7 @@ import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.util.ApoiaSuasException
 import org.apoiasuas.util.StringUtils
 import org.hibernate.Hibernate
+import org.springframework.context.ApplicationContext
 
 import javax.servlet.http.HttpSession
 
@@ -221,6 +223,17 @@ class FamiliaController extends AncestralController {
 
     public static String getNotificacao(HttpSession session) {
         return session[SESSION_NOTIFICACAO_FAMILIA]
+    }
+
+    public static Familia getUltimaFamiliaAtualizaMembros(HttpSession session) {
+        Familia result = getUltimaFamilia(session);
+        if (result) {
+            //Atualiza os dados da familia no banco de dados (principalmente os membros)
+            ApplicationContext ctx = Holders.grailsApplication.mainContext;
+            FamiliaService f = ctx.getBean("familiaService");
+            return f.obtemFamilia(result.id, true);
+        } else
+            return result;
     }
 
     public static Familia getUltimaFamilia(HttpSession session) {

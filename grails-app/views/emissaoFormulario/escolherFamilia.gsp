@@ -3,6 +3,7 @@
 <head>
     <meta name="layout" content="main">
     <title><g:message code="emissao.formularios"/></title>
+    <asset:stylesheet src="emissaoFormulario/emissao-formulario.less"/>
 </head>
 
 

@@ -37,7 +37,7 @@ class FormularioService {
 
     private void valoresFixos(Formulario formulario) {
         formulario.nomeEquipamento = segurancaService.servicoLogado?.nome
-        formulario.enderecoEquipamento = segurancaService.servicoLogado?.endereco.obtemEnderecoCompleto()
+        formulario.enderecoEquipamento = segurancaService.servicoLogado?.endereco?.obtemEnderecoCompleto()
         formulario.telefoneEquipamento = segurancaService.servicoLogado?.telefone
         formulario.emailEquipamento = segurancaService.servicoLogado?.email
         formulario.cidadeEquipamento = segurancaService.servicoLogado?.endereco?.municipio

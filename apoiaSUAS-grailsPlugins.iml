@@ -27,10 +27,10 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-2.1.5">
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-2.1.5/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-2.1.5/grails-app/services" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-2.1.5/grails-app/taglib" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-2.2.5">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-2.2.5/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-2.2.5/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-2.2.5/grails-app/taglib" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/cache-1.1.8">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/cache-1.1.8/src/java" isTestSource="false" />
@@ -133,7 +133,6 @@
           <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.6.2/jackson-core-2.6.2.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/com/vividsolutions/jts/1.13/jts-1.13.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/com/bertramlabs/plugins/less-asset-pipeline/2.1.0/less-asset-pipeline-2.1.0.jar!/" />
-          <root url="jar://$MAVEN_REPOSITORY$/com/bertramlabs/plugins/asset-pipeline-core/2.1.1/asset-pipeline-core-2.1.1.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/com/twitter/jsr166e/1.1.0/jsr166e-1.1.0.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/commons-cli/commons-cli/1.3.1/commons-cli-1.3.1.jar!/" />
           <root url="jar://$MAVEN_REPOSITORY$/org/hdrhistogram/HdrHistogram/2.1.6/HdrHistogram-2.1.6.jar!/" />
@@ -349,6 +348,7 @@
           <root url="jar://$USER_HOME$/.ideaLibSources/fr.opensagres.xdocreport.template-1.0.4-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/fr.opensagres.xdocreport.template.velocity-1.0.4-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/ooxml-schemas-1.1-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/asset-pipeline-core-2.1.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
