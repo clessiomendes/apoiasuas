@@ -4,6 +4,10 @@ import grails.transaction.Transactional
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
 
 @Transactional(readOnly = true)
+/**
+ * ESCOPO DE SESSÃO - pode ser injetado normalmente em um controller com "def customizacoesService".
+ * No entanto, para outros servicos com escopo singleton (o default) ou para taglibs, deve ser injetado o proxy "def customizacoesServiceProxy"
+ */
 class CustomizacoesService {
 
     public static enum Codigos {
@@ -14,13 +18,20 @@ class CustomizacoesService {
     static scope = "session"
     private List<Codigos> codigos = null;
 
+    /**
+     * Verifica se o codigo de customizacao passado está previsto para esse servicoSistema
+     */
     public boolean contem(Codigos codigo) {
         return contem([codigo]);
     }
 
+    /**
+     * Verifica se PELO MENOS UM dos codigos de customizacao passados esta previsto para esse servicoSistema
+     */
     public boolean contem(List<Codigos> codigos) {
         if (this.codigos == null)
             inicializa();
+        //verifica se PELO MENOS UM dos codigo passados esta previsto para esse servicoSistema
         return this.codigos.intersect(codigos)
     }
 

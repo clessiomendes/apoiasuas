@@ -14,11 +14,9 @@
     <link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon">
     <link rel="apple-touch-icon" href="${assetPath(src: 'apple-touch-icon.png')}">
     <link rel="apple-touch-icon" sizes="114x114" href="${assetPath(src: 'apple-touch-icon-retina.png')}">
+    <asset:link rel="manifest" href="manifest.json"/>
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
-    <asset:javascript src="notify.js"/>
-    <asset:stylesheet src="notificacoes-familia.less"/>
-    <asset:stylesheet src="header.less"/>
     <g:if env="development">
         <asset:stylesheet src="development-utils.less"/>
     </g:if>
@@ -29,10 +27,24 @@
 </head>
 
 <script>
+    var notificacoesFamilia = {
+        //Busca na sessao a(s) mensagens a serem exibidas
+        conteudo: '${raw(FamiliaController.getNotificacao(session))}',
+        //Busca na sessao o numero de vezes que a notificacao ja foi exibida
+        numExibicoes: ${FamiliaController.getNumeroExibicoesNotificacao(session)},
+        //chamada ajax para limpar na sessão a notificação exibida atualmente
+        limpar: function () {
+            ${remoteFunction(controller: 'familia', action: 'limparNotificacoes', method: "post",
+                    //antes: desabilitar a animação de "aguardando submissão de ajax responder"
+                    before: "noOverlay = true",
+                    //após: esconder o balão de notificação
+                    after: "jQuery(this).trigger('notify-hide')")};
+        }
+    };
+
     var intervaloVerificacaoSessaoExpirada = 2 /*segundos*/;
     var janelaModalLogin = new JanelaModalAjax();
     var timerSessaoExpirada
-
     /**
     * Inicia contador para fim da sessao que, ao final, abre uma janela de login para reconectar
     */
@@ -46,7 +58,6 @@
             }
         }, intervaloVerificacaoSessaoExpirada * 1000);
     }
-
     iniciaTimerSessaoExpirada();
 
     //caminho para imagens a serem utilizadas em qualquer pagina
@@ -55,7 +66,7 @@
     };
 
     $(document).ready(function(){
-        var imgNovoRecurso = '${assetPath(src: 'novo-recurso.png')}'
+        var imgNovoRecurso = '${assetPath(src: 'novo-recurso.png')}';
         $('.novo-recurso').after($( '<img src="'+imgNovoRecurso+'" class="animmated flash"/>' ));
     });
 
@@ -63,13 +74,9 @@
 
 <body>
 
-    <g:render template="/layouts/notificacoesFamilia"></g:render>
-
     %{--   Muda a cor do banner de acordo com o ambiente:   --}%
-    <div role="banner" id= "grailsLogoProd"}>
-    %{--<div role="banner" id= ${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "grailsLogoProd" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "grailsLogoValid" : "grailsLogoLocal"}>--}%
+    <div role="banner" class = "${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "banner-producao" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "banner-validacao" : "banner-desenvolvimento"}"}>
         <table id="cabecalho"><tr>
-            %{--<td><a href="${createLink(controller: "inicio", action: "menu")}"><asset:image src="apoiasuas_logo.png" alt="Grails"/></a> <span style="font-size:30px">${application.configuracao ? application.configuracao.nome : "indefinido" }</span> </td>--}%
             <td>
                 <a id="textoBanner" href="${createLink(controller: "inicio", action: "menu")}"><asset:image id="imgLogo" src="suas.png" alt="Apoia CRAS"/>
                         <h1>APOIA CRAS</h1>

@@ -1,12 +1,17 @@
 package org.apoiasuas.marcador
 
 import org.apoiasuas.cidadao.Familia
+import org.apoiasuas.seguranca.AuditoriaService
 import org.apoiasuas.seguranca.UsuarioSistema
 
 /**
  * Many to Many entre programas e familias
  */
 class ProgramaFamilia implements AssociacaoMarcador {
+
+    //Necessario acesso ao servico para executar rotinas de auditoria durante qualquer gravacao
+    def auditoriaService;
+
     Programa programa
     Familia familia
     Date data;
@@ -36,4 +41,17 @@ class ProgramaFamilia implements AssociacaoMarcador {
     void setMarcador(Marcador marcador) {
         programa = marcador;
     }
+
+    def beforeInsert() {
+        auditoriaService.auditaPrograma(this, AuditoriaService.Operacao.INCLUSAO);
+    }
+
+    def beforeUpdate() {
+        auditoriaService.auditaPrograma(this, AuditoriaService.Operacao.ALTERACAO);
+    }
+
+    def beforeDelete() {
+        auditoriaService.auditaPrograma(this, AuditoriaService.Operacao.EXCLUSAO);
+    }
+
 }

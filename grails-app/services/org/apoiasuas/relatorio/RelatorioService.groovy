@@ -91,7 +91,7 @@ class RelatorioService {
         String sqlTelefonesSelect = "select "
         String sqlTelefonesFrom = "from familia f join telefone t "
 
-        if (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO)) {
+        if (segurancaService.identificacaoCodigoLegado) {
             sqlPrincipalSelect += AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado') + ' as "' + LABEL_CAD + '"'
             sqlPrincipalOrder +=  AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado');
         } else {
@@ -218,7 +218,7 @@ class RelatorioService {
      * como um único campo no resultado final
      */
     private List<GroovyRowResult> telefonesTodasFamilias() {
-        final String campoCad = (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO)) ?
+        final String campoCad = (segurancaService.identificacaoCodigoLegado) ?
                 AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado')
                 : "f.id";
         String sql = "select distinct t.ddd, t.numero, " + campoCad + ' as "' + LABEL_CAD + '" \n' +
@@ -233,7 +233,7 @@ class RelatorioService {
      * como um único campo no resultado final
      */
     private List<GroovyRowResult> programasTodasFamilias() {
-        final String campoCad = (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO)) ?
+        final String campoCad = (segurancaService.identificacaoCodigoLegado) ?
                 AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado')
                 : "f.id";
         String sql = "select distinct "+ AmbienteExecucao.SqlProprietaria.valorNaoNulo("p.sigla","p.descricao")+" as sigla, " +

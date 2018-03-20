@@ -1,11 +1,11 @@
-<%@ page import="org.apoiasuas.redeSocioAssistencial.RecursosServico; org.apoiasuas.importacao.ImportacaoFamiliasController; org.apoiasuas.seguranca.DefinicaoPapeis" %>
+<%@ page import="org.apoiasuas.InicioController; org.apoiasuas.redeSocioAssistencial.RecursosServico; org.apoiasuas.importacao.ImportacaoFamiliasController; org.apoiasuas.seguranca.DefinicaoPapeis" %>
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="layout" content="main"/>
     <title>Apoia SUAS</title>
-    <asset:stylesheet src="menu/menu.less"/>
+    <asset:stylesheet src="inicio/menu.less"/>
     <asset:javascript src="cidadao/procurarCidadao.js"/>
     %{--<asset:stylesheet src="animate.css"/>--}%
 </head>
@@ -43,7 +43,7 @@
         <div style="clear: both"></div>
     </div>
 
-    <g:render template="anuncioRedeSocioAssistencial"/>
+    %{--<g:render template="anuncioRedeSocioAssistencial"/>--}%
 
     <script>
         $(document).ready(function(){
@@ -56,13 +56,13 @@
 
             <g:linkMenu title="Formulários emitidos on-line com preenchimento automático à partir do banco de dados de cidadãos (quando disponíveis)"
                         imagem="usecases/formulario-w.png"
-                        class="verde_oliva" controller="emissaoFormulario" action="escolherFamilia">Emissão de Formulários</g:linkMenu>
+                        class="verde_oliva" controller="emissaoFormulario" action="escolherFormulario">Emissão de Formulários</g:linkMenu>
             <g:linkMenu title="Banco de dados de famílias cadastradas em ${sec.loggedInUserInfo(field:'servicoSistemaSessaoCorrente.nome')}"
                         imagem="usecases/procurar-usuario-w.png"
                         class="laranja" controller="cidadao" action="procurarCidadao">Pesquisa de Usuários</g:linkMenu>
             <g:linkMenu title="Cadastra uma nova família no banco de dados"
                         imagem="usecases/cadastrar-familia-w.png"
-                        class="rosa novo-recurso-menu" controller="familiaDetalhado" action="create">Cadastrar família</g:linkMenu>
+                        class="rosa ${InicioController.novoRecurso("31/03/2018","novo-recurso-menu")}" controller="familiaDetalhado" action="create">Cadastrar família</g:linkMenu>
             <g:linkMenu title="Serviços, programas, projetos e ações disponíveis na rede sócio-assistencial"
                         imagem="usecases/rede-socio-assistencial-w.png"
                         class="verde_agua" controller="servico">Rede sócio-assistencial</g:linkMenu>

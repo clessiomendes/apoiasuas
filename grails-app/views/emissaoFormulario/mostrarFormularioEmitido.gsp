@@ -11,7 +11,7 @@
 		<a href="#show-formularioEmitido" class="skip" tabindex="-1"><g:fieldValue bean="${formularioEmitidoInstance}" field="descricao"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-                <li><g:link class="create" action="escolherFamilia">Novo</g:link></li>
+                <li><g:link class="create" action="escolherFormulario">Novo</g:link></li>
 				%{--<li><g:link class="list" action="index">Listagem</g:link></li>--}%
 			</ul>
 		</div>

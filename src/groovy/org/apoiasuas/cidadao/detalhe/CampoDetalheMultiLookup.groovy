@@ -24,7 +24,7 @@ public class CampoDetalheMultiLookup extends CampoDetalhe {
 
     @Override
     public Map toJsonMap() {
-        return [tipo: getTipo(), codigosList: codigosList, descricoesLookupList: descricoesLookupList]
+        return [tipo: getTipo().toString(), codigosList: codigosList, descricoesLookupList: descricoesLookupList]
     }
 
     @Override

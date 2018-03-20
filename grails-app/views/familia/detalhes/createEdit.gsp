@@ -21,10 +21,14 @@
 	<body>
 
         <script>
-            var imgVerMais = '${assetPath(src: 'down-w.png')}'
-            var imgVerMenos = '${assetPath(src: 'up-w.png')}'
-            var imgVerMaisTodos = 'url(${assetPath(src: 'double-down-w.png')})'
-            var imgVerMenosTodos = 'url(${assetPath(src: 'double-up-w.png')})'
+            //variaveis globais para serem usadas pelo javascript familia-detalhado.js
+            var imgVerMais = '${assetPath(src: 'down-w.png')}';
+            var imgVerMenos = '${assetPath(src: 'up-w.png')}';
+            var imgVerMaisTodos = 'url(${assetPath(src: 'double-down-w.png')})';
+            var imgVerMenosTodos = 'url(${assetPath(src: 'double-up-w.png')})';
+            var actionEscolherFormulario = "${createLink(controller: 'emissaoFormulario', action: 'escolherFormulario')}";
+            var actionDowloadCadastro = "${createLink(controller: 'familiaDetalhado', action: 'download', id: localDtoFamilia?.id)}";
+
             $(document).ready(function(){
                 //          Mostra controles aa partir do modo. obs: manter embargado na gsp por conta das tags gsp do grails
                 <g:if test="${modoEdicao}" >

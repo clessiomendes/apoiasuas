@@ -26,14 +26,14 @@ class AgendaController extends AncestralController {
     def usuarioSistemaService;
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def calendario(Long idUsuarioSistema) {
+    def calendario(Long idUsuarioSistema, Boolean selecionaUsuarioLogado) {
 //        Map configuracaoCalendario;
 //        if (! session[CONFIGURACAO_CALENDARIO])
 //            session[CONFIGURACAO_CALENDARIO] = (CONFIGURACAO_INICIAL + [defaultDate: ApoiaSuasDateUtils.dateTimeToStringIso8601(new Date())]) as JSON;
 //                //Caso não haja configuração prévia guardada na sessão, usar parâmetros default e partir da data atual
 
         render view: "calendario", model: [operadores: getOperadoresOrdenadosController(true),
-                configuracao: getConfiguracao(), idUsuarioSistema: idUsuarioSistema]
+                configuracao: getConfiguracao(), idUsuarioSistema: idUsuarioSistema, idUsuarioSistema: selecionaUsuarioLogado ? usuarioLogado.id : null ]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -298,6 +298,8 @@ class AgendaController extends AncestralController {
      * Converte da classe Compromisso para um mapa contendo as propriedades de um Event do componente FullCalendar
      */
     private Map compromissoToEvent(Compromisso compromisso) {
+        if (! request.inibirAtendimentoApos)
+            request.inibirAtendimentoApos = [valorCalculado: agendaService.inibirAtendimentoApos()];
         String participantes = "";
         if (compromisso.participantes) {
             participantes += "["+compromisso.participantes[0].username;
@@ -313,7 +315,7 @@ class AgendaController extends AncestralController {
                 title: titulo,
                 start: ApoiaSuasDateUtils.dateTimeToStringIso8601(compromisso.inicio),
                 end: ApoiaSuasDateUtils.dateTimeToStringIso8601(compromisso.fim),
-                className: compromisso.cor,
+                className: compromisso.getCor(request.inibirAtendimentoApos.valorCalculado),
                 //Personalizados:
                 tipoAtendimento: compromisso.tipo.atendimento,
                 tooltip: compromisso.tooltip,

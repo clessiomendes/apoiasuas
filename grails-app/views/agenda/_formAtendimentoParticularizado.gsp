@@ -65,7 +65,9 @@
         $('#inputTelefoneContato').val('');
         $('#checkSemTelefone').prop('checked', false).change();
 
-        $('#spanSituacao').text("${AtendimentoParticularizado.LIVRE}").css("background-color","${org.apoiasuas.agenda.Compromisso.CSS_VERDE}");
+        %{--$('#spanSituacao').text("${AtendimentoParticularizado.LIVRE}").css("background-color","${org.apoiasuas.agenda.Compromisso.CSS_VERDE}");--}%
+        $('#spanSituacao').text("${AtendimentoParticularizado.LIVRE}").removeClass("${org.apoiasuas.agenda.Compromisso.CSS_AMARELO}");
+        $('#spanSituacao').text("${AtendimentoParticularizado.LIVRE}").addClass("${org.apoiasuas.agenda.Compromisso.CSS_VERDE}");
         $('#hiddenCompareceu').val('');
 
         $('#btnLimpar').hide();

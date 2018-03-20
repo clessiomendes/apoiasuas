@@ -151,8 +151,7 @@ grails.project.dependency.resolution = {
 
         compile ":scaffolding:2.1.2"
         compile ':cache:1.1.8'
-//        compile ":asset-pipeline:2.10.1"
-        compile ":asset-pipeline:2.2.5"
+        compile ":asset-pipeline:2.1.5"
         compile ":spring-security-core:2.0-RC4" //autenticacao e authority, definicao de usuarios e papeis.
 //        compile ":filterpane:2.4.5" //filtros para as telas de busca
 //        compile ":perf4j:0.1.1" //plugin para profiling minucioso

@@ -36,7 +36,6 @@ class FamiliaController extends AncestralController {
     private static final String SESSION_ULTIMA_FAMILIA = "SESSION_ULTIMA_FAMILIA"
     private static final String SESSION_NOTIFICACAO_FAMILIA = "SESSION_NOTIFICACAO_FAMILIA"
     private static final String SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES = "SESSION_NOTIFICACAO_FAMILIA_NUMERO_EXIBICOES"
-    private static final int TELEFONES_POR_FAMILIA = 5; //numero máximo de possíveis telefones para uma dada familia
 
     //destinos de navegação usados na seleção de famílias para o caso de uso de acompanhamento familiar
     public static final Map modeloSelecionarAcompanhamento = [
@@ -58,6 +57,7 @@ class FamiliaController extends AncestralController {
     def cidadaoService;
     def monitoramentoService;
     def agendaService;
+    def auditoriaService;
 /*
     @Override
     protected interceptaSeguranca() {
@@ -143,6 +143,10 @@ class FamiliaController extends AncestralController {
                 operadores: marcadorService.getTecnicosIncluiMarcadores(familiaInstance) as Set,
                 outrosMarcadoresDisponiveis: outrosMarcadoresDisponiveis, programasDisponiveis: programasDisponiveis,
                 acoesDisponiveis: acoesDisponiveis, vulnerabilidadesDisponiveis: vulnerabilidadesDisponiveis]
+    }
+
+    protected Map getEditCreateAcompanhamentoModel(Familia familiaInstance) {
+        return modeloSelecionarAcompanhamento + [auditoriaAcompanhamentoList: auditoriaService.listaAuditorias(familiaInstance, Auditoria.Tipo.TIPOS_ACOMPANHAMENTO)];
     }
 
     private Map getEditCreateModelMonitoramento(Monitoramento monitoramentoInstance) {
@@ -358,8 +362,7 @@ class FamiliaController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def editAcompanhamentoFamilia(Familia familiaInstance) {
         guardaUltimaFamiliaSelecionada(familiaInstance)
-        render view: "acompanhamento/editAcompanhamento", model: modeloSelecionarAcompanhamento +
-                getEditCreateModel(familiaInstance)
+        render(view: "acompanhamento/editAcompanhamento", model: getEditCreateAcompanhamentoModel(familiaInstance) + getEditCreateModel(familiaInstance));
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
@@ -387,7 +390,8 @@ class FamiliaController extends AncestralController {
         }
 
         //sempre retorna para a tela de edicao, quer a gravacao tenha sido feita com sucesso ou tenha erros de validacao
-        render view: "acompanhamento/editAcompanhamento", model: modeloSelecionarAcompanhamento + getEditCreateModel(familiaInstance);
+        render(view: "acompanhamento/editAcompanhamento", model: getEditCreateModel(familiaInstance)
+                + getEditCreateAcompanhamentoModel(familiaInstance));
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])

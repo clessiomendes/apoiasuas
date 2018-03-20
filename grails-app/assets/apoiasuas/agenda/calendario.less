@@ -8,12 +8,20 @@
   margin-left: 5px;
 }
 
+.hideOnMobile() {
+  @media screen and (max-width: 700px) {
+    display: none;
+  }
+}
+
 .speed-button-imprimir {
+  .hideOnMobile;
   vertical-align: middle;
   .speedButton(url(../../images/print.png));
   margin-left: 5px;
 }
 
+/*
 .speed-button-voltar {
   vertical-align: middle;
   .speedButton(url(../../images/double_left.png));
@@ -31,16 +39,27 @@
   margin-right: 5px;
   margin-left: 20px;
 }
+*/
 
 .speed-button-config {
+  .hideOnMobile;
   vertical-align: middle;
   .speedButton(url(../../images/config.png));
   margin-left: 5px;
 }
 
 .speed-button-atualizar {
+  .hideOnMobile;
   vertical-align: middle;
   .speedButton(url(../../images/refresh.png));
+  margin-left: 5px;
+}
+
+.speed-button-adicionar-evento {
+  //exibir somente em celulares:
+  @media screen and (min-width: 700px) { display: none; }
+  vertical-align: middle;
+  .speedButton(url(../../images/database/add.png));
   margin-left: 5px;
 }
 
@@ -74,6 +93,7 @@
   width: 50px;
   height: 50px;
   background-size: 45px 45px;
+  @media screen and (max-width: 700px) { background-size: 28px 28px; }
   margin: 10px
 }
 
@@ -83,6 +103,7 @@
   width: 50px;
   height: 50px;
   background-size: 45px 45px;
+  @media screen and (max-width: 700px) { background-size: 28px 28px; }
   margin: 10px
 }
 
@@ -100,6 +121,7 @@
 .fc-verde { .fc-div-eventos(#A9DFBF, #88B399); }
 .fc-vermelho { .fc-div-eventos(#FA5858, #B34040); }
 .fc-azul { .fc-div-eventos(#AED6F1, #829FB3); }
+.fc-cinza { .fc-div-eventos(#dddddd, #aaaaaa); }
 
 //            MOBILE
 @media screen and (max-width: 700px) {

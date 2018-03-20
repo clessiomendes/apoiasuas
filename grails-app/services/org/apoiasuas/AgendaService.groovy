@@ -27,6 +27,7 @@ class AgendaService {
     private static final String FILTRO_COMPROMISSOS_PERIODO = " where a.servicoSistemaSeguranca = :servicoSistema "+
             " and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim > :periodoInicio and a.fim < :periodoFim)) ";
 
+    def sessionFactory
     def segurancaService
     def usuarioSistemaService
     ApoiaSuasService apoiaSuasService
@@ -304,4 +305,23 @@ class AgendaService {
                 compromissoAlterado.mensagem = "Conflito de agenda para "+nomesConflito.join(", ")+".";
         }
     }
+
+    /**
+     * Verifica qual o proximo dia de "abertura da agenda", ou seja, aa partir de que dia que os atendimentos devem ser inibidos
+     * @return o proximo dia no futuro em que a agenda sera aberta (ou nulo, caso nao exista essa configuracao)
+     */
+    public Date inibirAtendimentoApos() {
+        //pode haver mais de um dia de abertura de agenda na semana (separados por virgula na gravacao)
+        List<Integer> diasSemana = segurancaService.servicoLogado.acessoSeguranca.inibirAtendimentoApos?.split(',')?.collect { Integer.parseInt(it) };
+        if (! diasSemana)
+            return null;
+        //testando aa partir de amanha
+        Date dataInibicao = new Date().clearTime() + 1;
+        //caminhar ate chegar em um dia futuro cujo dia da semana coincida com um dos previstos para abertura da agenda
+        while (! diasSemana.contains(dataInibicao[Calendar.DAY_OF_WEEK]))
+            dataInibicao = dataInibicao + 1;
+        log.debug(dataInibicao.format('dd/MM/YYYY'));
+        return dataInibicao;
+    }
+
 }

@@ -82,23 +82,27 @@ class FormularioService {
         Formulario formulario = getFormulario(idFormulario, true);
         if (! formulario)
             return null
-//        Hibernate.initialize(formulario.campos)
-        formulario.cidadao = idCidadao ? Cidadao.get(idCidadao) : null
-        if (formulario.cidadao) {
-            Hibernate.initialize(formulario.cidadao.familia)
-            Hibernate.initialize(formulario.cidadao.familia.endereco)
-        } else {            //Se nenhum cidadao foi selecionado,
-            formulario.cidadao = new Cidadao()
-            formulario.cidadao.familia = familiaService.obtemFamilia(idFamilia)
-            if (formulario.cidadao.familia) {   //Nao selecionou cidadao mas selecionou familia
-                Hibernate.initialize(formulario.cidadao.familia.endereco)
-            } else {        //Se nenhuma familia foi selecionada
-                formulario.cidadao.familia = new Familia()
-                formulario.cidadao.familia.endereco = new Endereco()
-            }
+        if (idCidadao && idCidadao >= 0) {
+            formulario.cidadao = Cidadao.get(idCidadao);
+            formulario.familia = formulario.cidadao.familia;
+            //TODO: precisa mesmo?
+            Hibernate.initialize(formulario.familia)
+            Hibernate.initialize(formulario.familia.endereco)
+        } else if (idFamilia && idFamilia >= 0) {  //Se nenhum cidadao foi selecionado,
+            formulario.familia = familiaService.obtemFamilia(idFamilia);
+            //TODO: precisa mesmo?
+            Hibernate.initialize(formulario.familia.endereco)
         }
+
+        //TODO: precisa mesmo?
+        if (! formulario.cidadao)
+            formulario.cidadao = new Cidadao()
+        if (! formulario.familia) {
+            formulario.familia = new Familia()
+            formulario.familia.endereco = new Endereco()
+        }
+
         formulario.dataPreenchimento = new Date()
-//        formulario.nomeResponsavelPreenchimento = segurancaService.getUsuarioLogado().nomeCompleto
 
         FormularioEmitido formularioEmitido = new FormularioEmitido()
         formularioEmitido.descricao = formulario.nome
@@ -115,7 +119,7 @@ class FormularioService {
     @Transactional
     protected FormularioEmitido registraEmissao(Formulario formulario) {
         FormularioEmitido formularioEmitido = formulario.formularioEmitido
-        formularioEmitido.familia = formulario.cidadao?.familia ? Familia.get(formulario.cidadao?.familia?.id) : null
+        formularioEmitido.familia = formulario.familia ? Familia.get(formulario.familia.id) : null
         formularioEmitido.cidadao = formulario.cidadao ? Cidadao.get(formulario.cidadao.id) : null
 
         //Caso não seja preenchida uma data explicitamente pelo operador, assumir a data atual:
@@ -127,7 +131,7 @@ class FormularioService {
             formularioEmitido.campos.each { it.delete() }
         formularioEmitido.campos = []
 
-        formulario.getCamposOrdenados(false).each { campoPrevisto ->
+        formulario.getCamposOrdenados(false).each { CampoFormulario campoPrevisto ->
             CampoFormularioEmitido campoPreenchido = new CampoFormularioEmitido()
             formularioEmitido.campos << campoPreenchido
             campoPreenchido.formulario = formularioEmitido
@@ -174,7 +178,7 @@ class FormularioService {
     def inicializaFormularios(UsuarioSistema usuarioSistema) {
 
         PreDefinidos.values().each { enumForm ->
-            try {
+            if (enumForm.habilitado) try {
                 Formulario formulario = Formulario.findByFormularioPreDefinido(enumForm)
                 Closure closure = enumForm.definicaoFormulario.newInstance().run()
                 Formulario transiente = new FormularioBuilder(closure).build()
@@ -208,6 +212,7 @@ class FormularioService {
                 enumForm.instanciaPersistida = formulario
                 //grava os campos gerando novos ids, mesmo que o formulario já exista
             } catch (Throwable t) {
+                log.error(t.message);
                 throw new RuntimeException("Erro inicializando formulário ${enumForm}. Abortando", t)
             }
         }
@@ -243,20 +248,85 @@ class FormularioService {
     }
 
     /**
-     * Grava permanentemente eventuais alteracoes no cidadao ou familia afetados pelo formulario
+     * Verifica se algum dos campos preenchidos no formulario deve(m) ser atualizado(s) no cadastro
+     * Retorna uma lista destes campos
      */
-    @Transactional
-    public void gravarAlteracoes(Formulario formulario) {
-        if (!formulario.cidadao.id)
-            return
+    public List camposAlterados(Formulario formulario) {
+        List result = [];
+        if (!formulario.familia?.id)
+            return result;
+        Familia familiaPersistente = Familia.get(formulario.familia.id)
+        Cidadao cidadaoPersistente = formulario.cidadao.id ? Cidadao.get(formulario.cidadao.id) : null;
 
-        Cidadao cidadaoPersistente = Cidadao.get(formulario.cidadao.id)
-        formulario.campos.each { campo ->
+        formulario.campos.sort{ it.ordem }.each { campo ->
             Object instanciaAfetada = {
                 switch (campo.origem) {
                     case CampoFormulario.Origem.CIDADAO: return cidadaoPersistente
-                    case CampoFormulario.Origem.FAMILIA: return cidadaoPersistente.familia
-                    case CampoFormulario.Origem.ENDERECO: return cidadaoPersistente.familia.endereco
+                    case CampoFormulario.Origem.FAMILIA: return familiaPersistente
+                    case CampoFormulario.Origem.ENDERECO: return familiaPersistente.endereco
+                    case CampoFormulario.Origem.AVULSO: return null
+                }
+            }.call()
+
+            if (!instanciaAfetada)
+                return //esse return pula para o proximo passo do closure formulario.campos.each{}
+
+            def conteudoAnterior = instanciaAfetada."${campo.nomeCampoPersistente}"
+            def novoConteudo = campo.valorArmazenado
+            //FIXME https://github.com/clessiomendes/apoiasuas/issues/16
+            log.debug("Comparando ${campo.caminhoCampo}: ${conteudoAnterior} => ${novoConteudo} ?")
+
+            boolean atualizarInstanciaPersistente
+            if (!campo.isAtualizavel())
+                atualizarInstanciaPersistente = false
+            else if (CampoFormulario.Tipo.TELEFONE == campo.tipo)
+                atualizarInstanciaPersistente = false //TODO: Pensar um caso de uso de inclusao de telefones (no BD) a ser usado na tela de preenchimento de formulario (e reutilizado em outros casos de uso)
+            else if (novoConteudo == null)
+                atualizarInstanciaPersistente = false
+            else if ((! conteudoAnterior) && novoConteudo) { //vazio antes, preenchido depois
+                atualizarInstanciaPersistente = true
+                //Converte o novo conteudo para um formato String, necessario para ser exibido no HTML
+                if (campo.tipo == CampoFormulario.Tipo.DATA)
+                    novoConteudo = ((Date) novoConteudo).format("dd/MM/yyyy");
+            }
+            else if ((! conteudoAnterior) && (! novoConteudo)) //vazio antes, vazio depois
+                atualizarInstanciaPersistente = false
+            else {
+                if (campo.tipo == CampoFormulario.Tipo.TEXTO) {
+                    if (! conteudoAnterior.toString().equalsIgnoreCase(novoConteudo.toString()))
+                        atualizarInstanciaPersistente = true;
+                } else if (campo.tipo == CampoFormulario.Tipo.DATA) {
+                    conteudoAnterior = ((Date) conteudoAnterior).format("dd/MM/yyyy");
+                    //Converte o novo conteudo para um formato String, necessario para ser exibido no HTML
+                    novoConteudo = ((Date) novoConteudo).format("dd/MM/yyyy");
+                    if (conteudoAnterior  != novoConteudo)
+                        atualizarInstanciaPersistente = true;
+                }
+            }
+            if (atualizarInstanciaPersistente)
+                result << [campoFormulario: campo, nomeCampoPersistente: campo.nomeCampoPersistente, conteudoAnterior: conteudoAnterior, novoContedudo: novoConteudo]
+        }
+
+        return result;
+    }
+
+     /**
+     * Grava permanentemente eventuais alteracoes no cidadao ou familia afetados pelo formulario
+     */
+    @Transactional
+    public void gravarAlteracoesAntigo(Formulario formulario) {
+        //somente gravar se houver alguma familia associada
+        if (! formulario.familia?.id)
+            return;
+
+        Cidadao cidadaoPersistente = Cidadao.get(formulario.cidadao.id)
+        Familia familiaPersistente = Familia.get(formulario.familia.id)
+        formulario.campos.sort{ it.ordem }.each { campo ->
+            Object instanciaAfetada = {
+                switch (campo.origem) {
+                    case CampoFormulario.Origem.CIDADAO: return cidadaoPersistente
+                    case CampoFormulario.Origem.FAMILIA: return familiaPersistente
+                    case CampoFormulario.Origem.ENDERECO: return familiaPersistente.endereco
                     case CampoFormulario.Origem.AVULSO: return null
                 }
             }.call()
@@ -267,7 +337,7 @@ class FormularioService {
             def conteudoAnterior = instanciaAfetada."${campo.nomeCampoPersistente}"
             def novoContedudo = campo.valorArmazenado
             //FIXME https://github.com/clessiomendes/apoiasuas/issues/16
-            log.debug("Comparando ${campo.caminhoCampo}: ${conteudoAnterior} => ${novoContedudo} ?")
+            log.debug("Comparando  ${campo.caminhoCampo}: ${conteudoAnterior} => ${novoContedudo} ?")
 
             boolean atualizarInstanciaPersistente
             if (!campo.isAtualizavel())
@@ -290,6 +360,69 @@ class FormularioService {
             new Date().clone()
             if (atualizarInstanciaPersistente) {
                 log.debug("atualizado!")
+                instanciaAfetada."${campo.nomeCampoPersistente}" = novoContedudo
+            }
+        }
+    }
+
+    /**
+     * Grava permanentemente eventuais alteracoes no cidadao ou familia afetados pelo formulario
+     */
+    @Transactional
+    public void gravarAlteracoes(Formulario formulario, List<CampoFormularioCommand> camposSelecionados) {
+        //somente gravar se houver alguma familia associada
+        if (! formulario.familia?.id)
+            return;
+        Cidadao cidadaoPersistente = formulario.cidadao?.id ? Cidadao.get(formulario.cidadao.id) : null;
+        Familia familiaPersistente = Familia.get(formulario.familia.id);
+
+        camposSelecionados.each { CampoFormularioCommand campoSelecionado ->
+            if (! campoSelecionado?.id)
+                return;
+
+            CampoFormulario campo = formulario.campos.find{ it.id.toString() == campoSelecionado.id };
+//
+//        }
+//        formulario.campos.sort{ it.ordem }.each { campo ->
+            Object instanciaAfetada = {
+                switch (campo.origem) {
+                    case CampoFormulario.Origem.CIDADAO: return cidadaoPersistente
+                    case CampoFormulario.Origem.FAMILIA: return familiaPersistente
+                    case CampoFormulario.Origem.ENDERECO: return familiaPersistente.endereco
+                    case CampoFormulario.Origem.AVULSO: return null
+                }
+            }.call()
+
+            if (!instanciaAfetada)
+                return //esse return pula para o proximo passo do closure formulario.campos.each{}
+
+            def conteudoAnterior = instanciaAfetada."${campo.nomeCampoPersistente}"
+//            def novoContedudo = campo.valorArmazenado
+            def novoContedudo
+            if (campo.tipo == CampoFormulario.Tipo.TEXTO) {
+                novoContedudo = campoSelecionado.novoConteudo;
+            } else if (campo.tipo == CampoFormulario.Tipo.DATA) {
+                novoContedudo = new Date().parse('dd/MM/yyyy', campoSelecionado.novoConteudo.toString());
+            }
+
+            //FIXME https://github.com/clessiomendes/apoiasuas/issues/16
+            boolean atualizarInstanciaPersistente
+            if (!campo.isAtualizavel())
+                atualizarInstanciaPersistente = false
+            else if (CampoFormulario.Tipo.TELEFONE == campo.tipo)
+                atualizarInstanciaPersistente = false //TODO: Pensar um caso de uso de inclusao de telefones (no BD) a ser usado na tela de preenchimento de formulario (e reutilizado em outros casos de uso)
+            else if (conteudoAnterior && ! novoContedudo)
+                atualizarInstanciaPersistente = true
+            else if ((! conteudoAnterior) && novoContedudo)
+                atualizarInstanciaPersistente = true
+            else if (campo.tipo == CampoFormulario.Tipo.TEXTO) {
+                    atualizarInstanciaPersistente = !conteudoAnterior.toString().equalsIgnoreCase(novoContedudo.toString());
+                } else if (campo.tipo == CampoFormulario.Tipo.DATA) {
+                    atualizarInstanciaPersistente = conteudoAnterior != novoContedudo
+                } else atualizarInstanciaPersistente = false;
+
+            if (atualizarInstanciaPersistente) {
+                log.debug("atualizado !")
                 instanciaAfetada."${campo.nomeCampoPersistente}" = novoContedudo
             }
         }

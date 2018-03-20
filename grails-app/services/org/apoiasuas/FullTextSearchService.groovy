@@ -51,7 +51,7 @@ class FullTextSearchService {
             IndexRequest indexRequest = new IndexRequest("org.apoiasuas.menu","menu", "9999");
             XContentBuilder json = jsonBuilder()
                     .startObject()
-                    .field("url", "emissaoFormulario/escolherFamilia")
+                    .field("url", "emissaoFormulario/escolherFormulario")
                     .field("meu_titulo", "Emissão de formulários")
                     .field("meus_detalhes", "Emite formulários de gratuidade para segunda via de identidade, fotos 3x4, declaração de pobreza, etc.")
                     .endObject();

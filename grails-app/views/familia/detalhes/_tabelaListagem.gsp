@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.cidadao.FamiliaController; org.apoiasuas.cidadao.Cidadao" %>
+<%@ page import="org.apoiasuas.cidadao.Familia; org.apoiasuas.cidadao.FamiliaController; org.apoiasuas.cidadao.Cidadao" %>
 
 <%
     List<org.apoiasuas.cidadao.Familia> familiaInstanceList = familiaInstanceList;
@@ -61,7 +61,7 @@
                 </td>
                 <td rowspan="${familia.getMembrosOrdemPadrao(true).size()}" style="text-align: left;">
                     Novo Cad:
-                    <g:textField name="codigoLegado" size="5"/>
+                    <g:textField name="codigoLegado" size="5" value="${familia.cad != Familia.NOVO_CAD ? familia.cad : ''}"/>
                     <g:submitButton name="grava" class="save" style="margin-top: 5px" value="Gravar"/>
                 </td>
             </g:form>

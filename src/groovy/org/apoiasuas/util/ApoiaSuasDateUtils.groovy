@@ -15,7 +15,7 @@ class ApoiaSuasDateUtils {
 
     public static Date stringToDateTime(String s) {
         if (s && s != "" && s != "null") {
-            final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            final DateFormat df = new SimpleDateFormat(FORMATO_DATA_HORA);
             return df.parse(s);
         } else
             return null;

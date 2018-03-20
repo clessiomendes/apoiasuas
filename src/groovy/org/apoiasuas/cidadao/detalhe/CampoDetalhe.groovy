@@ -53,7 +53,7 @@ public abstract class CampoDetalhe {
                 case CampoDetalhe.Tipo.MULTI_PLAIN:
                     return new CampoDetalheMultiString(mapaAtributos); break
                 default:
-                    throw new ApoiaSuasException("Tipo  indefinido instanciando CampoDetalhe: '$tipo'");
+                    throw new ApoiaSuasException("Tipo indefinido instanciando CampoDetalhe: '$tipo'");
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -207,4 +207,16 @@ class AncestralController {
         return true;
     }
 
+    /**
+     * Retorna o nome da classe css a aplicar em novos recursos para chamar a atencao do operador
+     * @param dataLimite quando informada, limita o tempo em que a sinalizacao fica no sistema
+     * @return
+     */
+    public static String novoRecurso(String dataLimite = null, String classeCss = "novo-recurso") {
+        if (! dataLimite || new Date() < Date.parse('dd/MM/yyyy', dataLimite))
+            return classeCss
+        else
+            return "";
+    }
+
 }

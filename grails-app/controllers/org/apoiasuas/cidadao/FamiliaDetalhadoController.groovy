@@ -188,6 +188,7 @@ class FamiliaDetalhadoController extends FamiliaController {
             Map result  =  familiaInstance.membros.collectEntries { [(it.ord): it.id] }
             return render(contentType: 'text/json', status: 200, text: result as JSON)
         } else {
+            //FIXME: na verdade, erros de validação podem ocorrer em outras entidades dependentes da familia e do cidadao (como Auditoria, Telefone, etc)
             String erros = familiaService.errosParaJson(familiaInstance);
             return render(contentType:'text/json', status: 422, text: erros)
         }

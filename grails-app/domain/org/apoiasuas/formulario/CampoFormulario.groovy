@@ -29,16 +29,34 @@ class CampoFormulario {
         boolean isTexto() { return this == TEXTO }
     }
 
-    public enum Origem { FAMILIA(Familia.class), ENDERECO(Endereco.class), CIDADAO(Cidadao.class), AVULSO(null)
-        Class classeDominio
-        Origem(Class classeDominio) { this.classeDominio = classeDominio }
-        boolean isAvulso() { return this == AVULSO }
-        boolean isCidadao() { return this == CIDADAO }
-        boolean isFamilia() { return this == FAMILIA }
-        boolean isEndereco() { return this == ENDERECO }
-        String toCamelCase() {
-            return StringUtils.upperToCamelCase(this.toString())
+    public enum Origem {
+        FAMILIA(Familia.class, "Família"),
+        DETALHE_FAMILIA(Familia.class, "Família"),
+        ENDERECO(Endereco.class, "Endereço"),
+        CIDADAO(Cidadao.class, "Cidadão"),
+        DETALHE_CIDADAO(Cidadao.class, "Cidadão"),
+        AVULSO(null, "Avulso");
+
+        Class classeDominio;
+        String descricao;
+
+        public Origem(Class classeDominio, String descricao) {
+            this.classeDominio = classeDominio;
+            this.descricao = descricao
         }
+        boolean isAvulso() {
+            return this == AVULSO
+        }
+        boolean isCidadao() {
+            return this == CIDADAO
+        }
+        boolean isFamilia() {
+            return this == FAMILIA
+        }
+        boolean isEndereco() {
+            return this == ENDERECO
+        }
+
     }
 
 //Propriedades persistentes
@@ -91,6 +109,7 @@ class CampoFormulario {
     static constraints = {
         codigo(nullable: false, unique: ['formulario','origem'], validator: { String codigo, CampoFormulario instancia ->
             //Verifica se o codigo escolhido realmente corresponde a um codigo previsto na classe persistente
+            if (instancia.tipo )
             if ( (instancia.origem?.cidadao && ! InfoDominioUtils.infoPropriedadePeloCodigo(Cidadao.class, codigo)) ||
                     (instancia.origem?.familia && ! InfoDominioUtils.infoPropriedadePeloCodigo(Familia.class, codigo)) ||
                     (instancia.origem?.endereco && ! InfoDominioUtils.infoPropriedadePeloCodigo(Endereco.class, codigo)))
@@ -136,8 +155,8 @@ class CampoFormulario {
         switch (origem) {
             case Origem.AVULSO: valorAvulso = valor; break
             case Origem.CIDADAO: formulario.cidadao?."${nomeCampoPersistente}" = valor; break
-            case Origem.FAMILIA: formulario.cidadao?.familia?."${nomeCampoPersistente}" = valor; break
-            case Origem.ENDERECO: formulario.cidadao?.familia?.endereco?."${nomeCampoPersistente}" = valor; break
+            case Origem.FAMILIA: formulario.familia?."${nomeCampoPersistente}" = valor; break
+            case Origem.ENDERECO: formulario.familia?.endereco?."${nomeCampoPersistente}" = valor; break
             default: throw new RuntimeException("Origem não tratada: ${origem}");
         }
         log.debug getValorArmazenado()
@@ -150,8 +169,8 @@ class CampoFormulario {
         switch (origem) {
             case Origem.AVULSO: return valorAvulso //formulario.camposAvulsos?."${codigo}"
             case Origem.CIDADAO: return formulario.cidadao?."${nomeCampoPersistente}"
-            case Origem.FAMILIA: return formulario.cidadao?.familia?."${nomeCampoPersistente}"
-            case Origem.ENDERECO: return formulario.cidadao?.familia?.endereco?."${nomeCampoPersistente}"
+            case Origem.FAMILIA: return formulario.familia?."${nomeCampoPersistente}"
+            case Origem.ENDERECO: return formulario.familia?.endereco?."${nomeCampoPersistente}"
             default: throw new RuntimeException("Origem não tratada: ${origem}")
         }
     }

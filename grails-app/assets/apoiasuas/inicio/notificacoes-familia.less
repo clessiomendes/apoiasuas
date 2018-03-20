@@ -1,4 +1,4 @@
-@import (reference) "main.less";
+@import (reference) "../main.less";
 
 @largura-notificacao:					350px;
 @cor-notificacao-frente:				#C09853;
@@ -49,11 +49,19 @@
 
 .notifyjs-notificacoesFamilia-base button {
     color: @cor-notificacao-frente;
-    border: 1px solid @cor-notificacao-frente;
-    border-radius: 30%;
+    //border: 1px solid @cor-notificacao-frente;
+    //border-radius: 30%;
+    border: none;
     font-weight: bold;
-    background-color: @cor-notificacao-background;
-    font-size: 9px;
-    padding: 2px;
-    margin-right: 3px;
+    //background-color: @cor-notificacao-background;
+    background: transparent;
+    //font-size: 9px;
+    font-size: x-large;
+    //padding: 2px;
+    //margin-right: 3px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
 }
+

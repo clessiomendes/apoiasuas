@@ -1,6 +1,5 @@
 package org.apoiasuas.formulario
 
-import org.apoiasuas.formulario.definicao.FormularioAcompanhamento
 import org.apoiasuas.formulario.definicao.FormularioBase
 import org.apoiasuas.formulario.definicao.FormularioCarreto
 import org.apoiasuas.formulario.definicao.FormularioCertidoes
@@ -31,7 +30,7 @@ enum PreDefinidos {
     ENCAMINHAMENTO(FormularioEncaminhamento.class, 8),
     CURRICULO_EMPREGO(FormularioCurriculoEmprego.class, 9),
     //GENERICO(FormularioBase.class),
-    PLANO_ACOMPANHAMENTO(FormularioAcompanhamento.class, 999, false) //DESATIVADO
+    PLANO_ACOMPANHAMENTO(null, 999, false) //DESATIVADO
 
     Class<FormularioBase> definicaoFormulario
     boolean habilitado

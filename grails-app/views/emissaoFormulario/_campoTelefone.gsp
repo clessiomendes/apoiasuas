@@ -1,8 +1,8 @@
 <%@ page import="org.apoiasuas.formulario.EmissaoFormularioController" %>
 
 <g:select name="${campoFormulario.caminhoCampo+'_select'}"
-          from="${campoFormulario.formulario.cidadao?.familia?.telefones}"
-          keys="${campoFormulario.formulario.cidadao?.familia?.telefones*.id}"
+          from="${campoFormulario.formulario.familia?.telefones}"
+          keys="${campoFormulario.formulario.familia?.telefones*.id}"
           onchange="document.getElementById('${campoFormulario.caminhoCampo}').value = (this.value == -1) ? '' : this.options[this.selectedIndex].text;"
           noSelection="['-1': 'novo']"/>
 %{--onchange="(function(select) { alert(select.options[select.selectedIndex].text) })(this);"--}%

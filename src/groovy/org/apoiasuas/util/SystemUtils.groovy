@@ -11,6 +11,19 @@ import java.lang.reflect.Modifier;
  */
 class SystemUtils {
 
+/*
+    public static void dumpObjectsCount() {
+        final VirtualMachine vm = ac.attach(connectArgs);
+        final List<ReferenceType> allClasses = vm.allClasses();
+        final long[] instanceCounts = vm.instanceCounts(allClasses);
+        for (int i = 0; i < allClasses.size(); i++)
+        {
+            System.out.println(allClasses.get(i).name()
+                    + ": " + instanceCounts[i]);
+        }
+    }
+*/
+
     public static String systemStatistics() {
         String result = ""
         result += "JVMMaxMemory : " + StringUtils.readableLong(Runtime.getRuntime().maxMemory());

@@ -17,6 +17,8 @@ import java.sql.Types
  * Created by admin on 02/05/2016.
  */
 class ServicoSistema {
+
+
     String nome
     String telefone
     String site
@@ -26,11 +28,10 @@ class ServicoSistema {
     Boolean habilitado
     AcessoSeguranca acessoSeguranca
 
-//    AbrangenciaTerritorial abrangenciaTerritorial
-
     static transients = ['urlSite']
     static embedded = ['endereco', 'acessoSeguranca']
     static mapping = {
+//        cache 'nonstrict-read-write' //sempre mantem em cache o servico sistema logado
         id generator: 'native', params: [sequence: 'sq_servico_sistema']
         nome length: 80
         telefone length: 30
@@ -57,6 +58,7 @@ class AcessoSeguranca {
     boolean pedidosCertidao
     boolean planoAcompanhamento
     boolean identificacaoPeloCodigoLegado
+    String inibirAtendimentoApos
 }
 
 /**

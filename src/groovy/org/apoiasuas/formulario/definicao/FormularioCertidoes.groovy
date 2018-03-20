@@ -1,7 +1,7 @@
 package org.apoiasuas.formulario.definicao
 
 import groovy.transform.TypeChecked
-
+import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.CampoFormulario.Origem
 import org.apoiasuas.formulario.FormularioCertidoesService
@@ -11,7 +11,6 @@ class FormularioCertidoes extends FormularioBase {
 
     public static final String CODIGO_NOME_REGISTRO = "nome_registro"
     public static final String CODIGO_DATA_REGISTRO = "data_registro"
-    public static final String CODIGO_NACIONALIDADE = "nacionalidade"
 
     @Override
     public Class<? extends FormularioService> classeServico() { return FormularioCertidoesService.class }
@@ -42,9 +41,17 @@ class FormularioCertidoes extends FormularioBase {
                 }
                 campoAvulso {
                     descricao 'Nacionalidade'
-                    codigo CODIGO_NACIONALIDADE
+                    codigo Cidadao.CODIGO_NACIONALIDADE
                     tamanho 20
                 }
+/*
+                campoDetalhes {
+                    descricao 'Nacionalidade'
+                    origem Origem.CIDADAO
+                    codigo Cidadao.CODIGO_NACIONALIDADE
+                    tamanho 20
+                }
+*/
                 campoAvulso {
                     codigo 'profissao'
                     descricao 'Profissão'

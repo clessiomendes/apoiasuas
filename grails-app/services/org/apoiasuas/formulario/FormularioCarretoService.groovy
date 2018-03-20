@@ -10,7 +10,7 @@ class FormularioCarretoService extends FormularioService {
     @Override
     Formulario preparaPreenchimentoFormulario(Long idFormulario, Long idFamilia, Long idCidadao) {
         Formulario formulario = super.preparaPreenchimentoFormulario(idFormulario, idFamilia, idCidadao);
-        String endereco = formulario?.cidadao?.familia?.endereco.obtemEnderecoCompleto();
+        String endereco = formulario?.familia?.endereco?.obtemEnderecoCompleto();
         formulario.getCampoAvulso(FormularioCarreto.CODIGO_ORIGEM).setValorArmazenado(endereco);
         return formulario
     }

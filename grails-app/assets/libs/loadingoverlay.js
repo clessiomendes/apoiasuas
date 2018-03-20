@@ -9,6 +9,8 @@ LoadingOverlay - A flexible loading overlay jQuery plugin
 //permite uma pagina/funcao ajax cliente informar o componente que não deve ser acionado em uma chamada espcifica
 var noOverlay = false;
 
+//var elementoOverlay = null;
+
 /*
 * Customização para automaticamente interceptar todos os submits de formularios e todas as chamadas ajax
 */
@@ -22,8 +24,12 @@ $(document).ready(function () {
         }
         catch(err) { }
 
-        if (! noOverlay)
-            $.LoadingOverlay("show", { fade: [20000, 0], color: "rgba(255, 255, 255, 0.3)" });
+        if (! noOverlay) {
+            //if (elementoOverlay)
+            //    $(elementoOverlay).LoadingOverlay("show", { fade: [20000, 0], color: "rgba(255, 255, 255, 0.3)" })
+            //else
+                $.LoadingOverlay("show", { fade: [20000, 0], color: "rgba(255, 255, 255, 0.3)" });
+        }
         //restaura o comportamento padrão do componente
         noOverlay = false;
         return true; // continuar o submit após bloquear a tela
@@ -31,18 +37,33 @@ $(document).ready(function () {
 
     // every time ajax is called
     $(document).ajaxSend(function () {
-        if (! noOverlay)
-            $.LoadingOverlay("show", { fade: [0, 0], color: "rgba(255, 255, 255, 0.3)" });
+        if (! noOverlay) {
+            //if (elementoOverlay)
+            //    $(elementoOverlay).LoadingOverlay("show", { fade: [0, 0], color: "rgba(255, 255, 255, 0.8)" })
+            //else
+                $.LoadingOverlay("show", { fade: [0, 0], color: "rgba(255, 255, 255, 0.3)" });
+        }
         //restaura o comportamento padrão do componente
         noOverlay = false;
     })
 
     // every time ajax is completed
     $(document).ajaxComplete(function () {
-        //console.log("LoadingOverlay.hide true");
-        $.LoadingOverlay("hide", true/*force*/);
+        //if (elementoOverlay)
+        //    $(elementoOverlay).LoadingOverlay("hide", true/*force*/)
+        //else
+            $.LoadingOverlay("hide", true/*force*/);
+        //elementoOverlay = null;
     });
 });
+
+function iniciaOverlayAjax(elemento) {
+    noOverlay = true;
+    $(elemento).LoadingOverlay("show", { fade: [0, 0], color: "rgba(255, 255, 255, 0.8)" });
+}
+function terminaOverlayAjax(elemento) {
+    $(elemento).LoadingOverlay("hide", true/*force*/);
+}
 
 (function($, undefined){
     // Default Settings

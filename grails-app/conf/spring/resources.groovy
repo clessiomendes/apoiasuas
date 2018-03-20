@@ -1,3 +1,4 @@
+import org.apoiasuas.CustomizacoesService
 import org.apoiasuas.fileStorage.LocalFSService
 import org.apoiasuas.formulario.FormularioCurriculoService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
@@ -63,6 +64,15 @@ for injection.
      */
     userDetailsService(ApoiaSuasDetailsService) { bean ->
         bean.autowire = 'byName'
+    }
+
+    /**
+     * Necessario para que um servico com escopo de "session" possa ser injetado (IOC) em um servico/taglib de escopo "singleton"
+     * Toda chamada a um servico no escopo de sessao ou de request aa partir de um servico de escopo singleton (ou de uma taglib) precisa passar por um proxy (já chamadas de controllers, nao precisam)
+     */
+    customizacoesServiceProxy(org.springframework.aop.scope.ScopedProxyFactoryBean) {
+        targetBeanName = 'customizacoesService'
+        proxyTargetClass = true
     }
 
 }

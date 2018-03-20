@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.cidadao.Familia" %>
+<%@ page import="org.apoiasuas.InicioController; org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.cidadao.Familia" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -14,9 +14,9 @@
 			<ul>
                 <li><g:link class="search" controller="cidadao" action="procurarCidadao"
 							title="Procurar outra família/usuário"><g:message message="Procurar"/></g:link></li>
-				<li><g:link class="edit novo-recurso" controller="familiaDetalhado" action="edit" id="${familiaInstance.id}"
+				<li><g:link class="edit ${InicioController.novoRecurso("31/03/2018")}" controller="familiaDetalhado" action="edit" id="${familiaInstance.id}"
 							title="Ver (ou alterar) o cadastro familiar completo">Cadastro completo</g:link></li>
-				<li><g:link class="formulario" controller="emissaoFormulario" action="escolherFamilia"
+				<li><g:link class="formulario" controller="emissaoFormulario" action="escolherFormulario"
 							title="Preencher um formulário para um membro desta família">Emitir formulário</g:link></li>
 				<li><g:link class="edit" controller="familia" action="editMarcadoresApenas" id="${familiaInstance.id}"
 							title="Definir programas, vulnerabilidades e ações para esta família">Alterar indicadores</g:link></li>

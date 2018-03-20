@@ -68,6 +68,7 @@ class Cidadao implements Serializable, DominioProtegidoServico, DetalhesJSON {
     Date dateCreated, lastUpdated, dataUltimaImportacao;
     boolean habilitado = true;
     String detalhes;
+    Set<Auditoria> auditoria = [];
 
 //CAMPOS TRANSIENTES
     Integer ord
@@ -75,7 +76,12 @@ class Cidadao implements Serializable, DominioProtegidoServico, DetalhesJSON {
     Map<String, CampoDetalhe> mapaDetalhes = [:]
     static transients = ['ord', 'mapaDetalhes', 'idadeAproximada', 'desabilitado'];
 
+//CAMPOS DE DETALHES USADOS EM FORMULÁRIOS
+    public static final String CODIGO_NACIONALIDADE = "nacionalidade"
+
     static belongsTo = [familia: Familia] //importado
+
+    static hasMany = [auditoria: Auditoria]
 
     static constraints = {
         id(bindable: true) //permite que uma propriedade transiente seja alimentada automaticamente pelo construtor

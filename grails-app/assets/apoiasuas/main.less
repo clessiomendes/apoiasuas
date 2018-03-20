@@ -34,6 +34,7 @@
 @z-index-notificacao-familia:		@z-index-sticky-header + 100; //notify.js: 1050 - notificacoes da familia do lado direito do cabecalho do sistema
 @z-index-tooltip:					@z-index-notificacao-familia + 100;
 @z-index-snackbar: 					@z-index-tooltip + 100;
+@z-index-modal: 					@z-index-snackbar + 100;
 
 .tamanho-icones() {
   background-size: 16px 16px;
@@ -92,15 +93,15 @@ body {
 	        box-shadow: 0 0 0.3em @cor-sombra-corpo;
 }
 
-#grailsLogoProd {
+.banner-producao {
 	background-color: @cor-principal;
 }
 
-#grailsLogoValid {
+.banner-validacao {
     background-color: #bf5858;
 }
 
-#grailsLogoLocal {
+.banner-desenvolvimento {
     background-color: #7e80bf;
 }
 
@@ -1066,4 +1067,8 @@ div.tamanho-memo, div.tamanho-memo textarea {
         margin-left: -30px;
         margin-top: -5px;
     }
+}
+
+.ui-front {
+	z-index: @z-index-modal;
 }

@@ -394,3 +394,29 @@ alter table familia add column bpc boolean;
 
 -- versao ate aqui: current (local:feito, producao: feito)
 
+create table auditoria (id int8 not null, version int8 not null, cidadao_id int8, criador_id int8 not null, date_created timestamp not null, descricao varchar(1024), detalhes varchar(1000000), familia_id int8, servico_sistema_seguranca_id int8 not null, tipo varchar(255) not null, primary key (id));
+create index Auditoria_Cidadao_Idx on auditoria (cidadao_id);
+create index Auditoria_Criador_Idx on auditoria (criador_id);
+create index Auditoria_Familia_Idx on auditoria (familia_id);
+create index Auditoria_Servico_Sistema_Idx on auditoria (servico_sistema_seguranca_id);
+create index Auditoria_Tipo_Idx on auditoria (tipo);
+alter table auditoria add constraint FK_a0ysw90h9e6kxlb6i725yhejx foreign key (cidadao_id) references cidadao;
+alter table auditoria add constraint FK_fawr6jplcj4ofytc4okmuxtke foreign key (criador_id) references usuario_sistema;
+alter table auditoria add constraint FK_k0yccasy4806gb716pi2gbv0x foreign key (familia_id) references familia;
+alter table auditoria add constraint FK_q414r0tvmcqy0xenwn6vdnwlw foreign key (servico_sistema_seguranca_id) references servico_sistema;
+create sequence sq_auditoria;
+
+-- criacao de auditorias aa partir de registros ja existentes em outras entidades (programaFamilia)
+select 0,
+  -- select nextval('sq_auditoria'),
+  0 as version, tecnico_id, data,
+  'Família inserida em ' || c.descricao as descricao,
+  a.familia_id, b.servico_sistema_seguranca_id, 'PROGRAMA_FAMILIA' as tipo
+from programa_familia a join usuario_sistema b on (a.tecnico_id = b.id)
+  join programa c on (a.programa_id = c.id)
+where a.habilitado is true;
+
+-- versao ate aqui: current (local:feito, producao: feito)
+
+alter table servico_sistema add column acesso_seguranca_inibir_atendimento_apos varchar(255);
+update servico_sistema set acesso_seguranca_inibir_atendimento_apos = '2,4' where id = 1;

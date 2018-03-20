@@ -9,6 +9,7 @@ import fr.opensagres.xdocreport.template.formatter.FieldsMetadata
 import grails.transaction.Transactional
 import groovy.json.JsonOutput
 import org.apoiasuas.ApoiaSuasService
+import org.apoiasuas.CustomizacoesService
 import org.apoiasuas.cidadao.detalhe.CampoDetalhe
 import org.apoiasuas.cidadao.detalhe.CampoDetalheLookup
 import org.apoiasuas.cidadao.detalhe.CampoDetalheMultiLookup
@@ -27,6 +28,7 @@ import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.marcador.ProgramaFamilia
+import org.apoiasuas.seguranca.AuditoriaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.CollectionUtils
 import org.apoiasuas.util.SimNao
@@ -52,7 +54,10 @@ class FamiliaService {
     def messageSource
     def marcadorService
     def servicoSistemaService
+    //Toda chamada a um servico no escopo de sessao ou de request aa partir de um servico de escopo singleton (ou de uma taglib) precisa passar por um proxy (já chamadas de controllers, nao precisam)
+    def customizacoesServiceProxy
     ApoiaSuasService apoiaSuasService
+    AuditoriaService auditoriaService
 
     @Transactional
     public Familia gravaNovo(Familia familia, Cidadao novaReferenciaFamiliar) {
@@ -84,6 +89,13 @@ class FamiliaService {
         marcadorService.gravaMarcadoresFamilia(vulnerabilidadesCommand, familia.vulnerabilidades, familia, Vulnerabilidade.class, VulnerabilidadeFamilia.class);
         marcadorService.gravaMarcadoresFamilia(acoesCommand, familia.acoes, familia, Acao.class, AcaoFamilia.class);
         marcadorService.gravaMarcadoresFamilia(outrosMarcadoresCommand, familia.outrosMarcadores, familia, OutroMarcador.class, OutroMarcadorFamilia.class);
+
+/*
+        //Detectando mudanca no tecnico de referencia: AUDITAR
+        if (familia.isDirty('tecnicoReferencia'))
+            auditoriaService.registraTecnicoFamilia(familia, familia.getPersistentValue('tecnicoReferencia'), familia.tecnicoReferencia);
+*/
+
         familia.acompanhamentoFamiliar?.save();
 //        familia.errors.reject("some.error.code");
         familia.save();
@@ -336,7 +348,10 @@ class FamiliaService {
         boolean buscaPorCad = nomeOuCad && ! StringUtils.PATTERN_TEM_LETRAS.matcher(nomeOuCad);
         List<Familia> familias
         if (buscaPorCad) {
-            familias = [Familia.get(nomeOuCad)]
+            if (segurancaService.identificacaoCodigoLegado)
+                familias = [Familia.findByCodigoLegadoAndServicoSistemaSeguranca(nomeOuCad, segurancaService.servicoLogado)]
+            else
+                familias = [Familia.get(nomeOuCad)];
         } else {//Pesquisa sem filtros ou com filtro por nome
 
             //Realizar pesquisa com no minimo 3 caracteres digitados
@@ -364,66 +379,106 @@ class FamiliaService {
                 familias = familiasFiltrado;
             }
         }
-
-        familias.each { Familia familia ->
-            //Inicia a montagem da planilha com os elementos comuns aa familia
-            List<String> copyPasteFamilia = [
-                          //Nº do Cadastro;Unidade;Data do Cadastro;Nome da referência;
-                          '','',familia.dateCreated.format('dd/MM/YYYY'),familia.referencia?.nomeCompleto,
-                          //NIS da referência;Código Familiar no CADÚNICO;Logradouro;Nome do logradouro;
-                          familia.referencia?.nis,'',familia.endereco?.tipoLogradouro,familia.endereco?.nomeLogradouro,
-                          //Nº;Complemento;Bairro;CEP;Telefone;
-                          familia.endereco?.numero, familia.endereco?.complemento, familia.endereco?.bairro, familia.endereco?.CEP, familia.telefonesToString,
-                          //Moradia;Cômodos / Quartos;
-                          familia.mapaDetalhes['propriedadeMoradia'], familia.mapaDetalhes['numeroComodos']?.toString() + " / " + familia.mapaDetalhes['numeroQuartos']?.toString(),
-                          //Tipo de construção;Riscos;Barreira arquitetônica;
-                          familia.mapaDetalhes['tipoConstrucao'], familia.mapaDetalhes['riscoConstrutivo'],'',
-                          //Energia elétrica;Destino de Esgoto;
-                          familia.mapaDetalhes['eletricidade'], familiasSemCad.converteBool(familia.mapaDetalhes['redeEsgoto'], 'Rede Pública', 'Outro'),
-                          //Instalação Sanitária;
-                          familiasSemCad.converteBool(familia.mapaDetalhes['banheiro'], "Própria", "Ausente"),
-                          //Abastecimento de água;
-                          familiasSemCad.converteBool(familia.mapaDetalhes['aguaTratada'], "Rede pública encanada", "Outro"),
-                          //Destino do lixo;
-                          familiasSemCad.converteBool(familia.mapaDetalhes['coletaLixo'], "Coleta domiciliar", "Outro"),
-                          //Nº de integrantes;Nº PEA;Renda familiar Total;
-                          familia.getMembrosOrdemPadrao(true).size()+"", "", familiasSemCad.calculaRenda(familia),
-                          //Possui cadastro no CADÚNICO;B.F.;R$;Descumprimento BF;Mês Desc. BF;familiasSemCad.publicoPrioritario(familia, "3"), "",
-                          "", familiasSemCad.publicoPrioritario(familia, "1"), "", familiasSemCad.publicoPrioritario(familia, "2"), "",
-                          //familiasSemCad.publicoPrioritario(familia, "3"), "",Trabalho Infantil;PETI;Outros benefícios?;R$ Outros Benefícios;Notificação de Ocorrência;Encaminhado para PSE;
-                          familiasSemCad.publicoPrioritario(familia, "3"), "", "", "", "", "", "", "",
-                          //Deficiente na família?;Em serviço de Acolhimento?;Família em Acompanhamento;Data de inserção no Acompanhamento;Data de encerramento do Acompanhamento;
-                          familiasSemCad.contemMembro(familia, "deficiencia"), familiasSemCad.contemMembro(familia, "institucionalizado"), "", "", "",
-                          //Renda per capta;
-                          getRendaPerCapita(familia)
-            ];
-            //Gera, para cada membro, as planilhas definitivas (a primeira ate a data de nascimento e a segunda depois da data de nascimento)
-            familia.getMembrosOrdemPadrao(true).each { Cidadao cidadao ->
-                List<String> copyPaste1 = copyPasteFamilia.clone()
-                if (! cidadao.referencia)
-                    copyPaste1[2] = ''; //apaga a data de criacao para os membros que nao a referencia familiar
-                          //Grau de parentesco;Nome do integrante;
-                copyPaste1 << [ cidadao.parentescoReferencia, cidadao.nomeCompleto ];
-                List<String> copyPaste2 = [
-                          //Sexo;Escolaridade;Ocupação;Tipo de deficiência;
-                          cidadao.sexo?.descricao, cidadao.escolaridade?.descricao, cidadao.mapaDetalhes['situacaoTrabalho'], cidadao.mapaDetalhes['tipoDeficiencia'],
-                          //Raça;Estado civil;Centro de Saúde;Instituição de Ensino;Atividade do CRAS
-                          cidadao.mapaDetalhes['corRaca'], cidadao.mapaDetalhes['estadoCivil'], familia.mapaDetalhes['centroSaude'], cidadao.mapaDetalhes['escola'], ''
-                ];
-
-                cidadao.metaClass.copyPaste1 = copyPaste1.collect{ it ? '="'+it.toString()+'"' : "" }.join("\\t");
-                cidadao.metaClass.copyPaste2 = copyPaste2.collect{ it ? '="'+it.toString()+'"' : "" }.join("\\t");
-            }
-        }
+        familiasSemCad.geraCelulasParaPlanilha(familias)
         return familias;
     }
 
     // * Organizando os metodos privados específicos pra emissao do formulario de cadastro familiar
     public FamiliasSemCad familiasSemCad = new FamiliasSemCad();
     public class FamiliasSemCad {
+        //lista as colunas da planilha de Banco de Dados dos CRAS de Belo Horizonte, que foram previamente formatadas como texto e, assim, dispensam a ncessidade de terem conteudos entre aspas
+        private static final List FORMATOS_TEXTO_PLANILHA = [13/*N*/, 44/*AS*/, 45/*AT*/];
+
+        private List<Familia> geraCelulasParaPlanilha(List<Familia> familias) {
+
+            int colunaInicialPlanilha = 0;
+
+            familias.each { Familia familia ->
+                log.debug(familiasSemCad.converteBool(familia.mapaDetalhes['aguaTratada'], "Rede pública encanada", "Outro"));
+
+                //lista base das células contendo as infos do cadastro, que podem ser copiadas para uma planilha
+                List<String> copyPasteFamilia = [];
+
+                //Nº do Cadastro;
+                copyPasteFamilia << '';
+
+                //acrescenta uma coluna a mais para o CRAS Havai-Ventosa
+                if (customizacoesServiceProxy.contem(CustomizacoesService.Codigos.BELO_HORIZONTE_HAVAI_VENTOSA)) {
+                    //Unidade;
+                    copyPasteFamilia << '';
+                    //neste caso, considerar que a planilha começa com uma coluna a mais do que o normal (na verdade, é a segunda coluna)
+                    colunaInicialPlanilha++;
+                }
+
+                //Inicia a montagem da planilha com os elementos comuns aa familia
+                copyPasteFamilia.addAll([
+                        //Data do Cadastro;Nome da referência;
+                        familia.dateCreated.format('dd/MM/YYYY'), familia.referencia?.nomeCompleto,
+                        //NIS da referência;Código Familiar no CADÚNICO;Logradouro;Nome do logradouro;
+                        familia.referencia?.nis, '', familia.endereco?.tipoLogradouro, familia.endereco?.nomeLogradouro,
+                        //Nº;Complemento;Bairro;CEP;Telefone;
+                        familia.endereco?.numero, familia.endereco?.complemento, familia.endereco?.bairro, familia.endereco?.CEP, familia.telefonesToString,
+                        //Moradia;Cômodos / Quartos;
+                        familia.mapaDetalhes['propriedadeMoradia'], familiasSemCad.comodosEquartos(familia),
+                        //Tipo de construção;Riscos;Barreira arquitetônica;
+                        familia.mapaDetalhes['tipoConstrucao'], familia.mapaDetalhes['riscoConstrutivo'], '',
+                        //Energia elétrica;Destino de Esgoto;
+                        familia.mapaDetalhes['eletricidade'], familiasSemCad.converteBool(familia.mapaDetalhes['redeEsgoto'], 'Rede Pública', 'Outro'),
+                        //Instalação Sanitária;
+                        familiasSemCad.converteBool(familia.mapaDetalhes['banheiro'], "Própria", "Ausente"),
+                        //Abastecimento de água;
+                        familiasSemCad.converteBool(familia.mapaDetalhes['aguaTratada'], "Rede pública encanada", "Outro"),
+                        //Destino do lixo;
+                        familiasSemCad.converteBool(familia.mapaDetalhes['coletaLixo'], "Coleta domiciliar", "Outro"),
+                        //Nº de integrantes;Nº PEA;Renda familiar Total;
+                        familia.getMembrosOrdemPadrao(true).size() + "", "", familiasSemCad.calculaRenda(familia),
+                        //Possui cadastro no CADÚNICO;B.F.;R$;Descumprimento BF;Mês Desc. BF;familiasSemCad.publicoPrioritario(familia, "3"), "",
+                        "", familiasSemCad.publicoPrioritario(familia, "1"), "", familiasSemCad.publicoPrioritario(familia, "2"), "",
+                        //familiasSemCad.publicoPrioritario(familia, "3"), "",Trabalho Infantil;PETI;Outros benefícios?;R$ Outros Benefícios;Notificação de Ocorrência;Encaminhado para PSE;
+                        familiasSemCad.publicoPrioritario(familia, "3"), "", "", "", "", "", "", "",
+                        //Deficiente na família?;Em serviço de Acolhimento?;Família em Acompanhamento;Data de inserção no Acompanhamento;Data de encerramento do Acompanhamento;
+                        familiasSemCad.contemMembro(familia, "deficiencia"), familiasSemCad.contemMembro(familia, "institucionalizado"), "", "", "",
+                        //Renda per capta;
+                        getRendaPerCapita(familia)
+                ]);
+                //Gera, para cada membro, as planilhas definitivas (a primeira ate a data de nascimento e a segunda depois da data de nascimento)
+                familia.getMembrosOrdemPadrao(true).each { Cidadao cidadao ->
+                    List<String> copyPaste1 = copyPasteFamilia.clone()
+                    if (!cidadao.referencia)
+                        copyPaste1[colunaInicialPlanilha+1] = ''; //apaga a data de criacao para os membros que nao a referencia familiar
+                    //Grau de parentesco;Nome do integrante;
+                    copyPaste1 << cidadao.parentescoReferencia;
+                    copyPaste1 << cidadao.nomeCompleto;
+                    List<String> copyPaste2 = [
+                            //Sexo;Escolaridade;Ocupação;Tipo de deficiência;
+                            cidadao.sexo?.descricao, cidadao.escolaridade?.descricao, cidadao.mapaDetalhes['situacaoTrabalho'], cidadao.mapaDetalhes['tipoDeficiencia'],
+                            //Raça;Estado civil;Centro de Saúde;Instituição de Ensino;Atividade do CRAS
+                            cidadao.mapaDetalhes['corRaca'], cidadao.mapaDetalhes['estadoCivil'], familia.mapaDetalhes['centroSaude'], cidadao.mapaDetalhes['escola'], ''
+                    ];
+
+                    int index = 0;
+                    cidadao.metaClass.copyPaste1 = copyPaste1.collect {
+                        if (FORMATOS_TEXTO_PLANILHA.contains((index++) - colunaInicialPlanilha/*desprezar as colunas indicadas anteriormente*/))
+                            return it;
+                        else
+                            return it ? '="' + it.toString() + '"' : "";
+                    }.join("\\t");
+                    index += 7/*pula campos da idade*/;
+                    cidadao.metaClass.copyPaste2 = copyPaste2.collect {
+                        if (FORMATOS_TEXTO_PLANILHA.contains((index++) - colunaInicialPlanilha/*desprezar as colunas indicadas anteriormente*/))
+                            return it;
+                        else
+                            return it ? '="' + it.toString() + '"' : "";
+                    }.join("\\t");
+                }
+            }
+        }
 
         private String converteBool(CampoDetalhe campoDetalhe, String seSim, String seNao) {
-            return campoDetalhe?.asBoolean() == true ? seSim : (campoDetalhe?.asBoolean() == false ? seNao : '');
+            if (campoDetalhe?.notEmpty())
+                return campoDetalhe?.asBoolean() ? seSim : seNao
+            else
+                return '';
         }
 
         private String calculaRenda(Familia familia) {
@@ -433,6 +488,13 @@ class FamiliaService {
                     total += Integer.parseInt(cidadao.mapaDetalhes['rendaMensal'].toString());
             }
             return total + "";
+        }
+
+        private String comodosEquartos(Familia familia) {
+            if (! familia.mapaDetalhes['numeroComodos'] && ! familia.mapaDetalhes['numeroQuartos'])
+                return ""
+            else
+                return familia.mapaDetalhes['numeroComodos']?.toString() + " / " + familia.mapaDetalhes['numeroQuartos']?.toString()
         }
 
         private String publicoPrioritario(Familia familia, String codigo) {
@@ -484,7 +546,7 @@ class FamiliaService {
             //define um mapa de pares chave/conteudo cujas CHAVES são buscadas como FIELDS no template do word e substiuídas
             // pelo conteúdo correspondente. Esse mapa é transferido na sequência para o CONTEXTO do mecanismo de geração do .doc
             [
-                    codigoLegado            : familia.cad == Familia.NOVO_CAD ? '' : familia.cad,
+                    codigoLegado            : cad(familia),
                     referenciaFamiliar      : familia.getReferencia()?.nomeCompleto,
                     enderecoBasico          : familia.endereco.obtemEnderecoBasico(),
                     bairro                  : familia.endereco?.bairro,
@@ -523,7 +585,10 @@ class FamiliaService {
             return new ReportDTO(report: report, context: context);
         }
 
-        /**
+        private String cad(Familia familia) {
+            return familia.cad == Familia.NOVO_CAD ? '' : familia.cad
+        }
+/**
          * arredonda e converte para string. se nulo, converte para uma string vazia ''
          */
         private String roundDoubleToStr(Double aDouble) {
@@ -573,7 +638,7 @@ class FamiliaService {
 
             //Por fim, personaliza alguns campos ou sobrescreve os campos definidos anteriormente
             [
-                    codigoLegado            : cidadao.familia.cad,
+                    codigoLegado            : cad(cidadao.familia),
                     nomeCompleto            : cidadao.nomeCompleto,
                     filiacao                : getFiliacao(cidadao),
                     dataNascimento          : getDataNacimento(cidadao),
@@ -686,6 +751,7 @@ class FamiliaService {
      * Calcula a renda total da família, somando a renda de cada membro ativo, e considerando "sem renda" como zero.
      * Obs: Caso não haja nenhuma informação registrada para nenhum dos membros, retorna null e não zero.
      */
+    @Transactional(readOnly = true)
     public Double getRendaTotal(Familia familia) {
         Double total = 0;
         boolean semInformacao = true;
@@ -704,6 +770,7 @@ class FamiliaService {
      * Calcula a despesa total da família, somando as despesas detalhadas.
      * Obs: Caso não haja nenhuma informação registrada de despesa, retorna null e não zero.
      */
+    @Transactional(readOnly = true)
     public Double getDespesaTotal(Familia familia) {
         Double total = 0;
         boolean semInformacao = true;
@@ -722,9 +789,10 @@ class FamiliaService {
      * Calcula a renda per capita da família.
      * Obs: Caso não haja nenhuma informação registrada de renda, retorna null e não zero.
      */
-   public Double getRendaPerCapita(Familia familia) {
-       Double rendaTotal = getRendaTotal(familia);
-       if (rendaTotal == null)
+    @Transactional(readOnly = true)
+    public Double getRendaPerCapita(Familia familia) {
+        Double rendaTotal = getRendaTotal(familia);
+        if (rendaTotal == null)
            return null;
         int numeroMembros = familia.getMembrosOrdemPadrao(true).size();
         if (numeroMembros == 0) //evita erro de divisão por zero, partindo do pressuposto que toda familia tem pelo menos um membro
@@ -732,4 +800,11 @@ class FamiliaService {
         return rendaTotal / numeroMembros;
     }
 
+    @Transactional(readOnly = true)
+    public List<Telefone> obtemTelefones(Long idFamilia) {
+        if (idFamilia)
+            return Familia.get(idFamilia).telefones.sort { a,b-> b.dateCreated<=>a.dateCreated } //ordem inversa
+        else
+            return [];
+    }
 }

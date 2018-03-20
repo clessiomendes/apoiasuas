@@ -4,8 +4,7 @@
 %>
 
 %{--Se estiver em modo de criação, exigir o nome da RF para a primeira gravacao--}%
-<g:fieldcontain showto="${[CustomizacoesService.Codigos.BELO_HORIZONTE_HAVAI_VENTOSA]}"
-                showif="${modoCriacao}" class="required ${erroReferencia ? 'error' : ''}">
+<g:fieldcontain showif="${modoCriacao}" class="required ${erroReferencia ? 'error' : ''}">
     <label>
         Nome Completo da RF<g:helpTooltip chave="help.referencia.familiar"/>
         <span class="required-indicator">*</span>

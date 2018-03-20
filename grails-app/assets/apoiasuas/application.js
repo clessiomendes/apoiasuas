@@ -15,4 +15,6 @@
 //= require snackbar/snackbar.js
 //= require utils.js
 //= require main.js
+//= require notify.js
+//= require /inicio/notificacoes-familia.js
 

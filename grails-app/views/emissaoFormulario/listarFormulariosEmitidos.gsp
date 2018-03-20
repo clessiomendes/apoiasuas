@@ -11,7 +11,7 @@
 		<a href="#list-formularioEmitido" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
 			<ul>
-                <g:link class="create" action="escolherFamilia">Novo</g:link>
+                <g:link class="create" action="escolherFormulario">Novo</g:link>
 			</ul>
 		</div>
 		<div id="list-formularioEmitido" class="content scaffold-list" role="main">

@@ -12,6 +12,7 @@ class Compromisso implements DominioProtegidoServico {
     public static final String CSS_VERMELHO = "fc-vermelho"
     public static final String CSS_VERDE = "fc-verde"
     public static final String CSS_AZUL = "fc-azul"
+    public static final String CSS_CINZA = "fc-cinza"
 
     public static enum Tipo {
         ATENDIMENTO_PARTICULARIZADO("atendimento particularizado"),
@@ -61,9 +62,9 @@ class Compromisso implements DominioProtegidoServico {
         return descricao
     }
 
-    public String getCor() {
+    public String getCor(Date dataInibicao = null) {
         if (tipo && tipo.atendimento)
-            return atendimentoParticularizado.cor
+            return atendimentoParticularizado.getCor(dataInibicao)
         else
             return CSS_AZUL;
     }

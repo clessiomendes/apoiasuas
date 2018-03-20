@@ -1,6 +1,7 @@
 package org.apoiasuas.formulario
 
 import org.apoiasuas.cidadao.Cidadao
+import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.FullTextSearchUtils
 
@@ -19,10 +20,11 @@ class Formulario implements Serializable {
     //Campos transientees
     byte[] template
     Cidadao cidadao
+    Familia familia
     UsuarioSistema usuarioSistema //Campo transiente para armazenar um usuarioResponsavel (caso ele exista no formulario)
     boolean atualizarPersistencia
     FormularioEmitido formularioEmitido
-    static transients = ['formularioEmitido', 'cidadao', 'usuarioSistema', 'dataPreenchimento',
+    static transients = ['formularioEmitido', 'cidadao', 'familia', 'usuarioSistema', 'dataPreenchimento',
                          'nomeEquipamento', 'enderecoEquipamento', 'telefoneEquipamento',
                          'emailEquipamento', 'cidadeEquipamento', 'ufEquipamento',
                          /*'nomeResponsavelPreenchimento', 'camposAvulsos',*/ 'atualizarPersistencia',
@@ -52,18 +54,11 @@ class Formulario implements Serializable {
      * @param params O "recorte" do request correspondente aos conteudos avulsos
      * @return Retorna uma lista de erros de conversão (ou vazia, se não houve nenhum erro)
      */
-//    public List<String> setCamposAvulsos(Map params) {
     public void setCamposAvulsos(Map params) {
-//        List<String> result = [];
         //Filtra, de todos os campos, apenas aqueles do tipo AVULSO e itera sobre eles
         campos.findAll { it.origem?.avulso }*.each { campo ->
-//            try {
                 campo.valorArmazenado = params.get(campo.codigo)
-//        } catch (ParseException e) {
-//                result << "Erro em ${campo.descricao}: ${e.message}";
-//            }
         }
-//        return result;
     }
 
     public void setDataPreenchimento(Date date) {
@@ -185,6 +180,13 @@ class Formulario implements Serializable {
 
     public ModeloFormulario getModeloPadrao() {
         return modelos?.find { it.padrao }
+    }
+
+    /**
+     * Caso haja um cidadao definido, retorna a familia ligada ao cidadao, se nao, retorna a familia autonoma
+     */
+    public Familia getFamilia() {
+        return cidadao?.familia ?: familia;
     }
 
 }

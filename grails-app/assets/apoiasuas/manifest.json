@@ -1,0 +1,8 @@
+{
+  "short_name": "Apoia CRAS",
+  "name": "Apoia CRAS",
+  "background_color": "#abbf78",
+  "theme_color": "#abbf78",
+  "display": "standalone",
+  "start_url": "../agenda/calendario?selecionaUsuarioLogado=true"
+}

@@ -12,6 +12,7 @@ import org.apoiasuas.cidadao.FiltroCidadaoCommand
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.seguranca.UsuarioSistema
+import org.apoiasuas.util.ApoiaSuasException
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
@@ -19,16 +20,36 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+/**
+ * CDU de Emissão de Formulários
+ * documentação (diagrama) em https://www.draw.io/#G13oiXAgbzyw6ZWHq1Rsv15raTeNZ0hKkw
+ */
 class EmissaoFormularioController extends AncestralController {
 
-    static defaultAction = "escolherFamilia"
+    static defaultAction = "escolherFormulario"
 //    static scope = "prototype" //garante uma nova instancia deste controller para cada request
 
     CidadaoService cidadaoService
     def pedidoCertidaoProcessoService
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def escolherFamilia() {
+    def _old_escolherFormulario(Long idCidadao) {
+        if (idCidadao)
+            guardaUltimoCidadaoSelecionado(Cidadao.get(idCidadao))
+        List<Formulario> formulariosDisponiveis = [];
+        if (params.idFormulario)
+            formulariosDisponiveis << servico(null).getFormulario(params.idFormulario.toLong())
+        else
+            formulariosDisponiveis = servico(null).getFormulariosDisponiveis();
+        Map<String, List<Formulario>> tiposFormulario = formulariosDisponiveis.sort {
+            [it.id, it.tipo]
+        }.groupBy { it.tipo ?: "Outros" }
+        render view: 'escolherFormulario', model: [formulariosDisponiveis: tiposFormulario]
+    }
+
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def escolherFormulario() {
         List<Formulario> formulariosDisponiveis = [];
         if (params.idFormulario)
             formulariosDisponiveis << servico(null).getFormulario(params.idFormulario.toLong())
@@ -43,16 +64,17 @@ class EmissaoFormularioController extends AncestralController {
                 tiposFormulario.put(tipo, [])
             tiposFormulario[tipo].add(it);
         }
-        render view: 'escolherFamilia', model: [formulariosDisponiveis: tiposFormulario]
+        render view: 'escolherFormulario', model: [formulariosDisponiveis: tiposFormulario]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def preencherFormulario(Long idFormulario, Long idServico, Long membroSelecionado, Long familiaSelecionada) {
+    def preencherFormulario(Long idFormulario, Long idServico /*preenchido apenas quando vindo do cdu de servico socio assistencial*/,
+                            Long membroSelecionado, Long familiaSelecionada) {
 //        try {
         Formulario formulario = servico(Formulario.get(idFormulario)).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
         if (! formulario)
             return redirect(controller: 'inicio')
-        guardaUltimaFamiliaSelecionada(formulario.cidadao.familia)
+        guardaUltimaFamiliaSelecionada(formulario.familia)
         guardaUltimoCidadaoSelecionado(formulario.cidadao)
         render(view: 'preencherFormulario',
                 model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
@@ -84,7 +106,7 @@ class EmissaoFormularioController extends AncestralController {
 */
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def imprimirFormulario(Long idFormulario, Long idModelo) {
+    def _old_imprimirFormulario(Long idFormulario, Long idModelo) {
         Formulario formulario
 
         instanciamento_dos_objetos: { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
@@ -92,14 +114,17 @@ class EmissaoFormularioController extends AncestralController {
 
             String idUsuarioSistema = params.avulso?.get(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
             if (idUsuarioSistema)
-                formulario.usuarioSistema = UsuarioSistema.get(idUsuarioSistema.toLong())
-            formulario.cidadao = new Cidadao(params.cidadao)
+                formulario.usuarioSistema = UsuarioSistema.get(idUsuarioSistema.toLong());
+            if (params.cidadao)
+                formulario.cidadao = new Cidadao(params.cidadao);
             if (params.familia) {
-                formulario.cidadao.familia = new Familia(params.familia)
-                formulario.cidadao.familia.telefones = cidadaoService.obtemTelefonesViaCidadao(formulario.cidadao.id)
+                formulario.familia = new Familia(params.familia);
+                //necessário buscar os telefones no banco de dados
+                formulario.familia.telefones = familiaService.obtemTelefones(formulario.familia.id);
+//                formulario.familia.telefones = cidadaoService.obtemTelefonesViaCidadao(formulario.cidadao.id)
+                if (params.endereco)
+                    formulario.familia.endereco = new Endereco(params.endereco)
             }
-            if (params.endereco)
-                formulario.cidadao.familia.endereco = new Endereco(params.endereco)
 
             formulario.formularioEmitido = FormularioEmitido.get(params.formularioEmitido.id)
 
@@ -114,7 +139,7 @@ class EmissaoFormularioController extends AncestralController {
         geraFormularioPreenchidoEgrava: {
             ReportDTO reportDTO = servico(formulario).prepararImpressao(formulario, idModelo)
             if (verificaPermissao(DefinicaoPapeis.STR_USUARIO))
-                servico(formulario).gravarAlteracoes(formulario)
+                servico(formulario).gravarAlteracoesAntigo(formulario)
 
             //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
             //javascript que rodara automaticamente na proxima pagina)
@@ -123,8 +148,77 @@ class EmissaoFormularioController extends AncestralController {
                 String idProcesso = pedidoCertidaoProcessoService.getIdProcessoPeloFormularioEmitido(reportDTO.formularioEmitido.id)
                 return redirect(controller: "pedidoCertidaoProcesso", action: "mostraProcesso", id:idProcesso)
             } else {
-                redirect action: 'escolherFamilia'
+                redirect action: 'escolherFormulario'
             }
+        }
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def imprimirFormulario(Long idFormulario, Long idModelo) {
+        Formulario formulario
+
+        instanciamento_dos_objetos: { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
+            formulario = servico(Formulario.get(idFormulario)).getFormulario(idFormulario, true)
+
+            String idUsuarioSistema = params.avulso?.get(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
+            if (idUsuarioSistema)
+                formulario.usuarioSistema = UsuarioSistema.get(idUsuarioSistema.toLong())
+            if (params.cidadao)
+                formulario.cidadao = new Cidadao(params.cidadao);
+            if (params.familia) {
+                formulario.familia = new Familia(params.familia);
+                //necessário buscar os telefones no banco de dados
+                formulario.familia.telefones = familiaService.obtemTelefones(formulario.familia.id);
+//                formulario.familia.telefones = cidadaoService.obtemTelefonesViaCidadao(formulario.cidadao.id)
+                if (params.endereco)
+                    formulario.familia.endereco = new Endereco(params.endereco)
+            }
+
+            formulario.formularioEmitido = FormularioEmitido.get(params.formularioEmitido.id);
+
+            //Validacao dos campos obrigatorios e dos formatos
+            if (! validarPreenchimento(formulario, params))
+                return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
+                                                                   dtoFormulario: formulario, tecnicos: getTecnicosOrdenadosController(true) ]);
+
+//            formulario.setCamposAvulsos(params.avulso)
+        }
+
+        geraFormularioPreenchido: {
+            ReportDTO reportDTO = servico(formulario).prepararImpressao(formulario, idModelo)
+            //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
+            //javascript que rodara automaticamente na proxima pagina)
+            setReportParaBaixar(session, reportDTO)
+
+            //Verifica se existem campos alterados que podem ser atualizados no cadastro
+            //FIXME: abranger também situações em que não há cidadão selecionado, mas há família
+            if (formulario.familia && verificaPermissao(DefinicaoPapeis.STR_USUARIO)) {
+                List camposAfetados = servico(formulario).camposAlterados(formulario);
+                if (camposAfetados) {
+                    return render(view: "atualizarCadastro", model: [formulario: formulario, camposAfetados: camposAfetados,
+                                  familiaSelecionada: Familia.get(formulario.familia?.id),
+                                  cidadaoSelecionado: Cidadao.get(formulario.cidadao?.id)])
+                }
+            }
+
+            return fimEmissao(formulario);
+        }
+    }
+
+    /**
+     * Decide qual será a tela para a qual o operador será encaminhado após concluir a emisão do formulario (e confirmar
+     * a gravação de eventuais alterações no cadastro). Em geral, retorna para a tela de escolha de formulario. Mas casos
+     * especificos, como do pedido de certidão, podem ter um destino diferente.
+     */
+
+    private def fimEmissao(Formulario formulario) {
+        if (! formulario.formularioEmitido)
+            throw new ApoiaSuasException("formulario.formularioEmitido não fornecido")
+        if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO && segurancaService.acessoRecursoServico(RecursosServico.PEDIDOS_CERTIDAO)) {
+            String idProcesso = pedidoCertidaoProcessoService.getIdProcessoPeloFormularioEmitido(formulario.formularioEmitido.id)
+            return redirect(controller: "pedidoCertidaoProcesso", action: "mostraProcesso", id:idProcesso)
+        } else {
+            redirect action: 'escolherFormulario'
         }
     }
 
@@ -174,7 +268,7 @@ class EmissaoFormularioController extends AncestralController {
         return result;
     }
 
-/**
+    /**
      * Infere, à partir do formulário sendo gerado, o serviço correspondente
      */
     private FormularioService servico(Formulario formulario) {
@@ -187,7 +281,7 @@ class EmissaoFormularioController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def familiaParaSelecao(String cad) {
+    def escolherCidadao(String cad) {
         Familia familiaSelecionada = null
 //        boolean familiaEncontrada = false
         if (cad) {
@@ -196,7 +290,7 @@ class EmissaoFormularioController extends AncestralController {
 //                familiaEncontrada = true
         }
         if (familiaSelecionada)
-            render(template:'escolherFamilia-Selecionar', model:[dtoFamiliaSelecionada: familiaSelecionada/*, familiaEncontrada: familiaEncontrada*/])
+            render(template:'escolherCidadao', model:[dtoFamiliaSelecionada: familiaSelecionada/*, familiaEncontrada: familiaEncontrada*/])
         else
             render(template: 'familiaNaoEncontrada');
     }
@@ -257,4 +351,39 @@ class EmissaoFormularioController extends AncestralController {
         render view: "mostrarFormularioEmitido", model: [formularioEmitidoInstance: formularioEmitidoInstance ]
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def gravarAlteracoes(FormularioCommand formularioCommand) {
+        Formulario formulario = Formulario.get(formularioCommand.id);
+        formulario.formularioEmitido = FormularioEmitido.get(formularioCommand.idFormularioEmitido);
+        if (formularioCommand.idFamilia)
+            formulario.familia = Familia.get(formularioCommand.idFamilia)
+        else
+            throw new ApoiaSuasException("Id do cidadão não encontrado entre os parâmetros")
+        if (formularioCommand.idCidadao)
+            formulario.cidadao = Cidadao.get(formularioCommand.idCidadao);
+
+        servico(formulario).gravarAlteracoes(formulario, formularioCommand.campos);
+        return fimEmissao(formulario);
+    }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def cancelarAlteracoes(FormularioCommand formularioCommand) {
+        Formulario formulario = Formulario.get(formularioCommand.id);
+        formulario.formularioEmitido = FormularioEmitido.get(formularioCommand.idFormularioEmitido);
+        return fimEmissao(formulario);
+    }
+
+}
+
+class FormularioCommand {
+    String id
+    String idCidadao
+    String idFamilia
+    String idFormularioEmitido
+    List<CampoFormularioCommand> campos
+}
+
+class CampoFormularioCommand {
+    String id
+    String novoConteudo
 }

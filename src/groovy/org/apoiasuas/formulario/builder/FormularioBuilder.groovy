@@ -18,7 +18,6 @@ abstract class BaseFormularioBuilder {
     }
 
     void campoAvulso( @DelegatesTo(value = CampoAvulsoFormularioBuilder, strategy = groovy.lang.Closure.DELEGATE_FIRST) groovy.lang.Closure closure) {
-
         CampoFormulario campoFormulario = new CampoAvulsoFormularioBuilder(closure).build()
         campoFormulario.origem = CampoFormulario.Origem.AVULSO
         //Valores default
@@ -28,6 +27,19 @@ abstract class BaseFormularioBuilder {
             campoFormulario.tamanhoPersonalizado = InfoPropriedadeDominio.TAMANHO_DEFAULT
         camposBuilder.add(campoFormulario)
     }
+
+    void campoDetalhes( @DelegatesTo(value = CampoDetalhesFormularioBuilder, strategy = groovy.lang.Closure.DELEGATE_FIRST) groovy.lang.Closure closure) {
+        CampoFormulario campoFormulario = new CampoDetalhesFormularioBuilder(closure).build()
+        if (! campoFormulario.origem?.cidadao && ! campoFormulario.origem?.familia)
+            throw new RuntimeException("Origem inválida para o campo de detalhes '${campoFormulario.codigo}'. Use 'CIDADAO' ou 'FAMILIA' ")
+        //Valores default
+        if (! campoFormulario.tipo)
+            campoFormulario.tipoPersonalizado = InfoPropriedadeDominio.TIPO_DEFAULT
+        if (! campoFormulario.tamanho)
+            campoFormulario.tamanhoPersonalizado = InfoPropriedadeDominio.TAMANHO_DEFAULT
+        camposBuilder.add(campoFormulario)
+    }
+
 }
 
 class GrupoCamposBuilder extends BaseFormularioBuilder {

@@ -28,6 +28,8 @@ class Familia implements Serializable, DominioProtegidoServico, DetalhesJSON {
 
     //Necessario acesso ao servico para definir se o ServicoSistema logado faz uso ou nao de codigo legado
     def segurancaService;
+    //Necessario acesso ao servico para executar rotinas de auditoria durante qualquer gravacao
+    def auditoriaService;
 
     @InfoPropriedadeDominio(codigo='cad', descricao = 'Cad', tamanho = 10, atualizavel = false)
     String cad //transiente
@@ -45,6 +47,7 @@ class Familia implements Serializable, DominioProtegidoServico, DetalhesJSON {
     Set<VulnerabilidadeFamilia> vulnerabilidades = []
     Set<OutroMarcadorFamilia> outrosMarcadores = []
     Set<Cidadao> membros = []
+    Set<Auditoria> auditoria = [];
 
     AcompanhamentoFamiliar acompanhamentoFamiliar //deveria ser hasOne, mas essa funcionalidade não está estável no Grails/Hibernate
     String detalhes;
@@ -67,7 +70,7 @@ class Familia implements Serializable, DominioProtegidoServico, DetalhesJSON {
     static hasMany = [membros: Cidadao, telefones: Telefone, monitoramentos: Monitoramento,
                       programas: ProgramaFamilia, acoes: AcaoFamilia,
                       outrosMarcadores: OutroMarcadorFamilia,
-                      vulnerabilidades: VulnerabilidadeFamilia]
+                      vulnerabilidades: VulnerabilidadeFamilia, auditoria: Auditoria]
 
     static embedded = ['endereco']
 /*
@@ -118,7 +121,7 @@ class Familia implements Serializable, DominioProtegidoServico, DetalhesJSON {
         if (cad)
             return cad
         try {
-            if (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO))
+            if (segurancaService.identificacaoCodigoLegado)
                 return codigoLegado ?: NOVO_CAD
             else
                 return id ?: NOVO_CAD;
@@ -225,6 +228,14 @@ class Familia implements Serializable, DominioProtegidoServico, DetalhesJSON {
     public void setDetalhes(String detalhes) {
         this.detalhes = detalhes;
         DetalheService.parseDetalhes(this, detalhes)
+    }
+
+    def beforeInsert() {
+        auditoriaService.auditaFamilia(this);
+    }
+
+    def beforeUpdate() {
+        auditoriaService.auditaFamilia(this);
     }
 
 }

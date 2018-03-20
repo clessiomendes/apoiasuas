@@ -3,6 +3,11 @@ var janelaModalTipoCompromisso = new JanelaModalAjax();
 var compromissoAntesMudancaHorario = null;
 
 $(document).ready(function() {
+    //detectar celular
+    var isMobile = false;
+    try { isMobile = window.matchMedia("only screen and (max-width: 700px)").matches; }
+    catch(e) { console.error('window.matchMedia() não suportado') };
+
     var cookieCalendario = cookie.get("calendario") ? JSON.parse(cookie.get("calendario")) :
             { //Configuração inicial ou default da agenda
                 defaultView: "agendaWeek", start: moment().format()
@@ -18,21 +23,20 @@ $(document).ready(function() {
         minTime: configuracaoAgenda.minTime,
         maxTime: configuracaoAgenda.maxTime,
         aspectRatio: "auto",
-        defaultView: cookieCalendario.defaultView,
+        //defaultView: "agendaTwoDay",
+        defaultView: isMobile ? "listDay" : cookieCalendario.defaultView,
         slotLabelFormat: "HH:mm",
         locale: 'pt',
         allDaySlot: false,
         weekends: configuracaoAgenda.weekends,
         header: {
-            //left: 'prev,next today',
             left: 'prev',
             center: 'title',
             right: 'next',
-            //right: 'month,agendaWeek,listWeek,agendaDay'
         },
-        defaultDate: moment(cookieCalendario.start),
+        defaultDate: isMobile ? null /*data atual*/ : moment(cookieCalendario.start) /*ultima data consultada*/,
         navLinks: true, // can click day/week names to navigate views
-        selectable: true,
+        selectable: isMobile ? false : true,
         selectHelper: true,
         //evento acionado para criação de novos compromissos
         select: createCompromisso,
@@ -46,7 +50,7 @@ $(document).ready(function() {
         eventResizeStart: guardaEstadoCompromisso,
         //clique num evento
         eventClick: abreCompromisso,
-        editable: true,
+        editable: isMobile ? false : true,
         eventRender: eventRender,
         eventLimit: false, // allow "more" link when too many events
         eventDataTransform: injetaMetodos,
@@ -68,7 +72,9 @@ $(document).ready(function() {
   * os eventos definidos no corpo desta funcao e adicionados dinamicamente à janela modal, específica para esta seleção.
   */
 function createCompromisso(start, end, jsEvent, view) {
-    var inicioStr = start ? start.format() : ""
+    if (! start)
+        start = moment($('#calendar').fullCalendar('getDate').format()+"T"+configuracaoAgenda.minTime);
+    var inicioStr = start ? start.format() : "";
     var fimStr = end ? end.format() : ""
     var $usuarioSelecionadoModal = $('#selectUsuarioSistemaOpcoesCompromisso')
     var $usuarioSelecionadoTelaMae = $('#selectUsuarioSistema')
@@ -111,7 +117,7 @@ function createCompromisso(start, end, jsEvent, view) {
         janelaModalTipoCompromisso.confirmada();
     }
 
-    if (jsEvent.shiftKey && $usuarioSelecionadoTelaMae.val()) //compromisso automatico - do tipo Atendimento
+    if (jsEvent && jsEvent.shiftKey && $usuarioSelecionadoTelaMae.val()) //compromisso automatico - do tipo Atendimento
         janelaModalTipoCompromisso.createAtendimento();
     else
         janelaModalTipoCompromisso.abreJanela({titulo: "Agenda", element: $('#divEscolherTipoCompromisso'), largura: 550});
@@ -147,10 +153,11 @@ function updateHorarioCompromisso( event, delta, revertFunc, jsEvent, ui, view) 
             alert("Erro gravando alteração do compromisso ["+event.title+"] no banco de dados : "+textStatus+", "+errorThrown);
         },
         success: function(data) {
-            refreshEvento(data, {pos: 'bottom-center', duration: 0, customClass: 'snackbar-agenda',
-                showSecondButton: true, secondButtonText: 'desfazer', secondButtonTextColor: '#cc0000',
+            refreshEvento(data, {pos: 'bottom-center', duration: 0, 
+                showSecondButton: true, secondButtonText: 'desfazer',
                 backgroundColor: '#e3f3ff', textColor: '#006dba',
-                actionTextColor: '#006dba', actionText: 'X',
+                //secondButtonTextColor: '#cc0000',
+                //actionTextColor: '#006dba', actionText: '&times;',
                 onSecondButtonClick: desfazUpdateHorarioCompromisso,
                 text: 'Horário alterado: '+event.start.format('D/M H:mm')+' às '+event.end.format('H:mm')});
         }
@@ -206,12 +213,11 @@ function refreshEvento(compromisso, snackbarOptions){
             if (snackbarOptions) {
                 snackbarOptions.text = compromisso.mensagem + '<br>'  + snackbarOptions.text;
             } else {
-                snackbarOptions = {pos: 'bottom-center', duration: 0, customClass: 'snackbar-agenda',
-                    actionText: 'X', text: compromisso.mensagem};
+                snackbarOptions = {pos: 'bottom-center', duration: 0,
+                    actionText: '&times;', text: compromisso.mensagem};
             }
-            snackbarOptions.backgroundColor = '#fff5f5';
-            snackbarOptions.textColor = '#cc0000';
-            snackbarOptions.actionTextColor = '#cc0000';
+            snackbarOptions.backgroundColor = '#fff5f5'; //rosa
+            snackbarOptions.textColor = '#cc0000';//vermelho
         }
         if (snackbarOptions)
             Snackbar.show(snackbarOptions);
@@ -241,26 +247,6 @@ function sucessoSave(data) {
 function sucessoDelete(data) {
     janelaModal.confirmada(); //fecha a janela modal
     $('#calendar').fullCalendar('removeEvents', data.id)
-}
-
-/**
-* Verifica se o compromisso em questao confilta com algum dos outros compromissos.
-* 1) Verifica se o intervalo deste compromisso intersecciona o intervalo de algum outro compromisso.
-* 2) Olha cada participante do compromisso, ve se ele ja esta presente em algum outro compromisso.
-* 3) Exibe mensagem de alerta de cada participante no conflito de horarios
-*/
-function verificaConflitos_DESATIVADO(evento) {
-    var compromisso1 = $('#calendar').fullCalendar('clientEvents', evento.id)[0] //retorna o primeiro elemento, embora a lista seja de apenas um elemento
-    console.log("testando evento "+compromisso1.title)
-
-    $('#calendar').fullCalendar('clientEvents').forEach(function(compromisso2) {
-        if (compromisso1.id != compromisso2.id) {
-            console.log("Testa: "+compromisso1.title+" e "+compromisso2.title)
-            if (compromisso1.start.isBefore(compromisso2.end) && compromisso1.end.isAfter(compromisso2.start)) {
-                console.log("Match: "+compromisso1.title+" e "+compromisso2.title)
-            }
-        }
-    });
 }
 
 function injetaMetodos(eventData ) {

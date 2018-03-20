@@ -81,7 +81,7 @@ class CidadaoService {
         }
 
         if (filtroCad) {
-            if (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO)) {
+            if (segurancaService.identificacaoCodigoLegado) {
                 hqlWhere += ' and a.familia.codigoLegado = :cad'
                 filtrosHql << [cad: filtroCad]
             } else {
@@ -220,7 +220,7 @@ class CidadaoService {
         }
 
         if (filtroCad) {
-            if (segurancaService.acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO)) {
+            if (segurancaService.identificacaoCodigoLegado) {
                 sqlWhere += ' and b.codigo_legado = :cad'
                 filtrosSql << [cad: filtroCad]
             } else {
@@ -357,10 +357,12 @@ class CidadaoService {
         return result;
     }
 
+/*
     @Transactional(readOnly = true)
     public Set<Telefone> obtemTelefonesViaCidadao(Long idCidadao) {
         return obtemCidadao(idCidadao, true)?.familia?.telefones
     }
+*/
 
     @Transactional(readOnly = true)
     public boolean testaAcessoDominio(Cidadao cidadao) {

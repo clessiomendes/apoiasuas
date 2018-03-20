@@ -14,7 +14,9 @@ import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 
 class ApoiaSuasTagLib {
+
     static defaultEncodeAs = [taglib: 'raw']
+
     public static final String TABS_O_QUE_MONTAR = "TABS_O_QUE_MONTAR"
     public static final String TABS_MONTAR_MENU = "TABS_MONTAR_MENU"
     public static final String TABS_MONTAR_DIVS = "TABS_MONTAR_DIVS"
@@ -23,6 +25,8 @@ class ApoiaSuasTagLib {
 
     def segurancaService;
     def lookupService
+    //Toda chamada a um servico no escopo de sessao ou de request aa partir de um servico de escopo singleton (ou de uma taglib) precisa passar por um proxy (já chamadas de controllers, nao precisam)
+    def customizacoesServiceProxy;
 
     /**
      * Cria um div para um novo campo numa tela de formulario APENAS se o campo estiver previsto para o formulario em questao.
@@ -196,8 +200,10 @@ class ApoiaSuasTagLib {
         if (assetsTagLib.isAssetPath(caminhoImagem))
             estilo = " background-image: url(${assetPath(src: caminhoImagem)}) ";
         log.debug(estilo);
+
+        //onclick simula submissao do form formPreencherFormulario (renderizado no template _escolherFamilia.gsp)
         out << submitButton([value: formulario.nome, name: 'foo', class: 'image-button-formulario', style: estilo,
-                             onclick: "document.getElementById('preencherFormulario').idFormulario.value = '${formulario.id}'; document.getElementById('preencherFormulario').submit(); return true"
+                             onclick: "document.getElementById('formPreencherFormulario').idFormulario.value = '${formulario.id}'; document.getElementById('formPreencherFormulario').submit(); return true"
         ])
     }
 
@@ -635,9 +641,9 @@ class ApoiaSuasTagLib {
 
     public boolean testaCustomizacao(Map attrs, String key) {
         //como o servico CustomizacoesService tem escopo de sessao, nao pode ser declarado diretamente em uma taglib
-        CustomizacoesService customizacoesService = grailsApplication.mainContext.customizacoesService;
+//        CustomizacoesService customizacoesService = grailsApplication.mainContext.customizacoesService;
         def codigos = attrs.remove(key);
-        return customizacoesService.contem(codigos);
+        return customizacoesServiceProxy.contem(codigos);
     }
 
 }

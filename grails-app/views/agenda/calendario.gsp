@@ -44,20 +44,22 @@
                 <input type="button" class="speed-button-atualizar" title="recarregar" onclick="atualiza()"/>
                 <input type="button" class="speed-button-imprimir" title="imprimir" onclick="imprimirCompromissos();"/>
                 <g:select id="selectUsuarioSistema" name="idUsuarioSistema" from="${operadores}" style="max-width: 7em"
+                          value="${idUsuarioSistema}"
                           optionKey="id" class="many-to-one" noSelection="['': '(todos)']" onchange="atualiza();" />
             </div>
 
             <div style="float: left; display: inline; margin-top: 3px">
+                <input type="button" class="speed-button-adicionar-evento" title="novo" onclick="createCompromisso();"/>
                 <input type="button" class="speed-button-visao-mensal" title="visão mensal" onclick="$('#calendar').fullCalendar('changeView', 'month');"/>
                 <input type="button" class="speed-button-visao-semanal" title="visão semanal" onclick="$('#calendar').fullCalendar('changeView', 'agendaWeek');"/>
                 <input type="button" class="speed-button-visao-diaria" title="visão diária" onclick="$('#calendar').fullCalendar('changeView', 'agendaDay');"/>
-                <input type="button" class="speed-button-visao-lista" title="visão em lista" onclick="$('#calendar').fullCalendar('changeView', 'listMonth');"/>
+                <input type="button" class="speed-button-visao-lista" title="visão em lista" onclick="$('#calendar').fullCalendar('changeView', 'listWeek');"/>
             </div>
         </div>
     </g:form>
 </div>
 
-<div id='calendar' style="display: inline-block"></div>
+<div id='calendar'></div>
 
 <div style="display: none" id='divEscolherTipoCompromisso'>
     <input type="button" class="speed-button-atendimento" onclick="janelaModalTipoCompromisso.createAtendimento();"/>

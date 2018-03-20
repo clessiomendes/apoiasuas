@@ -8,6 +8,7 @@ import org.apoiasuas.seguranca.UsuarioSistema
 
 class AtendimentoParticularizado implements DominioProtegidoServico {
 
+    def agendaService
 
     public static final String COMPARECEU = "atendimento (compareceu) - "
     public static final String NAO_COMPARECEU = "atendimento (NÂO compareceu) - "
@@ -47,7 +48,7 @@ class AtendimentoParticularizado implements DominioProtegidoServico {
 //        return this.toString()
 //    }
 
-    public String getCor() {
+    public String getCor(Date dataInibicao = null) {
         String result = null
         use (TimeCategory) {
             if (compareceu == true)
@@ -62,7 +63,13 @@ class AtendimentoParticularizado implements DominioProtegidoServico {
             } else if (! horarioPreenchido && dataHora < (new Date() - 1.hours)) //horario livre mas ja no passado (nao tem como ser utilizado mais)
                 result = Compromisso.CSS_AMARELO
         }
-        result = result ? result : Compromisso.CSS_VERDE;
+        //horario vago: verificar se esta dentro do prazo para nao ser inibido
+        if (! result) {
+            if (dataInibicao && dataHora && dataHora >= dataInibicao)
+                result = Compromisso.CSS_CINZA
+            else
+                result = Compromisso.CSS_VERDE;
+        }
         return result;
     }
 

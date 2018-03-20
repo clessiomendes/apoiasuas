@@ -8,5 +8,4 @@ cd c:\workspaces\deploy-cc\prod\
 git add .
 git commit -m "deploy producao"
 git push -f clever master
-cd c:\workspaces\apoiaSUAS\scripts
 echo Fim: %time%

@@ -14,7 +14,7 @@
 				<li><g:link class="search" action="procurarCidadao"><g:message message="Procurar"/></g:link></li>
                 <li><g:link class="edit" controller="familiaDetalhado" action="edit" params="[id: cidadaoInstance.familia.id, idCidadao: cidadaoInstance.id]"
                             title="Ver (ou alterar) o cadastro completo deste membro familiar">Cadastro completo</g:link></li>
-                <li><g:link class="formulario" controller="emissaoFormulario" action="escolherFamilia"
+                <li><g:link class="formulario" controller="emissaoFormulario" action="escolherFormulario"
                         title="Preencher um formulário para um membro desta família">Emitir formulário</g:link></li>
 				<li><g:link class="atendimento" controller="agenda" action="calendario"
 							title="Abre a agenda de atendimentos para escolha de um horário">Agendar atendimento</g:link></li>

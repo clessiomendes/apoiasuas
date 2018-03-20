@@ -18,7 +18,7 @@ public class CampoDetalheMultiString extends CampoDetalhe {
 
     @Override
     public Map toJsonMap() {
-        return [tipo: getTipo(), valoresList: valoresList]
+        return [tipo: getTipo().toString(), valoresList: valoresList]
     }
 
     @Override

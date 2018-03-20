@@ -18,6 +18,7 @@ class AbrangenciaTerritorial {
     private ComponenteVisual componenteVisual = new ComponenteVisual();
 
     static mapping = {
+        cache 'nonstrict-read-write' //sempre mantem em cache o servico sistema logado
         id generator: 'native', params: [sequence: 'sq_abrangencia_territorial']
     }
 

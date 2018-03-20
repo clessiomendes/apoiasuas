@@ -1,3 +1,4 @@
+<%@ page import="org.apoiasuas.cidadao.Cidadao" %>
 <div class="sessao-detalhes">
 
     <div class="cabecalho-sessao">
@@ -21,10 +22,10 @@
             </span>
         </g:fieldcontain>
 
-        <g:fieldcontain bean="${localDtoCidadao}" field="detalhe.nacionalidade">
+        <g:fieldcontain bean="${localDtoCidadao}" field="detalhe.${Cidadao.CODIGO_NACIONALIDADE}">
             <label>Nacionalidade</label>
-            <g:textField class="destinoSugestao1" name="${prefixo}detalhe.nacionalidade" size="10" maxlength="30"
-                         value="${localDtoCidadao.mapaDetalhes['nacionalidade']}"/>
+            <g:textField class="destinoSugestao1" name="${prefixo}detalhe.${Cidadao.CODIGO_NACIONALIDADE}" size="10" maxlength="30"
+                         value="${localDtoCidadao.mapaDetalhes[Cidadao.CODIGO_NACIONALIDADE]}"/>
             <span class="sugestaoPreenchimento">
                 <input type="button" class="speed-button-sugestao" onclick="clickSugestao(this);" title="preencher com informação padrão"/>
                 <span class="origemSugestao1">brasileira</span>

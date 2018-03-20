@@ -13,7 +13,8 @@
 var coresSnackbar = {
     erro: {text: '#cc0000', background: '#fff5f5'},
     info: {text: '#006dba', background: '#e3f3ff'},
-    alerta: {text: '#C09853', background: '#FCF8E3'}};
+    alerta: {text: '#C09853', background: '#FCF8E3'}
+};
 
 (function(root, factory) {
     'use strict';
@@ -92,19 +93,32 @@ var coresSnackbar = {
         Snackbar.snackbar.style.background = options.backgroundColor;
         if (options.showSecondButton) {
             var secondButton = document.createElement('button');
-            secondButton.className = 'action';
+
+//  ========>  Customização ApoiaSUAS
+//            secondButton.className = 'action';
+            secondButton.className = 'second-button';
+            //secondButton.style.color = options.secondButtonTextColor;
+            secondButton.style.color = options.backgroundColor;
+            secondButton.style.backgroundColor = options.textColor;
+//  ========>  Fim da Customização
+
             secondButton.innerHTML = options.secondButtonText;
-            secondButton.style.color = options.secondButtonTextColor;
             secondButton.addEventListener('click', function() {
                 options.onSecondButtonClick(Snackbar.snackbar);
             });
             Snackbar.snackbar.appendChild(secondButton);
         }
-        if (options.showAction) {
+        if (options.showAction) { //botão de fechar SEMPRE
             var actionButton = document.createElement('button');
             actionButton.className = 'action';
-            actionButton.innerHTML = options.actionText;
-            actionButton.style.color = options.actionTextColor;
+
+//  ========>  Customização ApoiaSUAS
+//            actionButton.innerHTML = options.actionText;
+            actionButton.innerHTML = '&times;';
+            //actionButton.style.color = options.actionTextColor;
+            actionButton.style.color = options.textColor;
+//  ========>  Fim da Customização
+
             actionButton.addEventListener('click', function() {
                 options.onActionClick(Snackbar.snackbar);
             });

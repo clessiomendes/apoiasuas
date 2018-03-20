@@ -59,7 +59,7 @@ class BuscaCentralizadaController extends AncestralController {
                     Formulario formularioInstance = formularioService.getFormulario(objeto.id)
                     objetoEncontrado.tipo = "formulário online"
                     objetoEncontrado.imagem = "usecases/formulario.png"
-                    objetoEncontrado.url = link([controller: "emissaoFormulario", action: "escolherFamilia",
+                    objetoEncontrado.url = link([controller: "emissaoFormulario", action: "escolherFormulario",
                                                  params: [idFormulario: formularioInstance.id]]) { formularioInstance.nome }
                     objetoEncontrado.detalhes = fullTextSearchService.formataDetalhe(objetoEncontrado.detalhes ?: formularioInstance.descricao)
                 } else if (objeto instanceof Map) {  //menu

@@ -39,6 +39,8 @@
 					<g:tab id="tabMarcadores" titulo="programas, ações..." template="marcador/tabMarcadores" model="[permiteInclusao: 'true']"/>
 					<g:tab id="tabMonitoramento" titulo="monitoramento" template="monitoramento/tabMonitoramentos"/>
 					<g:tab id="tabAcompanhamento" titulo="plano de acompanhamento" template="acompanhamento/tabAcompanhamento"/>
+					<g:tab id="tabHistorico" titulo="histórico" template="acompanhamento/tabHistoricoAcompanhamento" model="[auditoriaAcompanhamentoList: auditoriaAcompanhamentoList]"/>
+    %{--<g:render template="monitoramento/listMonitoramento" model="[monitoramentoInstanceList: localDtoFamilia.monitoramentos?.sort()]"/>--}%
 				</g:tabs>
 
 

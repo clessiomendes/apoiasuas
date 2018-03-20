@@ -13,6 +13,8 @@
 *= require buttons-links.less
 *= require main.less
 *= require animate.css
+*= require /inicio/notificacoes-familia.less
+*= require header.less
 
 *
 * require_self so deve ser usado se formos definir css neste arquivo, o que eh desaconselhado

@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.CustomizacoesService; org.apoiasuas.util.StringUtils" %>
+<%@ page import="org.apoiasuas.InicioController; org.apoiasuas.CustomizacoesService; org.apoiasuas.util.StringUtils" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,7 +14,7 @@
     <sec:access showto="${CustomizacoesService.Codigos.BELO_HORIZONTE}">
 		<div class="nav" role="navigation">
 			<ul>
-                <li><g:link class="list novo-recurso" controller="familiaDetalhado" action="familiasSemCad">Famílias sem Cad</g:link></li>
+                <li><g:link class="list ${InicioController.novoRecurso("31/03/2018")}" controller="familiaDetalhado" action="familiasSemCad">Famílias sem Cad</g:link></li>
 			</ul>
 		</div>
     </sec:access>

@@ -20,7 +20,7 @@ public class CampoDetalheLookup extends CampoDetalhe {
 
     @Override
     public Map toJsonMap() {
-        return [tipo: getTipo(), codigo: codigo, descricaoLookup: descricaoLookup]
+        return [tipo: getTipo().toString(), codigo: codigo, descricaoLookup: descricaoLookup]
     }
 
     @Override

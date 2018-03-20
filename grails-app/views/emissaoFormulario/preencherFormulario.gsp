@@ -22,7 +22,7 @@
 </g:javascript>
 
 <div class="nav" role="navigation">
-    <ul><li><g:link class="formulario" action="escolherFamilia">
+    <ul><li><g:link class="formulario" action="escolherFormulario">
             Voltar
     </g:link></li></ul>
 </div>
@@ -45,16 +45,6 @@
 </g:if>
 
 
-%{--
-<g:hasErrors bean="${dtoFormulario}">
-    <ul class="errors" role="alert">
-        <g:eachError bean="${dtoFormulario}" var="error">
-            <li><g:message error="${error}"/></li>
-        </g:eachError>
-    </ul>
-</g:hasErrors>
---}%
-
 <g:each in="${dtoFormulario.campos.sort { it.id } .findAll { it.mensagemErro }}" var="campo">
     <ul class="errors" role="alert">
         %{--<li><g:message error="${mensagemErro}"/></li>--}%
@@ -65,7 +55,7 @@
 <g:form>
 
     <input type="hidden" id="cidadao.id" name="cidadao.id" value="${dtoFormulario?.cidadao?.id}">
-    <input type="hidden" id="familia.id" name="familia.id" value="${dtoFormulario?.cidadao?.familia?.id}">
+    <input type="hidden" id="familia.id" name="familia.id" value="${dtoFormulario?.familia?.id}">
     <input type="hidden" id="idFormulario" name="idFormulario" value="${dtoFormulario?.id}">
     <input type="hidden" id="formularioEmitido.id" name="formularioEmitido.id" value="${dtoFormulario?.formularioEmitido?.id}">
 
@@ -95,7 +85,7 @@
     </ol>
 
     <fieldset class="buttons sticky-footer">
-        <g:actionSubmit class="save" action="imprimirFormulario" value="Gerar formulário"/>
+        <g:actionSubmit class="print" action="imprimirFormulario" value="Gerar formulário"/>
     </fieldset>
     </div>
 </g:form>

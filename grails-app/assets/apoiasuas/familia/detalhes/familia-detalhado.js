@@ -7,6 +7,8 @@ modoEdicao = false;
 modoCriacao = false;
 modoContinuarCriacao = false;
 modoConsulta = false;
+//Contém uma referência para a aba (form de domicilio ou membro) atualmente sendo exibido
+var $divFormSelecionado = null;
 
 /**
  * Carregamento inicial da página. obs: tambem ha um bloco de carregamento no corpo da gsp, por conta das tags gsp do grails \${}
@@ -36,17 +38,17 @@ function inicializa() {
  * @returns {boolean}
  */
 function showForm(div, linkClicado) {
-    var $div = $(div);
+    $divFormSelecionado = $(div);
     //destaca apenas o link selecionado dentre os demais disponiveis no cabecalho
     $('.links-forms').removeClass('link-selecionado');
     $(linkClicado).addClass('link-selecionado');
 
     //exibe apenas o formulario correspondente ao link selecionado
-    if (!$div.is(":visible")) {
-        $div.removeClass('hidden')
+    if (!$divFormSelecionado.is(":visible")) {
+        $divFormSelecionado.removeClass('hidden')
         $('.forms-detalhados').hide(0);
-        $div.show("slide", {direction: "up"}, 200, function () {
-            realinhaToolTips($div);
+        $divFormSelecionado.show("slide", {direction: "up"}, 200, function () {
+            realinhaToolTips($divFormSelecionado);
         });
     }
 
@@ -650,7 +652,7 @@ function sucessoSave(responseText, mensagemSucesso, duracao) {
     for (var ordMembro in responseText) {
         var $divMembro = $('#divMembros\\['+ordMembro+'\\]')
         if ($divMembro.find('[name="membros\\['+ordMembro+'\\].id"]').length == 0)
-            $divMembro.prepend("<input type='hidden' name='membros["+ordMembro+"].id' value='"+responseText[ordMembro]+"'/>")
+            $divMembro.prepend("<input type='hidden' class='id-cidadao' name='membros["+ordMembro+"].id' value='"+responseText[ordMembro]+"'/>")
     }
 
 }
@@ -834,4 +836,31 @@ function rendaChange() {
  */
 function btnAdicionarTelefoneClick() {
     $('.importante').on('change', CamposImportantes.onChangeImportante);
+}
+
+/**
+ * Após clicar em imprimir, caso a chamada ajax tenha sido bem sucedida
+ */
+function sucessoImprimir(data) {
+    sucessoSave(data, "Família gravada com sucesso. Preparando download...", 6000);
+    window.location = actionDowloadCadastro;
+
+    //Desabilita o botão por 20 segundos, para evitar excesso de envios para o servidor
+    var $btnImprimir = $('#btnImprimir');
+    $btnImprimir.prop('disabled', true);
+    setTimeout(function() { $btnImprimir.prop('disabled', false); }, 20000);
+}
+
+/**
+ * Após clicar em concluir, caso a chamada ajax tenha sido bem sucedida
+ */
+function sucessoConcluir(data) {
+    sucessoSave(data);
+    var destino = actionEscolherFormulario;
+
+    //acrescenta na url de escolherFormulario o id do membro atualmente exibido (se houver)
+    var $hiddenIdCidadao = $divFormSelecionado.find('.id-cidadao');
+    if ($hiddenIdCidadao)
+        destino += "?idCidadao="+$hiddenIdCidadao.val();
+    window.location = destino;
 }

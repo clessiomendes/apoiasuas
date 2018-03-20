@@ -295,7 +295,7 @@ class SegurancaService {
      * @param recurso verifica se o serviço logado tem acesso a determinada funcionalidade.
      * Ex: acessoServico='inclusaoMembroFamiliar' (todas as opções disponíveis são obtidas de AcessoSeguranca em ServicoSistema)
      */
-    @NotTransactional
+    @Transactional(readOnly = true)
     public boolean acessoRecursoServico(RecursosServico recurso) {
 
         if (recurso && ! recurso.propriedade.trim().isEmpty()) {
@@ -303,6 +303,11 @@ class SegurancaService {
             return temp.asBoolean();
         }
         return true;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isIdentificacaoCodigoLegado() {
+        return acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO);
     }
 }
 
