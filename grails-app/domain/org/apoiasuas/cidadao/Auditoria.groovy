@@ -8,7 +8,7 @@ class Auditoria {
 
     public static enum Tipo { MUDANCA_TECNICO_FAMILIA("Mudança do técnico de referência da família"),
 //        ACOMPANHAMENTO_FAMILIA("Acompanhamento familiar"),
-        PROGRAMA_FAMILIA("Participação em programa, projeto, serviço ou benefício");
+        PROGRAMA_FAMILIA("Participação em programa, serviço ou benefício");
 
         public static List<Tipo> TIPOS_ACOMPANHAMENTO = [MUDANCA_TECNICO_FAMILIA, PROGRAMA_FAMILIA];
 

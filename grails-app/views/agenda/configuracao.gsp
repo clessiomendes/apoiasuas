@@ -26,20 +26,22 @@
                 <g:checkBox style="margin-left: 20px" name="atendimentos" id="checkAtendimentos" checked="${configuracao.atendimentos}"/> atendimentos
                 <g:checkBox style="margin-left: 20px" name="outrosCompromissos" id="checkOutrosCompromissos" checked="${configuracao.outrosCompromissos}"/> outros compromissos
             </div>
-            <div class="fieldcontain">
+            <br>
+            <div class="fieldcontain quebra-linha">
                 <label>Mostrar na tela</label>
                 <span style="margin-left: 20px" >
                     hora inicial: <g:textField class="timepicker-agenda" name="minTime" id="selectMinTime" size="4" value="${configuracao.minTime}" />
                     hora final: <g:textField class="timepicker-agenda" name="maxTime" id="selectMaxTime" size="4" value="${configuracao.maxTime}" />
                 </span>
             </div>
-            <div class="fieldcontain">
+            <div class="fieldcontain quebra-linha">
                 <label></label>
                 <g:checkBox style="margin-left: 20px" name="weekends" id="checkWeekends" checked="${configuracao.weekends}"/> fins de semana
             </div>
-            <div class="fieldcontain">
+            <br>
+            <div class="fieldcontain quebra-linha">
                 <label>Semana iniciando em</label>
-                <g:select from="${inicioSemana.entrySet()}" name="firstDay" optionKey="key" optionValue="value" value="${configuracao.firstDay}" />
+                <g:select from="${inicioSemana.entrySet()}" name="firstDay" optionKey="key" optionValue="value" value="${configuracao.firstDay}" forcarEscolha="true" />
             </div>
 		</fieldset>
 		<fieldset class="buttons">

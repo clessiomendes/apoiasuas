@@ -44,7 +44,7 @@ public abstract class TipoAmbiente {
     public String validationQuery = "SELECT 1*1"
 
     public TipoAmbiente(String bd, String runtime) {
-        System.out.println("Definicao de banco de dados 2: ${bd} ${runtime}")
+//        System.out.println("Definicao de banco de dados 2: ${bd} ${runtime}")
         if (!bd || !runtime)
             throw new ApoiaSuasException("definicao de banco de dados e ambiente de runtime nao fornecidas");
 
@@ -58,9 +58,9 @@ public abstract class TipoAmbiente {
                 throw new ApoiaSuasException("parâmetro de configuração '${key}' não esperado em ${this.class.name}");
             this[key] = value;
         }
-        if (Environment.current == Environment.DEVELOPMENT)
-            System.out.println(this.dump());
-        System.out.println("fim da configuracao de banco de dados");
+//        if (Environment.current == Environment.DEVELOPMENT)
+//            System.out.println(this.dump());
+//        System.out.println("fim da configuracao de banco de dados");
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class TipoAmbiente {
      */
     private void resolveParametrosProperties(Map config, String bd, String runtime) {
         String nomearquivo = '/' + DATA_SOURCES_CONFIG + '.properties';
-        System.out.println(nomearquivo);
+//        System.out.println(nomearquivo);
         if (! getClass().getResourceAsStream(nomearquivo))
             return;
         Properties properties = new Properties()

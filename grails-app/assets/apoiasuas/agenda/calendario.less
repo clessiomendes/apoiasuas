@@ -21,6 +21,12 @@
   margin-left: 5px;
 }
 
+.speed-button-estatistica {
+  vertical-align: middle;
+  .speedButton(url(../../images/calendario/estatistica.png));
+  margin-left: 5px;
+}
+
 /*
 .speed-button-voltar {
   vertical-align: middle;
@@ -66,6 +72,12 @@
 .speed-button-visao-mensal {
   vertical-align: middle;
   .speedButton(url(../../images/calendario/month_calendar.png));
+  margin-left: 5px;
+}
+
+.speed-button-hoje {
+  vertical-align: middle;
+  .speedButton(url(../../images/calendario/manha.png));
   margin-left: 5px;
 }
 
@@ -133,3 +145,70 @@
     font-size: 0.8em;
   }
 }
+
+li.estatistica {
+  min-width: 100px;
+  .property-label, .property-value {
+    width: auto;
+    text-align: center;
+  }
+  .property-value {
+    height: 30px;
+  }
+}
+
+ol.estatistica {
+  text-align: center;
+}
+
+li.estatistica-total {
+  width: 340px;
+  .property-label, .property-value {
+    font-size: 1.2em;
+    font-weight: bolder;
+    width: auto;
+    text-align: center;
+  }
+  .property-value {
+    height: 30px;
+  }
+}
+
+.container-centralizado {
+  text-align: center;
+  /* May want to do this if there is risk the container may be narrower than the element inside */
+  white-space: nowrap;
+
+  /* The ghost, nudged to maintain perfect centering */
+  &:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em; /* Adjusts for spacing */
+  }
+
+  /* The element to be centered, can also be of any width and height */
+  .conteudo-centralizado {
+    display: inline-block;
+    vertical-align: middle;
+    //width: 300px;
+  }
+}
+
+/*
+/!* The ghost, nudged to maintain perfect centering *!/
+.container-centralizado:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.25em; /!* Adjusts for spacing *!/
+}
+
+/!* The element to be centered, can also be of any width and height *!/
+.conteudo-centralizado {
+  display: inline-block;
+  vertical-align: middle;
+  //width: 300px;
+}*/

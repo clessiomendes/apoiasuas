@@ -18,6 +18,7 @@
             <g:select name="bolsaFamilia" id="selectBolsaFamilia" from="${[true: SimNao.SIM.descricao, false: SimNao.NAO.descricao]}"
                       noSelection="['':'não sabe']" class="importante many-to-one select-sim-nao"
                       value="${localDtoFamilia.bolsaFamilia}" onchange="vinculosCamposFamilia(this)"/>
+            <span>mar/2018</span>
         </g:fieldcontain>
 
         <g:fieldcontain class="pbf-sim" bean="${localDtoFamilia}" field="detalhe.descumprimentoPBF">

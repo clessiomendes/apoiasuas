@@ -420,3 +420,71 @@ where a.habilitado is true;
 
 alter table servico_sistema add column acesso_seguranca_inibir_atendimento_apos varchar(255);
 update servico_sistema set acesso_seguranca_inibir_atendimento_apos = '2,4' where id = 1;
+/*
+select familia, ddd, numero, count(*), max(id)
+from telefone group by familia, ddd, numero
+having count(*) > 1
+*/
+alter table telefone add constraint unique_numero  unique (familia, ddd, numero);
+
+alter table servico add column imagem_file_storage varchar(255);
+alter table servico add column documentos varchar(1000000);
+alter table servico add column contatos_internos varchar(1000000);
+alter table servico add column fluxo varchar(1000000);
+alter table servico add column enderecos varchar(1000000);
+alter table servico add column publico varchar(1000000);
+--ALTER TABLE public.servico ALTER COLUMN telefones TYPE VARCHAR(1000000) USING telefones::VARCHAR(1000000);
+
+update servico set enderecos = trim(
+    COALESCE(endereco_tipo_logradouro || ' ' || endereco_nome_logradouro, '') ||
+    COALESCE(', ' || endereco_numero, '') ||
+    COALESCE(', ' || servico.endereco_complemento, '') ||
+    COALESCE(', ' || servico.endereco_bairro, '')
+--   || COALESCE(', ' || servico.endereco_municipio, '') ||
+--    COALESCE(', ' || servico.endereco_uf, '') ||
+--    COALESCE(', CEP ' || servico.endereco_cep, '')
+);
+
+/*
+alter table file_storage_index add column descricao varchar(10000);
+alter table file_storage_index add column date_created timestamp;
+create table servico_file_storage_index (servico_anexos_id int8, file_storage_index_id int8);
+alter table servico_file_storage_index add constraint FK_22bpptv6sgpg2mtmxpbvk0r3q foreign key (file_storage_index_id) references file_storage_index;
+alter table servico_file_storage_index add constraint FK_b3vwr3i9jx7fhchjcqs0wt4ha foreign key (servico_anexos_id) references servico;
+
+FIXME: RODAR SOMENTE APÓS TESTAR O UPDATE ANTERIOR
+ALTER TABLE public.servico DROP endereco_cep;
+ALTER TABLE public.servico DROP endereco_uf;
+ALTER TABLE public.servico DROP endereco_bairro;
+ALTER TABLE public.servico DROP endereco_complemento;
+ALTER TABLE public.servico DROP endereco_municipio;
+ALTER TABLE public.servico DROP endereco_nome_logradouro;
+ALTER TABLE public.servico DROP endereco_numero;
+ALTER TABLE public.servico DROP endereco_tipo_logradouro;
+*/
+
+alter table formulario_emitido add column servico_destino_id int8;
+alter table formulario_emitido add constraint FK_d6wuh45ei1ntdldea847h9pj5 foreign key (servico_destino_id) references servico;
+
+alter table servico add column ultima_verificacao timestamp;
+alter table servico add column date_created timestamp;
+alter table servico add column last_updated timestamp;
+
+alter table atendimento_particularizado add column observacoes_agendamento varchar(1000000);
+
+-- versao ate aqui: current (local:feito, producao: feito)
+
+create table estatistica_consulta_servico (id int8 not null, version int8 not null, mes timestamp not null, quantidade int8 not null, servico_id int8 not null, servico_sistema_seguranca_id int8, usuario_sistema_id int8 not null, primary key (id));
+create table estatistica_encaminhamento (id int8 not null, version int8 not null, mes timestamp not null, quantidade int8 not null, servico_id int8 not null, servico_sistema_seguranca_id int8, usuario_sistema_id int8 not null, primary key (id));
+create index idx_estatistica_cs_m on estatistica_consulta_servico (mes);
+create index idx_estatistica_cs_ss on estatistica_consulta_servico (servico_sistema_seguranca_id);
+create index idx_estatistica_e_m on estatistica_encaminhamento (mes);
+create index idx_estatistica_e_ss on estatistica_encaminhamento (servico_sistema_seguranca_id);
+alter table estatistica_consulta_servico add constraint FK_8bf7ntujb4m9gq3etrhwcarre foreign key (servico_id) references servico;
+alter table estatistica_consulta_servico add constraint FK_mip3k86o0y9g1gia37k8vyc9s foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table estatistica_consulta_servico add constraint FK_1dgtr6bhohn4y8udsqeioi9n8 foreign key (usuario_sistema_id) references usuario_sistema;
+alter table estatistica_encaminhamento add constraint FK_kxqpc4gcn7p6dd5e8aq5d6fjf foreign key (servico_id) references servico;
+alter table estatistica_encaminhamento add constraint FK_g1egodpi1c11o57tiu7pbip0j foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table estatistica_encaminhamento add constraint FK_rrh7dhjyllg5k0k9thv12esah foreign key (usuario_sistema_id) references usuario_sistema;
+create sequence sq_estatistica_consulta_servico;
+create sequence sq_estatistica_encaminhamento;

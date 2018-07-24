@@ -2,7 +2,6 @@ package org.apoiasuas.formulario.definicao
 
 import groovy.transform.TypeChecked
 import org.apoiasuas.formulario.CampoFormulario
-import org.apoiasuas.formulario.FormularioCarretoService
 import org.apoiasuas.formulario.FormularioService
 
 class FormularioSepultamento extends FormularioBase {

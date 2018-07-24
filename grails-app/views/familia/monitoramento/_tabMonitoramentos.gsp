@@ -5,10 +5,12 @@
 <g:javascript>
     var janelaModalMonitoramentos = new JanelaModalAjax();
 
+/*
     $(document).ready(function() {
 		//updateList();
 		janelaModalMonitoramentos
     } );
+*/
 
     function createMonitoramento() {
         janelaModalMonitoramentos.abreJanela({titulo: "Criar novo Monitoramento", refreshFunction: updateList,

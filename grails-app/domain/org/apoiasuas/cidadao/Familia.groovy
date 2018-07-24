@@ -238,4 +238,10 @@ class Familia implements Serializable, DominioProtegidoServico, DetalhesJSON {
         auditoriaService.auditaFamilia(this);
     }
 
+/*
+    public static def debug(def f) {
+        return f;
+    }
+*/
+
 }

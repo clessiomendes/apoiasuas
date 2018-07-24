@@ -6,7 +6,6 @@ import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.CidadaoController
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.cidadao.FamiliaController
-import org.apoiasuas.cidadao.FamiliaService
 import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.processo.PedidoCertidaoProcessoController
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorial
@@ -14,10 +13,8 @@ import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorialService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.AcessoNegadoPersistenceException
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
-import org.codehaus.groovy.grails.commons.GrailsControllerClass
 import org.springframework.web.servlet.support.RequestContextUtils
 
 import javax.servlet.http.HttpSession
@@ -30,6 +27,7 @@ class AncestralController {
     def segurancaService
     def abrangenciaTerritorialService
     def familiaService
+    ApoiaSuasService apoiaSuasService
     public static String ENTITY_CLASS_ENTRY = "entity"
     public static String JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL = "JSTREE_HIDDEN_ABRANGENCIA_TERRITORIAL"
     private static final String ULTIMO_REPORT_DTO = "ULTIMO_FORMULARIO_REPORT_DTO"
@@ -170,26 +168,32 @@ class AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def baixarArquivo() {
-        ReportDTO reportDTO = getReportParaBaixar(session)
+        List<ReportDTO> reportsDTO = getReportsParaBaixar(session)
         try {
-            response.contentType = 'application/octet-stream'
-            if (reportDTO) {
-                response.setHeader 'Content-disposition', "attachment; filename=\"$reportDTO.nomeArquivo\""
-                reportDTO.report.process(reportDTO.context, response.outputStream);
-            } else {
-                response.setHeader 'Content-disposition', "signal; filename=\"erro-favor-cancelar\""
-            }
-            response.outputStream.flush()
+            baixarArquivoDiretamente(reportsDTO)
         } finally {
-            setReportParaBaixar(session, null)
+            setReportsParaBaixar(session, null)
         }
     }
 
-    public static ReportDTO getReportParaBaixar(HttpSession session) {
+    protected baixarArquivoDiretamente(List<ReportDTO> reportsDTO) {
+        response.contentType = 'application/octet-stream'
+        if (reportsDTO) {
+            //Usa o nome de arquivo indicado no primeiro (em geral unico) elemento da lista de reportsDTO
+            response.setHeader 'Content-disposition', "attachment; filename=\"${reportsDTO[0].nomeArquivo}\""
+            apoiaSuasService.appendReports(response.outputStream, reportsDTO)
+//            reportsDTO.report.process(reportsDTO.context, response.outputStream);
+        } else {
+            response.setHeader 'Content-disposition', "signal; filename=\"erro-favor-cancelar\""
+        }
+        response.outputStream.flush()
+    }
+
+    public static List<ReportDTO> getReportsParaBaixar(HttpSession session) {
         return session[ULTIMO_REPORT_DTO]
     }
 
-    public static void setReportParaBaixar(HttpSession session, ReportDTO reportParaBaixar) {
+    public static void setReportsParaBaixar(HttpSession session, List<ReportDTO> reportParaBaixar) {
         session[ULTIMO_REPORT_DTO] = reportParaBaixar
     }
 

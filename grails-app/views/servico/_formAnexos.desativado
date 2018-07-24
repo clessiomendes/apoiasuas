@@ -1,0 +1,37 @@
+<%@ page import="org.apoiasuas.fileStorage.FileStorageIndex; org.apoiasuas.cidadao.Telefone" %>
+
+<g:hiddenField name="idServico" value="${localDtoServico.id}"/>
+
+%{--<asset:image id="imgVazia" class="hidden" src="servico/sem-imagem.png" />--}%
+%{--<g:hiddenField name="urlImagem" value="${imagemServico ?: ''}"/>--}%
+%{--<g:hiddenField name="fileAction" value="${imagemServico ? FileStorageDTO.FileActions.ATUALIZAR : FileStorageDTO.FileActions.MANTER_ATUAL}"/>--}%
+
+
+<table id="tableAnexos" class="pure-table pure-table-striped pure-table-bordered">
+    <tr>
+        <th style="text-align: center;">Arquivo *</th>
+        <th style="text-align: center;">Descrição</th>
+        <th colspan="2" style="text-align: right;">
+        </th>
+    </tr>
+
+    <g:each in="${localDtoServico.anexos.sort{ it.id }}" var="anexo" status="i">
+        <g:render template="linhaTabela" model="${[anexo: anexo, i: i]}"/>
+    </g:each>
+
+%{--
+    <g:each in="${localDtoFamilia.telefones.sort{ it.dateCreated ? it.dateCreated : new Date(2999, 1, 1) }}" var="telefone" status="i">
+        <g:render template="/familia/telefone/linhaTabela" model="${[telefone: telefone]}"/>
+    </g:each>
+--}%
+
+    <tr> <td colspan="5">
+            <input id="btnAdicionarAnexo" type="button" class="speed-button-adicionar" title="Adicionar anexo" onclick="adicionarAnexo();"/>
+    </td> </tr>
+
+</table>
+
+<table id="tabelaModelo" class="hidden">
+    <g:render template="linhaTabela" model="${[anexo: new FileStorageIndex()]}"/>
+</table>
+

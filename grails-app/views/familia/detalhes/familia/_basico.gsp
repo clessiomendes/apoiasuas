@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.CustomizacoesService" %>
+<%@ page import="org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.redeSocioAssistencial.RecursosServico; org.apoiasuas.CustomizacoesService" %>
 <%
     org.apoiasuas.cidadao.Endereco enderecoInstance = localDtoFamilia.endereco
 %>
@@ -22,21 +22,6 @@
 --}%
 
 <div class="nova-linha"></div>
-
-%{--
-O código legado só fica disponível se o serviço tem acesso a este recurso, pois ele oculta o id na apresentação da
-descrição da familia: Familita.getCad()
---}%
-%{--
-<sec:access acessoServico="${RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO}">
-    <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'codigoLegado', 'error')} ">
-        <label for="codigoLegado">
-            <g:message code="familia.codigoLegado.label" default="Codigo Legado" />
-        </label>
-        <g:textField name="codigoLegado" size="10" pattern="[0-9]{0,}" value="${localDtoFamilia?.codigoLegado}"/>
-    </div>
-</sec:access>
---}%
 
 <div class="endereco">
 
@@ -124,3 +109,16 @@ descrição da familia: Familita.getCad()
               %{--from="${operadores}" optionKey="id" value="${localDtoFamilia?.tecnicoReferencia?.id}"--}%
 </div>
 
+%{--
+O código legado só fica disponível: 1) se o ServicoSistema tem acesso a este recurso, 2) em modo edição e 3) perfil admin
+--}%
+<g:if test="${modoEdicao}" >
+    <sec:ifAnyGranted roles="${DefinicaoPapeis.STR_SUPER_USER}">
+        <sec:access acessoServico="${RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO}">
+            <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'codigoLegado', 'error')} ">
+                <label>Cad</label>
+                <g:textField name="codigoLegado" size="10" value="${localDtoFamilia?.codigoLegado}"/>
+            </div>
+        </sec:access>
+    </sec:ifAnyGranted>
+</g:if>

@@ -1,6 +1,12 @@
 /* Styles for mobile devices */
 @import (reference) "main";
 
+@media screen and (min-width: 700px) {
+    .hide-on-desktop {
+      display:none!important;
+      visibility:hidden;
+    }
+}
 @media screen and (max-width: 700px) {
 	.nav {
 		padding: 0.5em;
@@ -95,7 +101,7 @@
 	}
 
     .hide-on-mobile {
-      display:none;
+      display:none!important;
       visibility:hidden;
     }
 

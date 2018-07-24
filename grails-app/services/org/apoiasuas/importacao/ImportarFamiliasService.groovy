@@ -311,6 +311,8 @@ class ImportarFamiliasService {
 //        if (AmbienteExecucao.SABOTAGEM)
 //            assert result.codigoLegado != "4", "Erro na familia"
 
+
+            result.servicoSistemaSeguranca = result.servicoSistemaSeguranca.merge(validate: false, flush: false);
             result.save(flush: true) //Forca a ida ao BD para geracao automatica da data/hora de criacao e atualizacao
             result.dateCreated = convertExcelDate(mapaDeCampos.get("DataCadastroFamilia"))
             //Sobrescrever a data de criacao automatica com a data do cadastro presente na planilha importada
@@ -388,6 +390,7 @@ class ImportarFamiliasService {
         if (StringUtils.removeAcentos(conteudoPrograma?.toUpperCase()) == "SIM" && ! associacao) {
             ProgramaFamilia pf = new ProgramaFamilia()
             pf.familia = familiaPersistida
+            pf.habilitado = true
             pf.programa = tipoPrograma.instanciaPersistida
             pf.tecnico = usuarioSistema;
             if (! familiaPersistida.programas)

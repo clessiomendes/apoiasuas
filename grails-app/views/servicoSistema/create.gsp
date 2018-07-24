@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'servico.label', default: 'Servico (rede sócio-assistencial)')}" />
+		<g:set var="entityName" value="Serviços com acesso ao sistema" />
 		<title><g:message code="default.create.label" args="[entityName]" /></title>
 
 	</head>

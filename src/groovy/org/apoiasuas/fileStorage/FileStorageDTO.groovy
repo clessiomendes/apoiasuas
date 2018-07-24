@@ -9,7 +9,7 @@ class FileStorageDTO {
 
     public static final long MAX_FILE_SIZE = 10 * FileUtils.ONE_MB //10M
     public static String INPUT_FILE = "inputFile"
-    public static String FILE_ACTION = "fileAction"
+//    public static String FILE_ACTION = "fileAction"
     /**
      * Acoes usadas na camada de visao para inidicar o que deve ser feito com o arquivo anexado na camada de serviço
      **/

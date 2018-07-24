@@ -33,22 +33,6 @@ class EmissaoFormularioController extends AncestralController {
     def pedidoCertidaoProcessoService
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def _old_escolherFormulario(Long idCidadao) {
-        if (idCidadao)
-            guardaUltimoCidadaoSelecionado(Cidadao.get(idCidadao))
-        List<Formulario> formulariosDisponiveis = [];
-        if (params.idFormulario)
-            formulariosDisponiveis << servico(null).getFormulario(params.idFormulario.toLong())
-        else
-            formulariosDisponiveis = servico(null).getFormulariosDisponiveis();
-        Map<String, List<Formulario>> tiposFormulario = formulariosDisponiveis.sort {
-            [it.id, it.tipo]
-        }.groupBy { it.tipo ?: "Outros" }
-        render view: 'escolherFormulario', model: [formulariosDisponiveis: tiposFormulario]
-    }
-
-
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def escolherFormulario() {
         List<Formulario> formulariosDisponiveis = [];
         if (params.idFormulario)
@@ -64,38 +48,44 @@ class EmissaoFormularioController extends AncestralController {
                 tiposFormulario.put(tipo, [])
             tiposFormulario[tipo].add(it);
         }
-        render view: 'escolherFormulario', model: [formulariosDisponiveis: tiposFormulario]
+        render view: '/emissaoFormulario/escolherFormulario', model: [formulariosDisponiveis: tiposFormulario]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def preencherFormulario(Long idFormulario, Long idServico /*preenchido apenas quando vindo do cdu de servico socio assistencial*/,
                             Long membroSelecionado, Long familiaSelecionada) {
-//        try {
+        Formulario formulario = Formulario.get(idFormulario);
+        if (! formulario)
+            return redirect(controller: 'inicio');
+
+        //Permite utilizar um controller especializado de acordo com o tipo de formulário escolhido
+        String controller = this.controllerName;
+        if (formulario.formularioPreDefinido == PreDefinidos.ENCAMINHAMENTO)
+            controller = 'emissaoFormularioEncaminhamento';
+        redirect(controller: controller, action: 'exibirPreencherFormulario', params: [idFormulario: idFormulario, idServico: idServico,
+                            membroSelecionado: membroSelecionado, familiaSelecionada: familiaSelecionada]);
+    }
+
+    def exibirPreencherFormulario(Long idFormulario, Long idServico /*preenchido apenas quando vindo do cdu de servico socio assistencial*/,
+                            Long membroSelecionado, Long familiaSelecionada) {
         Formulario formulario = servico(Formulario.get(idFormulario)).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
         if (! formulario)
             return redirect(controller: 'inicio')
-        guardaUltimaFamiliaSelecionada(formulario.familia)
-        guardaUltimoCidadaoSelecionado(formulario.cidadao)
-        render(view: 'preencherFormulario',
+        guardaUltimaFamiliaSelecionada(formulario.familia);
+        guardaUltimoCidadaoSelecionado(formulario.cidadao);
+        render(view: '/emissaoFormulario/preencherFormulario',
                 model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
                         dtoFormulario: formulario,
                         idServico: idServico,
                         tecnicos: getTecnicosOrdenadosController(true) ])
-//        } catch (Exception e) {
-//            e.printStackTrace()
-//            throw e
-//        }
-
     }
 
     /**
      * Define eventuais templates customizados para exibição dos campos a serem preenchidos
+     * Implementado em classes descendentes
      */
-    private String getTemplateCamposCustomizados(Formulario formulario) {
-        switch (formulario.formularioPreDefinido) {
-            case PreDefinidos.ENCAMINHAMENTO: return "formularioEncaminhamento"
-            default: return null
-        }
+    protected String getTemplateCamposCustomizados(Formulario formulario) {
+        return null;
     }
 
 /*
@@ -104,54 +94,6 @@ class EmissaoFormularioController extends AncestralController {
         return imprimirFormulario(idFormulario, true)
     }
 */
-
-    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def _old_imprimirFormulario(Long idFormulario, Long idModelo) {
-        Formulario formulario
-
-        instanciamento_dos_objetos: { //Instancia e associa os objetos cidadao, familia, telefones, endereco (e formulario) à partir do preenchimento da tela (e nao do banco de dados)
-            formulario = servico(Formulario.get(idFormulario)).getFormulario(idFormulario, true)
-
-            String idUsuarioSistema = params.avulso?.get(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
-            if (idUsuarioSistema)
-                formulario.usuarioSistema = UsuarioSistema.get(idUsuarioSistema.toLong());
-            if (params.cidadao)
-                formulario.cidadao = new Cidadao(params.cidadao);
-            if (params.familia) {
-                formulario.familia = new Familia(params.familia);
-                //necessário buscar os telefones no banco de dados
-                formulario.familia.telefones = familiaService.obtemTelefones(formulario.familia.id);
-//                formulario.familia.telefones = cidadaoService.obtemTelefonesViaCidadao(formulario.cidadao.id)
-                if (params.endereco)
-                    formulario.familia.endereco = new Endereco(params.endereco)
-            }
-
-            formulario.formularioEmitido = FormularioEmitido.get(params.formularioEmitido.id)
-
-            //Validacao dos campos obrigatorios e dos formatos
-            if (! validarPreenchimento(formulario, params))
-                return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
-                                                                   dtoFormulario: formulario, tecnicos: getTecnicosOrdenadosController(true) ]);
-
-//            formulario.setCamposAvulsos(params.avulso)
-        }
-
-        geraFormularioPreenchidoEgrava: {
-            ReportDTO reportDTO = servico(formulario).prepararImpressao(formulario, idModelo)
-            if (verificaPermissao(DefinicaoPapeis.STR_USUARIO))
-                servico(formulario).gravarAlteracoesAntigo(formulario)
-
-            //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
-            //javascript que rodara automaticamente na proxima pagina)
-            setReportParaBaixar(session, reportDTO)
-            if (formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO && segurancaService.acessoRecursoServico(RecursosServico.PEDIDOS_CERTIDAO)) {
-                String idProcesso = pedidoCertidaoProcessoService.getIdProcessoPeloFormularioEmitido(reportDTO.formularioEmitido.id)
-                return redirect(controller: "pedidoCertidaoProcesso", action: "mostraProcesso", id:idProcesso)
-            } else {
-                redirect action: 'escolherFormulario'
-            }
-        }
-    }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def imprimirFormulario(Long idFormulario, Long idModelo) {
@@ -176,26 +118,27 @@ class EmissaoFormularioController extends AncestralController {
 
             formulario.formularioEmitido = FormularioEmitido.get(params.formularioEmitido.id);
 
-            //Validacao dos campos obrigatorios e dos formatos
-            if (! validarPreenchimento(formulario, params))
-                return render(view: 'preencherFormulario', model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
-                                                                   dtoFormulario: formulario, tecnicos: getTecnicosOrdenadosController(true) ]);
-
-//            formulario.setCamposAvulsos(params.avulso)
+            //Preenche os campos do formulario aa partir do request, validando os campos obrigatorios e os formatos
+            if (! requestToFormulario(formulario, params))
+                return render(view: '/emissaoFormulario/preencherFormulario',
+                        model: [templateCamposCustomizados: getTemplateCamposCustomizados(formulario),
+                        dtoFormulario: formulario, tecnicos: getTecnicosOrdenadosController(true), erroValidacao: true ] + params);
         }
 
         geraFormularioPreenchido: {
-            ReportDTO reportDTO = servico(formulario).prepararImpressao(formulario, idModelo)
+            antesGerarFormularioPreenchido(formulario, formulario.formularioEmitido, params);
+
+            List<ReportDTO> reportsDTO = servico(formulario).prepararImpressao(formulario, idModelo);
             //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
             //javascript que rodara automaticamente na proxima pagina)
-            setReportParaBaixar(session, reportDTO)
+            setReportsParaBaixar(session, reportsDTO);
 
             //Verifica se existem campos alterados que podem ser atualizados no cadastro
             //FIXME: abranger também situações em que não há cidadão selecionado, mas há família
             if (formulario.familia && verificaPermissao(DefinicaoPapeis.STR_USUARIO)) {
                 List camposAfetados = servico(formulario).camposAlterados(formulario);
                 if (camposAfetados) {
-                    return render(view: "atualizarCadastro", model: [formulario: formulario, camposAfetados: camposAfetados,
+                    return render(view: "/emissaoFormulario/atualizarCadastro", model: [formulario: formulario, camposAfetados: camposAfetados,
                                   familiaSelecionada: Familia.get(formulario.familia?.id),
                                   cidadaoSelecionado: Cidadao.get(formulario.cidadao?.id)])
                 }
@@ -206,11 +149,15 @@ class EmissaoFormularioController extends AncestralController {
     }
 
     /**
+     * Evento que pode ser sobrescrito nas classes descendentes para personalização de comportamento
+     */
+    protected void antesGerarFormularioPreenchido(Formulario formulario, FormularioEmitido formularioEmitido, Map params) { }
+
+    /**
      * Decide qual será a tela para a qual o operador será encaminhado após concluir a emisão do formulario (e confirmar
      * a gravação de eventuais alterações no cadastro). Em geral, retorna para a tela de escolha de formulario. Mas casos
      * especificos, como do pedido de certidão, podem ter um destino diferente.
      */
-
     private def fimEmissao(Formulario formulario) {
         if (! formulario.formularioEmitido)
             throw new ApoiaSuasException("formulario.formularioEmitido não fornecido")
@@ -218,14 +165,14 @@ class EmissaoFormularioController extends AncestralController {
             String idProcesso = pedidoCertidaoProcessoService.getIdProcessoPeloFormularioEmitido(formulario.formularioEmitido.id)
             return redirect(controller: "pedidoCertidaoProcesso", action: "mostraProcesso", id:idProcesso)
         } else {
-            redirect action: 'escolherFormulario'
+            redirect controller: 'emissaoFormulario', action: 'escolherFormulario'
         }
     }
 
     /**
-     * Verifica se todos os campos foram preenchidos com valores validos ou obrigatorios
+     * Preenche os campos do formulario aa partir do request, validando os campos obrigatorios e os formatos
      */
-    private boolean validarPreenchimento(Formulario formulario, GrailsParameterMap params) {
+    private boolean requestToFormulario(Formulario formulario, GrailsParameterMap params) {
         boolean result = true;
         formulario.campos.each { CampoFormulario campo ->
             final conteudoFornecido = params.get(campo.caminhoCampo)?.toString();
@@ -316,7 +263,7 @@ class EmissaoFormularioController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def procurarCidadao(FiltroCidadaoCommand filtro) {
         params.max = params.max ?: 10
-        PagedResultList cidadaos = cidadaoService.procurarCidadao(params, filtro)
+        PagedResultList cidadaos = cidadaoService.procurarCidadao2(params, filtro)
         Map filtrosUsados = params.findAll { it.value }
         render view: "/cidadaos/cidadao/procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
     }
@@ -333,7 +280,7 @@ class EmissaoFormularioController extends AncestralController {
         render view: "/cidadao/procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
         */
         List<FormularioEmitido> formularios = FormularioEmitido.findAllByFamilia(Familia.get(idFamilia), [max: 20, sort: "id", order:"desc"])
-        render view: "listarFormulariosEmitidos", model: [formularioEmitidoInstanceList: formularios]
+        render view: "/emissaoFormulario/listarFormulariosEmitidos", model: [formularioEmitidoInstanceList: formularios]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
@@ -343,12 +290,12 @@ class EmissaoFormularioController extends AncestralController {
         render view: "/cidadao/procurarCidadao", model: [cidadaoInstanceList: cidadaos, cidadaoInstanceCount: cidadaos.getTotalCount(), filtro: filtrosUsados ]
         */
         List<FormularioEmitido> formularios = FormularioEmitido.findAllByCidadao(Cidadao.get(idCidadao), [max: 20, sort: "id", order:"desc"])
-        render view: "listarFormulariosEmitidos", model: [formularioEmitidoInstanceList: formularios]
+        render view: "/emissaoFormulario/listarFormulariosEmitidos", model: [formularioEmitidoInstanceList: formularios]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def mostrarFormularioEmitido(FormularioEmitido formularioEmitidoInstance) {
-        render view: "mostrarFormularioEmitido", model: [formularioEmitidoInstance: formularioEmitidoInstance ]
+        render view: "/emissaoFormulario/mostrarFormularioEmitido", model: [formularioEmitidoInstance: formularioEmitidoInstance ]
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])

@@ -21,8 +21,8 @@ class FormularioBeneficioEventualService extends FormularioService {
         if (!cidadao.identidade)
             cidadao.identidade = "NAO POSSUI"
 
-        CampoFormulario tecnico = formulario.getCampoAvulso(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
-//        CampoFormulario matricula = formulario.getCampoAvulso(.CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO)
+        CampoFormulario tecnico = formulario.getCampo(CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
+//        CampoFormulario matricula = formulario.getCampo(.CODIGO_MATRICULA_RESPONSAVEL_PREENCHIMENTO)
         //Substitui , no campo RESPONSAVEL_PREENCHIMENTO, o ID pelo nome completo do usuario
         tecnico.valorArmazenado = formulario.usuarioSistema?.nomeCompleto
 //        matricula.valorArmazenado = formulario.usuarioSistema?.matricula

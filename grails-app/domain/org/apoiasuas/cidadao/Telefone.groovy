@@ -23,7 +23,7 @@ class Telefone implements Serializable {
 //        criador(nullable: false)
 //        ultimoAlterador(nullable: false)
         DDD(blank: true, maxSize: 3);
-        numero(blank: false, maxSize: 40);
+        numero(blank: false, maxSize: 255, unique: ['DDD','familia']) //Cria um índice composto e único
         obs(blank: true, maxSize: 1000);
     }
 

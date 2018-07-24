@@ -111,8 +111,7 @@ function createCompromisso(start, end, jsEvent, view) {
 
     janelaModalTipoCompromisso.createOutroCompromisso = function() {
         janelaModal.abreJanela({titulo: "Criar novo Compromisso",
-                url: actionCreateCompromisso+"?idUsuarioSistema="+$usuarioSelecionadoTelaMae.val()+"&inicio="+inicioStr+"&fim="+fimStr,
-                largura: 800});
+                url: actionCreateCompromisso+"?idUsuarioSistema="+$usuarioSelecionadoTelaMae.val()+"&inicio="+inicioStr+"&fim="+fimStr/*, largura: 800*/});
         $('#calendar').fullCalendar('unselect');
         janelaModalTipoCompromisso.confirmada();
     }
@@ -120,12 +119,12 @@ function createCompromisso(start, end, jsEvent, view) {
     if (jsEvent && jsEvent.shiftKey && $usuarioSelecionadoTelaMae.val()) //compromisso automatico - do tipo Atendimento
         janelaModalTipoCompromisso.createAtendimento();
     else
-        janelaModalTipoCompromisso.abreJanela({titulo: "Agenda", element: $('#divEscolherTipoCompromisso'), largura: 550});
+        janelaModalTipoCompromisso.abreJanela({titulo: "Agenda", element: $('#divEscolherTipoCompromisso')/*, largura: 550*/});
 }
 
 function abreCompromisso( event, delta, revertFunc, jsEvent, ui, view ) {
      var tituloJanela = event.tipoAtendimento ? "Alterar Atendimento" : "Alterar Compromisso";
-     janelaModal.abreJanela({titulo: tituloJanela, url: actionEditCompromisso+"?idCompromisso="+event.id, largura: 800});
+     janelaModal.abreJanela({titulo: tituloJanela, url: actionEditCompromisso+"?idCompromisso="+event.id/*, largura: 800*/});
 }
 
 /**
@@ -262,6 +261,12 @@ function atualiza() {
     $('#calendar').fullCalendar('addEventSource', source )
 }
 
+function hoje() {
+    //$('#calendar').fullCalendar('removeEventSources' )
+    //var source = getEvents();
+    //$('#calendar').fullCalendar('addEventSource', source )
+}
+
 /**
  * Monta request para obter compromissos do servidor
  */
@@ -284,7 +289,7 @@ function getEvents() {
 }
 
 function configuracoes() {
-     janelaModal.abreJanela({titulo: "Configurações de exibição da agenda", largura: 600, url: actionConfiguracao,
+     janelaModal.abreJanela({titulo: "Configurações de exibição da agenda", /*largura: 600,*/ url: actionConfiguracao,
             refreshFunction: function() {
                 //atualiza a exibição do calendário
                 $selectUsuarioSistema = $("#selectUsuarioSistema");
@@ -299,3 +304,11 @@ function eventRender(event, element) {
     $(element).attr("title", event.title);
 }
 
+function abreEstatisticaAtendimentos() {
+    inicioStr = $('#calendar').fullCalendar('getView').intervalStart.format();
+    fimStr = $('#calendar').fullCalendar('getView').intervalEnd.format();
+//    console.log(inicioStr);
+//    console.log(fimStr);
+    janelaModal.abreJanela({titulo: "Total de atendimentos por técnico",
+            url: actionEstatisticaAtendimentos+"?inicio="+inicioStr+"&fim="+fimStr, largura: 400});
+}

@@ -1,0 +1,54 @@
+@import (reference) "main.less";
+@import (reference) "buttons-links.less";
+
+.cabecalho-sessao {
+  display: block;
+  background: @cor-principal;
+  color: white;
+  text-align: left;
+  text-transform: uppercase;
+  font-weight: bold;
+  line-height: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding: 0.5em;
+  //Garante que a barra ira para uma linha abaixo do ultimo elemento e ocupara a linha inteira
+  clear: both;
+
+  &:link, &:visited, .left {
+    color: white;
+    text-decoration: none;
+  }
+  .left {
+    padding: 15px 50px 15px 0; //aumenta a área clicável do link de expansao da sessao
+    img {
+      vertical-align:middle;
+      margin-right: 5px;
+    }
+  }
+  .right {
+    float: right;
+    padding: 8px 10px; //aumenta a área clicável do link de expansao da sessao
+    background-image: url(../../../images/double-down-w.png);
+    background-position: center;
+    width: 16px;
+    height: 16px;
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    //esconder o texto
+    overflow:hidden;
+    text-indent:100%;
+    white-space:nowrap;
+    //img {
+    //  vertical-align:middle;
+    //}
+  }
+}
+
+.conteudo-sessao {
+    display: none;
+}
+
+.sessao-detalhes {
+  page-break-inside: avoid;
+}

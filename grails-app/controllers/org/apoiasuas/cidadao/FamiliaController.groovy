@@ -77,6 +77,16 @@ class FamiliaController extends AncestralController {
 //        render view: 'list', model: [familiaInstanceList: Familia.list(params), familiaInstanceCount: Familia.count()]
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def delete(Familia familia) {
+        if (! familia)
+            return notFound()
+
+        familiaService.apaga(familia)
+        flash.message = "Família removida com sucesso";
+        redirect(controller: 'cidadao', action: 'procurarCidadao')
+    }
+
     def show(Familia familiaInstance) {
         if (! familiaInstance)
             return notFound()
@@ -99,7 +109,7 @@ class FamiliaController extends AncestralController {
         boolean modoCriacao = familiaInstance.id == null;
         boolean validado = true;
 
-                //A gravação de uma nova família embute também a gravação de um primeiro membro como referencia familiar
+        //A gravação de uma nova família embute também a gravação de um primeiro membro como referencia familiar
         Cidadao novaReferenciaFamiliar = null;
         if (modoCriacao) {
             //inicializando a referencia familiar
@@ -400,7 +410,7 @@ class FamiliaController extends AncestralController {
         saveAcompanhamento(familiaInstance, programasCommand, acoesCommand, vulnerabilidadesCommand, outrosMarcadoresCommand);
         //Guarda na sessao asinformacoes necessarias para a geracao do arquivo a ser baixado (que sera baixado por um
         //javascript que rodara automaticamente na proxima pagina)
-        setReportParaBaixar(session, familiaService.emitePlanoAcompanhamento(familiaInstance))
+        setReportsParaBaixar(session, [familiaService.emitePlanoAcompanhamento(familiaInstance)])
     }
 
     def selecionarAcompanhamento() {
@@ -414,7 +424,7 @@ class FamiliaController extends AncestralController {
         //Preenchimento de numeros no primeiro campo de busca indica pesquisa por cad
         boolean buscaPorCad = filtro.nomeOuCad && ! StringUtils.PATTERN_TEM_LETRAS.matcher(filtro.nomeOuCad)
         params.max = params.max ?: 20
-        PagedResultList cidadaos = cidadaoService.procurarCidadao(params, filtro)
+        PagedResultList cidadaos = cidadaoService.procurarCidadao2(params, filtro)
         Map filtrosUsados = params.findAll { it.value }
 
         if (buscaPorCad && cidadaos?.resultList?.size() > 0) {
@@ -616,14 +626,13 @@ class FamiliaController extends AncestralController {
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def listTelefones(Long id) {
         List<Map> telefones = getTodosOsTelefones(familiaService.obtemFamilia(id, false, true/*telefones*/, false, false));
-        render view: 'telefone/_listTelefones', model: [telefonesList: telefones];
+        render view: '/familia/telefone/_listTelefones', model: [telefonesList: telefones];
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
-    def saveTelefones(Long idFamilia) {
-        Familia familia = Familia.get(idFamilia);
+    def saveTelefones(Familia familia) {
         if (! familia)
-            throw new RuntimeException("Impossível acessar familia. id "+idFamilia);
+            throw new RuntimeException("Impossível acessar familia.");
 
         boolean validado = telefonesFromRequest(familia)
 
@@ -656,6 +665,10 @@ class FamiliaController extends AncestralController {
                 Telefone telefone = Telefone.get(idTelefone);
                 familia.telefones.remove(telefone);
                 telefone.delete();
+            } else if (!numero && !ddd && !obs && idTelefone) {
+                Telefone telefone = Telefone.get(idTelefone);
+                familia.telefones.remove(telefone);
+                telefone.delete();
             } else if (numero || ddd || obs || idTelefone) {
                 Telefone telefone = idTelefone ? Telefone.get(idTelefone) : new Telefone(familia)
                 telefone.DDD = ddd;
@@ -663,10 +676,6 @@ class FamiliaController extends AncestralController {
                 telefone.obs = obs;
                 familia.telefones.add(telefone);
                 result = result && telefone.validate();
-            } else if (!numero && !ddd && !obs && idTelefone) {
-                Telefone telefone = Telefone.get(idTelefone);
-                familia.telefones.remove(telefone);
-                telefone.delete();
             }
         }
         return result
@@ -687,19 +696,33 @@ class FamiliaController extends AncestralController {
         agendaService.getAtendimentos(familiaInstance).sort { it.dataHora }.reverse().each { AtendimentoParticularizado atendimento ->
             if (atendimento.telefoneContato && telefoneNovo(atendimento.telefoneContato, result))
                 result.add([data  : atendimento.dataHora, numero: atendimento.telefoneContato,
-                           origem: TELEFONES_AGENDAMENTO])
+                           origem: TELEFONES_AGENDAMENTO, observacoes: atendimento.nomeCidadao, idAtendimento: atendimento.id])
         }
 
         return result;
     }
 
+    /**
+     * Verifica se um telefone ja esta presente em uma lista
+     * Considera apenas os ultimos 8 caracteres numericos de cada telefone
+     */
     private boolean telefoneNovo(String novo, ArrayList<Map> atuais) {
         boolean result = true;
+        novo = novo.replaceAll("[^0-9]", "");
         atuais.each { Map atual ->
-            result = result && ( (novo.replaceAll("[^0-9]", "") != atual.numero.replaceAll("[^0-9]", "")) );
+            String sAtual = atual.numero.replaceAll("[^0-9]", "");
+            result = result && org.apache.commons.lang.StringUtils.right(novo, 8) != org.apache.commons.lang.StringUtils.right(sAtual, 8);
+//            result = result && ( (novo != sAtual) );
         }
         return result;
     }
+
+    @Secured([DefinicaoPapeis.STR_USUARIO])
+    def deleteTelefoneAtendimento(AtendimentoParticularizado atendimento) {
+        agendaService.deleteTelefoneAtendimento(atendimento);
+        return render(contentType:'text/json', text: ['success': true] as JSON);
+    }
+
 }
 
 class ProgramasCommand implements MarcadoresCommand {

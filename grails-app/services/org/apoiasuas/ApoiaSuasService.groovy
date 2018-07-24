@@ -1,15 +1,15 @@
 package org.apoiasuas
 
+import com.gc.iotools.stream.is.InputStreamFromOutputStream
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import groovy.sql.Sql
-import org.apache.commons.io.IOUtils
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.xwpf.usermodel.XWPFParagraph
 import org.apache.xmlbeans.XmlOptions
+import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.util.AmbienteExecucao
-import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
 import org.hibernate.dialect.PostgreSQL81Dialect
@@ -19,7 +19,6 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody
 import org.springframework.core.io.Resource
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
-import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder
 
 @Transactional(readOnly = true)
 class ApoiaSuasService {
@@ -85,9 +84,20 @@ class ApoiaSuasService {
         }
     }
 
+    public void appendReports(OutputStream dest, List<ReportDTO> reports) throws Exception {
+        List<InputStream> documentos = reports.collect {
+            new InputStreamFromOutputStream<Void>() {
+                public Void produce(final OutputStream dataSink) throws Exception {
+                    it.report.process(it.context, dataSink);
+                }
+            };
+        };
+        appendOfficeStreams(dest, documentos);
+    }
+
     @NotTransactional
-    public void append(OutputStream dest, List<InputStream> documentos) throws Exception {
-//        documentos = documentos.removeAll { it == null };
+    public void appendOfficeStreams(OutputStream dest, List<InputStream> documentos) throws Exception {
+
         InputStream primeiroInputStream = documentos[0]
         documentos.remove(0);
         OPCPackage primeiroPackage = OPCPackage.open(primeiroInputStream);

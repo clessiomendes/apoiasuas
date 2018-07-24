@@ -126,8 +126,8 @@ class LocalFSService implements FileStorageService {
     @Override
     @NotTransactional
     public String showConfig() {
-        return "Implementação: ${this.getClass().getSimpleName()}, Classe de domínio para índice: ${FileStorageIndex.getSimpleName()}";
-//                ", Caminho do repositório: ${caminhoRepositorio}"
+        return "Implementação: ${this.getClass().getSimpleName()}, Classe de domínio para índice: ${FileStorageIndex.getSimpleName()}, " +
+                "Caminho do repositório: ${AmbienteExecucao.getCaminhoRepositorioArquivos()}";
     }
 
     private void inicializaCaminhos(String... caminhos) {

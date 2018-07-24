@@ -101,6 +101,7 @@ class OverrideTagLib {
      * @attr multiple boolean value indicating whether the select a multi-select (automatically true if the value is a collection, defaults to false - single-select)
      * @attr valueMessagePrefix By default the value "option" element will be the result of a "toString()" call on each element in the "from" attribute list. Setting this allows the value to be resolved from the I18n messages. The valueMessagePrefix will be suffixed with a dot ('.') and then the value attribute of the option to resolve the message. If the message could not be resolved, the value is presented.
      * @attr noSelection A single-entry map detailing the key and value to use for the "no selection made" choice in the select box. If there is no current selection this will be shown as it is first in the list, and if submitted with this selected, the key that you provide will be submitted. Typically this will be blank - but you can also use 'null' in the case that you're passing the ID of an object
+     * @attr forcarEscolha Se true, elimina a opção vazia da lista (se sobrepõe ao parametros noSelection)
      * @attr disabled boolean value indicating whether the select is disabled or enabled (defaults to false - enabled)
      * @attr readonly boolean value indicating whether the select is read only or editable (defaults to false - editable)
      */
@@ -137,6 +138,8 @@ class OverrideTagLib {
 
         if (! attrs.containsKey('noSelection'))
             attrs.noSelection = ['': '']
+        if (attrs.forcarEscolha?.toBoolean())
+            attrs.remove('noSelection');
 
         //Eh preciso buscar a tag original antes de executa-la, pois ela foi sobrescrita
         FormTagLib original = grailsAttributes.applicationContext.getBean(FormTagLib.name)

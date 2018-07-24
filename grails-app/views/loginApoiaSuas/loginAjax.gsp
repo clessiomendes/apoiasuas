@@ -1,3 +1,4 @@
+<%@ page import="org.apoiasuas.util.AmbienteExecucao" %>
 %{--
                 LOGIN EM TELA MODAL VIA AJAX
 
@@ -44,7 +45,7 @@ Com base na proposta em http://grails-plugins.github.io/grails-spring-security-c
                  //Reinicia contagem de tempo de sessao
                  iniciaTimerSessaoExpirada();
              } else if (json.error)
-                $("#loginMessage").html('<span class="errorMessage">' + json.error + "</error>");
+                $("#loginMessage").html('<span class="errorMessage">' + json.error + "</span>");
              else
                 $("#loginMessage").html(jqXHR.responseText);
           },
@@ -55,20 +56,20 @@ Com base na proposta em http://grails-plugins.github.io/grails-spring-security-c
                 // the login request itself wasn't allowed, possibly because the
                 // post url is incorrect and access was denied to it
                 $("#loginMessage").html('<span class="errorMessage">' +
-                   'Sorry, there was a problem with the login request</error>');
+                   'Erro na chamada ajax</span>');
              }
              else {
                 var responseText = jqXHR.responseText;
                 if (responseText) {
                    var json = $.parseJSON(responseText);
                    if (json.error) {
-                      $("#loginMessage").html('<span class="errorMessage">' + json.error + "</error>");
+                      $("#loginMessage").html('<span class="errorMessage">' + json.error + "</span>");
                       return;
                    }
                 } else {
-                   responseText = "Sorry, an error occurred (status: " + textStatus + ", error: " + errorThrown + ")";
+                   responseText = "Erro (status: " + textStatus + ", erro: " + errorThrown + ")";
                 }
-                $("#loginMessage").html('<span class="errorMessage">' + responseText + "</error>");
+                $("#loginMessage").html('<span class="errorMessage">' + responseText + "</span>");
              }
           }
        });
@@ -80,9 +81,20 @@ Com base na proposta em http://grails-plugins.github.io/grails-spring-security-c
 
 <div id='login'>
     <div class='inner' style='width: inherit; margin: 10px'>
-        <div class='fheader'>Atenção! Após ${session.maxInactiveInterval / 60} minutos sem uso, é necessário um novo login para continuar usando o sistema.</div>
+        %{--<div class='fheader'>Atenção! Após ${session.maxInactiveInterval / 60} minutos sem uso, é necessário um novo login para continuar usando o sistema.</div>--}%
+        <div class='fheader'>
+            Necessário novo login para continuar usando o sistema.
+            <g:if test="${AmbienteExecucao.isDesenvolvimento()}">
+                <br> Login: clessio Senha: senha
+            </g:if>
+            <g:if test="${AmbienteExecucao.isDemonstracao()}">
+                <br> Login: joao Senha: demo
+            </g:if>
+        </div>
 
         <form action="${request.contextPath}/j_spring_security_check" method='POST' id='ajaxLoginForm' class='cssform' autocomplete='off'>
+            <g:hiddenField name="spring-security-redirect" value="${org.apoiasuas.LoginApoiaSuasController.URL_AJAX_SUCCESS_LOGIN}"/>
+
             <p>
                 <label for='username'><g:message code="springSecurity.login.username.label"/>:</label>
                 <input type='text' class='text_' name='j_username' id='username'/>

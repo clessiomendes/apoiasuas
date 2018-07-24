@@ -25,6 +25,7 @@
         <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'detalhe.tipoConstrucao', 'error')} ">
             <label>Tipo de construção<g:helpTooltip chave="help.tipo.construcao"/></label>
             <g:selectLookup bean="${localDtoFamilia}" name="detalhe.tipoConstrucao" class="many-to-one"/>
+            <span style="font-size: .7em">mar/<br>2018</span>
         </div>
 
         <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'detalhe.tipoEletricidade', 'error')} ">

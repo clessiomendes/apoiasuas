@@ -454,6 +454,52 @@ th.desc a {
   box-shadow: 0 0 3px 1px @cor-sombra-principal;
 }
 
+.pesquisar {
+  .painelNavegacaoOuBotoes();
+  overflow: hidden;
+  padding: 0.3em 1em;
+  margin: @espacamento-linhas-formulario 0 @espacamento-linhas-formulario 0;
+  border: none;
+  //botão de procurar (no canto inferior direito)
+  .search {
+	float: right;
+	margin: 15px 0 0 0;
+
+  }
+  //div contendo o titulo e o conteudo de cada filtro
+  .campo {
+    display: inline-block;
+	white-space: nowrap;
+    margin-right: 20px;
+	//div contendo apenas o titulo
+    .titulo {
+      .label-campos();
+      display: table-cell;
+	}
+  }
+  //div contendo filtros avançados
+  .mais-filtros {
+    display: none;
+  }
+  //inputs para preenchimento dos filtros (excluindo botões)
+  input:not([type='button']):not([type='submit']), select {
+	margin: 1px 0 10px 0;
+    width: 20em;
+	//iguala os tamanhos de selects e textboxes
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+    box-sizing:border-box;
+  }
+  //Setas para baixo indicando a possibilidader de pesquisa avançada
+  .expandir img {
+    display: block;
+    margin: 3px auto;
+    width: 20px;
+    height: 8px;
+    cursor: pointer;
+  }
+}
+
 .buttons {
   .painelNavegacaoOuBotoes();
   overflow: hidden;
@@ -506,13 +552,6 @@ th.desc a {
 .buttons input[type=button]:hover, .buttons input[type=button]:focus, .buttons input[type=submit]:hover, .buttons input[type=submit]:focus,
 .buttons a:hover, .buttons a:focus {
   .hoverBotoes();
-}
-
-.no-borderradius .buttons input:hover, .no-borderradius .buttons input:focus,
-.no-borderradius .buttons a:hover, .no-borderradius .buttons a:focus {
-	background-color: transparent;
-	color: #444444;
-	text-decoration: underline;
 }
 
 /*
@@ -863,14 +902,19 @@ ul.one-to-many li.create {
 //.fieldcontain ~ .fieldcontain {
 //}
 .fieldcontain label, .fieldcontain .property-label {
+    .label-campos();
 	display: block;
-	color: @cor-texto-secundario;
-	font-weight: bold;
-	font-size: small;
 	text-align: left;
 	width: 100%;
 	min-height: 1.3em;
 }
+
+.label-campos {
+	color: @cor-texto-secundario;
+	font-weight: bold;
+	font-size: small;
+}
+
 .embedded legend {
 	margin: 0 1em;
 	color: @cor-texto-secundario;
@@ -1051,8 +1095,20 @@ div.tamanho-memo, div.tamanho-memo textarea {
     -ms-animation-delay: 1s;
 }
 
+.novo-recurso-pequeno {
+  .novo-recurso();
+  & + img {
+	width: 30px;
+	height: 18px;
+  }
+  input& + img {
+	//recuo para sobrepor botões de ação
+	margin-left: -15px;
+  }
+}
+
 .novo-recurso {
-    & + img { //obs: o elemento imagem é iserido automaticamente em todas as paginas pela rotina jQuery em main.js
+    & + img { //obs: o elemento imagem é iserido automaticamente em todas as paginas pela rotina jQuery em main.gsp
         width: 40px;
         height: 25px;
         vertical-align: top;
@@ -1063,10 +1119,15 @@ div.tamanho-memo, div.tamanho-memo textarea {
         margin-top: -5px;
         //overflow: visible;
     }
-    input& + img, input& + img { //recuo para sobrepor botões de ação
+    input& + img { //recuo para sobrepor botões de ação
         margin-left: -30px;
         margin-top: -5px;
     }
+    span& + img { //recuo para sobrepor botões de ação
+        margin-left: -10px;
+        margin-top: -15px;
+    }
+
 }
 
 .ui-front {

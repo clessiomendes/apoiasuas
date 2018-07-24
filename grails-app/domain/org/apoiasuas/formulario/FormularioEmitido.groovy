@@ -2,6 +2,7 @@ package org.apoiasuas.formulario
 
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Familia
+import org.apoiasuas.redeSocioAssistencial.Servico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 
@@ -14,6 +15,7 @@ class FormularioEmitido {
     Familia familia
     Date dataPreenchimento
     UsuarioSistema operadorLogado
+    Servico servicoDestino
     ServicoSistema servicoSistemaSeguranca
 
     static hasMany = [campos: CampoFormularioEmitido]

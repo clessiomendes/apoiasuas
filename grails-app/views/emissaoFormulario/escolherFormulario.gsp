@@ -22,7 +22,7 @@
 
     <fieldset class="form">
 
-        <g:render template="escolherFamilia"/>
+        <g:render template="/emissaoFormulario/escolherFamilia"/>
 
         <g:each in="${formulariosDisponiveis}" var="tipo">
             <fieldset class="embedded" style="padding: 10px"><legend class="collapsable" style="cursor:pointer;">${tipo.key}</legend>

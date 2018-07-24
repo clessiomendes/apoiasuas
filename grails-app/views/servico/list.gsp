@@ -3,34 +3,38 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'servico.label', default: 'Servico')}" />
-		<title><g:message code="default.list.label" args="[entityName]" /></title>
+		<title>Rede intersetorial e socioassistencial</title>
+        <asset:stylesheet src="servico/servico.less"/>
 	</head>
 	<body>
-		<a href="#list-servico" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+		<a href="#list-servico" class="skip" tabindex="-1">Skip to content&hellip;</a>
+        <div id="list-servico" class="content scaffold-list" role="main">
 
-%{--
-    <fieldset class="buttons">
-        <g:link class="create" action="create">Incluir novo serviço</g:link>
-        <g:actionSubmit class="list" action="list" value="Procurar" />
-    </fieldset>
---}%
+		<h1>Procurar - Rede intersetorial e socioassistencial<span class="hide-on-mobile"> (serviços, benefícios e programas)</span></h1>
 
-    <div id="list-servico" class="content scaffold-list" role="main">
-			<h1>Rede sócio-assistencial</h1>
+		<div class="nav" role="navigation">
+			<ul>
+				<li><g:link class="create" action="create">Incluir novo</g:link></li>
+			</ul>
+		</div>
 
-            <g:form style="padding: 0.3em 1em">
-                Palavra chave:<g:textField name="palavraChave" size="20" autofocus="" value="${filtro?.nome}"/>
-				&nbsp;<g:actionSubmit action="list" class="search" value="Procurar"/>
-				&nbsp;<g:actionSubmit action="create" class="create" value="Incluir novo serviço"/>
-                %{--<g:link class="create" action="create">Incluir novo serviço</g:link>--}%
-            </g:form>
+<g:form class="pesquisar">
 
-        <g:if test="${flash.message}">
+    <span class="campo">
+        <span class="titulo">Palavra chave</span>
+        <g:textField name="palavraChave" size="20" autofocus="" value="${filtro?.nome}"/>
+    </span>
+
+	<g:actionSubmit action="list" class="search" value="Procurar" onclick="this.form.action='${createLink(action:'list')}';"/>
+
+</g:form>
+
+            <g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<table class="tabelaListagem">
                 <thead><tr>
+                    <th></th>
                     <th>Nome popular</th>
                     <th>Descrição</th>
                 </tr></thead>
@@ -38,8 +42,16 @@
 				<g:each in="${servicoInstanceList}" status="i" var="servicoInstance"> <% Servico servico = servicoInstance %>
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 						<td>
+							<g:if test="${servico?.imagemFileStorage}">
+                            <g:link action="show" id="${servico.id}">
+								<img class="avatar-servico" src="${g.createLink(action: 'imagem', params: [imagemFileStorage: servico?.imagemFileStorage])}"/>
+							</g:link>
+							</g:if>
+						</td>
+						%{--<td><asset:image src="config.png" width="40" height="40"/></td>--}%
+						<td>
                             <g:link action="show" id="${servico.id}">${raw(servico.apelido)}</g:link>
-                            <span style="color:red">${servico.habilitado ? "" : " (desativado)"}</span>
+                            <span class="desativado">${servico.habilitado ? "" : " (desativado)"}</span>
                         </td>
 						<td>${raw(servico.descricaoCortada)}</td>
 					</tr>

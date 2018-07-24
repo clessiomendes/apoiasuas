@@ -23,4 +23,13 @@ class ApoiaSuasException extends RuntimeException {
     ApoiaSuasException(String var1, Throwable var2, boolean var3, boolean var4) {
         super(var1, var2, var3, var4)
     }
+
+/*
+    public static final void raiseIfNotPresent(Map<Object, String> campos) {
+        campos.each {
+            if (! it.key)
+                throw new ApoiaSuasException(it.value);
+        }
+    }
+*/
 }

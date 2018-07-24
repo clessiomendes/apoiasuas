@@ -35,14 +35,14 @@ postgre {
                 System.getProperties().getProperty("POSTGRESQL_ADDON_DB");
 */
 
-        username = "uqupfxoijo5ecvvkw3cj"
-        password = "adp0EGEZCmO9taiK6g3x"
+//        username = "???"
+//        password = "???"
         url = "postgresql://bemstxtxm1dayhm-postgresql.services.clever-cloud.com:" + //host
                 "5432/" + //port
                 "bemstxtxm1dayhm"; //db
 
-        username_logs = "uwbhk7dyxjsqyljjw0qj"
-        password_logs = "cKaeAGNxltuXxLI8iKNF"
+//        username_logs = "???"
+//        password_logs = "???"
         url_logs = "postgresql://bcxpj29zvmrjzfl-postgresql.services.clever-cloud.com:" + //host
                 "5432/" + //port
                 "bcxpj29zvmrjzfl"; //db

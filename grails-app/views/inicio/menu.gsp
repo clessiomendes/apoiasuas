@@ -37,7 +37,8 @@
             Procurar no <nobr>ApoiaCRAS <g:helpTooltip chave="buscaCentralizada.help"/></nobr>
         </label>
         <nobr><g:form action="list" controller="buscaCentralizada">
-            <g:textField name="palavraChave" size="50" class="input-menu-procurar" onfocus="if(this.value == 'ex: jovem aprendiz') { this.value = ''; }" value="ex: jovem aprendiz"/>
+            <g:textField name="palavraChave" size="50" class="input-menu-procurar" placeholder="ex: jovem aprendiz"/>
+            %{--<g:textField name="palavraChave" size="50" class="input-menu-procurar" onfocus="if(this.value == 'ex: jovem aprendiz') { this.value = ''; }" value="ex: jovem aprendiz"/>--}%
             <g:submitButton name="list" class="input-menu-procurar speed-button-procurar" value=""/>
         </g:form></nobr>
         <div style="clear: both"></div>
@@ -63,9 +64,9 @@
             <g:linkMenu title="Cadastra uma nova família no banco de dados"
                         imagem="usecases/cadastrar-familia-w.png"
                         class="rosa ${InicioController.novoRecurso("31/03/2018","novo-recurso-menu")}" controller="familiaDetalhado" action="create">Cadastrar família</g:linkMenu>
-            <g:linkMenu title="Serviços, programas, projetos e ações disponíveis na rede sócio-assistencial"
+            <g:linkMenu title="Serviços, benefícios e programas disponíveis na rede sócioassistencial e intersetorial"
                         imagem="usecases/rede-socio-assistencial-w.png"
-                        class="verde_agua" controller="servico">Rede sócio-assistencial</g:linkMenu>
+                        class="verde_agua" controller="servico">Rede intersetorial e sócioassistencial</g:linkMenu>
             <g:linkMenu title="Agenda de atendimentos e demais compromissos"
                         imagem="usecases/agenda-w.png"
                         class="lilas" controller="agenda" action="calendario">Agenda</g:linkMenu>

@@ -57,9 +57,11 @@ class EmissaoRelatorioController extends AncestralController {
     def exibeListagem(DefinicaoListagemCommand definicao, ProgramasCommand programasCommand,
                       VulnerabilidadesCommand vulnerabilidadesCommand, AcoesCommand acoesCommand,
                       OutrosMarcadoresCommand outrosMarcadoresCommand) {
+        //Executa consulta ao banco de dados e guarda os registros retornados em uma lista
         List<GroovyRowResult> registrosEncontrados = listagem(definicao, programasCommand, vulnerabilidadesCommand,
                 acoesCommand, outrosMarcadoresCommand);
         response.contentType = 'text/html; charset=UTF-8'
+        //Transfere os registros encontrados para a saída
         relatorioService.geraListagemFinal(response.outputStream, false, registrosEncontrados);
     }
 
@@ -70,12 +72,12 @@ class EmissaoRelatorioController extends AncestralController {
     def downloadListagem(DefinicaoListagemCommand definicao, ProgramasCommand programasCommand,
                          VulnerabilidadesCommand vulnerabilidadesCommand, AcoesCommand acoesCommand,
                          OutrosMarcadoresCommand outrosMarcadoresCommand) {
-//        definicao.planilhaParaDownload = true
-//        return listagem(definicao, programasCommand, vulnerabilidadesCommand, acoesCommand)
+        //Executa consulta ao banco de dados e guarda os registros retornados em uma lista
         List<GroovyRowResult> registrosEncontrados = listagem(definicao, programasCommand, vulnerabilidadesCommand,
                 acoesCommand, outrosMarcadoresCommand);
         response.contentType = 'application/octet-stream'
         response.setHeader 'Content-disposition', "attachment; filename=\"listagem-apoiasuas.csv\""
+        //Transfere os registros encontrados para a saída
         relatorioService.geraListagemFinal(response.outputStream, true, registrosEncontrados);
     }
 

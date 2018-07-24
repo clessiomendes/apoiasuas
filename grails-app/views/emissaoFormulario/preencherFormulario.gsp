@@ -14,15 +14,14 @@
     * Preenche automaticamente logradouros à partir do que já está na base de dados
     */
     $(document).ready(function() {
-       $('.listaLogradouros').autocomplete({
+        $('.listaLogradouros').autocomplete({
             delay: 700, minLength: 2, source: '<g:createLink controller='familia' action='obtemLogradouros'/>'
-       });
-
+        });
     });
 </g:javascript>
 
 <div class="nav" role="navigation">
-    <ul><li><g:link class="formulario" action="escolherFormulario">
+    <ul><li><g:link controller="emissaoFormulario" class="formulario" action="escolherFormulario">
             Voltar
     </g:link></li></ul>
 </div>
@@ -52,7 +51,7 @@
     </ul>
 </g:each>
 
-<g:form>
+<g:form action="imprimirFormulario" elementId="formEmissaoFormulario">
 
     <input type="hidden" id="cidadao.id" name="cidadao.id" value="${dtoFormulario?.cidadao?.id}">
     <input type="hidden" id="familia.id" name="familia.id" value="${dtoFormulario?.familia?.id}">
@@ -70,22 +69,20 @@
             </g:agrupaCampos>
         </g:else>
 
-        %{--Varias opcoes de modelo: abre para escolha do operador--}%
-        <g:if test="${dtoFormulario.modelos.size() > 1}">
-            <div class="fieldcontain">
-                <label>Modelo</label>
-                <g:select style="max-width: 20em" id="idModelo" name="idModelo" from="${dtoFormulario.modelos.sort{it.id}}" optionKey="id"
-                          optionValue="descricao" value="${dtoFormulario.modeloPadrao.id}" class="many-to-one"/>
-            </div>
-        </g:if>
-        %{--modelo unico:--}%
-        <g:else>
-            <input type="hidden" id="idModelo" name="idModelo" value="${dtoFormulario.modeloPadrao.id}">
-        </g:else>
     </ol>
 
     <fieldset class="buttons sticky-footer">
-        <g:actionSubmit class="print" action="imprimirFormulario" value="Gerar formulário"/>
+        %{--Varias opcoes de modelo: abre para escolha do operador--}%
+        <g:if test="${dtoFormulario.modelos.size() > 1}">
+            <span class="label-campos" style="margin-left: 1em">Modelo</span>
+            <g:select style="max-width: 20em" id="idModelo" name="idModelo" from="${dtoFormulario.modelos.sort{it.id}}" optionKey="id"
+                          optionValue="descricao" value="${idModelo ?: dtoFormulario.modeloPadrao.id}" class="many-to-one" forcarEscolha="true"/>
+        </g:if>
+        %{--modelo unico:--}%
+        <g:else>
+            <input type="hidden" id="idModelo" name="idModelo" value="${idModelo ?: dtoFormulario.modeloPadrao.id}">
+        </g:else>
+        <input type="button" class="print" value="Gerar formulário" onclick="submitProtegido(this.form)"/>
     </fieldset>
     </div>
 </g:form>

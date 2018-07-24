@@ -1,6 +1,7 @@
 package org.apoiasuas.util
 
 import com.google.common.base.CaseFormat
+import org.apache.commons.lang.WordUtils
 import org.codehaus.plexus.util.Base64
 
 import java.text.DecimalFormat
@@ -21,6 +22,9 @@ class StringUtils {
     }
     public static String upperToCamelCase(String value, CaseFormat caseFormat = CaseFormat.UPPER_CAMEL) {
         return CaseFormat.UPPER_UNDERSCORE.to(caseFormat, value);
+    }
+    public static String camelCaseNomeProprio(String value) {
+        WordUtils.capitalizeFully(value);
     }
     public static String toHtml(String s) {
         StringBuilder builder = new StringBuilder();

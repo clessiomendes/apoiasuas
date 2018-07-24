@@ -1,11 +1,11 @@
-@import (reference) "../../main.less";
-@import (reference) "../../buttons-links.less";
+@import (reference) "../main.less";
+@import (reference) "../buttons-links.less";
 
 //Cria uma regra do tipo "input.list" para image buttons (corpo)
 input.btn-copy-antes {
   .imageButton();
   background-color: @cor-fundo-paineis-e-botoes;
-  background-image: url(../../../images/export.png);
+  background-image: url(../../images/export.png);
   background-repeat: no-repeat;
   background-position: 5px 5px;
   padding-left: 30px;
@@ -18,7 +18,7 @@ input.btn-copy-antes {
 .btn-copy-depois {
   .imageButton();
   background-color: @cor-fundo-paineis-e-botoes;
-  background-image: url(../../../images/checked.png);
+  background-image: url(../../images/checked.png);
   background-repeat: no-repeat;
   background-position: 5px 5px;
   padding-left: 30px;
@@ -50,4 +50,8 @@ tr>td:first-child, tr>th:first-child {
 }
 tr>td:last-child, tr>th:last-child {
 	padding-right: 0.6em;
+}
+
+table, th, td {
+    border: 1px solid #DFDFDF;
 }

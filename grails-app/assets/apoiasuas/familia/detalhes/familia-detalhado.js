@@ -1,4 +1,5 @@
 //= require moment.js
+//= require sessao.js
 
 /**
  * Variaveis Globais
@@ -163,13 +164,25 @@ function procurarCampoDetalhe(txtProcura) {
 
 }
 
+function ultimoValor($jquerySelector) {
+    var max = -1;
+    $jquerySelector.each(function() {
+        var ord = $(this).val()
+        if (jQuery.isNumeric(ord))
+            max = Math.max(max, ord);
+    });
+    return max+1;
+}
+
 /**
  * Caso o operador tenha acionado o botao de "Novo Membro", criamos um novo tab e formulario correspondente (clonado) na tela
  */
 function novoMembro() {
     var $formPrincipal = $('#formPrincipal')
-    //os forms de membros já têm um elemento a mais previsto para novos
-    var proximoIndice = $formPrincipal.children('.forms-cidadao').length;
+    //determinando o proximo ord
+    //var proximoIndice = $formPrincipal.children('.forms-cidadao').length;
+    var proximoIndice = ultimoValor($('.ord-cidadao'));
+    console.log('proximo ord '+proximoIndice);
 
     //adiciona novo div aa partir do modelo
     var $divMembroClonado = $('#divNovoMembro').clone();
@@ -198,12 +211,26 @@ function novoMembro() {
     //adiciona novo link nos tabs
     var $novoTab = $("<a href='#' class='links-forms cidadao-detalhado' title='novo cidadao'>novo membro</a>");
     //$novoTab.insertAt(-1, $('#navFamilia ul')[0]);
-    $('#navFamilia').children('ul').append($novoTab);
-    $novoTab.wrap('<li></li>');
+    //$('#navFamilia').children('ul').append($novoTab);
+    //$novoTab.wrap('<li></li>');
+
+    var $excluirNovoTab = $("<a href='#' id='linkExcluirMembro[" + proximoIndice + "]' class='cidadao-remover' title='excluir cidadao'>x</a>");
+    //$('#navFamilia').children('ul').append($excluirNovoTab);
+    //$excluirNovoTab.wrap('<li></li>');
+
+    $li = $('<li>');
+    $li.append($novoTab);
+    $li.append($excluirNovoTab);
+    $('#navFamilia').children('ul').append($li);
 
     //associa o tab ao form
     $novoTab.on("click", function () {
         showForm($divMembroClonado, $novoTab);
+    });
+    $excluirNovoTab.on("click", function () {
+        $divMembroClonado.remove();
+        $novoTab.remove();
+        $excluirNovoTab.remove();
     });
     //Navega ate o div criado simulando um click no novo tab
     $novoTab.click();
@@ -441,53 +468,7 @@ var ModoInicializacao = {
         $('.links-forms.cidadao-detalhado')[0].click();
         //dirige o foco para o segundo campo do formulario da referencia familiar
         $('.forms-cidadao .fieldcontain input')[1].focus();
-        sucessoSave('{}');
     }
-}
-
-/**
- * mostra ou esconde uma sessao especifica
- */
-function foldSessao(elementoSessao) {
-    var $mae = $(elementoSessao).closest('.sessao-detalhes');
-
-    //todos os filhos imediatos de sessao-detalhes que nao sao cabecalho-sessao
-    //var $conteudoSessao = $mae.children(':not(.cabecalho-sessao)');
-    var $conteudoSessao = $mae.children('.conteudo-sessao');
-    //determina se a sessao estava visivel antes do cabecalho dela ser clicado
-    var visiveis = $conteudoSessao.is(':visible')
-
-    //troca o icone de seta pra baixo/cima, tanto icone simples (img) quanto do icone duplo (a background-image)
-    var $imagem = $mae.find('.imagem-fold');
-    var $link = $mae.find('.right');
-    $imagem.attr('src', visiveis ? imgVerMais : imgVerMenos);
-    $link.css('background-image', visiveis ? imgVerMaisTodos : imgVerMenosTodos);
-
-    //mostra ou esconde a sessao
-    $conteudoSessao.toggle(500);
-}
-
-/**
- * mostra ou esconde todas as sessoes
- */
-function foldSessaoTodos(elementoSessao) {
-    var $mae = $(elementoSessao).closest('.sessao-detalhes');
-
-    //todos os filhos imediatos de sessao-detalhes que nao sao cabecalho-sessao
-    var $irmaos = $mae.children(':not(.cabecalho-sessao)');
-    var visiveis = $($irmaos[0]).is(':visible')
-
-    //troca todos os icones de seta pra baixo/cima EM TODOS OS CABEÇALHOS, tanto icone simples (img) quanto do icone duplo (a background-image)
-    var $imagens = $('.sessao-detalhes .imagem-fold');
-    var $links = $('.sessao-detalhes .right');
-    $imagens.attr('src', visiveis ? imgVerMais : imgVerMenos);
-    $links.css('background-image', visiveis ? imgVerMaisTodos : imgVerMenosTodos);
-
-    //mostra ou esconde todas as sessoes
-    if (visiveis)
-        $('.sessao-detalhes > :not(.cabecalho-sessao)').hide(500)
-    else
-        $('.sessao-detalhes > :not(.cabecalho-sessao)').show(500);
 }
 
 /**
@@ -542,6 +523,13 @@ function autocompletePaiMaeCuidador() {
  */
 function erroSave(status, responseText) {
 
+    if (status == "401" /*This request requires HTTP authentication*/) {
+        //alert("favor fazer login");
+        janelaModalLogin.abreJanela({url: urlLoginAjax, largura: 500});
+        clearInterval(timerSessaoExpirada);
+        return;
+    }
+
     if (status != "422" /*validation error*/) {
         Snackbar.show( {text: 'Erro inesperado durante a gravação', pos: 'bottom-center', duration: 0,
                         showSecondButton: true, secondButtonText: 'detalhes', secondButtonTextColor: '#cc0000',
@@ -571,7 +559,7 @@ function erroSave(status, responseText) {
     //mensagens de erro para cada campo da familia
     for (var nomeCampo in errosFamilia.mapaCampos) {
         ressaltaCampo($divErroFamilia, nomeCampo);
-        erroNaFamilia = erroNaFamilia || adicionaMensagem($divErroFamilia, errosFamilia.mapaCampos[nomeCampo].mensagens)
+        erroNaFamilia = adicionaMensagem($divErroFamilia, errosFamilia.mapaCampos[nomeCampo].mensagens) || erroNaFamilia;
     }
 
     if (erroNaFamilia)
@@ -645,16 +633,45 @@ function sucessoSave(responseText, mensagemSucesso, duracao) {
                     backgroundColor: coresSnackbar.info.background, textColor: coresSnackbar.info.text,
                     actionTextColor: coresSnackbar.info.text, actionText: 'X'});
 
-    //converte a String JSON para um objeto javascript com a mesma estrutura do JSON
-//    var membros = JSON.parse(responseText);
+    //todos os membros já foram persistidos
+    //$('.cidadao-remover').remove();
 
     //percorre cada membro e, se for novo, insere um input hidden contendo o novo id gerado
-    for (var ordMembro in responseText) {
+    var mapaMembros = responseText['membros'];
+    for (var ordMembro in mapaMembros) {
         var $divMembro = $('#divMembros\\['+ordMembro+'\\]')
         if ($divMembro.find('[name="membros\\['+ordMembro+'\\].id"]').length == 0)
-            $divMembro.prepend("<input type='hidden' class='id-cidadao' name='membros["+ordMembro+"].id' value='"+responseText[ordMembro]+"'/>")
+            $divMembro.prepend("<input type='hidden' class='id-cidadao' name='membros["+ordMembro+"].id' value='"+mapaMembros[ordMembro]+"'/>")
+        //como já foi gravado, não é mais possível excluir o membro diretamente pela aba
+        $('#linkExcluirMembro\\['+ordMembro+'\\]').remove();
     }
 
+    //percorre cada telefone: se for novo, insere um input hidden contendo o novo id gerado
+    var mapaTelefones = responseText['telefones'];
+    $('#tableTelefones .linha-telefone').each(function() {
+        var $tr = $(this);
+
+        var id = $tr.find('.idTelefone').val();
+        //remover da tela telefones removidos do banco de dados:
+        if (id) {
+            console.log("id: " + id);
+            //busca o id na tela entre os ids presentes no banco de dados
+            var idPresente = false;
+            for (var key in mapaTelefones) {
+                if (mapaTelefones[key] == id)
+                    idPresente = true;
+            }
+            if (!idPresente)
+                $tr.remove()
+        //atualizar id de novo telefone gravado no banco de dados:
+        } else { //novo registro
+            var chave = ifNull( $tr.find('.ddd-telefone').val() , '')
+                + ifNull( $tr.find('.numero-telefone').val() , '');
+            var novoId = mapaTelefones[chave];
+            $tr.find('.idTelefone').val(novoId);
+            console.log("novo telefone: "+chave+", id: "+novoId);
+        }
+    });
 }
 
 /*
@@ -863,4 +880,17 @@ function sucessoConcluir(data) {
     if ($hiddenIdCidadao)
         destino += "?idCidadao="+$hiddenIdCidadao.val();
     window.location = destino;
+}
+
+function submitCriacao(button) {
+    //console.debug('submitCriacao');
+    //console.debug(button.name + button.value);
+    $(button.form).append($('<input>', {
+            type: 'hidden',
+            name: button.name,
+            value: button.value
+    }));
+
+    //chama o metodo padrao (global) que testa o servidor antes de submeter um formulario
+    submitProtegido(button.form);
 }

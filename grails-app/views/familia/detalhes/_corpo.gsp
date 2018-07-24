@@ -5,7 +5,7 @@
     org.apoiasuas.cidadao.Familia localDtoFamilia = familiaInstance;
 %>
 
-<g:form action="edit" id="${localDtoFamilia.id}">
+<g:form>
     <fieldset id="formPrincipal" class="form">
         %{-- Montagem do formulário de dados da família --}%
         <div id="divFamilia" class="forms-detalhados">
@@ -29,7 +29,8 @@
     </fieldset>
 
     <fieldset class="buttons sticky-footer">
-        <g:actionSubmit id="btnCreate" class="save hidden" action="saveNew" value="Gravar" title="Permite gravar e continuar alterando o cadastro" />
+        <g:actionSubmit id="btnCreate" class="save hidden" action="saveNew" value="Gravar" title="Permite gravar e continuar alterando o cadastro"
+            onclick="this.form.action='${createLink(action:'saveNew')}'; submitCriacao(this); return false;"/>
 
         <g:submitToRemote id="btnGravar" name="gravar" class="hidden save" value="Gravar"
                           title="Permite gravar e continuar alterando o cadastro"

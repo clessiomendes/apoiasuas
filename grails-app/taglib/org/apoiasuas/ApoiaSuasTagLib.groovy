@@ -114,8 +114,6 @@ class ApoiaSuasTagLib {
 
     private String geraHtmlInput(CampoFormulario campoFormulario, boolean focoInicial) {
         if (campoFormulario.codigo == CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO)
-//        <g:select optionKey='id' optionValue="apelido" name="servico" id="servico" from="${Servico.list()}" noSelection="['null': '']"
-//        onchange="${remoteFunction(controller: 'servico', action:'getServico', params:"'idServico='+escape(this.value)", onSuccess:'preencheEncaminhamentos(data)')}"/>
             return select(name: campoFormulario.caminhoCampo,
                     autofocus: focoInicial,
                     value: campoFormulario.valorArmazenado,
@@ -645,5 +643,18 @@ class ApoiaSuasTagLib {
         def codigos = attrs.remove(key);
         return customizacoesServiceProxy.contem(codigos);
     }
+
+    /**
+     * Tag  para converter um enum Java em uma estrutura de dados javascript que emula o comportamento de enums, como
+     * var FileActions = { MODIFICAR: "MODIFICAR", ANULAR: "ANULAR" }
+     * @attr enum REQUIRED nome do enum Java
+     */
+    def enumToJavascript = { attrs, body ->
+        def myEnum = attrs.enum;
+        out << 'var '+myEnum.getSimpleName()+' = {';
+        out << myEnum.values().collect { it.toString() + ": '${it.toString()}'" }.join(", ");
+        out << '}';
+    }
+
 
 }

@@ -4,8 +4,14 @@
 	<head>
 		<meta name="layout" content="main">
 		<title><g:message code="buscaCentralizada.titulo" /></title>
-	</head>
+    </head>
 	<body>
+    <style>
+    .tabelaListagem img {
+        width: 72px;
+        height: 72px;
+    }
+    </style>
     <div id="list-busca" class="content scaffold-list" role="main">
 		<h1><g:message code="buscaCentralizada.titulo" /></h1>
 
@@ -26,9 +32,10 @@
 			<g:each in="${resultadoDTO?.objetosEncontrados}" status="i" var="objetoEncontrado">
 				<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					<td style="vertical-align: middle">
-						%{--<div class="imagem-centralizada"></div>--}%
+                        ${raw(objetoEncontrado.imagem)}
+                        %{--<img src="${objetoEncontrado.imagem}" title="${objetoEncontrado.tipo}" style="width: 72px; height: 72px;"/>--}%
 						%{--<g:img file="${objetoEncontrado.imagem}" title="${objetoEncontrado.tipo}" height="40" width="40"/>--}%
-						<asset:image src="${objetoEncontrado.imagem}" title="${objetoEncontrado.tipo}" height="40" width="40"/>
+						%{--<asset:image src="${objetoEncontrado.imagem}" title="${objetoEncontrado.tipo}" height="40" width="40"/>--}%
 					</td>
 					<td>
 						${raw(objetoEncontrado.url)}<br>

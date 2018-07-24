@@ -17,4 +17,11 @@ class LogHelper {
                 threshold: level);
     }
 
+    public static String fillParameters(String sql, Map parameters) {
+        parameters.each { key, value ->
+            sql = sql.replaceAll(":$key", "'$value'");
+        }
+        return sql;
+    }
+
 }

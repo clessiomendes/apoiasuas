@@ -37,8 +37,8 @@
         <br>
 
         <div class="fieldcontain">
-            <span id="uf-label" class="property-label"><g:message code="servico.abrangenciaTerritorial.label" default="Território atendido" /></span>
-            <span class="property-value" style="margin-left:25%" aria-labelledby="uf-label">
+            <label><g:message code="servico.abrangenciaTerritorial.label"/><label>
+            <span class="property-value" style="margin-left:25%">
                 <g:render template="/abrangenciaTerritorial"/>
             </span>
         </div>

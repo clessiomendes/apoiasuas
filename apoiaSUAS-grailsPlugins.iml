@@ -349,6 +349,8 @@
           <root url="jar://$USER_HOME$/.ideaLibSources/fr.opensagres.xdocreport.template.velocity-1.0.4-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/ooxml-schemas-1.1-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/asset-pipeline-core-2.1.1-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/elasticsearch-mapper-attachments-3.1.2-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/elasticsearch-2.1.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

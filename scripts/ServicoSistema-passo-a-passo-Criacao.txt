@@ -1,0 +1,15 @@
+1) Criar Area de Abrangencia
+2) Criar Servico Sistema
+   2.1) Update da linha correspondente na tabela de definicoes de importacao:
+UPDATE definicoes_importacao_familias
+SET aba_da_planilha = 1, coluna_bairro = 'Bairro', colunacep = 'CEP', coluna_codigo_familia = 'Nº do Cadastro', coluna_complemento = 'Complemento', coluna_data_cadastro_familia = 'Data do Cadastro', coluna_data_nascimento = 'Data de nascimento', coluna_municipio = null, colunanis = null, colunanisreferencia = 'NIS da referência', coluna_nome_cidadao = 'Nome do integrante', coluna_nome_logradouro = 'Nome do logradouro', coluna_nome_referencia = 'Nome da referência', coluna_numero = 'Nº', coluna_parentesco = 'Grau de parentesco', coluna_telefones = 'Telefone', coluna_tipo_logradouro = 'Logradouro', colunauf = null,
+linha_do_cabecalho = 2, ultimo_alterador_id = 8, colunabpc = 'B.P.C.', colunapbf = 'B.F.'
+where servico_sistema_seguranca_id = (novo id do ServicoSistema)
+
+3) Arquivo de importacao:
+   3.1) Criar planilha com nome no padrao cras-(nome do cras)-id-(id na tabela servico_sistema).xlsx
+   3.2) Verificar a sequencia de colunas em relacao aas demais planilhas
+   3.3) Excluir abas desncecessarias
+   3.4) Excluir colunas desnecessarias na aba principal
+   3.5) Fazer o upload via ftp para /apoiasuas-repositorio/importacao
+   3.6) Acionar "processar arquivos" na tela de importacao do sistema

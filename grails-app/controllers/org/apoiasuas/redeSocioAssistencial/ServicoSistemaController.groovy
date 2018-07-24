@@ -64,7 +64,7 @@ class ServicoSistemaController extends AncestralServicoController {
 
         if (! validado) {
             //exibe o formulario novamente em caso de problemas na validacao
-            return render(view: 'show', model: getModelExibicao(servicoSistemaInstance))
+            return render(view: 'edit', model: getModelExibicao(servicoSistemaInstance))
         }
 
         //Grava

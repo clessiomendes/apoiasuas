@@ -4,8 +4,10 @@
 .button-link(delete, url(../images/database/delete.png));
 .button-link(import, url(../images/import.png));
 .button-link(export, url(../images/export.png));
+.button-link(clone, url(../images/database/copy.png));
 .button-link(edit, url(../images/database/edit.png));
 .button-link(atendimento, url(../images/usecases/atendimento.png));
+.button-link(encaminhar, url(../images/usecases/encaminhamento.png));
 .button-link(check, url(../images/checked.png));
 .button-link(save, url(../images/database/save.png));
 .button-link(print, url(../images/print.png));
@@ -15,6 +17,7 @@
 .button-link(close, url(../images/close.png));
 .button-link(create, url(../images/database/add.png));
 .button-link(list, url(../images/database/table.png));
+.button-link(filter, url(../images/database/filter.png));
 
 //Uma estrutura única para gerar links de navegação (topo), botões de ação (rodapé) e image buttons (corpo).
 //Usa mixins para gerar 3 regras para cada chamada, todas com o mesmo nome de classe e imagem, mas com atributos específicos
@@ -120,4 +123,11 @@
 
 .speed-button-remover {
   .speedButton(url(../images/database/delete.png));
+}
+
+.speed-button-sugestao {
+  vertical-align: middle;
+  .speedButton(url(../images/double_left.png));
+  padding-left: 10px;
+  padding-right: 10px;
 }

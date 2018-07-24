@@ -141,6 +141,8 @@
     <span>família sem cadastro</span>
 </div>
 
+<br>
+
 <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'telefoneContato', 'error')} ">
     <label>Telefone</label>
     <g:textField name="telefoneContato" id="inputTelefoneContato" size="11" value="${localDtoAtendimento.telefoneContato}" />
@@ -156,6 +158,8 @@
     <g:select style="max-width: 10em" id="tecnico" name="tecnico.id" from="${operadores}" optionKey="id"
               value="${localDtoAtendimento?.tecnico?.id}" class="many-to-one" noSelection="['': '']"/>
 </div>
+
+<br>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'dataHora', 'error')} ">
     <label>
@@ -174,6 +178,12 @@
 
 <br>
 
+<div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'observacoesAgendamento', 'error')} ">
+    <label>Observações</label>
+    <g:textField name="observacoesAgendamento" size="60" value="${localDtoAtendimento?.observacoesAgendamento}" />
+</div>
+
+<br>
 <div class="fieldcontain">
     <label></label>
     <span id="spanSituacao" class="${localDtoAtendimento.getCor()}" style="padding: 0.5em 0.7em; display: inline-block; border-radius: 0.3em;">

@@ -27,6 +27,29 @@ function JanelaModalAjax() {
         return $divModal
     }
 
+    function executaComponenteDialog(parametros) {
+        var dialogClass = ""
+        if (parametros.esconderBotaoFechar)
+            dialogClass += "no-close "
+        if (!parametros.titulo)
+            dialogClass += "no-titlebar "
+
+        refreshFunction = parametros.refreshFunction;
+
+        //exibe uma janela modal inicialmente vazia enquanto aguarda a resposta do servidor
+        var largura = ifNull(parametros.largura, 'auto');
+        var altura = ifNull(parametros.altura, 'auto');
+        $divModal.dialog({
+            position: {my: "center", at: "center", of: window},
+            resizable: false,
+            dialogClass: dialogClass,
+            modal: true,
+            title: ifNull(parametros.titulo, ""),
+            height: $(window).height() > altura ? altura : 'auto',
+            width: $(window).width() > largura ? largura : 'auto'
+        }).dialog('open');
+    }
+
     /**
      * Abre uma janela modal com o título e a url (ou o conteudo HTML) passados
      * Os parametros são passados como {titulo: ..., url: ..., conteudoHTML: ..., element: ..., refreshFunction: ..., largura: ...}
@@ -48,46 +71,29 @@ function JanelaModalAjax() {
         }
 
         if (parametros.conteudoHTML) {
-            $divModal.html(parametros.conteudoHTML)
+            $divModal.html(parametros.conteudoHTML);
+            executaComponenteDialog(parametros);
         } else if (parametros.element) {
             $(parametros.element).appendTo($divModal);
             $(parametros.element).show();
+            executaComponenteDialog(parametros);
         } else if (parametros.url) {
-            $divModal.html('<asset:image src="loading.gif"/> carregando...');
+            //$divModal.html('<asset:image src="loading.gif"/> carregando...');
+            //Executa a chamada ajax para preencher a janela com o resultado retornado do servidor
+            $.ajax({
+                url: parametros.url,
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $divModal.html(jqXHR.responseText).dialog({position: ['center']}).dialog('open');
+                    executaComponenteDialog(parametros);
+                },
+                success: function (data) {
+                    $divModal.html(data).dialog({position: ['center']}).dialog('open');
+                    executaComponenteDialog(parametros);
+                }
+            });
         } else {
             throw "Erro! conteudoHTML, element ou url devem ser fornecidos para abrejanela() em apoiasuas-modal.js"
         }
-
-        var dialogClass = ""
-        if (parametros.esconderBotaoFechar)
-            dialogClass += "no-close "
-        if (! parametros.titulo)
-            dialogClass += "no-titlebar "
-
-        refreshFunction  = parametros.refreshFunction;
-
-        //exibe uma janela modal inicialmente vazia enquanto aguarda a resposta do servidor
-        var largura = ifNull(parametros.largura, 700);
-        $divModal.dialog({
-            position:  {my: "center", at: "center", of: window},
-            resizable: false,
-            dialogClass: dialogClass,
-            modal: true,
-            title: ifNull(parametros.titulo, ""),
-            width: $(window).width() > largura ? largura : 'auto'
-        }).dialog('open');
-
-        //Executa a chamada ajax para preencher a janela com o resultado retornado do servidor
-        if (parametros.url)
-            $.ajax({
-                url: parametros.url,
-                error: function( jqXHR, textStatus, errorThrown ) {
-                    $divModal.html(jqXHR.responseText).dialog({position: ['center']}).dialog('open');
-                },
-                success: function(data) {
-                    $divModal.html(data).dialog({position: ['center']}).dialog('open');
-                }
-            });
     }
 
     this.setOnClose = function(callback) {

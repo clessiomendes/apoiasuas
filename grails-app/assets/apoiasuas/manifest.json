@@ -4,5 +4,10 @@
   "background_color": "#abbf78",
   "theme_color": "#abbf78",
   "display": "standalone",
-  "start_url": "../agenda/calendario?selecionaUsuarioLogado=true"
+  "start_url": "../agenda/calendario?selecionaUsuarioLogado=true",
+ "icons": [ {
+    "src": "apple-touch-icon.png",
+    "sizes": "48x48",
+    "type": "image/png"
+  } ]
 }

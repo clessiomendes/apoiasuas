@@ -6,7 +6,7 @@ import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.DominioProtegidoServico
 import org.apoiasuas.util.FullTextSearchUtils
 
-//FIXME Ao marcarmos Link como dominio protegido, o ElasticSearch nao consegue indexa-lo na inicializacao do servidor - o metodo linkService.testaAcessoDominio(), chamado automaticamente ao se buscar um registro do BD, necessita saber o ServicoSistema logado, o que ainda não é possível se determinar durante a inicialização
+//FIXME Marcar como DominioProtegidoServico. Atualmente, se marcarmos Link como dominio protegido o ElasticSearch nao consegue indexa-lo na inicializacao do servidor - o metodo linkService.testaAcessoDominio(), chamado automaticamente ao se buscar um registro do BD, necessita saber o ServicoSistema logado, o que ainda não é possível se determinar durante a inicialização
 class Link /*implements DominioProtegidoServico*/ {
 
     public static enum Tipo { URL, FILE
@@ -28,7 +28,7 @@ class Link /*implements DominioProtegidoServico*/ {
 
     static searchable = {                           // <-- elasticsearch plugin
         only = ["descricao", "instrucoes", "url", FullTextSearchUtils.ID_SERVICO_SISTEMA, FullTextSearchUtils.ID_COMPARTILHADO_COM]
-        descricao alias: FullTextSearchUtils.MEU_TITULO, index:'analyzed', boost:10
+        descricao alias: FullTextSearchUtils.MEU_TITULO, index:'analyzed', boost:50
         instrucoes alias: FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:5
         url alias: FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:3
     }
@@ -43,14 +43,16 @@ class Link /*implements DominioProtegidoServico*/ {
     static constraints = {
         tipo(nullable: false);
         descricao(nullable: false);
-        descricao(unique: ['servicoSistemaSeguranca'], maxSize: 255);
-        instrucoes(nullable: true, maxSize: 255);
+        descricao(unique: ['servicoSistemaSeguranca'], maxSize: 10000);
+        instrucoes(nullable: true, maxSize: 10000);
         servicoSistemaSeguranca(nullable: false);
+        fileAction(bindable: true);
     }
 
     public String getUrlCompleta() {
         if (! url)
-            return url
+            return url;
+
         return url.toLowerCase().startsWith("http") ? url : "http://"+url
     }
 

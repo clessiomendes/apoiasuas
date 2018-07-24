@@ -1,0 +1,30 @@
+%{--Mostra eventuais erros de validacao:                        --}%
+<g:hasErrors bean="${anexo}">
+    <tr> <td colspan="3"> <ul class="errors" role="alert">
+        <g:eachError bean="${anexo}" var="error">
+            <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+        </g:eachError>
+    </ul></td></tr>
+</g:hasErrors>
+
+<tr id="linhaAnexo${i}" class="linha-anexo">
+
+    <g:hiddenField name="remover" class="removerAnexo"  value="false"/>
+    <g:hiddenField name="idAnexo" class="idAnexo" value="${anexo?.id}"/>
+
+    <td class="${hasErrors(bean: anexo, field: 'DDD', 'error')}">
+        <input type="file" name="inputAnexo" class="inputs-anexos">
+        %{--${anexo?.nomeArquivo}--}%
+    </td>
+    <td class="${hasErrors(bean: anexo, field: 'descricao', 'error')}">
+        <g:textField name="descricao" class="importante descricao-anexo" size="50" maxlength="255" value="${anexo?.descricao}"/>
+    </td>
+    <td>
+        <span style="font-size: 0.75em">
+            &nbsp;<g:formatDate date="${anexo?.dateCreated}" format="(MMM/yyyy)"/>&nbsp;
+        </span>
+    </td>
+    <td> <g:if test="${anexo?.id}">
+        <input type="button" id="removerAnexo" class="speed-button-remover" onclick="removerAnexoClick(this); return false;" title="remover"/>
+    </g:if> </td>
+</tr>

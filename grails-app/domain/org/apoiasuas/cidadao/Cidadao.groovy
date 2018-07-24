@@ -85,7 +85,6 @@ class Cidadao implements Serializable, DominioProtegidoServico, DetalhesJSON {
 
     static constraints = {
         id(bindable: true) //permite que uma propriedade transiente seja alimentada automaticamente pelo construtor
-//        nomeCompleto(nullable: false, maxSize: 255)
         referencia(nullable: false)
         criador(nullable: false)
         ultimoAlterador(nullable: false)

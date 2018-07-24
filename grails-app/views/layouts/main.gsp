@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.cidadao.FamiliaController; org.apoiasuas.cidadao.CidadaoController; org.apoiasuas.cidadao.Cidadao; org.apoiasuas.cidadao.Familia; org.apoiasuas.AncestralController" %>
+<%@ page import="org.apoiasuas.util.AmbienteExecucao; org.apoiasuas.cidadao.FamiliaController; org.apoiasuas.cidadao.CidadaoController; org.apoiasuas.cidadao.Cidadao; org.apoiasuas.cidadao.Familia; org.apoiasuas.AncestralController" %>
 <!DOCTYPE html>
 <!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
 <!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
@@ -27,11 +27,17 @@
 </head>
 
 <script>
+    //variaveis globais para serem usadas pelo javascript sessao.js
+    var imgVerMais = '${assetPath(src: 'down-w.png')}';
+    var imgVerMenos = '${assetPath(src: 'up-w.png')}';
+    var imgVerMaisTodos = 'url(${assetPath(src: 'double-down-w.png')})';
+    var imgVerMenosTodos = 'url(${assetPath(src: 'double-up-w.png')})';
+
     var notificacoesFamilia = {
         //Busca na sessao a(s) mensagens a serem exibidas
         conteudo: '${raw(FamiliaController.getNotificacao(session))}',
         //Busca na sessao o numero de vezes que a notificacao ja foi exibida
-        numExibicoes: ${FamiliaController.getNumeroExibicoesNotificacao(session)},
+        numExibicoes: ${FamiliaController.getNumeroExibicoesNotificacao(session) ?: 0},
         //chamada ajax para limpar na sessão a notificação exibida atualmente
         limpar: function () {
             ${remoteFunction(controller: 'familia', action: 'limparNotificacoes', method: "post",
@@ -43,39 +49,26 @@
     };
 
     var intervaloVerificacaoSessaoExpirada = 2 /*segundos*/;
+    var tempoSessaoSegundos = ${session.maxInactiveInterval}
     var janelaModalLogin = new JanelaModalAjax();
     var timerSessaoExpirada
-    /**
-    * Inicia contador para fim da sessao que, ao final, abre uma janela de login para reconectar
-    */
-    function iniciaTimerSessaoExpirada() {
-        timerSessaoExpirada = setInterval(function () {
-            var tempoAtual = getCookie('expireTime');
-            setCookie('expireTime', tempoAtual - intervaloVerificacaoSessaoExpirada);
-            if (tempoAtual - intervaloVerificacaoSessaoExpirada <= 0) {
-                janelaModalLogin.abreJanela({url: "${createLink(controller: 'LoginApoiaSuas', action: 'loginAjax')}",largura: 500});
-                clearInterval(timerSessaoExpirada);
-            }
-        }, intervaloVerificacaoSessaoExpirada * 1000);
-    }
-    iniciaTimerSessaoExpirada();
+    var timerKeepLoggedIn
+    var urlLoginAjax = "${createLink(controller: 'LoginApoiaSuas', action: 'loginAjax')}";
+    var urlKeepLoggedIn = "${createLink(controller: 'LoginApoiaSuas', action: 'keepLoggedIn')}";
+    var imgNovoRecurso = '${assetPath(src: 'novo-recurso.png')}';
 
     //caminho para imagens a serem utilizadas em qualquer pagina
     window.grailsSupport = {
         iconeCalendario : "${assetPath(src: 'calendario.png')}"
     };
 
-    $(document).ready(function(){
-        var imgNovoRecurso = '${assetPath(src: 'novo-recurso.png')}';
-        $('.novo-recurso').after($( '<img src="'+imgNovoRecurso+'" class="animmated flash"/>' ));
-    });
-
 </script>
 
 <body>
 
     %{--   Muda a cor do banner de acordo com o ambiente:   --}%
-    <div role="banner" class = "${org.apoiasuas.util.AmbienteExecucao.isProducao() ? "banner-producao" : org.apoiasuas.util.AmbienteExecucao.isValidacao() ? "banner-validacao" : "banner-desenvolvimento"}"}>
+    %{--<div role="banner" class = "${AmbienteExecucao.isProducao() || AmbienteExecucao.isDemonstracao() ? "banner-producao" : AmbienteExecucao.isValidacao() ? "banner-validacao" : "banner-desenvolvimento"}"}>--}%
+    <div role="banner" class = "banner-producao"}>
         <table id="cabecalho"><tr>
             <td>
                 <a id="textoBanner" href="${createLink(controller: "inicio", action: "menu")}"><asset:image id="imgLogo" src="suas.png" alt="Apoia CRAS"/>

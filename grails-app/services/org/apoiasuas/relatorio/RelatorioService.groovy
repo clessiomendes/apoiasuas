@@ -35,6 +35,9 @@ class RelatorioService {
     def groovySql
     def segurancaService
 
+    /**
+     * Acrescenta informações de telefones e programas para cada registro encontrado e transfere o resultado final para a saída
+     */
     public void geraListagemFinal(OutputStream outputStream, boolean planilhaParaDownload, List<GroovyRowResult> registrosEncontrados) {
         ListaLigada<GroovyRowResult> resultadoTelefones, resultadoProgramas
         //Busca a listagem completa de telefones e programas e armazena numa lista ligada com ponteiro de avanço (padrão recordset do JDBC)
@@ -60,8 +63,12 @@ class RelatorioService {
             }
 
             registrosEncontrados.each { row ->
-                String telefones = telefonesFamilia(getInt(row.get(LABEL_CAD)), resultadoTelefones)
-                String programas = programasFamilia(getInt(row.get(LABEL_CAD)), resultadoProgramas)
+                String telefones = "";
+                String programas = "";
+                if (row.get(LABEL_CAD)) {
+                    telefones = telefonesFamilia(getInt(row.get(LABEL_CAD)), resultadoTelefones)
+                    programas = programasFamilia(getInt(row.get(LABEL_CAD)), resultadoProgramas)
+                }
                 if (planilhaParaDownload) {
                     writer.append(montaAppendCSV(row.collect { it.value } + [telefones, programas]))
                     writer.newLine()
@@ -69,6 +76,11 @@ class RelatorioService {
                     writer.append(montaAppendHTML(row.collect { it.value } + [telefones, programas]))
                 }
             }
+            if (! planilhaParaDownload) {
+                writer.append(montaAppendHTML(["Total ${registrosEncontrados.size()} registros encontrados"], true));
+                writer.append('</table>');
+            }
+
         } else {
             writer.append("Nenhuma informação encontrada para as opções escolhidas")
         }
@@ -264,10 +276,10 @@ class RelatorioService {
         return result
     }
 
-    private CharSequence montaAppendHTML(Collection lista) {
+    private CharSequence montaAppendHTML(Collection lista, boolean linhaInteira = false) {
         String result = "<tr>"
         lista.eachWithIndex { elemento, i ->
-                result +=  '<td style="border: 1px solid black;">' + (elemento != null ? elemento : "" ) + '</td>'
+                result +=  "<td style='border: 1px solid black;' ${linhaInteira ? 'colspan = "99999"' : ''} >" + (elemento != null ? elemento : "" ) + '</td>'
         }
         return result + "</tr>";
     }

@@ -40,23 +40,22 @@
         <th></th>
     </tr></thead>
     <tbody>
-    <g:set var="corMembro" value="${0}"/>
     <g:set var="corFamilia" value="${0}"/>
     <g:each in="${familiaInstanceList}" var="familia">
         <tr class="${(++corFamilia % 2) == 0 ? 'even' : 'odd'}">
             <g:form action="gravaCodigoLegado" id="${familia.id}" >
                 <td rowspan="${familia.getMembrosOrdemPadrao(true).size()}"><g:formatDate date="${familia?.dateCreated}" /></td>
                 <td rowspan="${familia.getMembrosOrdemPadrao(true).size()}">${familia.endereco}</td>
-                <td class="${(++corMembro % 2) == 0 ? 'even' : 'odd'}">
+                <td class="${(corFamilia % 2) == 0 ? 'even' : 'odd'}">
                     <g:link title="ir para o cadastro da família" controller="familia" action="show" id="${familia.id}">
                         ${familia.referencia?.nomeCompleto}
                     </g:link>
                 </td>
-                <td class="${(corMembro % 2) == 0 ? 'even' : 'odd'}">
+                <td class="${(corFamilia % 2) == 0 ? 'even' : 'odd'}">
                     <input type="button" value="Copiar 1" class="btn-copy-antes" onclick="btnCopyClick(this, '${familia.referencia?.copyPaste1}');"/>
                 </td>
-                <td class="${(corMembro % 2) == 0 ? 'even' : 'odd'}"><g:formatDate date="${familia?.referencia?.dataNascimento}" /></td>
-                <td class="${(corMembro % 2) == 0 ? 'even' : 'odd'}">
+                <td class="${(corFamilia % 2) == 0 ? 'even' : 'odd'}"><g:formatDate date="${familia?.referencia?.dataNascimento}" /></td>
+                <td class="${(corFamilia % 2) == 0 ? 'even' : 'odd'}">
                     <input type="button" value="Copiar 2" class="btn-copy-antes" onclick="btnCopyClick(this, '${familia.referencia?.copyPaste2}');"/>
                 </td>
                 <td rowspan="${familia.getMembrosOrdemPadrao(true).size()}" style="text-align: left;">
@@ -70,12 +69,12 @@
             <tr>
                 %{--<td></td>--}%
                 %{--<td></td>--}%
-                <td class="${(++corMembro % 2) == 0 ? 'even' : 'odd'}">${cidadao.nomeCompleto}</td>
-                <td class="${(corMembro % 2) == 0 ? 'even' : 'odd'}">
+                <td class="${(corFamilia % 2) == 0 ? 'even' : 'odd'}">${cidadao.nomeCompleto}</td>
+                <td class="${(corFamilia % 2) == 0 ? 'even' : 'odd'}">
                     <input type="button" value="Copiar 1" class="btn-copy-antes" onclick="btnCopyClick(this, '${cidadao.copyPaste1}');"/>
                 </td>
-                <td class="${(corMembro % 2) == 0 ? 'even' : 'odd'}"><g:formatDate date="${cidadao.dataNascimento}" /></td>
-                <td class="${(corMembro % 2) == 0 ? 'even' : 'odd'}">
+                <td class="${(corFamilia % 2) == 0 ? 'even' : 'odd'}"><g:formatDate date="${cidadao.dataNascimento}" /></td>
+                <td class="${(corFamilia % 2) == 0 ? 'even' : 'odd'}">
                     <input type="button" value="Copiar 2" class="btn-copy-antes" onclick="btnCopyClick(this, '${cidadao.copyPaste2}');"/>
                 </td>
                 %{--<td></td>--}%

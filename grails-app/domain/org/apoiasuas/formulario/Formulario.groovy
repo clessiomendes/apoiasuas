@@ -24,18 +24,25 @@ class Formulario implements Serializable {
     UsuarioSistema usuarioSistema //Campo transiente para armazenar um usuarioResponsavel (caso ele exista no formulario)
     boolean atualizarPersistencia
     FormularioEmitido formularioEmitido
+    boolean anexarFichaNoEncaminhamento //Campo específico para formularios de encaminhamento
     static transients = ['formularioEmitido', 'cidadao', 'familia', 'usuarioSistema', 'dataPreenchimento',
                          'nomeEquipamento', 'enderecoEquipamento', 'telefoneEquipamento',
                          'emailEquipamento', 'cidadeEquipamento', 'ufEquipamento',
+//                         'arquivosModelos',
                          /*'nomeResponsavelPreenchimento', 'camposAvulsos',*/ 'atualizarPersistencia',
-                        'camposOrdenados', 'campoAvulso', 'conteudoCampo', 'modeloPadrao'
+                        'camposOrdenados', 'campoAvulso', 'conteudoCampo', 'modeloPadrao', 'anexarFichaNoEncaminhamento'
     ]
 
     static searchable = {                           // <-- elasticsearch plugin
-        only = ["nome","descricao"]
-        nome alias:FullTextSearchUtils.MEU_TITULO, index:'analyzed', boost:10
+        only = ["nome","descricao"/*,'arquivosModelos'*/]
+        nome alias:FullTextSearchUtils.MEU_TITULO, index:'analyzed', boost:50
         descricao alias:FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:5
+//        arquivosModelos alias:FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:1, type: "attachment"
     }
+
+//    public List<byte[]> getArquivosModelos() {
+//        return modelos*.arquivo
+//    }
 
     static hasMany = [campos: CampoFormulario, modelos: ModeloFormulario]
 
@@ -125,10 +132,10 @@ class Formulario implements Serializable {
 //        campos.find{ it.codigo == CampoFormulario.CODIGO_RESPONSAVEL_PREENCHIMENTO }?.valorArmazenado = nome
 //    }
 
-    public CampoFormulario getCampoAvulso(String codigo) {
-        CampoFormulario result = campos.find{ it.codigo == codigo && it.origem?.avulso }
+    public CampoFormulario getCampo(String codigo) {
+        CampoFormulario result = campos.find{ it.codigo == codigo }
         if (! result)
-            throw new RuntimeException("Campo avulso ${codigo} não encontrado")
+            throw new RuntimeException("Campo ${codigo} não encontrado")
         return result
     }
 

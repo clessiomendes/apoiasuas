@@ -355,6 +355,15 @@ class AgendaController extends AncestralController {
         }
     }
 
+    @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
+    def estatisticaAtendimentos(String inicio, String fim) {
+        Map<String, Integer> estatisticaAtendimentos = agendaService.estatisticaAtendimentos(ApoiaSuasDateUtils.stringToDateTimeIso8601(inicio),
+                ApoiaSuasDateUtils.stringToDateTimeIso8601(fim));
+//        return estatisticaAtendimentos as JSON;
+        Integer total = estatisticaAtendimentos.values().sum();
+        return render(view: "estatisticaAtendimentos", model: [tecnicos: estatisticaAtendimentos, total: total]);
+    }
+
 }
 
 class ConfiguracaoCommand implements Serializable {

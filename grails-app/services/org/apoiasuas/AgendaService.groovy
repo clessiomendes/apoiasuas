@@ -9,17 +9,13 @@ import fr.opensagres.xdocreport.template.formatter.FieldsMetadata
 import grails.converters.JSON
 import grails.transaction.Transactional
 import groovy.json.JsonSlurper
+import groovy.sql.GroovyRowResult
 import org.apache.commons.lang.time.DateUtils
-import org.apache.poi.openxml4j.opc.OPCPackage
-import org.apache.poi.xwpf.usermodel.XWPFDocument
-import org.apache.poi.xwpf.usermodel.XWPFParagraph
-import org.apache.xmlbeans.XmlOptions
 import org.apoiasuas.agenda.Compromisso
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody
 
 @Transactional(readOnly = true)
 class AgendaService {
@@ -28,6 +24,7 @@ class AgendaService {
             " and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim > :periodoInicio and a.fim < :periodoFim)) ";
 
     def sessionFactory
+    def groovySql;
     def segurancaService
     def usuarioSistemaService
     ApoiaSuasService apoiaSuasService
@@ -98,7 +95,7 @@ class AgendaService {
 
         //FIXME try catch e close para todos os streams criados
 
-        apoiaSuasService.append(out, agendasPreenchidas)
+        apoiaSuasService.appendOfficeStreams(out, agendasPreenchidas)
 //        out.close();
     }
 
@@ -140,7 +137,7 @@ class AgendaService {
 //            return result; //se não houver compromissos nesta data, não gera a parada
 
         // 1) Load Docx file by filling Velocity template engine and cache it to the registry
-        InputStream template = this.class.getResourceAsStream("templateAgendaAtendimentos.docx")
+        InputStream template = this.class.getResourceAsStream("/org/apoiasuas/report/TemplateAgendaAtendimentos.docx")
         if (! template)
             throw new ApoiaSuasException("template da agenda de atendimento provavelmente não encontrado ou não pode ser aberto.")
         IXDocReport report = XDocReportRegistry.getRegistry().loadReport(template, TemplateEngineKind.Velocity);
@@ -324,4 +321,36 @@ class AgendaService {
         return dataInibicao;
     }
 
+    @Transactional
+    public boolean deleteTelefoneAtendimento(AtendimentoParticularizado atendimento) {
+        atendimento.telefoneContato = null;
+        atendimento.semTelefone = true;
+        atendimento.save();
+    }
+
+    public Map<String, Integer> estatisticaAtendimentos(Date inicio, Date fim) {
+//        Compromisso.findAllByInicioBetweenAndTipoAndServicoSistemaSeguranca(
+//                inicio, fim, Compromisso.Tipo.ATENDIMENTO_PARTICULARIZADO, segurancaService.getServicoLogado());
+        String sql = "select c.username as nome_tenico, count(distinct a.id) as qnt from compromisso a \n" +
+                "left join compromisso_usuario_sistema b on a.id = b.compromisso_participantes_id \n" +
+                "left join usuario_sistema c on b.usuario_sistema_id = c.id \n" +
+                "where a.tipo = :tipo AND a.servico_sistema_seguranca_id = :idServicoSistema \n" +
+                "and a.inicio >= :inicioPeriodo and a.inicio < :fimPeriodo \n" +
+                "GROUP BY c.username";
+        def filtros = [tipo: Compromisso.Tipo.ATENDIMENTO_PARTICULARIZADO.toString(),
+                       inicioPeriodo: inicio.toTimestamp(), fimPeriodo: fim.toTimestamp(),
+                       idServicoSistema: segurancaService.getServicoLogado().id,
+        ];
+        log.debug("\n" + sql + "\n "+ filtros);
+        List<GroovyRowResult> resultado = groovySql.rows(sql, filtros) ;
+        Map<String, Long> result = [:];
+        resultado.each {
+            //noinspection GrUnresolvedAccess
+            result.put(it['nome_tenico'], it['qnt']);
+        }
+        return result.sort{
+            it.key?.toLowerCase();
+        };
+
+    }
 }

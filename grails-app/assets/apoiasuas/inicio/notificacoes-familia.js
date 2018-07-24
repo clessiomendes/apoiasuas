@@ -1,14 +1,15 @@
 //Exibe as notificacoes
 $( document ).ready(function() {
 
-    if (notificacoesFamilia.conteudo) {
+try {
+
+    if (typeof notificacoesFamilia != 'undefined' && notificacoesFamilia && notificacoesFamilia.conteudo) {
         //se for a primeira vez sendo exibida, usa um efeito de 1 segundo de duração, à partir daí, exibe imediatamente
         var showDuration = (notificacoesFamilia.numExibicoes > 0) ? 0 : 1000;
 
         //add a new style
         $.notify.addStyle('notificacoesFamilia', {
-            html:
-            "<div>" +
+            html: "<div>" +
             "<div class='clearfix'>" +
             "&nbsp;" +
             "<div class='buttonsNotify'>" +
@@ -23,10 +24,23 @@ $( document ).ready(function() {
         $(document).on('click', '.notifyjs-notificacoesFamilia-base .fechar', notificacoesFamilia.limpar);
 
         $("#caixa-familia").notify({title: notificacoesFamilia.conteudo},
-                {style: 'notificacoesFamilia', arrowSize: 10, showDuration: showDuration, hideDuration: 0, className: "warn", autoHide: false, clickToHide: false, position:"bottom right" });
+            {
+                style: 'notificacoesFamilia',
+                arrowSize: 10,
+                showDuration: showDuration,
+                hideDuration: 0,
+                className: "warn",
+                autoHide: false,
+                clickToHide: false,
+                position: "bottom right"
+            });
 
         //Necessário sobrescrever o z-index para as notificações de família
         //$(".notifyjs-wrapper").css('z-index','1050');
         $(".notifyjs-wrapper").addClass('z-index-notificacao-familia');
     }
+} catch (e) {
+    console.error(e)
+}
+
 });

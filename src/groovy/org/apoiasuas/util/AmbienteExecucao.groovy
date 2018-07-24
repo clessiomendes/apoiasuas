@@ -13,33 +13,22 @@ class AmbienteExecucao {
 
     public static final TipoAmbiente LOCAL_POSTGRE2 = new PostgreLocal();
     public static final TipoAmbiente CLEVERCLOUD_POSTGRE_PROD2 = new PostgreCleverCloud();
+    public static final TipoAmbiente CLEVERCLOUD_POSTGRE_DEMO2 = new PostgreCleverCloud();
     public static final TipoAmbiente CLEVERCLOUD_POSTGRE_VALID2 = new PostgreCleverCloud();
     public static final TipoAmbiente CURRENT2 = escolheTipoBD2();
 
-    public static final Integer CURRENT = escolheTipoBD()
+    public static final TipoAmbiente[] LOCAL = [LOCAL_POSTGRE2]
+    public static final TipoAmbiente[] CLEVERCLOUD = [CLEVERCLOUD_POSTGRE_PROD2, CLEVERCLOUD_POSTGRE_VALID2, CLEVERCLOUD_POSTGRE_DEMO2]
 
-    public static final Integer LOCAL_H2 = 0
-    public static final Integer LOCAL_MYSQL = 1
-    public static final Integer APPFOG_POSTGRES_VALID = 2
-    public static final Integer APPFOG_MYSQL = 3
-    public static final Integer CLEARDB_MYSQL = 4
-    public static final Integer LOCAL_POSTGRES = 5
-    public static final Integer APPFOG_POSTGRES_PROD = 6
-    public static final Integer CLEVERCLOUD_POSTGRES_PROD = 7
-    public static final Integer CLEVERCLOUD_POSTGRES_VALID = 8
+    public static final TipoAmbiente[] POSTGRES = [LOCAL_POSTGRE2, CLEVERCLOUD_POSTGRE_PROD2, CLEVERCLOUD_POSTGRE_DEMO2, CLEVERCLOUD_POSTGRE_VALID2]
 
-    public static final Integer[] LOCAL = [LOCAL_H2, LOCAL_MYSQL, LOCAL_POSTGRES]
-    public static final Integer[] APPFOG = [APPFOG_POSTGRES_VALID, APPFOG_MYSQL, CLEARDB_MYSQL, APPFOG_POSTGRES_PROD]
-    public static final Integer[] CLEVERCLOUD = [CLEVERCLOUD_POSTGRES_PROD, CLEVERCLOUD_POSTGRES_VALID]
+    public static final TipoAmbiente[] DESENVOLVIMENTO = [LOCAL_POSTGRE2]
+    public static final TipoAmbiente[] VALIDACAO = [CLEVERCLOUD_POSTGRE_VALID2]
+    public static final TipoAmbiente[] PRODUCAO = [CLEVERCLOUD_POSTGRE_PROD2]
+    public static final TipoAmbiente[] DEMO = [CLEVERCLOUD_POSTGRE_DEMO2]
 
-    public static final Integer[] H2 = [LOCAL_H2]
-    public static final Integer[] MYSQL = [LOCAL_MYSQL, APPFOG_MYSQL, CLEARDB_MYSQL]
-    public static
-    final Integer[] POSTGRES = [APPFOG_POSTGRES_VALID, APPFOG_POSTGRES_PROD, LOCAL_POSTGRES, CLEVERCLOUD_POSTGRES_PROD, CLEVERCLOUD_POSTGRES_VALID]
-
-    public static final Integer[] DESENVOLVIMENTO = [LOCAL_H2, LOCAL_MYSQL, LOCAL_POSTGRES]
-    public static final Integer[] VALIDACAO = [APPFOG_POSTGRES_VALID, CLEVERCLOUD_POSTGRES_VALID]
-    public static final Integer[] PRODUCAO = [APPFOG_POSTGRES_PROD, CLEVERCLOUD_POSTGRES_PROD]
+    public static final TipoAmbiente[] H2 = []
+    public static final TipoAmbiente[] MYSQL = []
 
     public static final Date inicioAplicacao = new Date()
 
@@ -49,51 +38,51 @@ class AmbienteExecucao {
         public static String concat(String... args) {
             if (!args)
                 return "null"
-            switch (AmbienteExecucao.CURRENT) {
+            switch (AmbienteExecucao.CURRENT2) {
                 case AmbienteExecucao.POSTGRES:
                     String result = ""
                     args.eachWithIndex { arg, i -> result += (i > 0 ? " || " : "") + "coalesce($arg,'')" }
                     return result
                 default: throw new RuntimeException("recurso dataNascimento() não implementado para engine de banco " +
-                        "de dados: ${AmbienteExecucao.CURRENT}")
+                        "de dados: ${AmbienteExecucao.CURRENT2}")
             }
         }
 
         public static String idade(String dataNascimento) {
-            switch (AmbienteExecucao.CURRENT) {
+            switch (AmbienteExecucao.CURRENT2) {
                 case AmbienteExecucao.POSTGRES: return "cast (extract(year from age($dataNascimento)) as integer)"
                 default: throw new RuntimeException("recurso dataNascimento() não implementado para engine de banco " +
-                        "de dados: ${AmbienteExecucao.CURRENT}")
+                        "de dados: ${AmbienteExecucao.CURRENT2}")
             }
         }
 
         public static String dateToString(String data) {
-            switch (AmbienteExecucao.CURRENT) {
+            switch (AmbienteExecucao.CURRENT2) {
                 case AmbienteExecucao.POSTGRES: return "to_char($data, 'DD/MM/YYYY')"
                 default: throw new RuntimeException("recurso dataNascimento() não implementado para engine " +
-                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
+                        "de banco de dados: ${AmbienteExecucao.CURRENT2}")
             }
         }
 
         public static String currentDate() {
-            switch (AmbienteExecucao.CURRENT) {
+            switch (AmbienteExecucao.CURRENT2) {
                 case AmbienteExecucao.POSTGRES: return "CURRENT_DATE"
                 default: throw new RuntimeException("recurso currentDate() não implementado para engine " +
-                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
+                        "de banco de dados: ${AmbienteExecucao.CURRENT2}")
             }
         }
 
         public static String getBoolean(boolean valor) {
-            switch (AmbienteExecucao.CURRENT) {
+            switch (AmbienteExecucao.CURRENT2) {
                 case AmbienteExecucao.H2 + AmbienteExecucao.MYSQL: return valor ? "1" : "0"
                 case AmbienteExecucao.POSTGRES: return valor ? "TRUE" : "FALSE"
                 default: throw new RuntimeException("recurso getBoolean() não implementado para engine " +
-                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
+                        "de banco de dados: ${AmbienteExecucao.CURRENT2}")
             }
         }
 
         public static String StringToNumber(String s) {
-            switch (AmbienteExecucao.CURRENT) {
+            switch (AmbienteExecucao.CURRENT2) {
 //                case H2 + MYSQL: return ""
 //                case POSTGRES: return "cast( ( REGEXP_REPLACE('0' || COALESCE( $s ,'0'), '[^0-9]+', '', 'g') ) as integer)" //ver http://stackoverflow.com/a/30582589/1916198
 //                case AmbienteExecucao.POSTGRES: return "to_number( $s ,'999999999999999.99999999')" //ver http://stackoverflow.com/a/18021967/1916198
@@ -104,10 +93,10 @@ class AmbienteExecucao {
         }
 
         public static String valorNaoNulo(String possivelNulo, String naoNulo) {
-            switch (AmbienteExecucao.CURRENT) {
+            switch (AmbienteExecucao.CURRENT2) {
                 case AmbienteExecucao.POSTGRES: return "coalesce($possivelNulo, $naoNulo)";
                 default: throw new RuntimeException("recurso valorNaoNulo() não implementado para engine " +
-                        "de banco de dados: ${AmbienteExecucao.CURRENT}")
+                        "de banco de dados: ${AmbienteExecucao.CURRENT2}")
             }
         }
     }
@@ -119,27 +108,27 @@ class AmbienteExecucao {
     final boolean SABOTAGEM = "true".equalsIgnoreCase(sysProperties('org.apoiasuas.sabotagem')) && (Environment.current != Environment.PRODUCTION)
 
     public static String getForncedorBancoDados() {
-        if (CURRENT in H2) return "H2"
-        if (CURRENT in POSTGRES) return 'Postgres'
-        if (CURRENT in MYSQL) return 'MySql'
-        throw new RuntimeException("tipo de banco de dados não definido: ${CURRENT}")
+        if (CURRENT2 in H2) return "H2"
+        if (CURRENT2 in POSTGRES) return 'Postgres'
+        if (CURRENT2 in MYSQL) return 'MySql'
+        throw new RuntimeException("tipo de banco de dados não definido: ${CURRENT2}")
     }
 
     public static String getAmbienteHospedagem() {
-        switch (CURRENT) {
+        switch (CURRENT2) {
             case LOCAL: return "Local"
-            case APPFOG: return 'AppFog'
-            case CLEVERCLOUD: return 'Clever-cloud'
-            default: throw new RuntimeException("ambiente de hospedagem não definido: ${CURRENT}")
+            case CLEVERCLOUD: return 'clever-cloud'
+            default: throw new RuntimeException("ambiente de hospedagem não definido: ${CURRENT2}")
         }
     }
 
     public static String getAmbienteExecucao() {
-        switch (CURRENT) {
+        switch (CURRENT2) {
             case DESENVOLVIMENTO: return "Desenvolvimento"
             case VALIDACAO: return "Validação"
             case PRODUCAO: return "Produção"
-            default: throw new RuntimeException("ambiente de execução não definido: ${CURRENT}")
+            case DEMO: return "Demonstração"
+            default: throw new RuntimeException("ambiente de execução não definido: ${CURRENT2}")
         }
     }
 
@@ -147,6 +136,11 @@ class AmbienteExecucao {
         return i?.toString()
     }
 
+    /**
+     * Busca um parâmetro de configuração
+     * @param nome
+     * @return
+     */
     public static String sysProperties(String nome) {
         return System.properties[nome]?.toString();
     }
@@ -155,35 +149,11 @@ class AmbienteExecucao {
      * Obtem a opção de banco de dados do deploy dos parametros da JVM
      * @return
      */
-    private static int escolheTipoBD() {
-        String ds
-//        if (isProducao())
-//             ds = 'CLEVERCLOUD_POSTGRES_PROD';
-//        else
-        ds = sysProperties('org.apoiasuas.datasource')?.toUpperCase()
-        System.out.println("Definicao de banco de dados: ${ds}")
-        switch (ds) {
-            case 'CLEVERCLOUD_POSTGRES_VALID': return CLEVERCLOUD_POSTGRES_VALID
-            case 'CLEVERCLOUD_POSTGRES_PROD': return CLEVERCLOUD_POSTGRES_PROD
-            case 'APPFOG_POSTGRES_PROD': return APPFOG_POSTGRES_PROD
-            case 'APPFOG_POSTGRES_VALID': return APPFOG_POSTGRES_VALID
-            case 'LOCAL_POSTGRES': return LOCAL_POSTGRES
-            case 'LOCAL_H2': return LOCAL_H2
-            case 'LOCAL_MYSQL': return LOCAL_MYSQL
-            case 'APPFOG_MYSQL': return APPFOG_MYSQL
-            case 'CLEARDB_MYSQL': return CLEARDB_MYSQL
-            default:
-                if (isDesenvolvimento())
-                    return LOCAL_POSTGRES
-                else
-                    throw new RuntimeException("Definicao de Banco de Dados nao prevista: ${ds}")
-        }
-    }
-
     private static final TipoAmbiente escolheTipoBD2() {
         String ds = sysProperties('org.apoiasuas.datasource')?.toUpperCase();
         switch (ds) {
             case 'CLEVERCLOUD_POSTGRES_PROD': return CLEVERCLOUD_POSTGRE_PROD2
+            case 'CLEVERCLOUD_POSTGRES_DEMO': return CLEVERCLOUD_POSTGRE_DEMO2
             case 'CLEVERCLOUD_POSTGRES_VALID': return CLEVERCLOUD_POSTGRE_VALID2
             case 'LOCAL_POSTGRES': return LOCAL_POSTGRE2
             default:
@@ -196,8 +166,8 @@ class AmbienteExecucao {
 
     public static String getCaminhoRepositorioArquivos() {
         String result = ""
-        if (CURRENT in CLEVERCLOUD)
-            result += sysProperties("APP_HOME") + File.separator + "repositorio-fs-prod"
+        if (CURRENT2 in CLEVERCLOUD)
+            result += sysProperties("APP_HOME") + File.separator + sysProperties("org.apoiasuas.caminhoRepositorio")
         else
             result += sysProperties("user.home")
         result += File.separator + "apoiasuas-repositorio"
@@ -210,15 +180,19 @@ class AmbienteExecucao {
     }
 
     public static boolean isDesenvolvimento() {
-        return CURRENT in DESENVOLVIMENTO
+        return CURRENT2 in DESENVOLVIMENTO
     }
 
     public static boolean isValidacao() {
-        return CURRENT in VALIDACAO
+        return CURRENT2 in VALIDACAO
     }
 
     public static boolean isProducao() {
-        return CURRENT in PRODUCAO
+        return CURRENT2 in PRODUCAO
+    }
+
+    public static boolean isDemonstracao() {
+        return CURRENT2 in DEMO
     }
 
     public static String toString() {
@@ -232,7 +206,7 @@ class AmbienteExecucao {
      * Em ambientes clusterizados, determina se o servidor corrente é o primario
      */
     public static boolean isServidorPrimario() {
-        switch (CURRENT) {
+        switch (CURRENT2) {
             case LOCAL: return true;
             case CLEVERCLOUD: return sysProperties('INSTANCE_NUMBER')?.equals("0");
             default: throw new RuntimeException("impossível definir servidor primário em um ambiente (possivelmente) clusterizado")

@@ -25,6 +25,7 @@ class AtendimentoParticularizado implements DominioProtegidoServico {
     ServicoSistema servicoSistemaSeguranca
     UsuarioSistema tecnico
     Boolean compareceu
+    String observacoesAgendamento
 
     //transientes:
     Compromisso compromisso

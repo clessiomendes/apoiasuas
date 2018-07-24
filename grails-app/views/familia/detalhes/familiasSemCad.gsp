@@ -5,7 +5,8 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="Familia"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
-    <asset:stylesheet src="familia/detalhes/familias-sem-cad.less"/>
+    <asset:stylesheet src="relatorio/familias-sem-cad.less"/>
+    <asset:javascript src="datepicker-pt-BR.js"/>
 </head>
 
 <body>
@@ -14,8 +15,10 @@
 
 <div class="buttons">
     <g:form action="familiasSemCad">
-        <nobr>Procurar por nome ou cad: <g:textField name="nomeOuCad" id="inputNomeOuCad" size="23" autofocus=""/></nobr>
-        <g:submitButton name="procurar" value="" class="speed-button-procurar"/>
+        Procurar por: <nobr>nome ou cad <g:textField name="nomeOuCad" id="inputNomeOuCad" size="23" autofocus=""/></nobr>
+        <nobr>data <g:textField class="dateMask datepicker" name="dataCriacao" id="dataCriacao" size="6" maxlength="10"/></nobr>
+        <nobr>técnico <g:select name="criador" noSelection="${['':'']}" from="${ususariosDisponiveis.collect{it.username}}" keys="${ususariosDisponiveis.collect{it.id}}"/></nobr>
+        <g:submitButton name="procurar" value="Procurar" class="search" />
     </g:form>
 </div>
 

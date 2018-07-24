@@ -159,7 +159,6 @@ class CampoFormulario {
             case Origem.ENDERECO: formulario.familia?.endereco?."${nomeCampoPersistente}" = valor; break
             default: throw new RuntimeException("Origem não tratada: ${origem}");
         }
-        log.debug getValorArmazenado()
     }
 
     /**

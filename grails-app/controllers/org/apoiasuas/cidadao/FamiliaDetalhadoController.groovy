@@ -1,15 +1,17 @@
 package org.apoiasuas.cidadao
 
 import grails.converters.JSON
-import grails.gorm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.validation.ValidationException
 import groovy.time.TimeCategory
 import org.apoiasuas.ApoiaSuasService
+import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
+import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ApoiaSuasDateUtils
 import org.apoiasuas.util.ApoiaSuasException
 import org.apoiasuas.util.StringUtils
 import org.springframework.context.ApplicationContext
@@ -70,7 +72,7 @@ class FamiliaDetalhadoController extends FamiliaController {
         //Pegar primeiro nome
         String result = cidadao.nomeCompleto.split(" ")[0];
         //Primeira letra maiúscula
-        result = StringUtils.upperToCamelCase(result);
+        result = StringUtils.camelCaseNomeProprio(result);
         //Referência
         if (cidadao?.referencia)
             result += " (RF)";
@@ -88,7 +90,7 @@ class FamiliaDetalhadoController extends FamiliaController {
             result = "referência: "
         else
             result = cidadao.parentescoReferencia ? cidadao.parentescoReferencia.toLowerCase()+": " : "";
-        return result + StringUtils.upperToCamelCase(cidadao.nomeCompleto ?: "");
+        return result + StringUtils.camelCaseNomeProprio(cidadao.nomeCompleto ?: "");
     }
 
     /**
@@ -152,19 +154,21 @@ class FamiliaDetalhadoController extends FamiliaController {
         familiaInstance.detalhes = detalheService.paramsToJson(params.detalhe);
 
         familiaInstance.membros.each { Cidadao cidadao ->
-            //Inicializa APENAS novos cidadaos
-            if (! cidadao.id)
-                cidadao = cidadaoService.novoCidadao(cidadao, familiaInstance);
-
             String paramMembro = "membros[${cidadao.ord}]";
+            //ignora cidadaos que não estejam no request
+            if (params[paramMembro]) {
+                //Inicializa APENAS novos cidadaos
+                if (! cidadao.id)
+                    cidadao = cidadaoService.novoCidadao(cidadao, familiaInstance);
 
-            dataNascimentoFromRequest(cidadao, params[paramMembro])
+                dataNascimentoFromRequest(cidadao, params[paramMembro])
 
-            //Obtem campos de detalhes do request e so converte em uma String no formato JSON
-            cidadao.detalhes = detalheService.paramsToJson(params[paramMembro]["detalhe"]);
+                //Obtem campos de detalhes do request e so converte em uma String no formato JSON
+                cidadao.detalhes = detalheService.paramsToJson(params[paramMembro]["detalhe"]);
 
-            //Validacao: valida cada membro
-            validado = cidadao.validate() && validado;
+                //Validacao: valida cada membro
+                validado = cidadao.validate() && validado;
+            }
         }
 
         //Validacao: primeiro valida os dados da familia e telefones
@@ -185,10 +189,15 @@ class FamiliaDetalhadoController extends FamiliaController {
             flash.message = "Família gravada com sucesso, cad "+familiaInstance.getCad()
             guardaUltimaFamiliaSelecionada(familiaInstance);
             //Captura os membros em um mapa [ord, id] a ser retornado para o browser em caso de sucesso na gravacao
-            Map result  =  familiaInstance.membros.collectEntries { [(it.ord): it.id] }
+            Map result  =  [:];
+            result << [membros: familiaInstance.membros.collectEntries { [(it.ord): it.id] }];
+            //informa aa pagina que chamou os novos telefones inseridos, passando o id referente a cada um
+            result << [telefones: familiaInstance.telefones.collectEntries {
+                String chaveNatural = (it.DDD ?: '') + (it.numero ?: ''); //unica forma de identificar o telefone submentido eh via chave natural
+                return [(chaveNatural): it.id]
+            }];
             return render(contentType: 'text/json', status: 200, text: result as JSON)
         } else {
-            //FIXME: na verdade, erros de validação podem ocorrer em outras entidades dependentes da familia e do cidadao (como Auditoria, Telefone, etc)
             String erros = familiaService.errosParaJson(familiaInstance);
             return render(contentType:'text/json', status: 422, text: erros)
         }
@@ -223,12 +232,13 @@ class FamiliaDetalhadoController extends FamiliaController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def download(Familia familiaInstance) {
-        List<InputStream> folhasCadastro = familiaService.emiteFormularioCadastro(familiaInstance);
+        List<ReportDTO> folhasCadastro = familiaService.emiteFormularioCadastro(familiaInstance);
+//        List<InputStream> folhasCadastro = familiaService.emiteFormularioCadastro(familiaInstance);
 
         response.contentType = 'application/octet-stream'
         response.setHeader('Content-disposition', "attachment; filename=\"Cadastro Familiar ${familiaInstance.cad}.docx\"");
 //        try {
-            apoiaSuasService.append(response.outputStream, folhasCadastro)
+            apoiaSuasService.appendReports(response.outputStream, folhasCadastro)
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //            throw e;
@@ -237,11 +247,14 @@ class FamiliaDetalhadoController extends FamiliaController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
-    def familiasSemCad(String nomeOuCad) {
-        log.debug(nomeOuCad);
-        List<Familia> familias = familiaService.familiasSemCad(nomeOuCad);
+    def familiasSemCad(String nomeOuCad, String dataCriacao, String criador) {
+        List<Familia> familias = familiaService.familiasSemCad.list(nomeOuCad,
+                dataCriacao ? ApoiaSuasDateUtils.stringToDate(dataCriacao) : null,
+                criador ? UsuarioSistema.get(criador) : null);
+
         return render(view:"/familia/detalhes/familiasSemCad",
-                model: [familiaInstanceList: familias, familiaInstanceCount: familias.size()]);
+                model: [familiaInstanceList: familias, familiaInstanceCount: familias.size(),
+                        ususariosDisponiveis: getOperadoresOrdenadosController(true)]);
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])

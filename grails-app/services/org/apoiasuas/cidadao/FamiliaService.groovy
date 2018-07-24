@@ -8,6 +8,7 @@ import fr.opensagres.xdocreport.template.TemplateEngineKind
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata
 import grails.transaction.Transactional
 import groovy.json.JsonOutput
+import groovy.json.StringEscapeUtils
 import org.apoiasuas.ApoiaSuasService
 import org.apoiasuas.CustomizacoesService
 import org.apoiasuas.cidadao.detalhe.CampoDetalhe
@@ -16,6 +17,7 @@ import org.apoiasuas.cidadao.detalhe.CampoDetalheMultiLookup
 import org.apoiasuas.cidadao.detalhe.ErrosCidadao
 import org.apoiasuas.cidadao.detalhe.ErrosFamilia
 import org.apoiasuas.cidadao.detalhe.MensagensErro
+import org.apoiasuas.formulario.FormularioEmitido
 import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.lookup.DetalhesJSON
 import org.apoiasuas.marcador.Acao
@@ -30,11 +32,13 @@ import org.apoiasuas.marcador.Programa
 import org.apoiasuas.marcador.ProgramaFamilia
 import org.apoiasuas.seguranca.AuditoriaService
 import org.apoiasuas.seguranca.UsuarioSistema
+import org.apoiasuas.util.AmbienteExecucao
 import org.apoiasuas.util.CollectionUtils
 import org.apoiasuas.util.SimNao
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import org.hibernate.Hibernate
 import org.springframework.core.io.Resource
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
@@ -44,9 +48,9 @@ import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 class FamiliaService {
 
     public static final int MAX_AUTOCOMPLETE_LOGRADOUROS = 10
-    public static final String TEMPLATE_PLANO_ACOMPANHAMENTO = "templatePlanoAcompanhamento.docx";
-    public static final String TEMPLATE_CADASTRO_FAMILIAR = "TemplateCadastroFamiliar.docx";
-    public static final String TEMPLATE_CADASTRO_FAMILIAR_MEMBRO = "TemplateCadastroFamiliar-Membro.docx";
+    public static final String TEMPLATE_PLANO_ACOMPANHAMENTO = "/org/apoiasuas/report/TemplatePlanoAcompanhamento.docx";
+    public static final String TEMPLATE_CADASTRO_FAMILIAR = "/org/apoiasuas/report/TemplateCadastroFamiliar.docx";
+    public static final String TEMPLATE_CADASTRO_FAMILIAR_MEMBRO = "/org/apoiasuas/report/TemplateCadastroFamiliar-Membro.docx";
 
     def segurancaService
     def cidadaoService
@@ -106,6 +110,26 @@ class FamiliaService {
 
     @Transactional
     public boolean apaga(Familia familia) {
+        //Necessario remover primeiro os programas, pois estes geram novos registros de auditoria
+        Set<ProgramaFamilia> tempProgramas = familia.programas.collect()
+        tempProgramas.each {
+            familia.programas.remove(it);
+            //forcar remocao no banco de dados
+            it.delete(flush: true);
+        }
+        //Na sequencia, atualizar a instancia de familia para obter as novas auditorias geradas
+        familia.refresh();
+        //Apagar um a um os registros de auditoria antes de apagar a familia
+        Set<Auditoria> tempAuditoria = familia.auditoria.collect()
+        tempAuditoria.each {
+            familia.auditoria.remove(it);
+            it.delete(flush: true);
+        }
+        //remover formularios emitidos associados aa familia (não são cascateados automaticamente)
+        FormularioEmitido.findAllByFamilia(familia).each {
+            it.delete();
+        }
+        //Finalmente, apagar a familia e todas as demais colecoes associadas
         familia.delete()
         return true
     }
@@ -286,21 +310,13 @@ class FamiliaService {
     }
 
     @Transactional(readOnly = true)
-    public List<InputStream> emiteFormularioCadastro(Familia familia) {
+    public List<ReportDTO> emiteFormularioCadastro(Familia familia) {
         List<ReportDTO> reports = []
         reports << cadastroFamiliar.folhaCadastroFamilia(familia);
         familia.getMembrosOrdemPadrao(true).each {
             reports << cadastroFamiliar.folhaCadastroCidadao(it)
         }
-
-//        return [pipeReport(reports[0]), pipeReport(reports[1])];
-        return reports.collect {
-            new InputStreamFromOutputStream<Void>() {
-                public Void produce(final OutputStream dataSink) throws Exception {
-                    it.report.process(it.context, dataSink);
-                }
-            };
-        };
+        return reports
     }
 
     public String errosParaJson(Familia familia) {
@@ -311,6 +327,7 @@ class FamiliaService {
         familia.errors.globalErrors.each { ObjectError error ->
             errosFamilia.errosGlobais.add(g.message(error: error))
         }
+
         //Depois preenche os erros para cada campo da familia (ignora dos membros)
         familia.errors.fieldErrors.findAll{! it.field.startsWith('membros[')}.each { FieldError error ->
             log.debug(error.objectName);
@@ -337,59 +354,26 @@ class FamiliaService {
             errosFamilia.mapaMembros.put(membro.ord, errosCidadao)
         }
 
-        return JsonOutput.toJson(errosFamilia)
-    }
-
-    /**
-     * Lista as familias sem codigo legado. Gera também um mapa de células para serem copiadas e coladas em uma planilha excel
-     */
-    public List<Familia> familiasSemCad(String nomeOuCad) {
-
-        boolean buscaPorCad = nomeOuCad && ! StringUtils.PATTERN_TEM_LETRAS.matcher(nomeOuCad);
-        List<Familia> familias
-        if (buscaPorCad) {
-            if (segurancaService.identificacaoCodigoLegado)
-                familias = [Familia.findByCodigoLegadoAndServicoSistemaSeguranca(nomeOuCad, segurancaService.servicoLogado)]
-            else
-                familias = [Familia.get(nomeOuCad)];
-        } else {//Pesquisa sem filtros ou com filtro por nome
-
-            //Realizar pesquisa com no minimo 3 caracteres digitados
-            if (nomeOuCad?.trim() && nomeOuCad?.trim()?.length() < 3)
-                return;
-
-            //Se não for uma busca filtrada, limita o resultado aos primeiros 20
-            int max = nomeOuCad?.trim() ? 999 : 20;
-
-            //Busca todas as familias do servico logado QUE NÃO TÊM CÓDIGO LEGADO, ordenado por data de criacao
-            familias = Familia.findAllByServicoSistemaSegurancaAndCodigoLegadoIsNull(segurancaService.getServicoLogado(),
-                    [max: max, sort: "dateCreated", order: "asc"]);
-
-            //FIXME: retirar trecho abaixo, apenas para testes
-//            if (AmbienteExecucao.isDesenvolvimento())
-//                familias = [Familia.get(514), Familia.get(513)]
-
-            //Filtra o resultado somente para familias contendo o nome filtrado
-            if (nomeOuCad?.trim()) {
-                List<Familia> familiasFiltrado = [];
-                familias.each { Familia familia ->
-                    if (familia.getMembrosOrdemPadrao(true).find { it.nomeCompleto?.toUpperCase()?.contains(nomeOuCad.toUpperCase()) })
-                        familiasFiltrado << familia;
-                }
-                familias = familiasFiltrado;
+        //Depois preenche os erros para cada telefone
+        familia.telefones.findAll{ it.hasErrors() }.each { Telefone telefone ->
+            telefone.errors.globalErrors.each { ObjectError error ->
+                errosFamilia.errosGlobais.add(g.message(error: error) + " em telefones")
+            }
+            telefone.errors.fieldErrors.each { FieldError error ->
+                errosFamilia.errosGlobais.add(g.message(error: error) + " em telefones")
             }
         }
-        familiasSemCad.geraCelulasParaPlanilha(familias)
-        return familias;
+
+        return JsonOutput.toJson(errosFamilia)
     }
 
     // * Organizando os metodos privados específicos pra emissao do formulario de cadastro familiar
     public FamiliasSemCad familiasSemCad = new FamiliasSemCad();
     public class FamiliasSemCad {
         //lista as colunas da planilha de Banco de Dados dos CRAS de Belo Horizonte, que foram previamente formatadas como texto e, assim, dispensam a ncessidade de terem conteudos entre aspas
-        private static final List FORMATOS_TEXTO_PLANILHA = [13/*N*/, 44/*AS*/, 45/*AT*/];
+        private static final List FORMATOS_TEXTO_PLANILHA = [1/*B*/,13/*N*/, 44/*AS*/, 45/*AT*/];
 
-        private List<Familia> geraCelulasParaPlanilha(List<Familia> familias) {
+        private Collection<Familia> geraCelulasParaPlanilha(Collection<Familia> familias) {
 
             int colunaInicialPlanilha = 0;
 
@@ -443,13 +427,13 @@ class FamiliaService {
                 ]);
                 //Gera, para cada membro, as planilhas definitivas (a primeira ate a data de nascimento e a segunda depois da data de nascimento)
                 familia.getMembrosOrdemPadrao(true).each { Cidadao cidadao ->
-                    List<String> copyPaste1 = copyPasteFamilia.clone()
+                    List<String> copyPaste1Lst = copyPasteFamilia.clone()
                     if (!cidadao.referencia)
-                        copyPaste1[colunaInicialPlanilha+1] = ''; //apaga a data de criacao para os membros que nao a referencia familiar
+                        copyPaste1Lst[colunaInicialPlanilha+1] = ''; //apaga a data de criacao para os membros que nao a referencia familiar
                     //Grau de parentesco;Nome do integrante;
-                    copyPaste1 << cidadao.parentescoReferencia;
-                    copyPaste1 << cidadao.nomeCompleto;
-                    List<String> copyPaste2 = [
+                    copyPaste1Lst << cidadao.parentescoReferencia;
+                    copyPaste1Lst << cidadao.nomeCompleto;
+                    List<String> copyPaste2Lst = [
                             //Sexo;Escolaridade;Ocupação;Tipo de deficiência;
                             cidadao.sexo?.descricao, cidadao.escolaridade?.descricao, cidadao.mapaDetalhes['situacaoTrabalho'], cidadao.mapaDetalhes['tipoDeficiencia'],
                             //Raça;Estado civil;Centro de Saúde;Instituição de Ensino;Atividade do CRAS
@@ -457,19 +441,24 @@ class FamiliaService {
                     ];
 
                     int index = 0;
-                    cidadao.metaClass.copyPaste1 = copyPaste1.collect {
-                        if (FORMATOS_TEXTO_PLANILHA.contains((index++) - colunaInicialPlanilha/*desprezar as colunas indicadas anteriormente*/))
-                            return it;
-                        else
-                            return it ? '="' + it.toString() + '"' : "";
+                    String copyPaste1Str = copyPaste1Lst.collect {
+//                        if (FORMATOS_TEXTO_PLANILHA.contains((index++) - colunaInicialPlanilha/*desprezar as colunas indicadas anteriormente*/))
+                            return StringEscapeUtils.escapeJavaScript(it ? (""+it) : "");
+//                            return StringEscapeUtils.escapeJavaScript(""+it) ?: "";
+//                        else
+//                            return it ? '="' + it.toString() + '"' : "";
                     }.join("\\t");
                     index += 7/*pula campos da idade*/;
-                    cidadao.metaClass.copyPaste2 = copyPaste2.collect {
-                        if (FORMATOS_TEXTO_PLANILHA.contains((index++) - colunaInicialPlanilha/*desprezar as colunas indicadas anteriormente*/))
-                            return it;
-                        else
-                            return it ? '="' + it.toString() + '"' : "";
+                    String copyPaste2Str = copyPaste2Lst.collect {
+//                        if (FORMATOS_TEXTO_PLANILHA.contains((index++) - colunaInicialPlanilha/*desprezar as colunas indicadas anteriormente*/))
+                            return StringEscapeUtils.escapeJavaScript(it ? (""+it) : "");
+//                        else
+//                            return it ? '="' + it.toString() + '"' : "";
                     }.join("\\t");
+
+                    //Adiciona uma propriedade dinamica no objeto cidada a ser utilizada na geração da gsp
+                    cidadao.metaClass.copyPaste1 = copyPaste1Str;
+                    cidadao.metaClass.copyPaste2 = copyPaste2Str;
                 }
             }
         }
@@ -504,6 +493,73 @@ class FamiliaService {
 
         private String contemMembro(Familia familia, String campo) {
             return familia.getMembrosOrdemPadrao(true).find { it.mapaDetalhes[campo]?.asBoolean() } ? "Sim" : null
+        }
+
+        /**
+         * Lista as familias sem codigo legado. Gera também um mapa de células para serem copiadas e coladas em uma planilha excel
+         */
+        public List<Familia> list(String nomeOuCad, Date dataCriacao, UsuarioSistema criador) {
+
+            boolean buscaPorCad = nomeOuCad && ! StringUtils.PATTERN_TEM_LETRAS.matcher(nomeOuCad);
+            Set<Familia> familias = [];
+            if (buscaPorCad) {
+                if (segurancaService.identificacaoCodigoLegado)
+                    familias = [Familia.findByCodigoLegadoAndServicoSistemaSeguranca(nomeOuCad, segurancaService.servicoLogado)]
+                else
+                    familias = [Familia.findByIdAndServicoSistemaSeguranca(nomeOuCad, segurancaService.servicoLogado)];
+            } else {//Pesquisa sem filtros ou com filtro por nome
+
+                int max = 50;
+
+                String filtroNome = nomeOuCad
+                def filtrosHql = [:]
+
+                String hqlList = "select f from Familia f inner join fetch f.membros a ";
+
+                String hqlWhere = ' where f.servicoSistemaSeguranca = :servicoSistema ';
+                filtrosHql << [servicoSistema: segurancaService.getServicoLogado()];
+
+                if (! (filtroNome || dataCriacao) ) {
+                    hqlWhere += ' and f.codigoLegado is null ';
+                }
+
+                if (filtroNome) {
+//                    hqlWhere += ' and a.nomeCompleto like :nome ';
+                    hqlWhere += " and lower(remove_acento(a.nomeCompleto)) like remove_acento(:nome)"
+                    filtrosHql.put('nome', "%${filtroNome?.toLowerCase()}%");
+/*
+                    String[] nomes = filtroNome?.split(" ");
+                    nomes?.eachWithIndex { nome, i ->
+                        String label = 'nome'+i
+                        hqlWhere += " and lower(remove_acento(a.nomeCompleto)) like remove_acento(:"+label+")"
+                        filtrosHql.put(label, '%'+nome?.toLowerCase()+'%')
+                    }
+*/
+                }
+
+                if (criador) {
+                    hqlWhere += ' and f.criador = :criador ';
+                    filtrosHql.put('criador', criador);
+                }
+
+                if (dataCriacao) {
+                    hqlWhere += ' and f.dateCreated >= :dataInicial and f.dateCreated < :dataFinal ';
+                    filtrosHql.put('dataInicial', dataCriacao );
+                    filtrosHql.put('dataFinal', dataCriacao + 1);
+                }
+
+                String hqlOrder = ' order by f.id';
+
+
+//                int count = Cidadao.executeQuery(hqlCount + hqlWhere, filtrosHql)[0]
+                familias = Familia.executeQuery(hqlList + hqlWhere + hqlOrder, filtrosHql, [max: max]);
+                if (filtroNome)
+                    familias.each {
+                        it.refresh();
+                    }
+            }
+            familiasSemCad.geraCelulasParaPlanilha(familias)
+            return familias.toList();
         }
     }
 
@@ -807,4 +863,6 @@ class FamiliaService {
         else
             return [];
     }
+
+
 }

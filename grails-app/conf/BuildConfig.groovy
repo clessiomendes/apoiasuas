@@ -7,11 +7,13 @@ grails.project.test.reports.dir = "target/test-reports"
 grails.project.work.dir = "target/work"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
-grails.project.war.file = "target/${appName}-${appVersion}.war"
 
-//grails.project.war.exploded.dir = "C:/workspaces/openshift/webapps/ROOT"    //openshift
+//grails.project.war.file = "target/${appName}-${appVersion}.war"
+//grails.project.war.exploded.dir = "target/${appName}-${appVersion}"
+//grails.project.war.exploded.dir = "C:/workspaces/deploy-cc/prod2/apoiasuas.war"
+grails.project.war.exploded.dir = "c:/temp/deploy-cc/apoiasuas.war"
+grails.war.exploded = true
 
-//grails.war.exploded = true
 /* Estes parametros nao serao mais definidos em arquivo de configuracao, e sim no script de deploy (deploy-af.bat)
 if (Environment.current == Environment.DEVELOPMENT) {
     grails.project.war.exploded.dir = "C:/workspaces/appfog/apoiasuas/validacao"    //appfog
@@ -140,6 +142,7 @@ grails.project.dependency.resolution = {
         // (ou seja, criar um pipe que ligue a saida de um processamento aa entrada de outro)
         // http://io-tools.sourceforge.net/easystream
         compile "net.sf.jsignature.io-tools:easystream:1.2.15"
+        compile 'org.elasticsearch:elasticsearch-mapper-attachments:3.1.2'
 
     }
 
@@ -178,7 +181,7 @@ grails.project.dependency.resolution = {
         //mas ATENÇÃO! se habilitada, espere por uma exceção na linha
         //      super.transfereConteudo(formulario, reportDTO)
         //da classe FormularioBeneficioEventualService
-        if (System.getProperty('org.apoiasuas.datasource') != 'CLEVERCLOUD_POSTGRES_PROD') {
+        if (System.getProperty('org.apoiasuas.datasource')?.toUpperCase() != 'CLEVERCLOUD_POSTGRES_PROD') {
 //            compile ":grails-melody:1.54.0" //plugin para profiling
         }
 

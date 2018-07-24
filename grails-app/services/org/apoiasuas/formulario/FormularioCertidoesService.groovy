@@ -20,7 +20,7 @@ class FormularioCertidoesService extends FormularioService {
         Formulario formulario = super.preparaPreenchimentoFormulario(idFormulario, idFamilia, idCidadao)
 
         //Atribui valores default para alguns campos
-        formulario.getCampoAvulso(Cidadao.CODIGO_NACIONALIDADE).setValorArmazenado(NACIONALIDADE_PADRAO);
+        formulario.getCampo(Cidadao.CODIGO_NACIONALIDADE).setValorArmazenado(NACIONALIDADE_PADRAO);
         return formulario
     }
 */

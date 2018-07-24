@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit
 
 class ApoiaSuasDateUtils {
     public static final String FORMATO_DATA_HORA = 'dd/MM/yyyy H:mm'   
+    public static final String FORMATO_DATA = 'dd/MM/yyyy'
 
     public static boolean momentosProximos(Date momento0, Date momento1, long proximidadeMillis = TimeUnit.SECONDS.toMillis(10)) {
         return Math.abs(momento1.time - momento0.time) < proximidadeMillis
@@ -16,6 +17,14 @@ class ApoiaSuasDateUtils {
     public static Date stringToDateTime(String s) {
         if (s && s != "" && s != "null") {
             final DateFormat df = new SimpleDateFormat(FORMATO_DATA_HORA);
+            return df.parse(s);
+        } else
+            return null;
+    }
+
+    public static Date stringToDate(String s) {
+        if (s && s != "" && s != "null") {
+            final DateFormat df = new SimpleDateFormat(FORMATO_DATA);
             return df.parse(s);
         } else
             return null;

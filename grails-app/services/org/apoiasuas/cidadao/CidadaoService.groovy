@@ -21,6 +21,7 @@ class CidadaoService {
     def sessionFactory
     static transactional = false
 
+/*
     @Transactional(readOnly = true)
     public grails.gorm.PagedResultList procurarCidadao(GrailsParameterMap params, FiltroCidadaoCommand filtrosOperador) {
         String filtroNome
@@ -154,6 +155,7 @@ class CidadaoService {
 
         return new HqlPagedResultList(cidadaos, count)
     }
+*/
 
     @Transactional(readOnly = true)
     public grails.gorm.PagedResultList procurarCidadao2(GrailsParameterMap params, FiltroCidadaoCommand filtrosOperador) {
@@ -167,19 +169,6 @@ class CidadaoService {
         }
         def filtrosSql = [:]
 
-/*
-        'select {a.*}, {b.*}, {c.*} ' +
-                "FROM cidadao a INNER JOIN familia b ON a.familia_id=b.id\n" +
-                "LEFT OUTER JOIN usuario_sistema c ON b.tecnico_referencia_id=c.id\n" +
-                "where 1=1\n" +
-                        "where 1=1\n" +
-                        "      and a.servico_sistema_seguranca_id=1\n" +
-                        "      and a.id = :idCidadao \n" +
-//                        "      and a.nome_completo = 'ANA MARIA DE SOUSA'\n" +
-//                    "      and upper(remove_acento(a.nome_completo)) = 'CAMILA MARIANA DE SOUZA SOARES'\n" +
-                        "order by\n" +
-                        "  a.nome_completo limit 10";
-*/
         String sqlSelectCount = "select count(*) ";
         String sqlSelectList = "select distinct {a.*}, {b.*}, {c.*}, "+AmbienteExecucao.SqlProprietaria.StringToNumber('b.endereco_numero')+" ";
         String sqlFrom = " FROM cidadao a INNER JOIN familia b ON a.familia_id=b.id " +

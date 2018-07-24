@@ -45,25 +45,25 @@ class FormularioService {
     }
 
     @Transactional
-    public ReportDTO prepararImpressao(Formulario formulario, Long idModelo) {
+    public List<ReportDTO> prepararImpressao(Formulario formulario, Long idModelo) {
 
-        ReportDTO result = new ReportDTO()
-        result.nomeArquivo = formulario.geraNomeArquivo()
+        ReportDTO reportDTO = new ReportDTO()
+        reportDTO.nomeArquivo = formulario.geraNomeArquivo()
 
 // 1) Load doc file and set Velocity template engine and cache it to the registry
         InputStream template = new ByteArrayInputStream(formulario.modelos.find {it.id == idModelo}.arquivo );
-        result.report = XDocReportRegistry.getRegistry().loadReport(template, TemplateEngineKind.Velocity);
+        reportDTO.report = XDocReportRegistry.getRegistry().loadReport(template, TemplateEngineKind.Velocity);
 
 // 2) Create Java model context
-        result.context = result.report.createContext();
-        result.fieldsMetadata = result.report.createFieldsMetadata();
+        reportDTO.context = reportDTO.report.createContext();
+        reportDTO.fieldsMetadata = reportDTO.report.createFieldsMetadata();
 
         valoresFixos(formulario)
-        result.formularioEmitido = registraEmissao(formulario) //chamar antes de transferir conteudo
-        transfereConteudo(formulario, result)
+        reportDTO.formularioEmitido = registraEmissao(formulario) //chamar antes de transferir conteudo
+        transfereConteudo(formulario, reportDTO)
         eventoPosEmissao(formulario)
 
-        return result
+        return [reportDTO]
     }
 
     /**

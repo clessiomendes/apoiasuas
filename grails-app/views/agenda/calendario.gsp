@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.AgendaController; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.apoiasuas.InicioController; org.apoiasuas.AgendaController; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta name="layout" content="main">
@@ -31,6 +31,7 @@
     var actionObterCompromissos = "${createLink(action:'obterCompromissos')}";
     var actionConfiguracao= "${createLink(action:'configuracao')}";
     var actionCalendario = "${createLink(controller: 'agenda', action: 'calendario')}";
+    var actionEstatisticaAtendimentos = "${createLink(controller: 'agenda', action: 'estatisticaAtendimentos')}";
 </g:javascript>
 
 <body>
@@ -43,6 +44,8 @@
                 <input type="button" class="speed-button-config" title="configurações de exibição da agenda" onclick="configuracoes()"/>
                 <input type="button" class="speed-button-atualizar" title="recarregar" onclick="atualiza()"/>
                 <input type="button" class="speed-button-imprimir" title="imprimir" onclick="imprimirCompromissos();"/>
+                <input type="button" class="speed-button-estatistica ${InicioController.novoRecurso("31/07/2018","novo-recurso-pequeno")}" title="total de atendimentos por técnico" onclick="abreEstatisticaAtendimentos();"/>
+                %{--<input type="button" class="speed-button-hoje" title="hoje" onclick="hoje();"/>--}%
                 <g:select id="selectUsuarioSistema" name="idUsuarioSistema" from="${operadores}" style="max-width: 7em"
                           value="${idUsuarioSistema}"
                           optionKey="id" class="many-to-one" noSelection="['': '(todos)']" onchange="atualiza();" />

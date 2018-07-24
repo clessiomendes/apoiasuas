@@ -2,19 +2,6 @@
 	org.apoiasuas.cidadao.Monitoramento localDtoMonitoramento = monitoramentoInstance
 %>
 
-%{--
-<script>
-	function onError(XMLHttpRequest) {
-//		console.log(XMLHttpRequest);
-		if (XMLHttpRequest.status == 401)
-			alert('Não autenticado')
-		else
-			janelaModalMonitoramentos.loadHTML(XMLHttpRequest.responseText);
-	}
-//# sourceURL=createMonitoramento
-</script>
---}%
-
 <div id="create-monitoramento" class="content scaffold-create" role="main">
 	<g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>

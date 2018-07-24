@@ -2,11 +2,18 @@ package org.apoiasuas.formulario.definicao
 
 import groovy.transform.TypeChecked
 import org.apoiasuas.formulario.CampoFormulario
+import org.apoiasuas.formulario.FormularioEncaminhamentoService
 import org.apoiasuas.formulario.FormularioService
 
 class FormularioEncaminhamento extends FormularioBase {
 
-    public Class<? extends FormularioService> classeServico() { return FormularioService.class }
+    public static final String CODIGO_CAMPO_DESTINO = "destino"
+    public static final String CODIGO_CAMPO_NOME_COMPLETO = "nome_completo"
+    public static final String CODIGO_CAMPO_CAD = "cad"
+    public static final String CODIGO_CAMPO_ENDERECO_DESTINO = "endereco_destino"
+    public static final String CODIGO_CAMPO_DESCRICAO_ENCAMINHAMENTO = "descricao_encaminhamento"
+
+    public Class<? extends FormularioService> classeServico() { return FormularioEncaminhamentoService.class }
 
     @TypeChecked
     Closure run() {
@@ -14,27 +21,29 @@ class FormularioEncaminhamento extends FormularioBase {
             nome 'Encaminhamento'
             descricao 'Encaminhamentos de prósito geral para a rede de serviços sócio-assistenciais'
             template 'Encaminhamento-2009.docx', 'Encaminhamento-2017.docx'
+            campoAvulso {
+                codigo CODIGO_CAMPO_DESTINO
+                obrigatorio true
+                tipo CampoFormulario.Tipo.TEXTO
+                descricao 'Nome formal'
+            }
             campoBancoDeDados {
                 origem CampoFormulario.Origem.CIDADAO
-                codigo 'nome_completo'
+                obrigatorio true
+                codigo CODIGO_CAMPO_NOME_COMPLETO
+                descricao 'Nome completo do cidadão'
             }
             campoBancoDeDados {
                 origem CampoFormulario.Origem.FAMILIA
-                codigo 'cad'
+                codigo CODIGO_CAMPO_CAD
             }
             campoAvulso {
-                codigo 'destino'
-                obrigatorio true
+                codigo CODIGO_CAMPO_ENDERECO_DESTINO
                 tipo CampoFormulario.Tipo.TEXTO
-                descricao 'Destino (unidade/entidade/ação)'
+                descricao 'Endereço e horários de atendimento'
             }
             campoAvulso {
-                codigo 'endereco_destino'
-                tipo CampoFormulario.Tipo.TEXTO
-                descricao 'Endereço'
-            }
-            campoAvulso {
-                codigo 'descricao_encaminhamento'
+                codigo CODIGO_CAMPO_DESCRICAO_ENCAMINHAMENTO
                 tipo CampoFormulario.Tipo.TEXTO
                 obrigatorio true
                 multiplasLinhas 8

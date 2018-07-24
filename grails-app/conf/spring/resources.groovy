@@ -75,4 +75,20 @@ for injection.
         proxyTargetClass = true
     }
 
+    /**
+     * Sobrescrevendo a classe que implementa um dos passos do login
+     */
+//    authenticationSuccessHandler(org.apoiasuas.seguranca.ApoiaSuasSuccessHandler) {
+//        /* Reusing the security configuration */
+//        def conf = SpringSecurityUtils.securityConfig
+//        /* Configuring the bean */
+//        requestCache = ref('requestCache')
+//        redirectStrategy = ref('redirectStrategy')
+//        defaultTargetUrl = conf.successHandler.defaultTargetUrl
+//        alwaysUseDefaultTargetUrl = conf.successHandler.alwaysUseDefault
+//        targetUrlParameter = conf.successHandler.targetUrlParameter
+//        ajaxSuccessUrl = conf.successHandler.ajaxSuccessUrl
+//        useReferer = conf.successHandler.useReferer
+//    }
+
 }

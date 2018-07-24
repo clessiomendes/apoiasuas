@@ -18,7 +18,7 @@
         $("#divTelefones").html('<asset:image src="loading.gif"/> carregando...');
         ${remoteFunction(action:'listTelefones', id: localDtoFamilia.id,
             update: [success: 'divListTelefones', failure: 'divListTelefones'],
-            onFailure: 'alert("Erro buscando telefones (via ajax)");'
+            onFailure: 'alert("Erro buscando telefones (via ajax)"); alert(textStatus); alert(Object.toHTML(XMLHttpRequest));'
         )};
     }
     //# sourceURL=tabShowTelefones

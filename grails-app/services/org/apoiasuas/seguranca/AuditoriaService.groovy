@@ -91,6 +91,11 @@ class AuditoriaService {
 
         //Campos basicos comuns a qualquer auditoria
         Auditoria auditoria = criaAuditoria(Auditoria.Tipo.PROGRAMA_FAMILIA);
+        //Se nao foi possivel buscar usuario e servico logado (rotinas batch), usar os campos da familia
+        if (! auditoria.criador)
+            auditoria.criador = programaFamilia.familia.criador.merge(validate: false, flush: false);
+        if (! auditoria.servicoSistemaSeguranca)
+            auditoria.servicoSistemaSeguranca = programaFamilia.familia.servicoSistemaSeguranca.merge(validate: false, flush: false);
 
         //Campos especificos do dominio
         auditoria.familia = programaFamilia.familia;

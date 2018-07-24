@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.cidadao.Telefone" %>
+<%@ page import="org.apoiasuas.cidadao.Familia; org.apoiasuas.cidadao.Telefone" %>
 
 <g:hiddenField name="idFamilia" value="${localDtoFamilia.id}"/>
 <table id="tableTelefones" class="pure-table pure-table-striped pure-table-bordered">
@@ -13,8 +13,14 @@
     </tr>
 
     <g:each in="${localDtoFamilia.telefones.sort{ it.dateCreated ? it.dateCreated : new Date(2999, 1, 1) }}" var="telefone" status="i">
+        <g:render template="/familia/telefone/linhaTabela" model="${[telefone: telefone, i: i]}"/>
+    </g:each>
+
+%{--
+    <g:each in="${localDtoFamilia.telefones.sort{ it.dateCreated ? it.dateCreated : new Date(2999, 1, 1) }}" var="telefone" status="i">
         <g:render template="/familia/telefone/linhaTabela" model="${[telefone: telefone]}"/>
     </g:each>
+--}%
 
     <tr> <td colspan="5">
             <input id="btnAdicionarTelefone" type="button" class="speed-button-adicionar" title="Adicionar telefone" onclick="adicionarTelefone();"/>

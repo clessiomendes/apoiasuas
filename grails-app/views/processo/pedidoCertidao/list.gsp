@@ -8,16 +8,55 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 
-<g:javascript>
-    function expandePesquisa() {
-        $("#expansivel").slideDown(1000);
-        $(".speed-button-expandir").hide();
-        return false;
-    };
-</g:javascript>
-
 	<body>
 		<a href="#list-task" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+
+        <h1>Pesquisar Pedidos de Certidão</h1>
+
+        <g:form class="pesquisar">
+            <span class="campo">
+                <span class="titulo">Nome na certidão</span>
+                <g:textField name="dadosCertidao" />
+            </span>
+
+            <span class="campo">
+                <span class="titulo">Cad</span>
+                <g:textField name="cad" style="width:5em" autofocus=""/>
+            </span>
+
+            <span class="mais-filtros">
+                <br>
+                <span class="campo">
+                    <span class="titulo">Autor</span>
+                    <g:select name="usuarioSistema" noSelection="${['':'']}" from="${ususariosDisponiveis.collect{it.username}}" keys="${ususariosDisponiveis.collect{it.id}}"/>
+                </span>
+
+                <span class="campo">
+                    <span class="titulo">Situação</span>
+                    <g:select name="situacao" noSelection="${['':'']}" from="${["Pendente","Entregue"]}" keys="${[ProcessoController.SITUACAO_PENDENTE,ProcessoController.SITUACAO_CONCLUIDO]}"/>
+                </span>
+
+                <span class="campo">
+                    <span class="titulo">AR</span>
+                    <g:textField name="numeroAR" />
+                </span>
+
+                <span class="campo">
+                    <span class="titulo">Cartório/Município</span>
+                    <g:textField name="cartorio" />
+                </span>
+
+                <span class="campo">
+                    <span class="titulo">Data</span>
+                    <g:textField name="dataInicio" style="width:6em" /> a <g:textField name="dataFim" style="width:6em" />
+                </span>
+            </span>
+
+            <g:submitButton formaction="list" name="list" id="search" class="search" value="Procurar"/>
+            <div class="expandir"><asset:image src="slidedown.png" onclick="expandirFiltros(this);"/></div>
+        </g:form>
+
+%{--
         <g:form>
             <table class="parametrosPesquisa">
                 <tr>
@@ -43,8 +82,9 @@
                 </tr>
             </table>
         </g:form>
+--}%
+
 		<div id="list-task" class="content scaffold-list" role="main">
-			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>

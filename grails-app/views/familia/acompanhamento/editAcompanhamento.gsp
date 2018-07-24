@@ -11,7 +11,7 @@
 
 		<div class="nav" role="navigation">
 			<ul>
-                <li><g:link class="list" controller="${controllerButtonProcurar}" action="${actionButtonProcurar}">Procurar outra família</g:link></li>
+                <li><g:link class="search	" controller="${controllerButtonProcurar}" action="${actionButtonProcurar}">Procurar outra família</g:link></li>
 				%{--<li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>--}%
 				%{--<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>--}%
 			</ul>
@@ -35,7 +35,7 @@
 				<g:hiddenField name="version" value="${familiaInstance?.version}" />
 
 				<g:tabs id="tabs" style="margin: 5px;">
-					<g:tab id="tabEditFamilia" titulo="família" template="tabEditFamilia"/>
+					<g:tab id="tabEditFamilia" titulo="família" template="acompanhamento/tabEditFamilia"/>
 					<g:tab id="tabMarcadores" titulo="programas, ações..." template="marcador/tabMarcadores" model="[permiteInclusao: 'true']"/>
 					<g:tab id="tabMonitoramento" titulo="monitoramento" template="monitoramento/tabMonitoramentos"/>
 					<g:tab id="tabAcompanhamento" titulo="plano de acompanhamento" template="acompanhamento/tabAcompanhamento"/>

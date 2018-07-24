@@ -6,14 +6,16 @@
 		<g:set var="entityName" value="${message(code: 'familia.label', default: 'Familia')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 		<asset:javascript src="familia/telefone/formTelefones.js"/>
+		<asset:javascript src="familia/show.js"/>
 		<asset:stylesheet src="familia/telefone/formTelefones.less"/>
+		<asset:stylesheet src="familia/show.less"/>
 	</head>
 	<body>
 
 		<div class="nav" role="navigation">
 			<ul>
                 <li><g:link class="search" controller="cidadao" action="procurarCidadao"
-							title="Procurar outra família/usuário"><g:message message="Procurar"/></g:link></li>
+							title="Procurar outra família ou usuário"><g:message message="Procurar"/></g:link></li>
 				<li><g:link class="edit ${InicioController.novoRecurso("31/03/2018")}" controller="familiaDetalhado" action="edit" id="${familiaInstance.id}"
 							title="Ver (ou alterar) o cadastro familiar completo">Cadastro completo</g:link></li>
 				<li><g:link class="formulario" controller="emissaoFormulario" action="escolherFormulario"
@@ -26,6 +28,11 @@
 							title="Abre a agenda de atendimentos para escolha de um horário">Agendar atendimento</g:link></li>
 				<li><g:link class="list" controller="emissaoFormulario" action="listarFormulariosEmitidosFamilia" params="[idFamilia: familiaInstance.id]"
 							title="Permite ver todos os formulários já emitidos para esta família">Formulários emitidos</g:link></li>
+				<sec:ifAnyGranted roles="${DefinicaoPapeis.STR_SUPER_USER}">
+					<li><g:link class="delete" controller="familia" action="delete" id="${familiaInstance.id}"
+								onclick="return confirm('Atenção! Todo o histórico da família será eliminado do sistema. Confirma?');"
+								title="Exclui a família do sistema">Excluír família</g:link></li>
+				</sec:ifAnyGranted>
 			</ul>
 		</div>
 

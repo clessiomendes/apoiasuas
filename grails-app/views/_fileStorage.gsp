@@ -17,7 +17,7 @@ e manter o arquivo intacto (pois ele nao vai ser reenviado no request como se po
 %{--this is your file input tag, so i hide it! i used the onchange event to update the choosen file name-->--}%
 <div style='height: 0px;width: 0px; overflow:hidden;'>
     <input name="${FileStorageDTO.INPUT_FILE}" id="${FileStorageDTO.INPUT_FILE}" type="file" onchange="mudarArquivo(this)"/>
-    <g:hiddenField name="${FileStorageDTO.FILE_ACTION}" value="${FileStorageDTO.FileActions.MANTER_ATUAL}"/>
+    <g:hiddenField name="fileAction" value="${FileStorageDTO.FileActions.MANTER_ATUAL}"/>
 </div>
 
 %{--Ao carregar a página, verificar se ja existe um arquivo selecionado --}%
@@ -47,20 +47,20 @@ e manter o arquivo intacto (pois ele nao vai ser reenviado no request como se po
             if (input.files.length == 0) { //nenhum arquivo selecionado, limpar
                 console.log("arquivo nulo");
                 document.getElementById("nomeArquivo").innerHTML = "(nenhum arquivo selecionado)";
-                document.getElementById("${FileStorageDTO.FILE_ACTION}").value = "${FileStorageDTO.FileActions.ANULAR}";
+                document.getElementById("fileAction").value = "${FileStorageDTO.FileActions.ANULAR}";
                 document.getElementById("limparArquivo").style.visibility = 'hidden';
             } else { //arquivo selecionado. assumir o primeiro e ignorar os demais, se for multipla selecao
                 var fileSize = input.files[0].size;
                 const MAX_FILE_SIZE = ${FileStorageDTO.MAX_FILE_SIZE}
-    if (fileSize > MAX_FILE_SIZE) { //testar tamanho maximo do arquivo
-        alert("O tamanho do arquivo escolhido ("+fileSizeToString(fileSize)+") é maior do que o permitido ("+fileSizeToString(MAX_FILE_SIZE)+")")
-        limparArquivoClick();
-        return;
-    }
-    var selectedFileName = input.files[0].name; //busca o nome do primeiro arquivo (ignora os demais, se for multipla selecao)
-    console.log("arquivo escolhido: "+selectedFileName);
-    document.getElementById("nomeArquivo").innerHTML = selectedFileName;
-    document.getElementById("${FileStorageDTO.FILE_ACTION}").value = "${FileStorageDTO.FileActions.ATUALIZAR}";
+                if (fileSize > MAX_FILE_SIZE) { //testar tamanho maximo do arquivo
+                    alert("O tamanho do arquivo escolhido ("+fileSizeToString(fileSize)+") é maior do que o permitido ("+fileSizeToString(MAX_FILE_SIZE)+")")
+                    limparArquivoClick();
+                    return;
+                }
+                var selectedFileName = input.files[0].name; //busca o nome do primeiro arquivo (ignora os demais, se for multipla selecao)
+                console.log("arquivo escolhido: "+selectedFileName);
+                document.getElementById("nomeArquivo").innerHTML = selectedFileName;
+                document.getElementById("fileAction").value = "${FileStorageDTO.FileActions.ATUALIZAR}";
                 document.getElementById("limparArquivo").style.visibility = 'visible';
             }
         }

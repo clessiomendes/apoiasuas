@@ -1,6 +1,7 @@
 import org.apache.commons.io.output.ThresholdingOutputStream
 import org.apache.log4j.Level
 import org.apache.log4j.xml.XMLLayout
+import org.apoiasuas.LoginApoiaSuasController
 import org.apoiasuas.formulario.PreDefinidos
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaController
 import org.apoiasuas.seguranca.DefinicaoPapeis
@@ -128,20 +129,20 @@ log4j.main = {
 //logs, em arquivos separados:
     def errorAppender = new RollingFileAppender(name: 'errorFile', append: true, maxFileSize: '10000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/error.log',
-            maxBackupIndex: 10, layout: pattern(conversionPattern: '%d{dd/MM/yy HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: Level.ERROR);
+            maxBackupIndex: 3, layout: pattern(conversionPattern: '%d{dd/MM/yy HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: Level.ERROR);
     def infoAppender = new RollingFileAppender(name: 'infoFile', append: true, maxFileSize: '10000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/info.log',
-            maxBackupIndex: 10, layout: pattern(conversionPattern: '%d{dd-MMM HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: Level.INFO);
+            maxBackupIndex: 3, layout: pattern(conversionPattern: '%d{dd-MMM HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: Level.INFO);
 //estatísticas de uso de recursos do sistema
-    def memAppender = new RollingFileAppender(name: 'memFile', append: true, maxFileSize: '30000KB',
+    def memAppender = new RollingFileAppender(name: 'memFile', append: true, maxFileSize: '2000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/mem.log',
             maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm};%m%n'));
 //sqls
-    def sqlAppender = new RollingFileAppender(name: 'sqlFile', append: true, maxFileSize: '100000KB',
+    def sqlAppender = new RollingFileAppender(name: 'sqlFile', append: true, maxFileSize: '2000KB',
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/sql.log',
             maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm:ss};%X{username};%X{requestedSessionId};%m%n'));
 
-    switch (AmbienteExecucao.CURRENT) {
+    switch (AmbienteExecucao.CURRENT2) {
     case AmbienteExecucao.CLEVERCLOUD:
         appenders {
             appender errorAppender;
@@ -152,12 +153,14 @@ log4j.main = {
         }
         root { error 'stdout','errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
         break
+/*
     case AmbienteExecucao.APPFOG:
         appenders {
             console name: 'console', layout: pattern(conversionPattern: '(af) %d{dd-MMM HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold:org.apache.log4j.Level.ERROR
         }
         root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
         break
+*/
     case AmbienteExecucao.LOCAL:
         appenders {
 //                    console name: 'sqlFile', file: 'c:/workspaces/logs/apoiasuassql.log', layout: pattern(conversionPattern: '(loc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.ALL
@@ -248,6 +251,8 @@ grails.plugin.springsecurity.fii.rejectPublicInvocations = true
 grails.plugin.springsecurity.authority.className = 'org.apoiasuas.seguranca.Papel'
 grails.plugin.springsecurity.useSecurityEventListener = true //Necessario para acionar a classe SegurancaListener
 grails.plugin.springsecurity.roleHierarchy = 'valor ignorado e sobrescrito em BootStrap.groovy'
+//grails.plugin.springsecurity.successHandler.alwaysUseDefault = true
+grails.plugin.springsecurity.successHandler.ajaxSuccessUrl = LoginApoiaSuasController.URL_AJAX_SUCCESS_LOGIN;
 
 /*
 switch (AmbienteExecucao.CURRENT) {
@@ -270,7 +275,7 @@ environments {
 }
 */
 
-grails.plugin.springsecurity.interceptUrlMap = [ '/importacaoFamilias/restUpload': ['IS_AUTHENTICATED_ANONYMOUSLY']]
+//grails.plugin.springsecurity.interceptUrlMap = [ '/importacaoFamilias/restUpload': ['IS_AUTHENTICATED_ANONYMOUSLY']]
 
 environments {
     production {
@@ -306,7 +311,8 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
     '/console/**':                    ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.STR_SUPER_USER}"],
 	'/monitoring/**':                 ["${AmbienteExecucao.isDesenvolvimento() ? 'permitAll' : DefinicaoPapeis.STR_SUPER_USER}"],
 	'/**/css/**':                     ['permitAll'],
-	'/**/images/**':                  ['permitAll'],
+    '/**/images/**':                  ['permitAll'],
+//    '/**/servico/imagem/**':          ['permitAll'],
 	'/**/favicon.ico':                ['permitAll']
 ]
 //grails.plugin.springsecurity.roleHierarchy = { PerfilUsuarioSistema.hierarquiaFormatada }
@@ -335,14 +341,19 @@ elasticSearch {
 //    index.name = 'apoiasuasES';
     client.mode = 'local';
     datastoreImpl = 'hibernateDatastore';
-    index.store.type = 'simplefs';
-    index.analysis.analyzer.default.type = 'brazilian'
-    bulkIndexOnStartup = false
+    //Configuracoes passadas diretamente pelo plugin para o motor nativo do ElasticSearch
+    index {
+        store.type = 'simplefs'
+        analysis.analyzer.default.type = 'brazilian';
+        analysis.analyzer.default.filter = 'asciifolding';
+    };
+    includeTransients = false;
+    bulkIndexOnStartup = true;
     development {
-        disableAutoIndex = false
+        disableAutoIndex = false;
     }
     production {
-        disableAutoIndex = false
+        disableAutoIndex = false;
     }
 
 //    elasticSearch.index.name = "apoiasuas"

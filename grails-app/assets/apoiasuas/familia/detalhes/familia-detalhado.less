@@ -1,5 +1,6 @@
 @import (reference) "../../main.less";
 @import (reference) "../../buttons-links.less";
+@import "../../sessao.less";
 
 .nav a.familia-detalhada {
   .linkNavegacao();
@@ -45,59 +46,9 @@
   background-image: url(../../../images/checked.png);
 }
 
-.speed-button-sugestao {
-  vertical-align: middle;
-  .speedButton(url(../../../images/double_left.png));
-  padding-left: 10px;
-  padding-right: 10px;
-}
 
 .sugestao-preenchimento {
   color: @cor-texto-secundario;
-}
-
-.cabecalho-sessao {
-  display: block;
-  background: @cor-principal;
-  color: white;
-  text-align: left;
-  text-transform: uppercase;
-  font-weight: bold;
-  line-height: 1.5em;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  padding: 0.5em;
-  //Garante que a barra ira para uma linha abaixo do ultimo elemento e ocupara a linha inteira
-  clear: both;
-
-  &:link, &:visited, .left {
-    color: white;
-    text-decoration: none;
-  }
-  .left {
-    padding: 15px 50px 15px 0; //aumenta a área clicável do link de expansao da sessao
-    img {
-      vertical-align:middle;
-      margin-right: 5px;
-    }
-  }
-  .right {
-    float: right;
-    padding: 8px 10px; //aumenta a área clicável do link de expansao da sessao
-    background-image: url(../../../images/double-down-w.png);
-    background-position: center;
-    width: 16px;
-    height: 16px;
-    background-size: 16px 16px;
-    background-repeat: no-repeat;
-    //esconder o texto
-    overflow:hidden;
-    text-indent:100%;
-    white-space:nowrap;
-    //img {
-    //  vertical-align:middle;
-    //}
-  }
 }
 
 //Acrescenta a propriedade aa classe de mesmo nome em main.less.
@@ -131,10 +82,6 @@ palavra-chave {
     display: none;
 }
 
-.conteudo-sessao {
-    display: none;
-}
-
 //customização do autocomplete da jQuery UI
 .ui-widget-content .ui-state-focus {
   border: 0;
@@ -159,10 +106,6 @@ palavra-chave {
   background-color: lighten(@cor-base-mensagem-erro, @lighten-fundo);
 }
 
-.sessao-detalhes {
-  page-break-inside: avoid;
-}
-
 /*
 label::before {
   content:'';
@@ -184,4 +127,17 @@ label:before {
   background-color: lighten(#fffd00, 40%) !important;
   border-color: darken(#fffd00, 10%) !important;
   color: darken(#fffd00, 20%) !important;
+}
+
+.nav .cidadao-remover {
+  margin-left: -4px;
+  vertical-align: super;
+  font-size: small;
+  &:hover {
+    background-color: inherit;
+    color: @cor-texto-secundario;
+    text-shadow: inherit;
+    margin-top: 0;
+    padding-top: 0;
+  }
 }

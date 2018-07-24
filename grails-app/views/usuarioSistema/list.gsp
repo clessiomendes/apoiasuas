@@ -9,26 +9,33 @@
 	</head>
 	<body>
 		<a href="#list-usuarioSistema" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+		<h1>Procurar - Operadores que utilizam o sistema</h1>
 
-    <div class="nav" role="navigation">
-    <g:form action="list">
-        <ul style="margin-bottom: 0.5em">
-            <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.STR_SUPER_USER}">
-                <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-            </sec:ifAnyGranted>
-        </ul>
-        <ul>
-            <li>Nome/login <g:textField name="nome" size="20" autofocus=""/></li>
-            <li>
-                Serviço <g:select name="servicoSistema" noSelection="${['':'']}" from="${servicosDisponiveis.collect{it.nome}}" keys="${servicosDisponiveis.collect{it.id}}"/>
-            </li>
-            <li><g:submitButton name="list" class="list" value="Procurar"/></li>
-        </ul>
-    </g:form>
+		<div class="nav" role="navigation">
+			<ul>
+				<sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.STR_SUPER_USER}">
+					<li><g:link class="create" action="create">Incluir novo</g:link></li>
+				</sec:ifAnyGranted>
+			</ul>
+		</div>
+
+		<g:form class="pesquisar" action="list">
+			<span class="campo">
+				<span class="titulo">Nome/login</span>
+				<g:textField name="nome" size="20" autofocus=""/>
+			</span>
+
+			<span class="campo">
+				<span class="titulo">Serviço</span>
+				<g:select name="servicoSistema" noSelection="${['':'']}" from="${servicosDisponiveis.collect{it.nome}}" keys="${servicosDisponiveis.collect{it.id}}"/>
+			</span>
+
+			<g:submitButton name="list" class="search" value="Procurar"/>
+		</g:form>
+
     </div>
 
 		<div id="list-usuarioSistema" class="content scaffold-list" role="main">
-			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
 
             <g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
