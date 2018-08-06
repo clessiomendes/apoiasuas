@@ -4,7 +4,7 @@
 # to generate your .gitignore file.
 
 # web application files
-todos/web-app/WEB-INF/classes
+**/web-app/WEB-INF/classes
 
 # default HSQL database files for production mode
 /prodDb.*
@@ -25,34 +25,34 @@ todos/web-app/WEB-INF/classes
 /*.war
 
 # IDE files
-todos/.idea
-**/.idea/workspace.xml 
-**/.idea/tasks.xml
 **/.idea
-todos/.idea/workspace.xml
-todos/.idea/tasks.xml
-todos/.idea/dictionaries
-todos/.idea/dataSources.ids
-todos/.idea/dataSources.xml
-todos/.idea/sqlDataSources.xml
-todos/.idea/dynamic.xml
-todos/.idea/uiDesigner.xml
+#**/.idea/workspace.xml 
+#**/.idea/tasks.xml
+#**/.idea
+#todos/.idea/workspace.xml
+#todos/.idea/tasks.xml
+#todos/.idea/dictionaries
+#todos/.idea/dataSources.ids
+#todos/.idea/dataSources.xml
+#todos/.idea/sqlDataSources.xml
+#todos/.idea/dynamic.xml
+#todos/.idea/uiDesigner.xml
 
 # plugin release files
 /*.zip
-todos/plugin.xml
+**/plugin.xml
 
 # older plugin install locations
-/plugins
-/web-app/plugins
+**/plugins
+**/web-app/plugins
 
 # "temporary" build files
-todos/target
-todos/target-eclipse
-todos/out
+**/target
+**/target-eclipse
+**/out
 
-todos/tmp_deploy
-todos/exportabd/intermediario.xlsx
-todos/exportabd/intermediario.xls
-todos/exportabd/curlw7/
-todos/exportabd/curlxp/
+**/tmp_deploy
+**/exportabd/intermediario.xlsx
+**/exportabd/intermediario.xls
+**/exportabd/curlw7/
+**/exportabd/curlxp/
