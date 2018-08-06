@@ -1,28 +1,10 @@
-import org.apache.commons.io.output.ThresholdingOutputStream
 import org.apache.log4j.Level
-import org.apache.log4j.xml.XMLLayout
-import org.apoiasuas.LoginApoiaSuasController
-import org.apoiasuas.formulario.PreDefinidos
-import org.apoiasuas.redeSocioAssistencial.ServicoSistemaController
-import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apache.log4j.RollingFileAppender
-import org.codehaus.groovy.grails.commons.spring.GrailsWebApplicationContext
-import org.springframework.security.authentication.event.AuthenticationSuccessEvent
+import org.apoiasuas.LoginApoiaSuasController
+import org.apoiasuas.seguranca.DefinicaoPapeis
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 
-// locations to search for config files that get merged into the main config;
-// config files can be ConfigSlurper scripts, Java properties files, or classes
-// in the classpath in ConfigSlurper format
-
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
-
-// if (System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
-// }
+parametroTesteNucleo = "lalala";
 
 //      M O D I F I C A D A S     P O R     M I M
 // Levantar excessao sempre que, ao gravar, a validacao falhar (http://www.acnenomor.com/5840084p1/why-doesnt-grails-notify-me-of-error-at-domain-object-saving)
@@ -367,5 +349,3 @@ assets {
             ]
     ]
 }
-
-

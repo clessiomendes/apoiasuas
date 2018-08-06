@@ -22,7 +22,7 @@ import java.sql.SQLException
 import groovy.sql.Sql
 import java.util.logging.Level
 
-class BootStrap {
+class NucleoBootStrap {
 
     def roleHierarchy
     def groovySql
@@ -48,6 +48,7 @@ class BootStrap {
             " group by familia_id"
 
     def init = { servletContext ->
+        System.out.println("meu bootstrap nucleo");
         //Criando um novo metodo "update" em todos os objetos groovy da aplicacao
         Object.metaClass.update = {
             updateAttributesFromMap delegate, it

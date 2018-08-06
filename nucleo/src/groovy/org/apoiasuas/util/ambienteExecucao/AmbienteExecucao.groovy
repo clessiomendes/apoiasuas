@@ -1,6 +1,8 @@
 package org.apoiasuas.util.ambienteExecucao
 
 import grails.util.Environment
+import grails.util.GrailsUtil
+import grails.util.Holders
 import org.apoiasuas.util.ambienteExecucao.Postgre
 import org.apoiasuas.util.ambienteExecucao.TipoAmbiente
 
@@ -205,6 +207,20 @@ class AmbienteExecucao {
             case LOCAL: return true;
             case CLEVERCLOUD: return CURRENT2.sysProperties('INSTANCE_NUMBER')?.equals("0");
             default: throw new RuntimeException("impossível definir servidor primário em um ambiente (possivelmente) clusterizado")
+        }
+    }
+
+    public static void setConfiguracoes() {
+        GroovyClassLoader classLoader = new GroovyClassLoader(getClass().classLoader)
+        // merging default Quartz config into main application config
+        try {
+            if (classLoader.loadClass('NucleoConfig'))
+                Holders.config.merge(new ConfigSlurper(Environment.current).parse(classLoader.loadClass('NucleoConfig')))
+            if (classLoader.loadClass('PedidoCertidaoConfig'))
+                Holders.config.merge(new ConfigSlurper(Environment.current).parse(classLoader.loadClass('PedidoCertidaoConfig')))
+    //        if (Holders.pluginManager.hasGrailsPlugin('nucleo'))
+        } catch (Exception e) {
+            System.out.println(e.message);
         }
     }
 
