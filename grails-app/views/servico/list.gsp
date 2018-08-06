@@ -25,7 +25,12 @@
         <g:textField name="palavraChave" size="20" autofocus="" value="${filtro?.nome}"/>
     </span>
 
-	<g:actionSubmit action="list" class="search" value="Procurar" onclick="this.form.action='${createLink(action:'list')}';"/>
+    <span class="campo">
+        <span class="titulo"></span>
+        <g:checkBox name="incluirDesabilitados" checked="${incluirDesabilitados}"/> Mostrar serviços desabilitados
+    </span>
+
+    <g:actionSubmit action="list" class="search" value="Procurar" onclick="this.form.action='${createLink(action:'list')}';"/>
 
 </g:form>
 

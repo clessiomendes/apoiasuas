@@ -18,28 +18,9 @@
             step: 30,
             timeFormat: 'H:i' //18:00
         });
+        $('#checkDiaInteiro').on('change', exibeHorarios);
+        exibeHorarios();
     });
-
-    /**
-    * Adiciona um novo select (clonado de selectParticipanteBase) aa tela para selecao de participantes
-    * @param valorInicial se fornecido, pre selecionad uma opcao do select
-    */
-    function criaSelectParticipante(valorInicial) {
-        var $selectClonado = $("#selectParticipanteBase").clone();
-        var $valoresParticipantes = $("#valoresParticipantes")
-        if (valorInicial)
-            $selectClonado.val(valorInicial);
-        $selectClonado.show();
-
-        //O evento onchange do select deve disparar a criacao de um novo select para que mais usuarios possam ser selecionados
-        $selectClonado.change( function() {
-            //Ignorar caso o select acionado nao seja o ultimo
-            if (this == $valoresParticipantes.find("[name='participantesAux']").last()[0])
-                criaSelectParticipante();
-        });
-
-        $valoresParticipantes.append($selectClonado);
-    }
 
     //# sourceURL=formCompromisso
 </script>
@@ -64,7 +45,8 @@
             de<span class="required-indicator">*</span>
         </div>
         <g:textField name="dataInicio" class="dateMask datepicker" id="dataInicio" size="9" value="${localDtoCompromisso?.inicio?.format("dd/MM/yyyy")}" />
-        <g:textField class="timepicker-agenda" name="horaInicio" id="horaInicio" size="4" value="${localDtoCompromisso?.inicio?.format("HH:mm")}" />
+        <g:checkBox id="checkDiaInteiro" name="diaInteiro"  checked="${localDtoCompromisso?.diaInteiro}"/> dia inteiro
+        <g:textField class="timepicker-agenda hora-compromisso" name="horaInicio" id="horaInicio" size="4" value="${localDtoCompromisso?.inicio?.format("HH:mm")}" />
     </div>
 
     <div class="fieldcontain ${hasErrors(bean: localDtoCompromisso, field: 'fim', 'error')} ">
@@ -72,7 +54,7 @@
             até<span class="required-indicator">*</span>
         </div>
         <g:textField name="dataFim" class="dateMask datepicker" id="dataFim" size="9" value="${localDtoCompromisso?.fim?.format("dd/MM/yyyy")}" />
-        <g:textField class="timepicker-agenda" name="horaFim" id="horaFim" size="4" value="${localDtoCompromisso?.fim?.format("HH:mm")}" />
+        <g:textField class="timepicker-agenda hora-compromisso" name="horaFim" id="horaFim" size="4" value="${localDtoCompromisso?.fim?.format("HH:mm")}" />
     </div>
 
     <br>

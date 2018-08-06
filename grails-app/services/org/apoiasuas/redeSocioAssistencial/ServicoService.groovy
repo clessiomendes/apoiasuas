@@ -9,7 +9,7 @@ import org.apoiasuas.fileStorage.FileStorageDTO
 import org.apoiasuas.fileStorage.FileStorageService
 import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.seguranca.SegurancaService
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.HqlPagedResultList
 import org.apoiasuas.util.LogHelper
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
@@ -77,7 +77,7 @@ class ServicoService {
      * Resultado ordenado primeiro pela frequencia de acessos de consulta ao servico (EstatisticaConsultaServico) e depois por ordem alfabetica
      * @return
      */
-    public grails.gorm.PagedResultList procurarServico(String palavraChave, GrailsParameterMap params, Boolean habilitado = null, Boolean permiteEncaminhamento = null) {
+    public grails.gorm.PagedResultList procurarServico(String palavraChave, GrailsParameterMap params) {
 
 /*
         1) FALTA FILTRAR O TERRITORIO DE ATENDIMENTO
@@ -137,6 +137,8 @@ class ServicoService {
             }
             sqlWhere += " ) ";
         }
+        if (! params.incluirDesabilitados)
+            sqlWhere += " and a.habilitado = " + AmbienteExecucao.SqlProprietaria.getBoolean(true);
 
         boolean restringirTerritorio = true;
 

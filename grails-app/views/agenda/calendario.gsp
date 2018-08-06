@@ -65,12 +65,14 @@
 <div id='calendar'></div>
 
 <div style="display: none" id='divEscolherTipoCompromisso'>
-    <input type="button" class="speed-button-atendimento" onclick="janelaModalTipoCompromisso.createAtendimento();"/>
+    <div id="divEscolhaAtendimento">
+        <input type="button" class="speed-button-atendimento" onclick="janelaModalTipoCompromisso.createAtendimento();"/>
         Atedimento Particularizado com <g:select id="selectUsuarioSistemaOpcoesCompromisso" name="idUsuarioSistema" from="${operadores}"
                           optionKey="id" class="many-to-one" noSelection="['': '']"/>
         <br>
-        <input type="button" class="speed-button-compromisso" onclick="janelaModalTipoCompromisso.createOutroCompromisso();"/>
-        Outros tipos de compromisso
+    </div>
+    <input type="button" class="speed-button-compromisso" onclick="janelaModalTipoCompromisso.createOutroCompromisso();"/>
+    Outros tipos de compromisso
 </div>
 
 </body>

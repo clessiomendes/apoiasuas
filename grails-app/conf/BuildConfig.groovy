@@ -8,37 +8,15 @@ grails.project.work.dir = "target/work"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 
-//grails.project.war.file = "target/${appName}-${appVersion}.war"
-//grails.project.war.exploded.dir = "target/${appName}-${appVersion}"
-//grails.project.war.exploded.dir = "C:/workspaces/deploy-cc/prod2/apoiasuas.war"
 grails.project.war.exploded.dir = "c:/temp/deploy-cc/apoiasuas.war"
 grails.war.exploded = true
-
-/* Estes parametros nao serao mais definidos em arquivo de configuracao, e sim no script de deploy (deploy-af.bat)
-if (Environment.current == Environment.DEVELOPMENT) {
-    grails.project.war.exploded.dir = "C:/workspaces/appfog/apoiasuas/validacao"    //appfog
-} else if(Environment.current == Environment.PRODUCTION) {
-    grails.project.war.exploded.dir = "C:/workspaces/appfog/apoiasuas/producao"    //appfog
-}
-*/
 
 grails.project.fork = [
         test: false,
         run : false
-/*
-    // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
-    //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
-
-    // configure settings for the test-app JVM, uses the daemon by default
-    test: [maxMemory: 768, minMemory: 64, debug: false, daemon:true],
-    // configure settings for the run-app JVM
-    run: [maxMemory: 768, minMemory: 64, debug: false, forkReserve:false],
-    // configure settings for the run-war JVM
-    war: [maxMemory: 768, minMemory: 64, debug: false, forkReserve:false],
-    // configure settings for the Console UI JVM
-    console: [maxMemory: 768, minMemory: 64, debug: false]
-*/
 ]
+
+System.out.println("Environment.current "+Environment.current+" em BuildConfig.groovy")
 
 grails.project.dependency.resolver = "maven" // or ivy
 grails.project.dependency.resolution = {
@@ -181,9 +159,9 @@ grails.project.dependency.resolution = {
         //mas ATENÇÃO! se habilitada, espere por uma exceção na linha
         //      super.transfereConteudo(formulario, reportDTO)
         //da classe FormularioBeneficioEventualService
-        if (System.getProperty('org.apoiasuas.datasource')?.toUpperCase() != 'CLEVERCLOUD_POSTGRES_PROD') {
+//        if (System.getProperty('org.apoiasuas.datasource')?.toUpperCase() != 'CLEVERCLOUD_POSTGRE') {
 //            compile ":grails-melody:1.54.0" //plugin para profiling
-        }
+//        }
 
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.9.0"

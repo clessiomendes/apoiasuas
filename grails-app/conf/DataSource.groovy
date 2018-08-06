@@ -1,5 +1,5 @@
 import org.apoiasuas.formulario.PreDefinidos
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.http.PreGrailsServletContextListener
 
 import javax.naming.InitialContext
@@ -35,8 +35,21 @@ dataSource {
     driverClassName = AmbienteExecucao.CURRENT2.driverClassName
 
     url = AmbienteExecucao.CURRENT2.url
+    System.out.println("AmbienteExecucao.CURRENT2.username "+AmbienteExecucao.CURRENT2.username);
     username = AmbienteExecucao.CURRENT2.username
     password = AmbienteExecucao.CURRENT2.password
+/*
+    if (! AmbienteExecucao.isDemonstracao()) {
+        url = AmbienteExecucao.CURRENT2.url
+        username = AmbienteExecucao.CURRENT2.username
+        password = AmbienteExecucao.CURRENT2.password
+    } else {
+        //A única forma até aqui de obter parametros conflitantes de DUAS APLICACOES TOMCAT em uma unica aplicacao clever cloud
+        url = "jdbc:postgresql://bvpuodmeyqud0kz-postgresql.services.clever-cloud.com:5432/bvpuodmeyqud0kz"
+        username = "ubj3r9q53kjn3lwndkg5"
+        password = "J7VKm1FX6P6jq7QIAoKK"
+    }
+*/
 
 //configuracao de pool:
     properties {
@@ -108,7 +121,7 @@ dataSource_log {
             password = "senha"
             break
 
-        case AmbienteExecucao.CLEVERCLOUD_POSTGRES_PROD:
+        case AmbienteExecucao.CLEVERCLOUD_POSTGRE:
             println("Ambiente: Postgres clever-cloud " + environment)
             dialect = "org.hibernate.dialect.PostgreSQLDialect"
 
@@ -130,7 +143,7 @@ dataSource_log {
             println(url);
             break
 
-        case AmbienteExecucao.CLEVERCLOUD_POSTGRES_VALID:
+        case AmbienteExecucao.CLEVERCLOUD_POSTGRE:
             println("Ambiente: Postgres clever-cloud " + environment)
             driverClassName = "org.postgresql.Driver"
             host = System.getProperties().getProperty("POSTGRESQL_ADDON_HOST")

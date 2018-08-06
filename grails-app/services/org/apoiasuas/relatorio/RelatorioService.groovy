@@ -9,7 +9,7 @@ import org.apoiasuas.marcador.Vulnerabilidade
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ListaLigada
 import org.joda.time.LocalDate
 

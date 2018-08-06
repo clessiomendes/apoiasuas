@@ -59,11 +59,12 @@ class ServicoController extends AncestralServicoController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def list(String palavraChave) {
-        params.max = 10
+    def list(String palavraChave, Boolean incluirDesabilitados) {
+        params.max = 30
         PagedResultList servicos = servicoService.procurarServico(palavraChave, params);
         //Exibir tela listando todos os serviços que respondem ao criterio buscado
-        render view: 'list', model: [servicoInstanceList: servicos, servicoInstanceCount: servicos.totalCount]
+        render view: 'list', model: [servicoInstanceList: servicos, servicoInstanceCount: servicos.totalCount,
+                                     incluirDesabilitados: incluirDesabilitados];
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])

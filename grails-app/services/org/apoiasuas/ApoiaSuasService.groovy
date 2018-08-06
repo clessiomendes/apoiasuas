@@ -9,7 +9,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.xwpf.usermodel.XWPFParagraph
 import org.apache.xmlbeans.XmlOptions
 import org.apoiasuas.formulario.ReportDTO
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
 import org.hibernate.dialect.PostgreSQL81Dialect

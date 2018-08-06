@@ -13,7 +13,7 @@ import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.Papel
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.seguranca.UsuarioSistemaPapel
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasException
 import org.springframework.transaction.annotation.Propagation
 

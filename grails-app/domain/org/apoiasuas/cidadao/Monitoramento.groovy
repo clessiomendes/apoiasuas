@@ -1,7 +1,7 @@
 package org.apoiasuas.cidadao
 
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 
 class Monitoramento implements Comparable<Monitoramento> {
 

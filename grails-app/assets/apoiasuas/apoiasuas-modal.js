@@ -115,6 +115,9 @@ function JanelaModalAjax() {
      * Chamar quando se quiser fechar a janela considerando a ação como confirmada
      */
     this.confirmada = function () {
+        if(! $divModal.is(':ui-dialog')) //janela nao inicializizada. Pode ignorar comfirmacao
+            return;
+
         if ($divModal.dialog('isOpen'))
             $divModal.dialog('close');
         if (refreshFunction !== undefined && refreshFunction !== null)

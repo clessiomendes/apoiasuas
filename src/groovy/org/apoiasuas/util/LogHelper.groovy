@@ -3,6 +3,7 @@ package org.apoiasuas.util
 import org.apache.log4j.Level
 import org.apache.log4j.PatternLayout
 import org.apache.log4j.RollingFileAppender
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 
 /**
  * Created by clessio on 07/12/2016.

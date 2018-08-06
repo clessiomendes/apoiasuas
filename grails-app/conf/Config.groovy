@@ -6,7 +6,7 @@ import org.apoiasuas.formulario.PreDefinidos
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaController
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apache.log4j.RollingFileAppender
 import org.codehaus.groovy.grails.commons.spring.GrailsWebApplicationContext
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent

@@ -5,7 +5,7 @@
   Time: 02:26
 --%>
 
-<%@ page import="org.apoiasuas.util.ApplicationContextHolder; org.apoiasuas.seguranca.DefinicaoPapeis" contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.apoiasuas.util.ambienteExecucao.AmbienteExecucao; org.apoiasuas.util.ApplicationContextHolder; org.apoiasuas.seguranca.DefinicaoPapeis" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Status</title>
@@ -52,12 +52,12 @@
     <h2>Parâmetros de instalação:</h2>
     <ul>
         %{--<li>Fornecedor de banco de dados: ${fornecedorVersaoBancoDeDados}</li>--}%
-        <li>Ambiente de hospedagem: ${org.apoiasuas.util.AmbienteExecucao.ambienteHospedagem}</li>
+        <li>Ambiente de hospedagem: ${org.apoiasuas.util.ambienteExecucao.AmbienteExecucao.ambienteHospedagem}</li>
         <li>Container: ${ApplicationContextHolder.getServletContext().getServerInfo()}</li>
-        <li>Ambiente de execução: ${org.apoiasuas.util.AmbienteExecucao.ambienteExecucao}</li>
+        <li>Ambiente de execução: ${org.apoiasuas.util.ambienteExecucao.AmbienteExecucao.ambienteExecucao}</li>
         <li>Repositorio de arquivos: ${configuracoesRepostiorio}</li>
         <li>Versão: <g:render template="versao"/></li>
-        <li>Rodando desde: <g:formatDate format="dd/MM/yyyy HH:mm:ss" date="${org.apoiasuas.util.AmbienteExecucao.inicioAplicacao}"/></li>
+        <li>Rodando desde: <g:formatDate format="dd/MM/yyyy HH:mm:ss" date="${org.apoiasuas.util.ambienteExecucao.AmbienteExecucao.inicioAplicacao}"/></li>
         <li>Estado do SO: ${org.apoiasuas.util.SystemUtils.systemStatistics()}</li>
 %{--
         <g:if test="${System.getenv().VCAP_SERVICES}">
@@ -66,7 +66,7 @@
 --}%
     </ul>
 
-    <sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.STR_SUPER_USER}">
+    %{--<sec:ifAnyGranted roles="${org.apoiasuas.seguranca.DefinicaoPapeis.STR_SUPER_USER}">--}%
         <div id="logList" class="dialog">
             <h2>Logs:</h2>
         <g:form action="changeLog">
@@ -89,6 +89,12 @@
             </g:each>
         </ul>
 --}%
+        <h2>Parametros de configuracao da aplicacao:</h2>
+        <ul>
+            <g:each var="c" in="${AmbienteExecucao.CURRENT2.listaPropriedades()}">
+                <li class="controller">${c.key} -> '${c.value}'</li>
+            </g:each>
+        </ul>
         <h2>Controllers disponíveis:</h2>
         <ul>
             <g:each var="c" in="${grailsApplication.controllerClasses}">
@@ -102,7 +108,7 @@
             </g:each>
         </ul>
     </div>
-    </sec:ifAnyGranted>
+    %{--</sec:ifAnyGranted>--}%
 </div>
 </body>
 </html>

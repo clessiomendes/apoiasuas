@@ -1,7 +1,6 @@
 package org.apoiasuas
 
 import grails.converters.JSON
-import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonSlurper
 import org.apoiasuas.agenda.Compromisso
 import org.apoiasuas.cidadao.CidadaoController
@@ -12,8 +11,6 @@ import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasDateUtils
 import org.apoiasuas.util.StringUtils
 import org.springframework.security.access.annotation.Secured
-
-import java.awt.Color
 
 //import fr.opensagres.xdocreport.samples.docxandvelocity.model.Developer;
 //import fr.opensagres.xdocreport.samples.docxandvelocity.model.Project;
@@ -37,7 +34,7 @@ class AgendaController extends AncestralController {
     }
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
-    def createCompromisso(Long idUsuarioSistema, String inicio, String fim) {
+    def createCompromisso(Long idUsuarioSistema, Boolean diaInteiro, String inicio, String fim) {
         Compromisso novoCompromisso = new Compromisso();
         if (idUsuarioSistema)
             novoCompromisso.participantes.add(UsuarioSistema.get(idUsuarioSistema));
@@ -45,6 +42,7 @@ class AgendaController extends AncestralController {
         novoCompromisso.fim = ApoiaSuasDateUtils.stringToDateTimeIso8601(fim);// + 0.042;
         novoCompromisso.tipo = Compromisso.Tipo.OUTROS;
         novoCompromisso.habilitado = true;
+        novoCompromisso.diaInteiro = diaInteiro;
         render view: "createCompromisso", model: getEditCreateModelCompromisso(novoCompromisso)
     }
 
@@ -102,9 +100,6 @@ class AgendaController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def saveCompromisso(Compromisso compromissoInstance) {
-//        if (! compromissoInstance)
-//            return buscaMonitoramento(-1);
-
         if (compromissoInstance == null) //registro excluido em outra sessao de usuario
             return render(status: 500 /*apontar que houve erro*/,
                     view: /*modoCriacao ? "" : */ "erroAlteracaoConcorrente",
@@ -130,12 +125,27 @@ class AgendaController extends AncestralController {
 
         compromissoInstance.inicio = dataDoRequest(params['dataInicio'], params['horaInicio'])
         compromissoInstance.fim = dataDoRequest(params['dataFim'], params['horaFim'])
+        if (compromissoInstance.diaInteiro) {
+            compromissoInstance.inicio.clearTime();
+            compromissoInstance.fim++
+            compromissoInstance.fim.clearTime();
+        }
 
         boolean validado = compromissoInstance.validate()
         if (compromissoInstance.fim <= compromissoInstance.inicio) {
             validado = false;
             compromissoInstance.errors.rejectValue('inicio', "", "O inicio do compromisso deve vir antes do fim")
         }
+/*
+        if (compromissoInstance.diaInteiro && compromissoInstance.fim < compromissoInstance.inicio) {
+            validado = false;
+            compromissoInstance.errors.rejectValue('inicio', "", "O inicio do compromisso deve vir antes do fim")
+        }
+        if (! compromissoInstance.diaInteiro && compromissoInstance.fim <= compromissoInstance.inicio) {
+            validado = false;
+            compromissoInstance.errors.rejectValue('inicio', "", "O inicio do compromisso deve vir antes do fim")
+        }
+*/
 
         if (validado) {
             agendaService.gravaCompromisso(compromissoInstance);
@@ -190,6 +200,9 @@ class AgendaController extends AncestralController {
                     view: /*modoCriacao ? "" : */ "erroAlteracaoConcorrente",
                     model: [detalhesErro: "Este compromisso/atendimento foi excluído em outro computador."]
             )
+
+        if (compromisso.diaInteiro)
+            compromisso.fim--
 
         if (compromisso.tipo.atendimento)
             render view: "editAtendimentoParticularizado", model: getEditCreateModelAtendimento(compromisso.atendimentoParticularizado);
@@ -313,6 +326,7 @@ class AgendaController extends AncestralController {
             titulo = participantes + compromisso.tooltip;
         return [id: compromisso.id,
                 title: titulo,
+                allDay: compromisso.diaInteiro,
                 start: ApoiaSuasDateUtils.dateTimeToStringIso8601(compromisso.inicio),
                 end: ApoiaSuasDateUtils.dateTimeToStringIso8601(compromisso.fim),
                 className: compromisso.getCor(request.inibirAtendimentoApos.valorCalculado),
@@ -357,11 +371,12 @@ class AgendaController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def estatisticaAtendimentos(String inicio, String fim) {
-        Map<String, Integer> estatisticaAtendimentos = agendaService.estatisticaAtendimentos(ApoiaSuasDateUtils.stringToDateTimeIso8601(inicio),
+        Map<String, Integer> atendimentosTecnico = agendaService.estatisticaAtendimentosTecnico(ApoiaSuasDateUtils.stringToDateTimeIso8601(inicio),
                 ApoiaSuasDateUtils.stringToDateTimeIso8601(fim));
-//        return estatisticaAtendimentos as JSON;
-        Integer total = estatisticaAtendimentos.values().sum();
-        return render(view: "estatisticaAtendimentos", model: [tecnicos: estatisticaAtendimentos, total: total]);
+        Map<String, Integer> atendimentosStatus = agendaService.estatisticaAtendimentosStatus(ApoiaSuasDateUtils.stringToDateTimeIso8601(inicio),
+                ApoiaSuasDateUtils.stringToDateTimeIso8601(fim));
+        Integer total = atendimentosTecnico.values().sum();
+        return render(view: "estatisticaAtendimentos", model: [tecnicos: atendimentosTecnico, status: atendimentosStatus, total: total]);
     }
 
 }

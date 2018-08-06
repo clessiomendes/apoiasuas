@@ -1,8 +1,7 @@
-package org.apoiasuas.util
+package org.apoiasuas.util.ambienteExecucao
 
 import grails.util.Environment
-import org.apoiasuas.util.ambienteExecucao.PostgreCleverCloud
-import org.apoiasuas.util.ambienteExecucao.PostgreLocal
+import org.apoiasuas.util.ambienteExecucao.Postgre
 import org.apoiasuas.util.ambienteExecucao.TipoAmbiente
 
 /**
@@ -11,21 +10,14 @@ import org.apoiasuas.util.ambienteExecucao.TipoAmbiente
 class AmbienteExecucao {
 //    public static final Integer DEFAULT = LOCAL_H2
 
-    public static final TipoAmbiente LOCAL_POSTGRE2 = new PostgreLocal();
-    public static final TipoAmbiente CLEVERCLOUD_POSTGRE_PROD2 = new PostgreCleverCloud();
-    public static final TipoAmbiente CLEVERCLOUD_POSTGRE_DEMO2 = new PostgreCleverCloud();
-    public static final TipoAmbiente CLEVERCLOUD_POSTGRE_VALID2 = new PostgreCleverCloud();
+    public static final TipoAmbiente LOCAL_POSTGRE2 = new Postgre("", "local");
+    public static final TipoAmbiente CLEVERCLOUD_POSTGRE = new Postgre("", "cleverCloud");
     public static final TipoAmbiente CURRENT2 = escolheTipoBD2();
 
     public static final TipoAmbiente[] LOCAL = [LOCAL_POSTGRE2]
-    public static final TipoAmbiente[] CLEVERCLOUD = [CLEVERCLOUD_POSTGRE_PROD2, CLEVERCLOUD_POSTGRE_VALID2, CLEVERCLOUD_POSTGRE_DEMO2]
+    public static final TipoAmbiente[] CLEVERCLOUD = [CLEVERCLOUD_POSTGRE]
 
-    public static final TipoAmbiente[] POSTGRES = [LOCAL_POSTGRE2, CLEVERCLOUD_POSTGRE_PROD2, CLEVERCLOUD_POSTGRE_DEMO2, CLEVERCLOUD_POSTGRE_VALID2]
-
-    public static final TipoAmbiente[] DESENVOLVIMENTO = [LOCAL_POSTGRE2]
-    public static final TipoAmbiente[] VALIDACAO = [CLEVERCLOUD_POSTGRE_VALID2]
-    public static final TipoAmbiente[] PRODUCAO = [CLEVERCLOUD_POSTGRE_PROD2]
-    public static final TipoAmbiente[] DEMO = [CLEVERCLOUD_POSTGRE_DEMO2]
+    public static final TipoAmbiente[] POSTGRES = [LOCAL_POSTGRE2, CLEVERCLOUD_POSTGRE]
 
     public static final TipoAmbiente[] H2 = []
     public static final TipoAmbiente[] MYSQL = []
@@ -123,13 +115,9 @@ class AmbienteExecucao {
     }
 
     public static String getAmbienteExecucao() {
-        switch (CURRENT2) {
-            case DESENVOLVIMENTO: return "Desenvolvimento"
-            case VALIDACAO: return "Validação"
-            case PRODUCAO: return "Produção"
-            case DEMO: return "Demonstração"
-            default: throw new RuntimeException("ambiente de execução não definido: ${CURRENT2}")
-        }
+        if (CURRENT2.modo)
+            return CURRENT2.modo
+        throw new RuntimeException("ambiente de execução não definido: ${CURRENT2}")
     }
 
     static def getLiteralInteiro(Integer i) {
@@ -142,7 +130,10 @@ class AmbienteExecucao {
      * @return
      */
     public static String sysProperties(String nome) {
-        return System.properties[nome]?.toString();
+        if (CURRENT2)
+            return CURRENT2.sysProperties(nome)?.toString()
+        else
+            return System.properties[nome]?.toString()
     }
 
     /**
@@ -151,17 +142,17 @@ class AmbienteExecucao {
      */
     private static final TipoAmbiente escolheTipoBD2() {
         String ds = sysProperties('org.apoiasuas.datasource')?.toUpperCase();
+        System.out.println("org.apoiasuas.datasource $ds");
         switch (ds) {
-            case 'CLEVERCLOUD_POSTGRES_PROD': return CLEVERCLOUD_POSTGRE_PROD2
-            case 'CLEVERCLOUD_POSTGRES_DEMO': return CLEVERCLOUD_POSTGRE_DEMO2
-            case 'CLEVERCLOUD_POSTGRES_VALID': return CLEVERCLOUD_POSTGRE_VALID2
-            case 'LOCAL_POSTGRES': return LOCAL_POSTGRE2
+            case 'CLEVERCLOUD_POSTGRE':
+                return CLEVERCLOUD_POSTGRE;
+            case 'LOCAL_POSTGRE':
+                return LOCAL_POSTGRE2
             default:
-                if (isDesenvolvimento())
-                    return LOCAL_POSTGRE2
-                else
-                    throw new RuntimeException("Definicao de Banco de Dados nao prevista: ${ds}")
+                System.out.println("Definicao de Banco de Dados nao prevista: ${ds}")
+                throw new RuntimeException("Definicao de Banco de Dados nao prevista: ${ds}")
         }
+        System.out.println("org.apoiasuas.datasource $ds");
     }
 
     public static String getCaminhoRepositorioArquivos() {
@@ -180,19 +171,23 @@ class AmbienteExecucao {
     }
 
     public static boolean isDesenvolvimento() {
-        return CURRENT2 in DESENVOLVIMENTO
+//        return CURRENT2 in DESENVOLVIMENTO
+        return CURRENT2.modo == "dev"
     }
 
     public static boolean isValidacao() {
-        return CURRENT2 in VALIDACAO
+//        return CURRENT2 in VALIDACAO
+        return CURRENT2.modo == "valid"
     }
 
     public static boolean isProducao() {
-        return CURRENT2 in PRODUCAO
+//        return CURRENT2 in PRODUCAO
+        return CURRENT2.modo == "prod"
     }
 
     public static boolean isDemonstracao() {
-        return CURRENT2 in DEMO
+//        return CURRENT2 in DEMO
+        return CURRENT2.modo == "demo"
     }
 
     public static String toString() {
@@ -208,39 +203,9 @@ class AmbienteExecucao {
     public static boolean isServidorPrimario() {
         switch (CURRENT2) {
             case LOCAL: return true;
-            case CLEVERCLOUD: return sysProperties('INSTANCE_NUMBER')?.equals("0");
+            case CLEVERCLOUD: return CURRENT2.sysProperties('INSTANCE_NUMBER')?.equals("0");
             default: throw new RuntimeException("impossível definir servidor primário em um ambiente (possivelmente) clusterizado")
         }
     }
-
-
-/*
-    public static String getDatabaseDependency() {
-        return 'org.postgresql:postgresql:9.3-1101-jdbc41';
-
-        String ds
-//        if (isProducao())
-//             ds = 'CLEVERCLOUD_POSTGRES_PROD';
-//        else
-        ds = sysProperties('org.apoiasuas.datasource')?.toUpperCase()
-        System.out.println("Definicao de banco de dados: ${ds}")
-        switch (ds) {
-            case 'CLEVERCLOUD_POSTGRES_VALID': return CLEVERCLOUD_POSTGRES_VALID
-            case 'CLEVERCLOUD_POSTGRES_PROD': return CLEVERCLOUD_POSTGRES_PROD
-            case 'APPFOG_POSTGRES_PROD': return APPFOG_POSTGRES_PROD
-            case 'APPFOG_POSTGRES_VALID': return APPFOG_POSTGRES_VALID
-            case 'LOCAL_POSTGRES': return LOCAL_POSTGRES
-            case 'LOCAL_H2': return LOCAL_H2
-            case 'LOCAL_MYSQL': return LOCAL_MYSQL
-            case 'APPFOG_MYSQL': return APPFOG_MYSQL
-            case 'CLEARDB_MYSQL': return CLEARDB_MYSQL
-            default:
-                if (isDesenvolvimento())
-                    return LOCAL_POSTGRES
-                else
-                    throw new RuntimeException("Definicao de Banco de Dados nao prevista: ${ds}")
-        }
-    }
-*/
 
 }

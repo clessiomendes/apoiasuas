@@ -481,8 +481,13 @@ th.desc a {
   .mais-filtros {
     display: none;
   }
+
+  input[type='checkbox'] {
+    width: auto;
+  }
+
   //inputs para preenchimento dos filtros (excluindo botões)
-  input:not([type='button']):not([type='submit']), select {
+  input:not([type='button']):not([type='submit']):not([type='checkbox']), select {
 	margin: 1px 0 10px 0;
     width: 20em;
 	//iguala os tamanhos de selects e textboxes
@@ -490,6 +495,7 @@ th.desc a {
     -webkit-box-sizing:border-box;
     box-sizing:border-box;
   }
+
   //Setas para baixo indicando a possibilidader de pesquisa avançada
   .expandir img {
     display: block;

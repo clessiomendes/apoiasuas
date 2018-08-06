@@ -2,7 +2,7 @@ package org.apoiasuas.cidadao
 
 import grails.transaction.Transactional
 import groovy.sql.GroovyRowResult
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 
 @Transactional(readOnly = true)
 class MonitoramentoService {

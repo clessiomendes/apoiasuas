@@ -3,7 +3,7 @@ package org.apoiasuas.redeSocioAssistencial
 import org.apoiasuas.cidadao.Endereco
 import org.apoiasuas.fileStorage.FileStorageDTO
 //import org.apoiasuas.fileStorage.FileStorageIndex
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.FullTextSearchUtils
 
 class Servico {

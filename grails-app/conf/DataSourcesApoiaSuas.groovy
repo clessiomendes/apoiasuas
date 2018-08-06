@@ -1,3 +1,7 @@
+local {
+}
+cleverCloud {
+}
 postgre {
     dialect = "org.hibernate.dialect.PostgreSQLDialect"
     driverClassName = "org.postgresql.Driver"

@@ -10,7 +10,7 @@ import org.apoiasuas.lookup.Sexo
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.DominioProtegidoServico
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasDateUtils
 import org.apoiasuas.DetalheService
 import org.grails.databinding.BindingFormat

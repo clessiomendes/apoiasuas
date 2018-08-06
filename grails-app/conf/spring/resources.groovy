@@ -9,7 +9,7 @@ import org.apoiasuas.seguranca.ApoiaSuasDetailsService
 import org.apoiasuas.seguranca.ApoiaSuasPersistenceListener
 import org.apoiasuas.seguranca.SegurancaListener
 import org.apoiasuas.services.ImportarFamiliasJavaService
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ApplicationContextHolder
 
 // Place your Spring DSL code here

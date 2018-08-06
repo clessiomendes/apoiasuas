@@ -10,7 +10,7 @@ import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasDateUtils
 import org.apoiasuas.util.ApoiaSuasException
 import org.apoiasuas.util.StringUtils

@@ -4,7 +4,7 @@ import apoiasuas.ImportacaoJob
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import org.apoiasuas.LinkService
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasException
 
 import java.nio.file.Files

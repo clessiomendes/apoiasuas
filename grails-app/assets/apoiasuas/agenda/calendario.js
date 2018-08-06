@@ -27,7 +27,7 @@ $(document).ready(function() {
         defaultView: isMobile ? "listDay" : cookieCalendario.defaultView,
         slotLabelFormat: "HH:mm",
         locale: 'pt',
-        allDaySlot: false,
+        allDaySlot: true,
         weekends: configuracaoAgenda.weekends,
         header: {
             left: 'prev',
@@ -72,8 +72,13 @@ $(document).ready(function() {
   * os eventos definidos no corpo desta funcao e adicionados dinamicamente à janela modal, específica para esta seleção.
   */
 function createCompromisso(start, end, jsEvent, view) {
-    if (! start)
-        start = moment($('#calendar').fullCalendar('getDate').format()+"T"+configuracaoAgenda.minTime);
+    if (!start)
+        start = moment($('#calendar').fullCalendar('getDate').format() + "T" + configuracaoAgenda.minTime);
+    var diaInteiro = ! start.hasTime();
+
+    if (diaInteiro)
+        end.subtract(1, 'days');
+
     var inicioStr = start ? start.format() : "";
     var fimStr = end ? end.format() : ""
     var $usuarioSelecionadoModal = $('#selectUsuarioSistemaOpcoesCompromisso')
@@ -82,26 +87,26 @@ function createCompromisso(start, end, jsEvent, view) {
     if ($usuarioSelecionadoTelaMae.val()) //Força que o tecnico selecionado na tela mae (se houver) sobrescreva o tecnico previamente selecionado na tela modal
         $usuarioSelecionadoModal.val($usuarioSelecionadoTelaMae.val()) //copia valor ao select no topo da tela para o select que aparecera na janela modal
 
-    janelaModalTipoCompromisso.createAtendimento = function() {
-        if (! $usuarioSelecionadoModal.val()) {
+    janelaModalTipoCompromisso.createAtendimento = function () {
+        if (!$usuarioSelecionadoModal.val()) {
             alert("Escolha um técnico para o atendimento!")
             return;
         }
         //duração de uma hora (TODO: permitir que esse tempo seja configuravel)
-        fimStr = start ? start.add(1,"h").format() : ""
-        var urlCreate = actionCreateCompromissoAutomatico+"?idUsuarioSistema="+$usuarioSelecionadoModal.val()
-                            +"&inicio="+inicioStr+"&fim="+fimStr;
+        fimStr = start ? start.add(1, "h").format() : ""
+        var urlCreate = actionCreateCompromissoAutomatico + "?idUsuarioSistema=" + $usuarioSelecionadoModal.val()
+            + "&inicio=" + inicioStr + "&fim=" + fimStr;
         //Executa a chamada ajax para autalizar o compromisso no banco de dados
         $.ajax({
             url: urlCreate,
             dataType: "json",
-            error: function( jqXHR, textStatus, errorThrown ) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 //TODO porque a janela modal não está conseguindo exibir o conteúdo HTML retornado com o erro do request?
                 //janelaModal.abreJanela("Erro gravando alteração do compromisso ["+event.title+"] no banco de dados : "+textStatus+", "+errorThrown,
                 //    null, jqXHR.responseText);
-                alert("Erro criando atendimento no banco de dados : "+textStatus+", "+errorThrown);
+                alert("Erro criando atendimento no banco de dados : " + textStatus + ", " + errorThrown);
             },
-            success: function(data) {
+            success: function (data) {
                 refreshEvento(data);
             }
         });
@@ -109,17 +114,27 @@ function createCompromisso(start, end, jsEvent, view) {
         janelaModalTipoCompromisso.confirmada();
     }
 
-    janelaModalTipoCompromisso.createOutroCompromisso = function() {
-        janelaModal.abreJanela({titulo: "Criar novo Compromisso",
-                url: actionCreateCompromisso+"?idUsuarioSistema="+$usuarioSelecionadoTelaMae.val()+"&inicio="+inicioStr+"&fim="+fimStr/*, largura: 800*/});
+    janelaModalTipoCompromisso.createOutroCompromisso = function () {
+        janelaModal.abreJanela({
+            titulo: "Criar novo Compromisso",
+            url: actionCreateCompromisso + "?idUsuarioSistema=" + $usuarioSelecionadoTelaMae.val() + "&diaInteiro=" + diaInteiro + "&inicio=" + inicioStr + "&fim=" + fimStr/*, largura: 800*/
+        });
         $('#calendar').fullCalendar('unselect');
         janelaModalTipoCompromisso.confirmada();
     }
 
-    if (jsEvent && jsEvent.shiftKey && $usuarioSelecionadoTelaMae.val()) //compromisso automatico - do tipo Atendimento
+    if (jsEvent && jsEvent.shiftKey && $usuarioSelecionadoTelaMae.val()) { //compromisso automatico - do tipo Atendimento
         janelaModalTipoCompromisso.createAtendimento();
-    else
-        janelaModalTipoCompromisso.abreJanela({titulo: "Agenda", element: $('#divEscolherTipoCompromisso')/*, largura: 550*/});
+    } else {
+        if (diaInteiro) { //subentende-se que é um "Outro tipo" de compromisso
+            janelaModalTipoCompromisso.createOutroCompromisso();
+        } else { //abre janela para escolha do tipo de compromisso
+            janelaModalTipoCompromisso.abreJanela({
+                titulo: "Agenda",
+                element: $('#divEscolherTipoCompromisso')/*, largura: 550*/
+            });
+        }
+    }
 }
 
 function abreCompromisso( event, delta, revertFunc, jsEvent, ui, view ) {
@@ -309,6 +324,38 @@ function abreEstatisticaAtendimentos() {
     fimStr = $('#calendar').fullCalendar('getView').intervalEnd.format();
 //    console.log(inicioStr);
 //    console.log(fimStr);
-    janelaModal.abreJanela({titulo: "Total de atendimentos por técnico",
-            url: actionEstatisticaAtendimentos+"?inicio="+inicioStr+"&fim="+fimStr, largura: 400});
+    janelaModal.abreJanela({titulo: "Total de atendimentos",
+            url: actionEstatisticaAtendimentos+"?inicio="+inicioStr+"&fim="+fimStr, largura: 600});
+}
+
+/**
+ * Adiciona um novo select (clonado de selectParticipanteBase) aa tela de "Outros Compromissos" para selecao de participantes
+ * @param valorInicial se fornecido, pre selecionad uma opcao do select
+ */
+function criaSelectParticipante(valorInicial) {
+    var $selectClonado = $("#selectParticipanteBase").clone();
+    var $valoresParticipantes = $("#valoresParticipantes")
+    if (valorInicial)
+        $selectClonado.val(valorInicial);
+    $selectClonado.show();
+
+    //O evento onchange do select deve disparar a criacao de um novo select para que mais usuarios possam ser selecionados
+    $selectClonado.change( function() {
+        //Ignorar caso o select acionado nao seja o ultimo
+        if (this == $valoresParticipantes.find("[name='participantesAux']").last()[0])
+            criaSelectParticipante();
+    });
+
+    $valoresParticipantes.append($selectClonado);
+}
+
+/**
+ * Exibe (ou oculta) campos de hora inicial e hora final na tela de "Outros Compromissos" dependendo
+ * se a checkbox "dia inteiro" estiver marcada
+ */
+function exibeHorarios() {
+    if ($("#checkDiaInteiro").prop('checked'))
+        $(".hora-compromisso").hide(500)
+    else
+        $(".hora-compromisso").show(500)
 }

@@ -5,6 +5,7 @@ import org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.DominioProtegidoServico
 import org.apoiasuas.seguranca.UsuarioSistema
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 
 class Compromisso implements DominioProtegidoServico {
 
@@ -28,6 +29,7 @@ class Compromisso implements DominioProtegidoServico {
         }
     }
 
+    Boolean diaInteiro
     Date inicio
     Date fim
     String descricao
@@ -45,6 +47,7 @@ class Compromisso implements DominioProtegidoServico {
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_compromisso']
         servicoSistemaSeguranca fetch: 'join' //por questoes de seguranca, sempre que um registro eh obtido do banco de dados, o servicoSistema precisara ser consultado
+        diaInteiro(defaultValue: AmbienteExecucao.SqlProprietaria.getBoolean(false))
 //        atendimentoParticularizado fetch: 'join' //por questoes de seguranca, sempre que um cidadao eh obtido do banco de dados, o servicoSistema precisara ser consultado
     }
 

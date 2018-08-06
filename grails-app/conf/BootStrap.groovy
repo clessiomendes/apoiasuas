@@ -15,7 +15,7 @@ import org.apoiasuas.seguranca.ApoiaSuasPersistenceListener
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import java.sql.SQLException
@@ -120,6 +120,8 @@ class BootStrap {
     }
 
     private void inicializacoesDiversas(UsuarioSistema admin) {
+        log.debug(AmbienteExecucao.CURRENT2.parametroTeste)
+        log.debug(AmbienteExecucao.sysProperties("org.apoiasuas.parametroTeste"))
         UsuarioSistema.withTransaction { status ->
             try {
 //                importarFamiliasService.inicializaDefinicoes(admin)

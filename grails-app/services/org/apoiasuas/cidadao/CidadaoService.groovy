@@ -4,7 +4,7 @@ import grails.transaction.Transactional
 import org.apache.commons.lang.StringEscapeUtils
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
-import org.apoiasuas.util.AmbienteExecucao
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.apoiasuas.util.HqlPagedResultList
@@ -254,8 +254,8 @@ class CidadaoService {
 
         SQLQuery queryList = sess.createSQLQuery(sqlSelectList + sqlFrom  + sqlWhere + sqlOrder)
                 .addEntity("a", Cidadao.class)
-                .addJoin("b", "a.familia")
-                .addJoin("c", "b.tecnicoReferencia");
+                .addJoin("b", "a.familia") //eager join for better performance
+                .addJoin("c", "b.tecnicoReferencia"); //eager join for better performance
         queryList.setFirstResult(params.offset ? new Integer(params.offset) : 0);
         queryList.setMaxResults(params.max ? new Integer(params.max) : 20);
 

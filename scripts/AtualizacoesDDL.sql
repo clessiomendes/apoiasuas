@@ -488,3 +488,11 @@ alter table estatistica_encaminhamento add constraint FK_g1egodpi1c11o57tiu7pbip
 alter table estatistica_encaminhamento add constraint FK_rrh7dhjyllg5k0k9thv12esah foreign key (usuario_sistema_id) references usuario_sistema;
 create sequence sq_estatistica_consulta_servico;
 create sequence sq_estatistica_encaminhamento;
+
+-- versao ate aqui: current (casa:feito, notebook: feito, producao: feito, demo:feito)
+
+alter table compromisso add column dia_inteiro boolean default FALSE;
+--alter table compromisso drop constraint ck_inicio_fim_compromisso;
+--alter table compromisso add constraint ck_inicio_fim_compromisso CHECK (fim >= inicio);
+
+-- versao ate aqui: current (casa:feito, notebook: , producao: , demo:)

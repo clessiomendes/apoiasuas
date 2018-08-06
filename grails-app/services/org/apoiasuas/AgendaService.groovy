@@ -16,12 +16,14 @@ import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
+import org.hibernate.SQLQuery
+import org.hibernate.Session
 
 @Transactional(readOnly = true)
 class AgendaService {
 
     private static final String FILTRO_COMPROMISSOS_PERIODO = " where a.servicoSistemaSeguranca = :servicoSistema "+
-            " and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim > :periodoInicio and a.fim < :periodoFim)) ";
+            " and ((a.inicio >= :periodoInicio and a.inicio < :periodoFim) or (a.fim > :periodoInicio and a.fim < :periodoFim) or (a.inicio <= :periodoInicio and a.fim >= :periodoFim)) ";
 
     def sessionFactory
     def groovySql;
@@ -328,9 +330,7 @@ class AgendaService {
         atendimento.save();
     }
 
-    public Map<String, Integer> estatisticaAtendimentos(Date inicio, Date fim) {
-//        Compromisso.findAllByInicioBetweenAndTipoAndServicoSistemaSeguranca(
-//                inicio, fim, Compromisso.Tipo.ATENDIMENTO_PARTICULARIZADO, segurancaService.getServicoLogado());
+    public Map<String, Integer> estatisticaAtendimentosTecnico(Date inicio, Date fim) {
         String sql = "select c.username as nome_tenico, count(distinct a.id) as qnt from compromisso a \n" +
                 "left join compromisso_usuario_sistema b on a.id = b.compromisso_participantes_id \n" +
                 "left join usuario_sistema c on b.usuario_sistema_id = c.id \n" +
@@ -351,6 +351,44 @@ class AgendaService {
         return result.sort{
             it.key?.toLowerCase();
         };
+    }
 
+    public Map<String, Integer> estatisticaAtendimentosStatus(Date inicio, Date fim) {
+        String sql = "select {atend.*} from compromisso comp join atendimento_particularizado atend on comp.atendimento_particularizado_id = atend.id \n" +
+                "where comp.servico_sistema_seguranca_id = :idServicoSistema \n" +
+                "and comp.inicio >= :inicioPeriodo and comp.inicio < :fimPeriodo"
+
+        Session sess = sessionFactory.getCurrentSession();
+        SQLQuery queryList = sess.createSQLQuery(sql)
+                .addEntity("atend", AtendimentoParticularizado.class);
+//        queryList.setFirstResult(params.offset ? new Integer(params.offset) : 0);
+//        queryList.setMaxResults(params.max ? new Integer(params.max) : 20);
+
+        queryList.setParameter('idServicoSistema', segurancaService.servicoLogado.id);
+        queryList.setParameter('inicioPeriodo', inicio);
+        queryList.setParameter('fimPeriodo', fim);
+        Map<String, Long> result = [:];
+        Date agora = new Date();
+        queryList.list().each { AtendimentoParticularizado atendimento ->
+            if (atendimento.horarioPreenchido) { //horario preenchido
+                if (atendimento.compareceu == true)
+                    incInMap(result, 'compareceu')
+                else if (atendimento.compareceu == false)
+                    incInMap(result, 'não compareceu')
+                if (atendimento.compareceu == null)
+                    incInMap(result, 'sem informação')
+            } else {  //horario vago
+                if (atendimento.dataHora < agora) //no passado
+                    incInMap(result, 'desperdiçado')
+                else  //no futuro
+                    incInMap(result, 'disponível')
+            }
+        }
+        return result;
+    }
+
+    private void incInMap(Map mapa, String key) {
+        Long atual = mapa.get(key) ?: 0;
+        mapa.put(key, atual+1)
     }
 }

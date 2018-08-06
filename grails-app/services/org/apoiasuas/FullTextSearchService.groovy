@@ -38,7 +38,6 @@ class FullTextSearchService {
 
 
     public void index() {
-//        Promise p = task {
 
 /*
 documentacao: https://static.javadoc.io/org.elasticsearch/elasticsearch/2.3.0/org/elasticsearch/client/Client.html
@@ -55,21 +54,19 @@ tentando setar os novos plugins em ClientNodeFactoryBean.getObject():
 
 
 
-            log.debug("remapeando")
-//            searchableClassMappingConfigurator.configureAndInstallMappings();
-//            elasticSearchService.unindex();
+        log.debug("remapeando")
         try {
             elasticSearchAdminService.deleteIndex("org.apoiasuas.menu")
         } catch (E) {
         }
-            elasticSearchAdminService.createIndex("org.apoiasuas.menu")
-            Map mapping = [menu:[properties:[
+        elasticSearchAdminService.createIndex("org.apoiasuas.menu")
+        Map mapping = [menu:[properties:[
 //                    nome:[index:"analyzed",boost:"10",type:"string",include_in_all:"true",term_vector:"with_positions_offsets"]
-                    meu_titulo:[index:"analyzed",boost:"10",type:"string",include_in_all:"true",term_vector:"with_positions_offsets"],
-                    meus_detalhes:[index:"analyzed",boost:"5",type:"string",include_in_all:"true",term_vector:"with_positions_offsets"],
-                    url:[index:"not_analyzed",type:"string",include_in_all:"false"]
-            ]]]
-            elasticSearchAdminService.createMapping("org.apoiasuas.menu","menu", mapping)
+                meu_titulo:[index:"analyzed",boost:"10",type:"string",include_in_all:"true",term_vector:"with_positions_offsets"],
+                meus_detalhes:[index:"analyzed",boost:"5",type:"string",include_in_all:"true",term_vector:"with_positions_offsets"],
+                url:[index:"not_analyzed",type:"string",include_in_all:"false"]
+        ]]]
+        elasticSearchAdminService.createMapping("org.apoiasuas.menu","menu", mapping)
 
 //            elasticSearchClient.prepareIndex()
 //                    .setIndex(scm.indexingIndex)
@@ -77,25 +74,18 @@ tentando setar os novos plugins em ClientNodeFactoryBean.getObject():
 //                    .setId(key.id)
 //                    .setSource(json)
 
-            IndexRequest indexRequest = new IndexRequest("org.apoiasuas.menu","menu", "9999");
-            XContentBuilder json = jsonBuilder()
-                    .startObject()
-                    .field("url", "emissaoFormulario/escolherFormulario")
-                    .field("meu_titulo", "Emissão de formulários")
-                    .field("meus_detalhes", "Emite formulários de clessio gratuidade para segunda via de identidade, fotos 3x4, declaração de pobreza, etc.")
-                    .endObject();
+        IndexRequest indexRequest = new IndexRequest("org.apoiasuas.menu","menu", "9999");
+        XContentBuilder json = jsonBuilder()
+                .startObject()
+                .field("url", "emissaoFormulario/escolherFormulario")
+                .field("meu_titulo", "Emissão de formulários")
+                .field("meus_detalhes", "Emite formulários de clessio gratuidade para segunda via de identidade, fotos 3x4, declaração de pobreza, etc.")
+                .endObject();
 
-            indexRequest.source(json);
-            IndexResponse response = elasticSearchClient.index(indexRequest).actionGet();
+        indexRequest.source(json);
+        IndexResponse response = elasticSearchClient.index(indexRequest).actionGet();
 //            log.debug("Indexing source ${json.string()}")
 //            elasticSearchService.index();
-//        }
-//        p.onError { Throwable err ->
-//            log.error("Erro indexando busca textual", err)
-//        }
-//        p.onComplete { result ->
-//            log.info("Indexação de busca textual terminada")
-//        }
     }
 
     public class Resultado {
