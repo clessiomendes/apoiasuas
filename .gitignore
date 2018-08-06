@@ -4,7 +4,7 @@
 # to generate your .gitignore file.
 
 # web application files
-/web-app/WEB-INF/classes
+todos/web-app/WEB-INF/classes
 
 # default HSQL database files for production mode
 /prodDb.*
@@ -25,34 +25,34 @@
 /*.war
 
 # IDE files
-/.idea
+todos/.idea
 **/.idea/workspace.xml 
 **/.idea/tasks.xml
 **/.idea
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/dictionaries
-.idea/dataSources.ids
-.idea/dataSources.xml
-.idea/sqlDataSources.xml
-.idea/dynamic.xml
-.idea/uiDesigner.xml
+todos/.idea/workspace.xml
+todos/.idea/tasks.xml
+todos/.idea/dictionaries
+todos/.idea/dataSources.ids
+todos/.idea/dataSources.xml
+todos/.idea/sqlDataSources.xml
+todos/.idea/dynamic.xml
+todos/.idea/uiDesigner.xml
 
 # plugin release files
 /*.zip
-/plugin.xml
+todos/plugin.xml
 
 # older plugin install locations
 /plugins
 /web-app/plugins
 
 # "temporary" build files
-/target
-/target-eclipse
-/out
+todos/target
+todos/target-eclipse
+todos/out
 
-/tmp_deploy
-/exportabd/intermediario.xlsx
-/exportabd/intermediario.xls
-/exportabd/curlw7/
-/exportabd/curlxp/
+todos/tmp_deploy
+todos/exportabd/intermediario.xlsx
+todos/exportabd/intermediario.xls
+todos/exportabd/curlw7/
+todos/exportabd/curlxp/
