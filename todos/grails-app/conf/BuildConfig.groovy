@@ -60,6 +60,8 @@ grails.project.dependency.resolution = {
     }
 }
 
+//ATENÇÃO: usar apenas caixa baixa e letras (sem "-", "_", etc)
 grails.plugin.location."nucleo" = "..//nucleo";
 grails.plugin.location."pedidocertidao" = "..//pedidocertidao";
+grails.plugin.location."crj" = "..//crj";
 

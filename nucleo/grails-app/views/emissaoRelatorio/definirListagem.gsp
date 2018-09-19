@@ -11,13 +11,13 @@
 <div id="edit-fool" class="content scaffold-edit" role="main">
     <h1>Emissão de Listagens</h1>
 
-    <sec:access showto="${CustomizacoesService.Codigos.BELO_HORIZONTE}">
+    <assec:access showto="${CustomizacoesService.Codigos.BELO_HORIZONTE}">
 		<div class="nav" role="navigation">
 			<ul>
                 <li><g:link class="list ${InicioController.novoRecurso("31/03/2018")}" controller="familiaDetalhado" action="familiasSemCad">Famílias sem Cad</g:link></li>
 			</ul>
 		</div>
-    </sec:access>
+    </assec:access>
 
     <g:if test="${flash.message}">
         <div class="message" role="status">${flash.message}</div>

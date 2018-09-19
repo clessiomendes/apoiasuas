@@ -66,12 +66,12 @@
             <span class="origemSugestao1">${municipioLogado}</span> - <span class="origemSugestao2">${UFLogada}</span>
         </span>
     </g:fieldcontain>
-    <sec:access showto="${[CustomizacoesService.Codigos.BELO_HORIZONTE_HAVAI_VENTOSA, CustomizacoesService.Codigos.BELO_HORIZONTE_VISTA_ALEGRE]}">
+    <assec:access showto="${[CustomizacoesService.Codigos.BELO_HORIZONTE_HAVAI_VENTOSA, CustomizacoesService.Codigos.BELO_HORIZONTE_VISTA_ALEGRE]}">
         <div class="fieldcontain hidden">
             <g:hiddenField name="endereco.municipio" value="${enderecoInstance?.municipio ?: municipioLogado}"/>
             <g:hiddenField name="endereco.UF" value="${enderecoInstance?.UF ?: UFLogada}"/>
         </div>
-    </sec:access>
+    </assec:access>
 
 </div>
 
@@ -114,11 +114,11 @@ O código legado só fica disponível: 1) se o ServicoSistema tem acesso a este 
 --}%
 <g:if test="${modoEdicao}" >
     <sec:ifAnyGranted roles="${DefinicaoPapeis.STR_SUPER_USER}">
-        <sec:access acessoServico="${RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO}">
+        <assec:access acessoServico="${RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO}">
             <div class="fieldcontain ${hasErrors(bean: localDtoFamilia, field: 'codigoLegado', 'error')} ">
                 <label>Cad</label>
                 <g:textField name="codigoLegado" size="10" value="${localDtoFamilia?.codigoLegado}"/>
             </div>
-        </sec:access>
+        </assec:access>
     </sec:ifAnyGranted>
 </g:if>

@@ -10,5 +10,5 @@ _assertExists(_span("Gratuidade Viagens Interestaduais para idosos"));
 _setValue(_textbox("cad"), "513");
 _click(_submit("ok"));
 _setSelected(_select("membroSelecionado"), "EZEQUIEL DE SOUZA REIS");
-_click(_submit("Encaminhar"));
+_click(_input("Encaminhar"));
 _assertEqual("Gratuidade Viagens Interestaduais para idosos", _getSelectedText(_select("servico")));

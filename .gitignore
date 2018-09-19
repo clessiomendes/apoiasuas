@@ -56,3 +56,10 @@
 **/exportabd/intermediario.xls
 **/exportabd/curlw7/
 **/exportabd/curlxp/
+
+#Katalon (testes de integração automatizados)
+/katalon/bin/
+/katalon/Libs/
+/katalon/.settings/
+/katalon/.classpath
+.svn/

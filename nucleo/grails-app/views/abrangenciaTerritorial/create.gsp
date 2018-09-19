@@ -15,6 +15,7 @@
 		</div>
 		<div id="create-abrangenciaTerritorial" class="content scaffold-create" role="main">
 			<h1><g:message code="default.create.label" args="[entityName]" /></h1>
+%{--
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
@@ -25,6 +26,9 @@
 				</g:eachError>
 			</ul>
 			</g:hasErrors>
+--}%
+			<g:render template="/mensagensPosGravacao" model="[bean: abrangenciaTerritorialInstance]"/>
+
 			<g:form onsubmit="submeteTerritoriosAtuacao(this)" url="[resource:abrangenciaTerritorialInstance, action:'save']" >
 				<fieldset class="form">
 					<g:render template="form"/>

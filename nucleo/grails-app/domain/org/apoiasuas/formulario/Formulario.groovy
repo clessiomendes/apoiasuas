@@ -33,12 +33,16 @@ class Formulario implements Serializable {
                         'camposOrdenados', 'campoAvulso', 'conteudoCampo', 'modeloPadrao', 'anexarFichaNoEncaminhamento'
     ]
 
+//FIXME: busca por formularios desabilitada porque, duranta a incializacao do elasticsearch, caso um formulario tenha sido indexado com um enum removido em Predefinidos, a aplicacao nao consegue inicializar
+//mensagem de erro: Error initializing the application: Unknown name value [PASSE_LIVRE_PCD] for enum class [org.apoiasuas.formulario.PreDefinidos]
+/*
     static searchable = {                           // <-- elasticsearch plugin
-        only = ["nome","descricao"/*,'arquivosModelos'*/]
+        only = ["nome","descricao"]
         nome alias:FullTextSearchUtils.MEU_TITULO, index:'analyzed', boost:50
         descricao alias:FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:5
 //        arquivosModelos alias:FullTextSearchUtils.MEUS_DETALHES, index:'analyzed', boost:1, type: "attachment"
     }
+*/
 
 //    public List<byte[]> getArquivosModelos() {
 //        return modelos*.arquivo

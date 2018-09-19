@@ -176,7 +176,9 @@ class FormularioService {
 
     @Transactional
     def inicializaFormularios(UsuarioSistema usuarioSistema) {
-
+        log.debug("inicializando formularios")
+        Formulario.executeUpdate("delete Formulario f where f.formularioPreDefinido is not null and f.formularioPreDefinido not in :pres", [pres: PreDefinidos.values()])
+//        Formulario.findAllByFormularioPreDefinidoNotInList(PreDefinidos.values())*.delete();
         PreDefinidos.values().each { enumForm ->
             if (enumForm.habilitado) try {
                 Formulario formulario = Formulario.findByFormularioPreDefinido(enumForm)

@@ -9,14 +9,25 @@
     <fieldset id="formPrincipal" class="form">
         %{-- Montagem do formulário de dados da família --}%
         <div id="divFamilia" class="forms-detalhados">
-            <g:render template="/familia/detalhes/familia/formFamilia"/>
+            <g:if test="${formFamilia}">
+                <g:render template="${formFamilia}"/>
+            </g:if>
+            <g:else>
+                <g:render template="/familia/detalhes/familia/formFamilia"/>
+            </g:else>
         </div>
 
     %{-- Montagem dos formulários para cada membro JA EXISTENTE --}%
         <g:each in="${localDtoFamilia.getMembrosOrdemPadrao(null)}" var="cidadao" status="i">
             <div id="divMembros[${i}]" class="forms-detalhados forms-cidadao hidden">
+            <g:if test="${formCidadao}">
+                <g:render template="${formCidadao}"
+                          model="[cidadaoInstance: cidadao, ordForm: i]"/>
+            </g:if>
+            <g:else>
                 <g:render template="/familia/detalhes/cidadao/formCidadao"
                           model="[cidadaoInstance: cidadao, ordForm: i]"/>
+            </g:else>
             </div>
         </g:each>
 
@@ -32,7 +43,7 @@
         <g:actionSubmit id="btnCreate" class="save hidden" action="saveNew" value="Gravar" title="Permite gravar e continuar alterando o cadastro"
             onclick="this.form.action='${createLink(action:'saveNew')}'; submitCriacao(this); return false;"/>
 
-        <g:submitToRemote id="btnGravar" name="gravar" class="hidden save" value="Gravar"
+        <g:submitToRemote elementId="btnGravar" name="gravar" class="hidden save" value="Gravar"
                           title="Permite gravar e continuar alterando o cadastro"
                           url="[action: 'save', id: localDtoFamilia.id]"
                           before="iniciaOverlayAjax(this); /*somente o botão receberá o efeito de bolinha rodando*/"
@@ -43,7 +54,7 @@
 
         %{--O botão chama a action de gravacao e, EM PARALELO, abre uma nova aba para o novo membro --}%
                           %{--before="noOverlay = true;"--}%
-        <g:submitToRemote id="btnAdicionarCidadao" class="hidden btn-adicionar-cidadao" value="Novo membro"
+        <g:submitToRemote elementId="btnAdicionarCidadao" class="hidden btn-adicionar-cidadao" value="Novo membro"
                           title="Adicionar mais um membro ao cadastro"
                           url="[action: 'save', id: localDtoFamilia.id]"
                           before="iniciaOverlayAjax(this); /*somente o botão receberá o efeito de bolinha rodando*/"
@@ -53,7 +64,7 @@
                           onFailure="erroSave(XMLHttpRequest.status, XMLHttpRequest.responseText);"/>
 
         %{--O botão imprimir, na verdade chama a action de gravacao e, em caso de sucesso, faz o download do formulario em seguida --}%
-        <g:submitToRemote id="btnImprimir" name="imprimir" class="hidden print" value="Imprimir"
+        <g:submitToRemote elementId="btnImprimir" name="imprimir" class="hidden print" value="Imprimir"
                           title="Gera formulário de cadastro para impressão (e grava eventuais alterações)"
                           url="[action: 'save', id: localDtoFamilia.id]"
                           before="iniciaOverlayAjax(this); /*somente o botão receberá o efeito de bolinha rodando*/"
@@ -64,7 +75,7 @@
         %{--O botão concluir, na verdade chama a action de gravacao e, em caso de sucesso, redireciona para a pagina de emissao de formularios --}%
                           %{--before="iniciaOverlayAjax(this); /*somente o botão receberá o efeito de bolinha rodando*/"--}%
                           %{--onComplete="terminaOverlayAjax(jQuery('#btnConcluir'));"--}%
-        <g:submitToRemote id="btnConcluir" class="hidden btn-concluir" value="Concluir"
+        <g:submitToRemote elementId="btnConcluir" class="hidden btn-concluir" value="Concluir"
                           title="Conclui as alteraçoes no cadastro (e grava eventuais alterações)"
                           url="[action: 'save', id: localDtoFamilia.id]"
                           onSuccess='sucessoConcluir(data);'

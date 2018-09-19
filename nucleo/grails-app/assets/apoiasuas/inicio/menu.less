@@ -1,12 +1,12 @@
 @import (reference) "../main.less";
 
-#menu {
+.divMenu {
     margin-bottom: 0px;
     font-weight: bold;
     list-style-type: none;
 }
 
-#menu a {
+.divMenu a {
     float: left;
     display: block;
     color: #fff;
@@ -28,60 +28,60 @@
 
 }
 
-#menu a.verde_oliva {
+.divMenu a.verde_oliva {
     background-color: #A6C91C;
 }
 
-#menu a.laranja {
+.divMenu a.laranja {
     background-color: #D87426;
 }
 
-#menu a.verde_agua {
+.divMenu a.verde_agua {
     background-color: #086A77;
 }
 
-#menu a.azul {
+.divMenu a.azul {
     background-color: #5375CA;
 }
 
-#menu a.magenta {
+.divMenu a.magenta {
     background-color: #DA3DF8;
 }
 
-#menu .marrom {
+.divMenu .marrom {
     background-color: #9C3939;
 }
 
-#menu .lilas {
+.divMenu .lilas {
     background-color: #363996;
 }
 
-#menu .rosa {
+.divMenu .rosa {
     background-color: #EC2141;
 }
 
-#menu .beje {
+.divMenu .beje {
     background-color: #F4B32A;
 }
 
 
 
 /* CSS3 Effects */
-#menu  a {
+.divMenu  a {
     -webkit-transition: all 0.4s linear;
     -moz-transition: all 0.4s linear;
     -o-transition: all 0.4s linear;
     -ms-transition: all 0.4s linear;
     transition: all 0.4s linear;
 }
-#menu  a:hover {
+.divMenu  a:hover {
     -webkit-transform: scale(0.85,0.85);
     -moz-transform: scale(0.85,0.85);
     -o-transform: scale(0.85,0.85);
     -ms-transform: scale(0.85,0.85);
     transform: scale(0.85,0.85);
 }
-#menu  a {
+.divMenu  a {
     -webkit-transition: all 0.4s linear;
     -moz-transition: all 0.4s linear;
     -o-transition: all 0.4s linear;
@@ -89,15 +89,15 @@
     transition: all 0.4s linear;
 }
 @media (max-width:768px){
-    #menu a.verde_oliva,
-    #menu a.laranja,
-    #menu a.verde_agua,
-    #menu a.azul,
-    #menu a.magenta,
-    #menu a.lilas,
-    #menu a.rosa,
-    #menu a.beje,
-    #menu a.marrom
+    .divMenu a.verde_oliva,
+    .divMenu a.laranja,
+    .divMenu a.verde_agua,
+    .divMenu a.azul,
+    .divMenu a.magenta,
+    .divMenu a.lilas,
+    .divMenu a.rosa,
+    .divMenu a.beje,
+    .divMenu a.marrom
     {
         font-size: 11px;
         background-position: 50% 90%;
@@ -111,6 +111,7 @@
     }
 }
 
+/*
 .anuncio-rede-socio-assistencial {
     background: lighten(@cor-base-mensagem-info, @lighten-fundo) url('../../images/usecases/rede-socio-assistencial.png') 0.5em 50% no-repeat;
     background-size: 40px 40px;
@@ -123,14 +124,15 @@
     font-size: 0.75em;
     line-height: 1.5;
     margin: 0.7em 0;
-    height: 5.3em; /*fixa o tambanho do anuncio*/
-    overflow:hidden /*Corta o conte�do que n�o couber no anuncio*/
+    height: 5.3em; /!*fixa o tambanho do anuncio*!/
+    overflow:hidden /!*Corta o conte�do que n�o couber no anuncio*!/
 }
 
 .anuncio-rede-socio-assistencial a:link, .anuncio-rede-socio-assistencial a:visited, .anuncio-rede-socio-assistencial a:hover {
     color: @cor-base-mensagem-info;
     text-decoration: none;
 }
+*/
 
 .label-menu-procurar {
     float: left;

@@ -58,6 +58,7 @@ class FamiliaController extends AncestralController {
     def monitoramentoService;
     def agendaService;
     def auditoriaService;
+    def facadeService;
 /*
     @Override
     protected interceptaSeguranca() {
@@ -96,8 +97,10 @@ class FamiliaController extends AncestralController {
         List<PedidoCertidaoProcessoDTO> pedidosCertidaoPendentes = pedidoCertidaoProcessoService.pedidosCertidaoPendentes(familiaInstance.id);
         List<AtendimentoParticularizado> atendimentosList = agendaService.getAtendimentos(familiaInstance);
 
-        guardaUltimaFamiliaSelecionada(familiaInstance)
+        guardaUltimaFamiliaSelecionada(familiaInstance);
+        log.debug("a");
         render view: 'show', model: [familiaInstance: familiaInstance, pedidosCertidaoPendentes: pedidosCertidaoPendentes,
+                                     pedidosCertidaoPendentesVersao20: facadeService.pedidosCertidaoPendentes(familiaInstance),
                                      telefonesList: getTodosOsTelefones(familiaInstance), atendimentosList: atendimentosList];
     }
 

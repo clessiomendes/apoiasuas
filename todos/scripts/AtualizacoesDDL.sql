@@ -495,4 +495,77 @@ alter table compromisso add column dia_inteiro boolean default FALSE;
 --alter table compromisso drop constraint ck_inicio_fim_compromisso;
 --alter table compromisso add constraint ck_inicio_fim_compromisso CHECK (fim >= inicio);
 
--- versao ate aqui: current (casa:feito, notebook: , producao: , demo:)
+-- versao ate aqui: current (casa:feito, notebook: feito, producao: feito, demo: feito)
+
+create SCHEMA pedidocertidao;
+
+--cabecalho
+create table pedidocertidao.pedido_certidao (id int8 not null, version int8 not null, familia_id int8, servico_sistema_seguranca_id int8, situacao varchar(255) not null, operador_responsavel_id int8 not null, date_created timestamp, last_updated timestamp,
+--certidao
+tipo_certidao varchar(255) not null, cidadao_registro_id int8, nome_registro varchar(255) not null, data_registro timestamp, nome_conjuge_registro varchar(255), folha varchar(255), livro varchar(255), termo varchar(255), observacoes_registro varchar(10000),
+--solicitante
+cidadao_solicitante_id int8, nome_solicitante varchar(10000) not null, cpf_solicitante varchar(255), identidade_solicitante varchar(255), estado_civil_solicitante varchar(255), mae_solicitante varchar(255), pai_solicitante varchar(255), nacionalidade_solicitante varchar(255), profissao_solicitante varchar(255), uniao_estavel_solicitante varchar(255), convivente_solicitante varchar(255), contatos_solicitante varchar(10000), endereco_solicitante varchar(255), municipio_solicitante varchar(255), uf_solicitante varchar(255),
+--cartorio
+nome_cartorio varchar(10000), endereco_cartorio varchar(255), bairro_cartorio varchar(255), cep_cartorio varchar(255), municipio_cartorio varchar(255), uf_cartorio varchar(255), observacoes_cartorio varchar(10000), contatos_cartorio varchar(10000),
+primary key (id));
+
+alter table pedidocertidao.pedido_certidao add constraint FK_srfdfee4tkf4p50sno5h73d2o foreign key (familia_id) references familia;
+alter table pedidocertidao.pedido_certidao add constraint FK_9ha7j30of75rsfw73fmblf5bi foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table pedidocertidao.pedido_certidao add constraint FK_emscmm79bi6g4dmy49i3d7wt4 foreign key (operador_responsavel_id) references usuario_sistema;
+alter table pedidocertidao.pedido_certidao add constraint FK_om2tt6tsks4tuvlxguk6uq8d8 foreign key (cidadao_registro_id) references cidadao;
+alter table pedidocertidao.pedido_certidao add constraint FK_ivfib5gtc2p67j5ndn0ofnhri foreign key (cidadao_solicitante_id) references cidadao;
+create sequence pedidocertidao.sq_pedidocertidao;
+
+create table pedidocertidao.historico_pedido_certidao (id int8 not null, version int8 not null, data_hora timestamp not null, descricao varchar(10000) not null, operador_id int8 not null, pedido_id int8 not null, acao varchar(255), primary key (id));
+alter table pedidocertidao.historico_pedido_certidao add constraint FK_fvbrmu7yuv334q8ktry4xotsh foreign key (operador_id) references usuario_sistema;
+alter table pedidocertidao.historico_pedido_certidao add constraint FK_k83p3jbm6arui3cfirn3sv4lx foreign key (pedido_id) references pedidocertidao.pedido_certidao;
+create sequence pedidocertidao.sq_historico_pedidocertidao;
+
+/*
+alter table pedidocertidao.pedido_certidao add column bairro_cartorio varchar(255);
+alter table pedidocertidao.pedido_certidao add column cep_cartorio varchar(255);
+alter table pedidocertidao.pedido_certidao add column contatos_cartorio varchar(10000);
+alter table pedidocertidao.pedido_certidao add column contatos_solicitante varchar(10000);
+alter table pedidocertidao.pedido_certidao add column convivente_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column cpf_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column endereco_cartorio varchar(255);
+alter table pedidocertidao.pedido_certidao add column estado_civil_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column folha varchar(255);
+alter table pedidocertidao.pedido_certidao add column identidade_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column livro varchar(255);
+alter table pedidocertidao.pedido_certidao add column mae_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column municipio_cartorio varchar(255);
+alter table pedidocertidao.pedido_certidao add column nacionalidade_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column nome_conjuge_registro varchar(255);
+alter table pedidocertidao.pedido_certidao add column observacoes_cartorio varchar(10000);
+alter table pedidocertidao.pedido_certidao add column observacoes_registro varchar(10000);
+alter table pedidocertidao.pedido_certidao add column pai_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column profissao_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column termo varchar(255);
+alter table pedidocertidao.pedido_certidao add column tipo_certidao varchar(255);
+alter table pedidocertidao.pedido_certidao add column uf_cartorio varchar(255);
+alter table pedidocertidao.pedido_certidao add column uniao_estavel_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column cidadao_registro_id int8;
+alter table pedidocertidao.pedido_certidao add column cidadao_solicitante_id int8;
+
+alter table pedidocertidao.pedido_certidao add column date_created timestamp;
+alter table pedidocertidao.pedido_certidao add column last_updated timestamp;
+
+alter table pedidocertidao.pedido_certidao add column endereco_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column municipio_solicitante varchar(255);
+alter table pedidocertidao.pedido_certidao add column uf_solicitante varchar(255);
+
+*/
+
+alter table servico_sistema add column recursos varchar(10000);
+alter table servico_sistema add column token varchar(255);
+update servico_sistema set token = 'CRJ' where id = 7;
+
+-- versao ate aqui: current (casa:feito, notebook: feito, producao: feito, demo:feito)
+
+alter table campo_formulario drop constraint fk_1rvtfmohx49wybiwxo3dporwj,
+add constraint fk_1rvtfmohx49wybiwxo3dporwj foreign key (formulario_id)
+   references formulario(id) on delete cascade;
+alter table modelo_formulario drop constraint fk_il6iv2mtvadvdfm83wyd171h4,
+add constraint fk_il6iv2mtvadvdfm83wyd171h4 foreign key (formulario_id)
+   references formulario(id) on delete cascade;

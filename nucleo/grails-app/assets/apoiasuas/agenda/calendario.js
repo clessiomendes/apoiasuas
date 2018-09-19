@@ -34,7 +34,7 @@ $(document).ready(function() {
             center: 'title',
             right: 'next',
         },
-        defaultDate: isMobile ? null /*data atual*/ : moment(cookieCalendario.start) /*ultima data consultada*/,
+        defaultDate: goToDate ? moment(goToDate, "YYYYMMDD") : isMobile ? null /*data atual*/ : moment(cookieCalendario.start) /*ultima data consultada*/,
         navLinks: true, // can click day/week names to navigate views
         selectable: isMobile ? false : true,
         selectHelper: true,

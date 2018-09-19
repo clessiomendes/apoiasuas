@@ -32,7 +32,7 @@
 
 		<div id="show-servico" class="content scaffold-show" role="main">
 			<g:if test="${flash.message}">
-			<div class="message" role="status">${flash.message}</div>
+			    <div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<ol class="property-list servico">
 

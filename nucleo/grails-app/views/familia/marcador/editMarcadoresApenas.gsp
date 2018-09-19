@@ -15,16 +15,9 @@
 		</div>
 		<div id="edit-familia" class="content scaffold-edit" role="main">
 			<h1>Alterar indicadores - ${familiaInstance?.montaDescricao()}</h1>
-			<g:if test="${flash.message}">
-			<div class="message" role="status">${flash.message}</div>
-			</g:if>
-			<g:hasErrors bean="${familiaInstance}">
-			<ul class="errors" role="alert">
-				<g:eachError bean="${familiaInstance}" var="error">
-				<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-				</g:eachError>
-			</ul>
-			</g:hasErrors>
+
+			<g:render template="/mensagensPosGravacao" model="[bean: familiaInstance]"/>
+
 			<g:form url="[resource:familiaInstance, action:'save']">
 				<g:hiddenField name="version" value="${familiaInstance?.version}" />
 

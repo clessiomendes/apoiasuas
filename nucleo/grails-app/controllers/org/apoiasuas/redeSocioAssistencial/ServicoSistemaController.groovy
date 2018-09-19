@@ -56,6 +56,9 @@ class ServicoSistemaController extends AncestralServicoController {
             return render(view: 'show', model: getModelExibicao(servicoSistemaInstance))
         }
 
+        //Converte os checkboxes selecionados no formulario em uma string separada por virgulas de codigos de RecursosServico
+        servicoSistemaInstance.recursos = params.recursos.findAll{RecursosServico.contains(it.key)}.collect{it.key}.join(",");
+
         servicoSistemaInstance.abrangenciaTerritorial = atribuiAbrangenciaTerritorial();
 
         //Validações:

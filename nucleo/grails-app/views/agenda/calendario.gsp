@@ -23,6 +23,7 @@
     //Variaveis globais geradas aa partir de tags grails (que não podem ser chamadas de um .js), a serem utilizadas em calendario.js
     var configuracaoAgenda = ${raw(configuracao as String)};
     var idUsuarioSistema = "${idUsuarioSistema}";
+    var goToDate = ${goToDate ? "$goToDate" : "null"};
     var actionCreateCompromissoAutomatico = "${createLink(action:'createCompromissoAutomatico')}";
     var actionCreateCompromisso = "${createLink(action:'createCompromisso')}";
     var actionEditCompromisso = "${createLink(action:'editCompromisso')}";
@@ -66,12 +67,12 @@
 
 <div style="display: none" id='divEscolherTipoCompromisso'>
     <div id="divEscolhaAtendimento">
-        <input type="button" class="speed-button-atendimento" onclick="janelaModalTipoCompromisso.createAtendimento();"/>
+        <input type="button" class="speed-button-atendimento" onclick="janelaModalTipoCompromisso.createAtendimento();"  id="btnAtendimento"/>
         Atedimento Particularizado com <g:select id="selectUsuarioSistemaOpcoesCompromisso" name="idUsuarioSistema" from="${operadores}"
                           optionKey="id" class="many-to-one" noSelection="['': '']"/>
         <br>
     </div>
-    <input type="button" class="speed-button-compromisso" onclick="janelaModalTipoCompromisso.createOutroCompromisso();"/>
+    <input type="button" class="speed-button-compromisso" onclick="janelaModalTipoCompromisso.createOutroCompromisso();" id="btnCompromisso"/>
     Outros tipos de compromisso
 </div>
 

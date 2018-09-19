@@ -3,6 +3,7 @@ package org.apoiasuas.seguranca
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
+import groovy.transform.Synchronized
 import org.apoiasuas.Link
 import org.apoiasuas.cidadao.Cidadao
 import org.apoiasuas.cidadao.Familia
@@ -292,22 +293,22 @@ class SegurancaService {
     }
 
     /**
-     * @param recurso verifica se o serviço logado tem acesso a determinada funcionalidade.
-     * Ex: acessoServico='inclusaoMembroFamiliar' (todas as opções disponíveis são obtidas de AcessoSeguranca em ServicoSistema)
+     * verifica se o serviço logado tem acesso a determinada funcionalidade.
      */
     @Transactional(readOnly = true)
     public boolean acessoRecursoServico(RecursosServico recurso) {
-
-        if (recurso && ! recurso.propriedade.trim().isEmpty()) {
-            def temp = servicoLogado.acessoSeguranca.getProperty(recurso.propriedade)
-            return temp.asBoolean();
-        }
-        return true;
+        return recurso ? servicoLogado.contemRecurso(recurso) : true;
+//        if (recurso && ! recurso.propriedade.trim().isEmpty()) {
+//            def temp = servicoLogado.acessoSeguranca.getProperty(recurso.propriedade)
+//            return temp.asBoolean();
+//        }
+//        return true;
     }
 
     @Transactional(readOnly = true)
     public boolean isIdentificacaoCodigoLegado() {
         return acessoRecursoServico(RecursosServico.IDENTIFICACAO_PELO_CODIGO_LEGADO);
     }
+
 }
 

@@ -16,16 +16,8 @@
 </script>
 
 <div id="create-compromisso" class="content scaffold-create" role="main">
-	<g:if test="${flash.message}">
-	<div class="message" role="status">${flash.message}</div>
-	</g:if>
-	<g:hasErrors bean="${localDtoCompromisso}">
-        <ul class="errors" role="alert">
-            <g:eachError bean="${localDtoCompromisso}" var="error">
-                <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-            </g:eachError>
-        </ul>
-	</g:hasErrors>
+
+	<g:render template="/mensagensPosGravacao" model="[bean: localDtoCompromisso]"/>
 
 	<g:formRemote url="[action:'saveCompromisso']" name="saveCompromisso"
 				  onFailure="janelaModal.loadHTML(XMLHttpRequest.responseText);"
@@ -35,8 +27,8 @@
             <g:render template="formCompromisso"/>
 		</fieldset>
 		<fieldset class="buttons">
-			<g:submitButton name="create" class="save" value="Gravar" />
-			<input type="button" class="cancel" onclick="janelaModal.cancelada();" value="Cancelar" />
+			<g:submitButton name="create" class="save" value="Gravar"  id="btnGravar"/>
+			<input type="button" class="cancel" onclick="janelaModal.cancelada();" value="Cancelar"  id="btnCancelar"/>
 		</fieldset>
 	</g:formRemote>
 </div>

@@ -9,6 +9,7 @@ import org.apoiasuas.formulario.definicao.FormularioEncaminhamento
 import org.apoiasuas.formulario.definicao.FormularioFotos
 import org.apoiasuas.formulario.definicao.FormularioIdentidade
 import org.apoiasuas.formulario.definicao.FormularioIdentidadeFoto
+import org.apoiasuas.formulario.definicao.FormularioPasseLivrePCD
 import org.apoiasuas.formulario.definicao.FormularioSepultamento
 
 /**
@@ -29,6 +30,7 @@ enum PreDefinidos {
     CERTIDOES_E_PEDIDO(FormularioCertidoesPedido.class, 7),
     ENCAMINHAMENTO(FormularioEncaminhamento.class, 8),
     CURRICULO_EMPREGO(FormularioCurriculoEmprego.class, 9),
+    PASSE_LIVRE_PCD(FormularioPasseLivrePCD.class, 10),
     //GENERICO(FormularioBase.class),
     PLANO_ACOMPANHAMENTO(null, 999, false) //DESATIVADO
 

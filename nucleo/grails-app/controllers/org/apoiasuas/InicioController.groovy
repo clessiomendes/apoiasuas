@@ -3,19 +3,19 @@ package org.apoiasuas
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.Holders
 import org.apache.log4j.AppenderSkeleton
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import org.apoiasuas.importacao.ImportacaoFamiliasController
+import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
+import org.apoiasuas.seguranca.ASMenuBuilder
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.ItemMenuDTO
 import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsBootstrapClass
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
-import org.springframework.http.ResponseEntity
-import org.springframework.web.client.RestTemplate
 
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
 class InicioController extends AncestralController {
@@ -30,6 +30,7 @@ class InicioController extends AncestralController {
     def fileStorageService
     def lookupService
     def detalheService
+    ASMenuBuilder menuBuilder
 
     static defaultAction = "actionInicial"
 
@@ -59,7 +60,7 @@ class InicioController extends AncestralController {
     /**
      * Exibicao da tela de menu inicial
      */
-    def menu() {
+    def menuDESATIVADO() {
         List<GrailsControllerClass> opcoes = []
         List<GrailsControllerClass> outrasOpcoes = []
 
@@ -73,6 +74,28 @@ class InicioController extends AncestralController {
 
         //Busca um servico aleatorio da rede socio assistencial para usar como anuncio
         render view:'menu', model: [/*opcoes: opcoes,*/ outrasOpcoes: outrasOpcoes, servicoAnuncio: servicoService.getServicoParaAnuncio()]
+    }
+
+    def menu() {
+
+        if (AmbienteExecucao.isDesenvolvimento()) {
+            menuBuilder.novaOpcaoMenu(new ItemMenuDTO(ordem: 50L, descricao: "Reservas",
+                    recursoServico: RecursosServico.RESERVAS,
+                    hint: "Reservas de espaços para atividades",
+                    imagem: "usecases/reservas-w.png", classeCss: "beje", link: [controller: "reserva", action: "agenda"]));
+
+/*
+            grailsApplication.bootstrapClasses.each { GrailsBootstrapClass bootstrap ->
+                log.debug(bootstrap);
+                if (bootstrap.name == "Crj")
+                    bootstrap.callInit(servletContext);
+//                    bootstrap.blablaa();
+//                    bootstrap."alimentaMenu"();
+//                    bootstrap."init".call(servletContext);
+            }
+*/
+        }
+        render view:'menu'
     }
 
     def status() {
@@ -110,13 +133,13 @@ class InicioController extends AncestralController {
 
     private ItemMenuDTO[] itemMenu(String descricao, Class classeController, String[] papeisAcesso) {
         String url = grailsApplication.getControllerClass(classeController.name)
-        log.debug("Novo item de menu: descricao ${descricao}, url ${url}, papeisAcesso ${papeisAcesso}")
-        return new ItemMenuDTO(descricao: descricao, url: url, papeisAcesso: papeisAcesso)
+        log.debug("Novo item de menu: descricao ${descricao}, url ${url}, restricoesAcesso ${papeisAcesso}")
+        return new ItemMenuDTO(descricao: descricao, url: url, restricaoAcesso: papeisAcesso)
     }
 
     private ItemMenuDTO[] itemMenu(String descricao, String url, String[] papeisAcesso) {
-        log.debug("Novo item de menu: descricao ${descricao}, url ${url}, papeisAcesso ${papeisAcesso}")
-        return new ItemMenuDTO(descricao: descricao, url: url, papeisAcesso: papeisAcesso)
+        log.debug("Novo item de menu: descricao ${descricao}, url ${url}, restricoesAcesso ${papeisAcesso}")
+        return new ItemMenuDTO(descricao: descricao, url: url, restricaoAcesso: papeisAcesso)
     }
 
     def recarregarConfiguracoes() {

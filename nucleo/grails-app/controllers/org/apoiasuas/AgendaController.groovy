@@ -23,13 +23,13 @@ class AgendaController extends AncestralController {
     def usuarioSistemaService;
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
-    def calendario(Long idUsuarioSistema, Boolean selecionaUsuarioLogado) {
+    def calendario(Long idUsuarioSistema, Boolean selecionaUsuarioLogado, String goToDate) {
 //        Map configuracaoCalendario;
 //        if (! session[CONFIGURACAO_CALENDARIO])
 //            session[CONFIGURACAO_CALENDARIO] = (CONFIGURACAO_INICIAL + [defaultDate: ApoiaSuasDateUtils.dateTimeToStringIso8601(new Date())]) as JSON;
 //                //Caso não haja configuração prévia guardada na sessão, usar parâmetros default e partir da data atual
 
-        render view: "calendario", model: [operadores: getOperadoresOrdenadosController(true),
+        render view: "calendario", model: [operadores: getOperadoresOrdenadosController(true), goToDate: goToDate,
                 configuracao: getConfiguracao(), idUsuarioSistema: idUsuarioSistema, idUsuarioSistema: selecionaUsuarioLogado ? usuarioLogado.id : null ]
     }
 

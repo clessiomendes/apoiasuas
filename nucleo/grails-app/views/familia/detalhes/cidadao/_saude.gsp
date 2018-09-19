@@ -52,11 +52,29 @@
                             class="selectDeficiencia many-to-one select-sim-nao"/>
         </g:fieldcontain>
 
+%{--
         <g:fieldcontain bean="${localDtoCidadao}" field="detalhe.tipoDeficiencia" class="deficiencia">
             <label>Tipo de Deficiência</label>
             <palavra-chave>cego,surdo,mudo,paraplegico,tetraplegico</palavra-chave>
             <g:selectLookup bean="${localDtoCidadao}" name="${prefixo}detalhe.tipoDeficiencia" class="many-to-one"/>
         </g:fieldcontain>
+--}%
+
+        <g:fieldcontain bean="${localDtoCidadao}" field="detalhe.tiposDeficiencia" class="deficiencia">
+            <label>Tipo de Deficiência</label>
+            <palavra-chave>cego,surdo,mudo,paraplegico,tetraplegico</palavra-chave>
+            <g:multiLookup bean="${localDtoCidadao}" name="${prefixo}detalhe.tiposDeficiencia"
+                           tabela="tipoDeficiencia" classeOpcao="opcao-multi-lookup"/>
+        </g:fieldcontain>
+
+        <g:fieldcontain bean="${localDtoCidadao}" field="detalhe.gratuidadeTransporteDeficiente" class="deficiencia">
+            <label>Acesso à gratuidade no transporte</label>
+            <palavra-chave>passe livre</palavra-chave>
+            <g:multiLookup bean="${localDtoCidadao}" name="${prefixo}detalhe.gratuidadeTransporteDeficiente"
+                           tabela="gratuidadeTransporte" classeOpcao="opcao-multi-lookup"/>
+        </g:fieldcontain>
+
+        <div class="nova-linha"></div>
 
         <g:fieldcontain bean="${localDtoCidadao}" field="detalhe.cuidadorPrincipal" class="deficiencia">
             <label>Cuidador(es) Princiapal(is)</label>
@@ -65,18 +83,9 @@
                          value="${localDtoCidadao.mapaDetalhes['cuidadorPrincipal']}"/>
         </g:fieldcontain>
 
-        <div class="nova-linha"></div>
-
         <g:fieldcontain bean="${localDtoCidadao}" field="detalhe.servicoPessoaDeficiencia">
             <label>Serviço(s) à P.C.D. onde é atendido<g:helpTooltip chave="help.servico.pessoa.deficiencia"/></label>
             <g:textField name="${prefixo}detalhe.servicoPessoaDeficiencia" size="30" maxlength="60" value="${localDtoCidadao.mapaDetalhes['servicoPessoaDeficiencia']}"/>
-        </g:fieldcontain>
-
-        <g:fieldcontain bean="${localDtoCidadao}" field="detalhe.gratuidadeTransporteDeficiente" class="deficiencia">
-            <label>Acesso à gratuidade no transporte</label>
-            <palavra-chave>passe livre</palavra-chave>
-            <g:multiLookup bean="${localDtoCidadao}" name="${prefixo}detalhe.gratuidadeTransporteDeficiente"
-                           tabela="gratuidadeTransporte" classeOpcao="opcao-multi-lookup"/>
         </g:fieldcontain>
 
 %{--

@@ -18,6 +18,7 @@
 .button-link(create, url(../images/database/add.png));
 .button-link(list, url(../images/database/table.png));
 .button-link(filter, url(../images/database/filter.png));
+.button-link(undo, url(../images/undo.png));
 
 //Uma estrutura única para gerar links de navegação (topo), botões de ação (rodapé) e image buttons (corpo).
 //Usa mixins para gerar 3 regras para cada chamada, todas com o mesmo nome de classe e imagem, mas com atributos específicos
@@ -113,6 +114,14 @@
   .speedButton(url(../images/database/add.png));
 }
 
+.speed-button-check {
+  .speedButton(url(../images/checked.png));
+}
+
+.speed-button-undo {
+  .speedButton(url(../images/undo.png));
+}
+
 .speed-button-editar {
   .speedButton(url(../images/database/edit.png));
 }
@@ -131,3 +140,8 @@
   padding-left: 10px;
   padding-right: 10px;
 }
+
+.speed-button-desfazer {
+  .speedButton(url(../images/undo.png));
+}
+

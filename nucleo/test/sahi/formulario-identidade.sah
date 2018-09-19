@@ -29,5 +29,5 @@ _setValue(_textbox("endereco.bairro"), "HAVAI");
 _setValue(_textbox("endereco.CEP"), "30550-631");
 _setSelected(_select("avulso.responsavel_preenchimento"), "clessio (logado)");
 _setValue(_textbox("avulso.data_preenchimento"), "21/02/2016");
-_click(_submit("Gerar formulário"));
+_click(_input("Gerar formulário"));
 _assertExists(_heading1("Emissão de Formulários"));

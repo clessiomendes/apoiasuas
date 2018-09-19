@@ -9,6 +9,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.xwpf.usermodel.XWPFParagraph
 import org.apache.xmlbeans.XmlOptions
 import org.apoiasuas.formulario.ReportDTO
+import org.apoiasuas.seguranca.IASMenuProvider
 import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
@@ -21,7 +22,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
 
 @Transactional(readOnly = true)
-class ApoiaSuasService {
+class ApoiaSuasService implements IASMenuProvider {
 
     static transactional = false;
     def grailsApplication
@@ -135,6 +136,8 @@ class ApoiaSuasService {
         src.set(makeBody);
     }
 
+    @Override
+    public void buildMenu() {
 
-
+    }
 }

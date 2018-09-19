@@ -23,16 +23,7 @@
 		</div>
 --}%
 		<div id="create-servico" class="content scaffold-create" role="main">
-			<g:if test="${flash.message}">
-			    <div class="message" role="status">${flash.message}</div>
-			</g:if>
-			<g:hasErrors bean="${servicoInstance}">
-                <ul class="errors" role="alert">
-                    <g:eachError bean="${servicoInstance}" var="error">
-                    <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-                    </g:eachError>
-                </ul>
-			</g:hasErrors>
+			<g:render template="/mensagensPosGravacao" model="[bean: servicoInstance]"/>
 			<g:form action="save">
 				<fieldset class="form">
                     <g:set var="beanCamposEdicao" scope="request" value="${servicoInstance}"/>

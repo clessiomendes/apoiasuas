@@ -210,17 +210,18 @@ class AmbienteExecucao {
         }
     }
 
-    public static void setConfiguracoes() {
-        GroovyClassLoader classLoader = new GroovyClassLoader(getClass().classLoader)
-        // merging default Quartz config into main application config
+    public static List getConfiguracoes() {
+        List result = []
+        result << getConfiguracao('NucleoConfig')
+        result << getConfiguracao('NaoExisteConfig')
+        return result.findAll { it != null}
+    }
+
+    private static Class getConfiguracao(String arquivoConfiguracao) {
         try {
-            if (classLoader.loadClass('NucleoConfig'))
-                Holders.config.merge(new ConfigSlurper(Environment.current).parse(classLoader.loadClass('NucleoConfig')))
-            if (classLoader.loadClass('PedidoCertidaoConfig'))
-                Holders.config.merge(new ConfigSlurper(Environment.current).parse(classLoader.loadClass('PedidoCertidaoConfig')))
-    //        if (Holders.pluginManager.hasGrailsPlugin('nucleo'))
-        } catch (Exception e) {
-            System.out.println(e.message);
+            return AmbienteExecucao.getClassLoader().loadClass(arquivoConfiguracao);
+        } catch (ClassNotFoundException e) {
+            return null;
         }
     }
 

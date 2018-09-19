@@ -71,10 +71,7 @@
     <div role="banner" class = "banner-producao"}>
         <table id="cabecalho"><tr>
             <td>
-                <a id="textoBanner" href="${createLink(controller: "inicio", action: "menu")}"><asset:image id="imgLogo" src="suas.png" alt="Apoia CRAS"/>
-                        <h1>APOIA CRAS</h1>
-                        <h2><sec:loggedInUserInfo field="servicoSistemaSessaoCorrente.nome"/></h2>
-                </a>
+                <g:banner/>
             </td><td> %{--  Exibe a última família / cidadão selecionado, se houver:   --}%
                 <%
                     Familia ultimaFamilia = org.apoiasuas.cidadao.FamiliaController.getUltimaFamilia(session)

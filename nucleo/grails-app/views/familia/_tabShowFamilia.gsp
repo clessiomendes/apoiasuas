@@ -134,10 +134,10 @@
         <g:render template="membro" collection="${localDtoFamilia.getMembrosOrdemPadrao(true)}"/>
         <div style="margin-top: 5px">
 %{--  Novos cidadãos são criados apenas na tela completa de cadastro familiar
-            <sec:access acessoServico="${RecursosServico.INCLUSAO_MEMBRO_FAMILIAR}">
+            <assec:access acessoServico="${RecursosServico.INCLUSAO_MEMBRO_FAMILIAR}">
                 <input id="novoMembro" type="button" class="create" style="margin: 5px 5px 5px 0"
                        title="Incluir um novo cidadão como membro desta família" value="Novo membro" onclick="novoMembro();">
-            </sec:access>
+            </assec:access>
 --}%
             <input id="trocarReferencia" type="button" class="edit" style="margin: 5px 5px 5px 0"
                    title="Alterar a referência familiar e o parentesco entre os membros" value="Trocar referência" onclick="trocaReferencia();">

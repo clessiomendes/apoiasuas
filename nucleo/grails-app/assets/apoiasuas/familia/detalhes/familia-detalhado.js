@@ -472,7 +472,7 @@ var ModoInicializacao = {
 }
 
 /**
- * Preenche automaticamente logradouros à partir do que já está na base de dados
+ * Preenche automaticamente membros da familia
  */
 function autocompletePaiMaeCuidador() {
 

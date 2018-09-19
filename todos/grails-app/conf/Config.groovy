@@ -14,11 +14,12 @@ import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao;
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
 
-def configuracoes = [];
-configuracoes << NucleoConfig;
-configuracoes << PedidoCertidaoConfig;
+//def configuracoes = [];
+//configuracoes << NucleoConfig;
+//configuracoes << PedidoCertidaoConfig;
 //configuracoes << NaoExisteConfig
-grails.config.defaults.locations = configuracoes;
+//grails.config.defaults.locations = configuracoes;
+grails.config.defaults.locations = AmbienteExecucao.getConfiguracoes();
 
 
 

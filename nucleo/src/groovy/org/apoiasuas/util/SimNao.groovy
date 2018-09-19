@@ -1,8 +1,5 @@
 package org.apoiasuas.util
 
-/**
- * Created by clessio on 20/01/2018.
- */
 public enum SimNao {
 
     SIM('sim'), NAO('não');

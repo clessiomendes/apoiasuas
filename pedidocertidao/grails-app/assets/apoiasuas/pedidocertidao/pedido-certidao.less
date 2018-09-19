@@ -1,0 +1,61 @@
+@import (reference) "../buttons-links.less";
+
+.image-button-acoes {
+  .text-image-button("");
+  margin: 5px 3px;
+  min-height: 3em;
+  background-position: left 5px center;
+  white-space: normal;
+  width: 150px;
+  text-align: left;
+  background-size: 26px 26px;
+  padding: 0 0 0 42px;
+  vertical-align: middle;
+  color: @cor-texto-secundario;
+}
+
+//#92D1C3
+//#F8E6E3
+//#FFD5FF
+//#FDF5BF
+//#ff9999
+//#8EE3EF
+.situacao-atual {
+  -webkit-box-shadow: 0 0 3px 1px @cor-sombra-principal;
+  box-shadow: 0 0 3px 1px @cor-sombra-principal;
+  color: @cor-texto-secundario;
+  background-color: @cor-textos-para-consulta;
+
+  margin: 0;
+  display: block;
+  width: auto;
+  line-height: 3em;
+  padding: 0;
+  text-align: center;
+
+  img {
+    width: 26px;
+    height: 26px;
+    vertical-align: middle;
+  }
+}
+.inserir-comentario {
+  .image-button-acoes();
+  background-image: url(../../images/usecases/comentario.png);
+}
+//.enviar-pedido { .image-button-acoes(url(../../images/export.png)); }
+//.receber-pedido { .image-button-acoes(url(../../images/import.png)); }
+//.entregar-pedido { .image-button-acoes(url(../../images/checked.png)); }
+//.cancelar-pedido { .image-button-acoes(url(../../images/cancel.png)); }
+.gravar-pedido {
+  .image-button-acoes();
+  background-image: url(../../images/database/save.png);
+}
+.imprimir-pedido {
+  .image-button-acoes();
+  background-image: url(../../images/print.png);
+}
+
+#spanCad {
+  margin-left: 10px;
+}

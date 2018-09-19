@@ -5,7 +5,7 @@ import org.apoiasuas.redeSocioAssistencial.RecursosServico
 
 class ApoiaSuasSecurityTagLib {
     static defaultEncodeAs = [taglib:'raw']
-    static namespace = "sec"
+    static namespace = "assec"
 
     def segurancaService;
 

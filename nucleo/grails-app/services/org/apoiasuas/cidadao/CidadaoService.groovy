@@ -174,6 +174,8 @@ class CidadaoService {
         String sqlFrom = " FROM cidadao a INNER JOIN familia b ON a.familia_id=b.id " +
                 " LEFT OUTER JOIN usuario_sistema c ON b.tecnico_referencia_id=c.id ";
 
+//================= FILTRAGEM ==============
+
         String sqlWhere = ' where 1=1 '
         if (!filtroNome && !filtrosOperador.idade && !filtrosOperador.nis && !filtroCad) {
             sqlWhere += "and a.referencia = true"
@@ -238,15 +240,17 @@ class CidadaoService {
             filtrosSql << [numero: filtrosOperador.numero]
         }
 
+//================= ORDENACAO ==============
+
         String sqlOrder = ""
         if (filtrosOperador.logradouro)
             sqlOrder = ' order by ' + AmbienteExecucao.SqlProprietaria.StringToNumber('b.endereco_numero')
-//            sqlOrder = ' order by b.endereco_numero '
         else if (filtrosOperador.numero)
             sqlOrder = ' order by b.endereco_nome_logradouro, ' + AmbienteExecucao.SqlProprietaria.StringToNumber('b.endereco_numero')
-//            sqlOrder = ' order by b.endereco_nome_logradouro, b.endereco_numero '
         else
             sqlOrder = ' order by a.nome_completo';
+
+//================= EXECUCAO ==============
 
         Session sess = sessionFactory.getCurrentSession();
 
@@ -268,33 +272,33 @@ class CidadaoService {
         List resultado = queryList.list();//Cidadao.executeQuery(sqlList + sqlWhere + hqlOrder, filtrosSql, params)
         List<Cidadao> cidadaos = [];
 
+        Iterator<Cidadao> iterator = resultado.iterator()
+        List<Endereco> enderecosFormatados = []
+        while (iterator.hasNext()) {
+            Cidadao cidadao = iterator.next()[0] //seleciona o cidadao e ignora a familia
+            cidadaos << cidadao;
+
             //Coloca em negrito os termos de busca utilizados
-            Iterator<Cidadao> iterator = resultado.iterator()
-            List<Endereco> enderecosFormatados = []
-            while (iterator.hasNext()) {
-                Cidadao cidadao = iterator.next()[0] //seleciona o cidadao e ignora a familia
-                cidadaos << cidadao;
-                cidadao.discard() //NAO gravar alteracoes
-                cidadao.familia?.discard() //NAO gravar alteracoes
-                //Escapa caracteres html por questoes de seguranca
-                cidadao.nomeCompleto = cidadao.nomeCompleto ? StringEscapeUtils.escapeHtml(cidadao.nomeCompleto) : null
+            cidadao.discard() //NAO gravar alteracoes
+            cidadao.familia?.discard() //NAO gravar alteracoes
+            //Escapa caracteres html por questoes de seguranca
+            cidadao.nomeCompleto = cidadao.nomeCompleto ? StringEscapeUtils.escapeHtml(cidadao.nomeCompleto) : null
 //                nomes?.each {
 //                    cidadao.nomeCompleto = cidadao.nomeCompleto?.replaceAll("(?i)" + Pattern.quote(it), '<b>$0</b>')
 //                }
-                cidadao.familia?.discard();
-                log.debug("Endereco da familia "+cidadao.familia.id)
-                //Para que o mesmo endereco nao seja reformatado varias vezes, precisamos verificar se ele ja foi processado na lista
-                if (cidadao.familia.endereco && ! enderecosFormatados.contains(cidadao.familia.endereco) ) {
-                    cidadao.familia.endereco.nomeLogradouro = cidadao.familia.endereco.nomeLogradouro ? StringEscapeUtils.escapeHtml(cidadao.familia.endereco.nomeLogradouro) : null
-                    cidadao.familia.endereco.complemento = cidadao.familia.endereco.complemento ? StringEscapeUtils.escapeHtml(cidadao.familia.endereco.complemento) : null
+            cidadao.familia?.discard();
+            //Para que o mesmo endereco nao seja reformatado varias vezes, precisamos verificar se ele ja foi processado na lista
+            if (cidadao.familia.endereco && ! enderecosFormatados.contains(cidadao.familia.endereco) ) {
+                cidadao.familia.endereco.nomeLogradouro = cidadao.familia.endereco.nomeLogradouro ? StringEscapeUtils.escapeHtml(cidadao.familia.endereco.nomeLogradouro) : null
+                cidadao.familia.endereco.complemento = cidadao.familia.endereco.complemento ? StringEscapeUtils.escapeHtml(cidadao.familia.endereco.complemento) : null
 //                    logradouros?.each {
 //                        cidadao.familia.endereco.nomeLogradouro = cidadao.familia.endereco.nomeLogradouro?.replaceAll("(?i)" + Pattern.quote(it), '<b>$0</b>')
 //                        cidadao.familia.endereco.complemento = cidadao.familia.endereco.complemento?.replaceAll("(?i)" + Pattern.quote(it), '<b>$0</b>')
 //                    }
-                    enderecosFormatados << cidadao.familia.endereco
-                }
+                enderecosFormatados << cidadao.familia.endereco
             }
-            return new HqlPagedResultList(cidadaos, count)
+        }
+        return new HqlPagedResultList(cidadaos, count)
 
     }
 
@@ -318,7 +322,7 @@ class CidadaoService {
         //Se for necessário carregar os membros, passa um parametro determinando o modo fetch como join (familia e cidadaos em uma unica sql)
         Map fetchMap = carregaMembros ? [fetch: [membros: 'join']] : [:];
         ServicoSistema servicoLogado = segurancaService.getServicoLogado();
-        Familia result = (servicoLogado.acessoSeguranca.identificacaoPeloCodigoLegado) ?
+        Familia result = segurancaService.identificacaoCodigoLegado ?
                 Familia.findByCodigoLegadoAndServicoSistemaSeguranca(cad, servicoLogado, fetchMap)
                 : Familia.findById(cad, fetchMap);
         return result

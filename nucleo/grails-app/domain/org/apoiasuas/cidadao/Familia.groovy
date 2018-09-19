@@ -103,6 +103,13 @@ class Familia implements Serializable, DominioProtegidoServico, DetalhesJSON {
         return membros?.findAll{ it.referencia && it.habilitado }?.min{ it.dataNascimento }
     }
 
+    public String montaDescricaoHTML() {
+        return CollectionUtils.join([
+                "cad <b>" + getCad() + "</b>",
+                getReferencia() ? "referência <b>" + getReferencia().toString() + "</b>" : null
+        ], ", ")
+    }
+
     public String montaDescricao() {
         return CollectionUtils.join([
                 toString(),

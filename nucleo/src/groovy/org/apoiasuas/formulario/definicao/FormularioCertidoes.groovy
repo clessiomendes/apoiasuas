@@ -138,7 +138,7 @@ class FormularioCertidoes extends FormularioBase {
                 }
                 campoAvulso {
                     codigo CODIGO_DATA_REGISTRO
-                    descricao 'Data do registro'
+                    descricao 'Data nasc/casam/óbito'
                     tipo CampoFormulario.Tipo.DATA
                 }
                 campoAvulso {

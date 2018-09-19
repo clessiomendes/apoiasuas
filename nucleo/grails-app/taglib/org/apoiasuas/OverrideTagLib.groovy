@@ -6,6 +6,7 @@ import org.codehaus.groovy.grails.plugins.jquery.JQueryProvider
 import org.codehaus.groovy.grails.plugins.web.taglib.FormTagLib
 import org.codehaus.groovy.grails.plugins.web.taglib.JavascriptProvider
 import org.codehaus.groovy.grails.plugins.web.taglib.JavascriptTagLib
+import org.codehaus.groovy.grails.plugins.web.taglib.RenderTagLib
 
 /**
  * Reescrevendo algumas taglibs padroes do grails
@@ -16,6 +17,10 @@ class OverrideTagLib {
      * Sobrescreve JavascriptTagLib.submitToRemote, basicamente para expor todos os atributos passados para o input button criado
      *
      * @attr url The url to submit to, either a map contraining keys for the action,controller and id or string value
+     * @attr controller
+     * @attr action
+     * @attr id
+     * @attr elementId
      * @attr update Either a map containing the elements to update for 'success' or 'failure' states, or a string with the element to update in which cause failure events would be ignored
      * @attr before The javascript function to call before the remote function call
      * @attr after The javascript function to call after the remote function call
@@ -26,7 +31,21 @@ class OverrideTagLib {
         if (attrs.containsKey('onclick'))
             throw new ApoiaSuasException("O evento onclick não pode ser definido diretamente para a tag submitToRemote. Use 'before' ou 'after' ");
 
-        JavascriptProvider p = JQueryProvider.newInstance()
+        //os parametros controller, action e id, quando definidos, se sobrepoem ao parametro url
+        if (attrs.controller || attrs.action || attrs.id) {
+            attrs.url = [:];
+            if (attrs.controller)
+                attrs.url << [controller: attrs.remove('controller')]
+            if (attrs.action)
+                attrs.url << [action: attrs.remove('action')]
+            if (attrs.id)
+                attrs.url << [id: attrs.remove('id')]
+        }
+
+        if (attrs.elementId)
+            attrs.id = attrs.remove('elementId')
+
+        JavascriptProvider p = JQueryProvider.newInstance();
 
         attrs.forSubmitTag = ".form"
         p.prepareAjaxForm(attrs)

@@ -11,12 +11,12 @@ import org.apoiasuas.seguranca.SegurancaListener
 import org.apoiasuas.services.ImportarFamiliasJavaService
 import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ApplicationContextHolder
+import org.codehaus.groovy.grails.commons.spring.BeanConfiguration
+import org.codehaus.groovy.grails.commons.spring.DefaultBeanConfiguration
 
 // Place your Spring DSL code here
 beans = {
 
-
-//  springConfig.addAlias 'fileStorageService', 'cleverCloudFSService'
     springConfig.addAlias 'fileStorageService', 'localFSService'
     localFSService(LocalFSService) {
         caminhoRepositorio=AmbienteExecucao.getCaminhoRepositorioArquivos()
@@ -27,19 +27,10 @@ beans = {
         java.util.Locale.setDefault(defaultLocale)
     }
 
-/*
-	importarFamiliasJava(ImportarFamiliasJavaService) {
-		daoForJavaService = ref("daoForJavaService")
-		importarFamiliasJava = ref("importarFamiliasJava")
-		segurancaService = ref("segurancaService")
-	}
-*/
-//	roleHierarchy(RoleHierarchyImpl)
-
     /**
      * Escolher a implementacao a usar para o servico de importacao de familias
      */
-    servicoImportarFamilias(ImportarFamiliasBHService) { bean ->
+    servicoImportarFamilias(ImportarFamiliasBHService) { BeanConfiguration bean ->
         bean.autowire = 'byName'
 //        sessionFactory = ref("sessionFactory")
     }
@@ -51,18 +42,18 @@ for injection.
 */
     groovySql(groovy.sql.Sql, ref('dataSource'))
 
-    applicationContextHolder(ApplicationContextHolder) { bean ->
+    applicationContextHolder(ApplicationContextHolder) { BeanConfiguration bean ->
         bean.factoryMethod = 'getInstance'
     }
 
-    segurancaListener(SegurancaListener) { bean ->
+    segurancaListener(SegurancaListener) { BeanConfiguration bean ->
         bean.autowire = 'byName'
     }
 
     /**
      * Subsitui o mecanismo padrão do spring para instanciar usuarios de segurança usando a classe ApoiaSuasUser
      */
-    userDetailsService(ApoiaSuasDetailsService) { bean ->
+    userDetailsService(ApoiaSuasDetailsService) { BeanConfiguration bean ->
         bean.autowire = 'byName'
     }
 
@@ -75,20 +66,12 @@ for injection.
         proxyTargetClass = true
     }
 
-    /**
-     * Sobrescrevendo a classe que implementa um dos passos do login
-     */
-//    authenticationSuccessHandler(org.apoiasuas.seguranca.ApoiaSuasSuccessHandler) {
-//        /* Reusing the security configuration */
-//        def conf = SpringSecurityUtils.securityConfig
-//        /* Configuring the bean */
-//        requestCache = ref('requestCache')
-//        redirectStrategy = ref('redirectStrategy')
-//        defaultTargetUrl = conf.successHandler.defaultTargetUrl
-//        alwaysUseDefaultTargetUrl = conf.successHandler.alwaysUseDefault
-//        targetUrlParameter = conf.successHandler.targetUrlParameter
-//        ajaxSuccessUrl = conf.successHandler.ajaxSuccessUrl
-//        useReferer = conf.successHandler.useReferer
+    menuBuilder(org.apoiasuas.seguranca.ASMenuBuilder) { BeanConfiguration bean ->
+        bean.autowire = 'byName'
+    }
+
+//    controllerFacade(org.apoiasuas.facade.ControllerFacade) { BeanConfiguration bean ->
+//        bean.autowire = 'byName'
 //    }
 
 }

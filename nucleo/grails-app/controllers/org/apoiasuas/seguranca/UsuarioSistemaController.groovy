@@ -49,6 +49,8 @@ class UsuarioSistemaController extends AncestralController {
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def alteraPerfil(UsuarioSistema usuarioSistemaInstance) {
+        if (! usuarioSistemaInstance)
+            usuarioSistemaInstance = segurancaService.usuarioLogado;
         if (segurancaService.usuarioLogado.id != usuarioSistemaInstance.id)
             return notFound()
         edit(usuarioSistemaInstance)

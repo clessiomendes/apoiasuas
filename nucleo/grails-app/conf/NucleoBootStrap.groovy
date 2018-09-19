@@ -11,6 +11,7 @@ import org.apoiasuas.importacao.ImportarFamiliasService
 import org.apoiasuas.redeSocioAssistencial.AbrangenciaTerritorialService
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.redeSocioAssistencial.ServicoSistemaService
+import org.apoiasuas.seguranca.ASMenuBuilder
 import org.apoiasuas.seguranca.ApoiaSuasPersistenceListener
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.SegurancaService
@@ -42,13 +43,17 @@ class NucleoBootStrap {
     FileStorageService fileStorageService
     MarcadorService marcadorService
     LookupService lookupService
+    ASMenuBuilder menuBuilder
 
     public final String VW_REFERENCIAS = "create view vw_referencias as select min(id) as referencia_id, familia_id " +
             " from cidadao where habilitado = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+" and referencia = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+
             " group by familia_id"
 
     def init = { servletContext ->
-        System.out.println("meu bootstrap nucleo");
+
+//        ASMenuBuilder menuBuilder = ctx.getBean(ASMenuBuilder.class)
+        menuBuilder.montaMenuBasico();
+
         //Criando um novo metodo "update" em todos os objetos groovy da aplicacao
         Object.metaClass.update = {
             updateAttributesFromMap delegate, it
@@ -84,7 +89,7 @@ class NucleoBootStrap {
         if (AmbienteExecucao.isProducao())
             fullTextSearchService.index()
 
-        RecursosServico.initTest();
+//        RecursosServico.initTest();
 
         Sql.LOG.level = Level.FINE; //necessario para gerar log de sqls que nao passam pelo hibernate
 
@@ -203,7 +208,7 @@ class NucleoBootStrap {
             atualizacoesPendentes.each {
                 erro += "\n" + it + ";"
             }
-            log.error(erro);
+//            log.error(erro);
             throw new RuntimeException("Startup interrompido. Banco de dados fora de sincronia com a aplicação: "+erro)
         }
     }

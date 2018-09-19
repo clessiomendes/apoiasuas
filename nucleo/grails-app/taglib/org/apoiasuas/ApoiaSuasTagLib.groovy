@@ -3,6 +3,7 @@ package org.apoiasuas
 import asset.pipeline.grails.AssetsTagLib
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apoiasuas.cidadao.detalhe.CampoDetalhe
+import org.apoiasuas.seguranca.ItemMenuDTO
 import org.apoiasuas.util.SimNao
 import org.apoiasuas.formulario.CampoFormulario
 import org.apoiasuas.formulario.Formulario
@@ -200,7 +201,7 @@ class ApoiaSuasTagLib {
         log.debug(estilo);
 
         //onclick simula submissao do form formPreencherFormulario (renderizado no template _escolherFamilia.gsp)
-        out << submitButton([value: formulario.nome, name: 'foo', class: 'image-button-formulario', style: estilo,
+        out << submitButton([value: formulario.nome, name: 'foo', class: 'image-button-formulario', style: estilo, title: formulario.descricao,
                              onclick: "document.getElementById('formPreencherFormulario').idFormulario.value = '${formulario.id}'; document.getElementById('formPreencherFormulario').submit(); return true"
         ])
     }
@@ -330,11 +331,29 @@ class ApoiaSuasTagLib {
  * @attr mapping The named URL mapping to use to rewrite the link
  * @attr event Webflow _eventId parameter
  * @attr elementId DOM element id
+ * @attr itemMenu objeto ItemMenuDTO contendo todas as informações do menu criado
 
  */
     def linkMenu = { attrs, body ->
+
+        //Traduzindo propriedades de ItemMenuDTO para os atributos da tag
+        if (attrs.containsKey("itemMenu")) {
+            ItemMenuDTO itemMenu = attrs.remove("itemMenu");
+            attrs.imagem = itemMenu.imagem;
+            attrs.url = itemMenu.link;
+            body = { out << itemMenu.descricao; }
+            attrs.title = itemMenu.hint;
+            attrs.class = itemMenu.classeCss;
+            if (itemMenu.recursoServico)
+                attrs.acessoServico = itemMenu.recursoServico;
+
+            //cancela geração se o usuario logado não tiver permissão de acesso ao recurso
+            if (itemMenu.restricaoAcesso && SpringSecurityUtils.ifNotGranted(itemMenu.restricaoAcesso))
+                return;
+        }
+
         RecursosServico acessoServico = attrs.remove("acessoServico")
-        if (! segurancaService.acessoRecursoServico(acessoServico))
+        if (acessoServico && ! segurancaService.acessoRecursoServico(acessoServico))
             return;
 
         String imagem = attrs.remove("imagem");

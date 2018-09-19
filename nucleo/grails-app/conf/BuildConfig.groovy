@@ -91,6 +91,7 @@ grails.project.dependency.resolution = {
             excludes "com.google.guava:guava:17.0"
             excludes "org.antlr:antlr-runtime:3.3" //o plugin LESS Grails Asset-Pipeline exige versao 3.5
         }
+
         //XDocReport (geracao de relatorio a partir de templates docx ou odt)
         compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.core:1.0.4"
         compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.document:1.0.4"

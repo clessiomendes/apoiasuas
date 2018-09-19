@@ -14,6 +14,7 @@ import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
 import org.apoiasuas.util.StringUtils
+import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.ParseException
@@ -31,9 +32,13 @@ class EmissaoFormularioController extends AncestralController {
 
     CidadaoService cidadaoService
     def pedidoCertidaoProcessoService
+    def formularioService
 
     @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
     def escolherFormulario() {
+        if (AmbienteExecucao.isDesenvolvimento())
+            formularioService.inicializaFormularios(segurancaService.usuarioLogado);
+
         List<Formulario> formulariosDisponiveis = [];
         if (params.idFormulario)
             formulariosDisponiveis << servico(null).getFormulario(params.idFormulario.toLong())
@@ -68,7 +73,17 @@ class EmissaoFormularioController extends AncestralController {
 
     def exibirPreencherFormulario(Long idFormulario, Long idServico /*preenchido apenas quando vindo do cdu de servico socio assistencial*/,
                             Long membroSelecionado, Long familiaSelecionada) {
-        Formulario formulario = servico(Formulario.get(idFormulario)).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
+        Formulario formulario  = Formulario.get(idFormulario);
+
+        // ATENÇÃO!!! Se este servico tem habilitado o modulo de Pedidos de Certidao versão 2.0, redireciona para a action correspondente
+        if (segurancaService.acessoRecursoServico(RecursosServico.PEDIDOS_CERTIDAO_2_0) &&
+                formulario.formularioPreDefinido == PreDefinidos.CERTIDOES_E_PEDIDO) {
+            return forward(controller: 'facade', action: 'pedidoCertidao', params: [idFamilia: familiaSelecionada]);
+//            return controllerFacade.redirecionaCreatePedidoCertidao(this, familiaSelecionada)
+//            return redirect(controller: "pedidoCertidao", action: "create", params: [idFamilia: familiaSelecionada])
+        }
+
+        formulario = servico(formulario).preparaPreenchimentoFormulario(idFormulario, membroSelecionado, familiaSelecionada)
         if (! formulario)
             return redirect(controller: 'inicio')
         guardaUltimaFamiliaSelecionada(formulario.familia);

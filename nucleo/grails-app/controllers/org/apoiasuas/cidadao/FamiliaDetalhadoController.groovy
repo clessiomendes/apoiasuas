@@ -6,7 +6,11 @@ import grails.util.Holders
 import grails.validation.ValidationException
 import groovy.time.TimeCategory
 import org.apoiasuas.ApoiaSuasService
+import org.apoiasuas.cidadao.detalhe.CampoDetalhe
+import org.apoiasuas.cidadao.detalhe.CampoDetalheLookup
+import org.apoiasuas.cidadao.detalhe.CampoDetalheMultiLookup
 import org.apoiasuas.formulario.ReportDTO
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.seguranca.UsuarioSistema
@@ -51,14 +55,35 @@ class FamiliaDetalhadoController extends FamiliaController {
 
 //        familiaInstance.membros.add(new Cidadao());
 
-        render view: "/familia/detalhes/createEdit", model: getEditCreateModel(familiaInstance)+
+        render view: "/familia/detalhes/createEdit", model: getEditCreateModel(familiaInstance) +
                 [modoEdicao: true] + (params.idCidadao ? [idCidadao: params.idCidadao] : [:]);
     }
 
     @Override
     protected Map getEditCreateModel(Familia familiaInstance) {
+        converteTipoDeficiencia(familiaInstance)
         Map result = super.getEditCreateModel(familiaInstance);
+        if (segurancaService.servicoLogado.token == ServicoSistema.Tokens.CRJ) {
+            result << [formFamilia: "/personalizados/familia/detalhes/familia/formFamiliaCRJ"];
+            result << [formCidadao: "/personalizados/familia/detalhes/cidadao/formCidadaoCRJ"];
+        }
+
         return result + [municipioLogado: segurancaService.getMunicipio(), UFLogada: segurancaService.getUF()];
+    }
+
+    /**
+     * Converte eventual campo (desativado) tipoDeficiencia, de cada membro, para tiposDeficiencia (multi valorado)
+     */
+    private void converteTipoDeficiencia(Familia familiaInstance) {
+        familiaInstance?.membros?.each { Cidadao cidadao ->
+            CampoDetalheLookup tipoDeficiencia = cidadao.mapaDetalhes['tipoDeficiencia'];
+            if (tipoDeficiencia?.notEmpty() && ! cidadao.mapaDetalhes['tiposDeficiencia']) {
+                //remove informacao - FIXME: passar para save() ?
+//            familiaInstance.mapaDetalhes.remove('tipoDeficiencia');
+                CampoDetalheMultiLookup tiposDeficiencia = CampoDetalheMultiLookup.novo(lookupService, 'tipoDeficiencia', [tipoDeficiencia.codigo]);
+                cidadao.mapaDetalhes.put('tiposDeficiencia', tiposDeficiencia);
+            }
+        }
     }
 
     /**
@@ -233,16 +258,10 @@ class FamiliaDetalhadoController extends FamiliaController {
     @Secured([DefinicaoPapeis.STR_USUARIO])
     def download(Familia familiaInstance) {
         List<ReportDTO> folhasCadastro = familiaService.emiteFormularioCadastro(familiaInstance);
-//        List<InputStream> folhasCadastro = familiaService.emiteFormularioCadastro(familiaInstance);
 
         response.contentType = 'application/octet-stream'
         response.setHeader('Content-disposition', "attachment; filename=\"Cadastro Familiar ${familiaInstance.cad}.docx\"");
-//        try {
-            apoiaSuasService.appendReports(response.outputStream, folhasCadastro)
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw e;
-//        }
+        apoiaSuasService.appendReports(response.outputStream, folhasCadastro)
         response.outputStream.flush();
     }
 

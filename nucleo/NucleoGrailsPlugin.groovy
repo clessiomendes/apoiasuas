@@ -1,4 +1,12 @@
+import grails.util.Environment;
+import grails.util.Holders
+import org.apoiasuas.seguranca.ASMenuBuilder
+import org.apoiasuas.seguranca.SegurancaService;
+
 class NucleoGrailsPlugin {
+
+    SegurancaService segurancaService
+
     // the plugin version
     def version = "0.1"
     // the version or versions of Grails the plugin is designed for
@@ -16,32 +24,11 @@ class NucleoGrailsPlugin {
 Brief summary/description of the plugin.
 '''
 
-    // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/nucleo"
-
-    // Extra (optional) plugin metadata
-
-    // License: one of 'APACHE', 'GPL2', 'GPL3'
-//    def license = "APACHE"
-
-    // Details of company behind the plugin (if there is one)
-//    def organization = [ name: "My Company", url: "http://www.my-company.com/" ]
-
-    // Any additional developers beyond the author specified above.
-//    def developers = [ [ name: "Joe Bloggs", email: "joe@bloggs.net" ]]
-
-    // Location of the plugin's issue tracker.
-//    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMYPLUGIN" ]
-
-    // Online location of the plugin's browseable source code.
-//    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
-
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before
     }
 
     def doWithSpring = {
-        // TODO Implement runtime spring config (optional)
     }
 
     def doWithDynamicMethods = { ctx ->
@@ -49,7 +36,6 @@ Brief summary/description of the plugin.
     }
 
     def doWithApplicationContext = { ctx ->
-        // TODO Implement post initialization spring config (optional)
     }
 
     def onChange = { event ->
@@ -59,7 +45,6 @@ Brief summary/description of the plugin.
     }
 
     def onConfigChange = { event ->
-        Holders.config.merge(new ConfigSlurper(Environment.current).parse(classLoader.loadClass('NucleoConfig')));
         // TODO Implement code that is executed when the project configuration changes.
         // The event is the same as for 'onChange'.
     }

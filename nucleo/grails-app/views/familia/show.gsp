@@ -43,7 +43,7 @@
 			<div class="message" role="status">${flash.message}</div>
 		</g:if>
 
-		%{--Exibe pedidos de certidão pendentes--}%
+		%{--Exibe pedidos de certidão pendentes (VERSÃO 1.0 do módulo de pedidos de certidão) --}%
 		<g:if test="${pedidosCertidaoPendentes}">
 			%{--Aguardando pedido de certidão:--}%
 			<ul class="errors" role="alert">
@@ -52,6 +52,11 @@
 			</g:each>
 			</ul>
 		</g:if>
+
+		%{--  PONTO DE INJEÇÃO DE FUNCIONALIDADE - caso o modulo pedidocertidao (VERSÃO 2.0 do módulo de
+		pedidos de certidão) esteja instalado --}%
+		%{--<g:renderComModulo template="/pedidoCertidao/familia/pendentes" plugin="${Modulos.PEDIDO_CERTIDAO}"/>--}%
+		<facade:pedidosCertidoesPendentes pedidos="${pedidosCertidaoPendentesVersao20}"/>
 
 		<g:tabs id="tabs" style="margin: 5px;">
 			<g:tab id="tabShowFamilia" titulo="família" template="tabShowFamilia"/>

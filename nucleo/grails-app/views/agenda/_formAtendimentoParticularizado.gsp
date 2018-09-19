@@ -93,6 +93,9 @@
         $('#divAgendandoAtendimento').slideUp();
     }
 
+    /**
+    * Evento de callback, acionado da tela de popup (_tabelaListagem.gsp) para registrar o cidadao selcionado
+     */
     function selecionaPopup(event, result) {
         event.preventDefault();
 //        alert('selectFamilia '+JSON.stringify(result));
@@ -134,7 +137,7 @@
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: localDtoAtendimento, field: 'familia', 'error')} ">
-    <label>Cad</label>
+    <label>Cadastro Familiar</label>
     <span id="spanCad">${localDtoAtendimento.familia?.cad}</span>
     <input type="button" class="search field-button" value="Procurar" onclick='popupProcurarCidadao();'/>
     &nbsp;&nbsp;<g:checkBox name="familiaSemCadastro" id="checkSemCad" checked="${localDtoAtendimento.familiaSemCadastro}" onchange="checkCadChange(this);"/>

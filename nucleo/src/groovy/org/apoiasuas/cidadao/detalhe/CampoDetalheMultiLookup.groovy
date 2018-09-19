@@ -52,4 +52,12 @@ public class CampoDetalheMultiLookup extends CampoDetalhe {
         else
             return false
     }
+
+    public static CampoDetalheMultiLookup novo(LookupService lookupService, String tabela, List<String> codigos) {
+        CampoDetalheMultiLookup result = new CampoDetalheMultiLookup();
+        result.codigosList = codigos?.toArray();
+        result.descricoesLookupList = result.codigosList?.collect { lookupService.getDescricao(tabela, it) }
+        return result;
+    }
+
 }

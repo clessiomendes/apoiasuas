@@ -30,6 +30,7 @@ import org.apoiasuas.marcador.VulnerabilidadeFamilia
 import org.apoiasuas.processo.PedidoCertidaoProcessoDTO
 import org.apoiasuas.marcador.Programa
 import org.apoiasuas.marcador.ProgramaFamilia
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.AuditoriaService
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
@@ -50,7 +51,9 @@ class FamiliaService {
     public static final int MAX_AUTOCOMPLETE_LOGRADOUROS = 10
     public static final String TEMPLATE_PLANO_ACOMPANHAMENTO = "/org/apoiasuas/report/TemplatePlanoAcompanhamento.docx";
     public static final String TEMPLATE_CADASTRO_FAMILIAR = "/org/apoiasuas/report/TemplateCadastroFamiliar.docx";
+    public static final String TEMPLATE_CADASTRO_FAMILIAR_CRJ = "/org/apoiasuas/report/TemplateCadastroFamiliarCRJ.docx";
     public static final String TEMPLATE_CADASTRO_FAMILIAR_MEMBRO = "/org/apoiasuas/report/TemplateCadastroFamiliar-Membro.docx";
+    public static final String TEMPLATE_CADASTRO_FAMILIAR_MEMBRO_CRJ = "/org/apoiasuas/report/TemplateCadastroFamiliar-MembroCRJ.docx";
 
     def segurancaService
     def cidadaoService
@@ -435,7 +438,7 @@ class FamiliaService {
                     copyPaste1Lst << cidadao.nomeCompleto;
                     List<String> copyPaste2Lst = [
                             //Sexo;Escolaridade;Ocupação;Tipo de deficiência;
-                            cidadao.sexo?.descricao, cidadao.escolaridade?.descricao, cidadao.mapaDetalhes['situacaoTrabalho'], cidadao.mapaDetalhes['tipoDeficiencia'],
+                            cidadao.sexo?.descricao, cidadao.escolaridade?.descricao, cidadao.mapaDetalhes['situacaoTrabalho'], cidadao.mapaDetalhes['tiposDeficiencia'],
                             //Raça;Estado civil;Centro de Saúde;Instituição de Ensino;Atividade do CRAS
                             cidadao.mapaDetalhes['corRaca'], cidadao.mapaDetalhes['estadoCivil'], familia.mapaDetalhes['centroSaude'], cidadao.mapaDetalhes['escola'], ''
                     ];
@@ -583,7 +586,11 @@ class FamiliaService {
         protected ReportDTO folhaCadastroFamilia(Familia familia) {
 
     // 1) Load doc file and set Velocity template engine and cache it to the registry
-            Resource resource = apoiaSuasService.obtemArquivo(TEMPLATE_CADASTRO_FAMILIAR)
+            Resource resource;
+            if (segurancaService.servicoLogado.token == ServicoSistema.Tokens.CRJ)
+                resource = apoiaSuasService.obtemArquivo(TEMPLATE_CADASTRO_FAMILIAR_CRJ)
+            else
+                resource = apoiaSuasService.obtemArquivo(TEMPLATE_CADASTRO_FAMILIAR)
             IXDocReport report = XDocReportRegistry.getRegistry().loadReport(resource.getInputStream(), TemplateEngineKind.Velocity);
 
     // 2) Create Java model context
@@ -674,7 +681,11 @@ class FamiliaService {
         protected ReportDTO folhaCadastroCidadao(Cidadao cidadao) {
 
             // 1) Load Docx file by filling Velocity template engine and cache it to the registry
-            Resource resource = apoiaSuasService.obtemArquivo(TEMPLATE_CADASTRO_FAMILIAR_MEMBRO)
+            Resource resource;
+            if (segurancaService.servicoLogado.token == ServicoSistema.Tokens.CRJ)
+                resource = apoiaSuasService.obtemArquivo(TEMPLATE_CADASTRO_FAMILIAR_MEMBRO_CRJ)
+            else
+                resource = apoiaSuasService.obtemArquivo(TEMPLATE_CADASTRO_FAMILIAR_MEMBRO)
             IXDocReport report = XDocReportRegistry.getRegistry().loadReport(resource.getInputStream(), TemplateEngineKind.Velocity);
 
             // 2) Create fields metadata to manage lazy loop (#forech velocity) for table row.

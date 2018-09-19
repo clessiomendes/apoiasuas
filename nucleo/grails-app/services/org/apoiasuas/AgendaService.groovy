@@ -14,6 +14,7 @@ import org.apache.commons.lang.time.DateUtils
 import org.apoiasuas.agenda.Compromisso
 import org.apoiasuas.cidadao.Familia
 import org.apoiasuas.redeSocioAssistencial.AtendimentoParticularizado
+import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
 import org.hibernate.SQLQuery
@@ -310,8 +311,9 @@ class AgendaService {
      * @return o proximo dia no futuro em que a agenda sera aberta (ou nulo, caso nao exista essa configuracao)
      */
     public Date inibirAtendimentoApos() {
+//        ServicoSistema.get(1)
         //pode haver mais de um dia de abertura de agenda na semana (separados por virgula na gravacao)
-        List<Integer> diasSemana = segurancaService.servicoLogado.acessoSeguranca.inibirAtendimentoApos?.split(',')?.collect { Integer.parseInt(it) };
+        List<Integer> diasSemana = segurancaService.servicoLogado.acessoSeguranca?.inibirAtendimentoApos?.split(',')?.collect { Integer.parseInt(it) };
         if (! diasSemana)
             return null;
         //testando aa partir de amanha

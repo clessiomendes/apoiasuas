@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.redeSocioAssistencial.ServicoSistema" %>
+<%@ page import="org.apoiasuas.redeSocioAssistencial.RecursosServico; org.apoiasuas.seguranca.DefinicaoPapeis; org.apoiasuas.redeSocioAssistencial.ServicoSistema" %>
 <%
     ServicoSistema servicoSistema = servicoSistemaInstance
 %>
@@ -105,14 +105,22 @@
         </div>
     </g:tab>
     <g:tab id="tabAcesso" titulo="recursos disponíveis" roles="${DefinicaoPapeis.STR_SUPER_USER}">
-        <f:with bean="${servicoSistema}">
-            <f:field label="acesso liberado ao sistema" property="habilitado"/>
-            <f:field label="cadastrar novas famílias" property="acessoSeguranca.inclusaoFamilia"/>
-            <f:field label="incluir novos membros familiares (cidadãos)" property="acessoSeguranca.inclusaoMembroFamiliar"/>
-            <f:field label="permitir cadastros mais detalhados de famílias e cidadãos" property="acessoSeguranca.cadastroDetalhado"/>
-            <f:field label="gerencia o processo de pedidos de certidão para outros municípios" property="acessoSeguranca.pedidosCertidao"/>
-            <f:field label="emitir planos de acompanhamento familiar à partir do modelo previsto no sistema" property="acessoSeguranca.planoAcompanhamento"/>
-            <f:field label="utilizar o código legado como identificador principal de busca de famílias" property="acessoSeguranca.identificacaoPeloCodigoLegado"/>
-        </f:with>
+        <g:campoEdicaoSelect titulo="Token" name="token" beanCamposEdicao="${servicoSistema}"
+                             helpTooltip="Identifica o serviço para fins de tratamento especial no código fonte do sistema"
+                             from="${ServicoSistema.Tokens.values()}" value="${servicoSistema.token}"
+                      class="many-to-one" noSelection="['': '']"/>
+        <br>
+        %{-- servicoSistema.habilitado (nao esta presente no enum RecursosServico) --}%
+        <div class="fieldcontain" style="margin-bottom: 0.2em">
+            <g:checkBox name="habilitado" value="${servicoSistema.habilitado}"/>
+            acesso liberado ao sistema<br>
+        </div><br>
+        %{-- demais recursos do enum RecursosServico --}%
+        <g:each in="${RecursosServico.recursosDisponiveis()}" var="recurso">
+            <div class="fieldcontain" style="margin-bottom: 0.2em">
+                <g:checkBox name="recursos.${recurso.name()}" value="${servicoSistema.recursosSelecionados().contains(recurso)}"/>
+                ${recurso.descricao}
+            </div><br>
+        </g:each>
     </g:tab>
 </g:tabs>

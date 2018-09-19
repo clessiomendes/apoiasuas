@@ -38,18 +38,6 @@ dataSource {
     System.out.println("AmbienteExecucao.CURRENT2.username "+AmbienteExecucao.CURRENT2.username);
     username = AmbienteExecucao.CURRENT2.username
     password = AmbienteExecucao.CURRENT2.password
-/*
-    if (! AmbienteExecucao.isDemonstracao()) {
-        url = AmbienteExecucao.CURRENT2.url
-        username = AmbienteExecucao.CURRENT2.username
-        password = AmbienteExecucao.CURRENT2.password
-    } else {
-        //A única forma até aqui de obter parametros conflitantes de DUAS APLICACOES TOMCAT em uma unica aplicacao clever cloud
-        url = "jdbc:postgresql://bvpuodmeyqud0kz-postgresql.services.clever-cloud.com:5432/bvpuodmeyqud0kz"
-        username = "ubj3r9q53kjn3lwndkg5"
-        password = "J7VKm1FX6P6jq7QIAoKK"
-    }
-*/
 
 //configuracao de pool:
     properties {
@@ -79,7 +67,6 @@ dataSource_log {
 
     dialect = AmbienteExecucao.CURRENT2.dialect
     driverClassName = AmbienteExecucao.CURRENT2.driverClassName
-
     url = AmbienteExecucao.CURRENT2.url_logs
     username = AmbienteExecucao.CURRENT2.username_logs
     password = AmbienteExecucao.CURRENT2.password_logs
