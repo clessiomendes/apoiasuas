@@ -8,9 +8,10 @@ import grails.util.Holders
 public class Modulos {
     public static String NUCLEO = "nucleo"
     public static PEDIDO_CERTIDAO = "pedidocertidao"
+    public static CRJ = "crj"
 
     public static String[] getModulos() {
-        return [NUCLEO, PEDIDO_CERTIDAO];
+        return [NUCLEO, PEDIDO_CERTIDAO, CRJ];
     }
 
     /**

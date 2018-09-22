@@ -569,3 +569,20 @@ add constraint fk_1rvtfmohx49wybiwxo3dporwj foreign key (formulario_id)
 alter table modelo_formulario drop constraint fk_il6iv2mtvadvdfm83wyd171h4,
 add constraint fk_il6iv2mtvadvdfm83wyd171h4 foreign key (formulario_id)
    references formulario(id) on delete cascade;
+
+create SCHEMA crj;
+create table crj.espaco (id int8 not null, version int8 not null, date_created timestamp not null, descricao varchar(255) not null, last_updated timestamp not null, servico_sistema_seguranca_id int8 not null, primary key (id));
+create table crj.reserva (id int8 not null, version int8 not null, data_fim timestamp, data_inicio timestamp not null, date_created timestamp not null, descricao varchar(255) not null, dia_inteiro boolean, dias_recorrencia_semanal varchar(255), espaco_id int8, hora_fim timestamp, hora_inicio timestamp, last_updated timestamp not null, servico_sistema_seguranca_id int8 not null, tipo varchar(255) not null, tipo_dia_recorrencia_mensal varchar(255), total_recorrencias int4, unidade_recorrencia varchar(255), primary key (id));
+--alter table crj.espaco drop constraint unique_descricao;
+alter table crj.espaco add constraint unique_descricao  unique (servico_sistema_seguranca_id, descricao);
+alter table crj.espaco add constraint FK_bfgqjboh3up3ylgkrfs11ug2k foreign key (servico_sistema_seguranca_id) references servico_sistema;
+alter table crj.reserva add constraint FK_gmpg3diacvf5uadqabytn3fia foreign key (espaco_id) references crj.espaco;
+alter table crj.reserva add constraint FK_tqrsrlupk1rdo494lsa9q4af5 foreign key (servico_sistema_seguranca_id) references servico_sistema;
+create sequence crj.sq_espaco;
+create sequence crj.sq_reserva;
+
+--TESTES em desenvolvimento
+--INSERT INTO crj.espaco (id, version, date_created, descricao, last_updated, servico_sistema_seguranca_id) VALUES (9999, 0, '2017-06-08 10:00:00.000000', 'auditorio', '2018-09-21 20:47:32.188000', 4);
+--INSERT INTO crj.espaco (id, version, date_created, descricao, last_updated, servico_sistema_seguranca_id) VALUES (9998, 0, '2018-09-21 20:48:43.492000', 'sala 1', '2018-09-21 20:48:50.639000', 4);
+--INSERT INTO crj.reserva (id, version, data_fim, data_inicio, date_created, descricao, dia_inteiro, dias_recorrencia_semanal, espaco_id, hora_fim, hora_inicio, last_updated, servico_sistema_seguranca_id, tipo, tipo_dia_recorrencia_mensal, total_recorrencias, unidade_recorrencia) VALUES (9999, 0, '2018-09-21 22:49:18.746000', '2018-09-21 20:49:30.062000', '2018-09-21 20:49:33.840000', 'curso de teatro de bonecos', false, null, 9999, '2018-09-21 22:50:04.989000', '2018-09-21 20:50:16.712000', '2018-09-21 20:50:21.141000', 4, 'SIMPLES', null, null, null);
+

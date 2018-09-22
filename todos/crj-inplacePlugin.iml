@@ -38,6 +38,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../crj/grails-app/services" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../crj/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../crj/grails-app/jobs" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../crj/target/classes" />
     </content>
     <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -16,7 +16,7 @@ class ASMenuBuilder {
 
     @Synchronized
     public void novaOpcaoMenu(ItemMenuDTO itemMenuDTO) {
-        System.out.println("ola");
+//        System.out.println("ola");
         ItemMenuDTO menuTemp = this.menusDisponiveis.find { it.descricao == itemMenuDTO.descricao };
         if (menuTemp)
             this.menusDisponiveis.remove(menuTemp)

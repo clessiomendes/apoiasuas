@@ -4,8 +4,6 @@ import org.apoiasuas.LoginApoiaSuasController
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
 
-parametroTesteNucleo = "lalala";
-
 //      M O D I F I C A D A S     P O R     M I M
 // Levantar excessao sempre que, ao gravar, a validacao falhar (http://www.acnenomor.com/5840084p1/why-doesnt-grails-notify-me-of-error-at-domain-object-saving)
 grails.gorm.failOnError = true

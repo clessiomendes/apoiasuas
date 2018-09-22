@@ -9,6 +9,7 @@ setlocal
 if "%1"=="prod" @call prod.properties.cmd
 if "%1"=="valid" @call valid.properties.cmd
 if "%1"=="demo" @call demo.properties.cmd
+if "%1"=="dev" @call dev.properties.cmd
 @set PGPASSWORD=%2
 
 @echo on
