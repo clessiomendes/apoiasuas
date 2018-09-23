@@ -126,8 +126,8 @@ class NucleoBootStrap {
     }
 
     private void inicializacoesDiversas(UsuarioSistema admin) {
-        log.debug(AmbienteExecucao.CURRENT2.parametroTeste)
-        log.debug(AmbienteExecucao.sysProperties("org.apoiasuas.parametroTeste"))
+//        log.debug(AmbienteExecucao.CURRENT2.parametroTeste)
+//        log.debug(AmbienteExecucao.sysProperties("org.apoiasuas.parametroTeste"))
         UsuarioSistema.withTransaction { status ->
             try {
 //                importarFamiliasService.inicializaDefinicoes(admin)

@@ -2,8 +2,10 @@ package org.apoiasuas.util.ambienteExecucao
 
 import org.apoiasuas.util.ApoiaSuasException
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.hibernate.cfg.Configuration
 import org.hibernate.dialect.Dialect
 
+import javax.sql.DataSource
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.security.AccessController
@@ -284,4 +286,6 @@ public abstract class TipoAmbiente {
     }
 
     abstract public Dialect getDialect();
+
+    abstract public String[] atualizacoesDDL(DataSource dataSource, Configuration conf);
 }

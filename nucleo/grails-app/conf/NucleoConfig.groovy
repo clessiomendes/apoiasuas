@@ -122,6 +122,7 @@ log4j.main = {
             file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/sql.log',
             maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm:ss};%X{username};%X{requestedSessionId};%m%n'));
 
+/*
     switch (AmbienteExecucao.CURRENT2) {
     case AmbienteExecucao.CLEVERCLOUD:
         appenders {
@@ -133,6 +134,7 @@ log4j.main = {
         }
         root { error 'stdout','errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
         break
+*/
 /*
     case AmbienteExecucao.APPFOG:
         appenders {
@@ -140,7 +142,8 @@ log4j.main = {
         }
         root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
         break
-*/
+*//*
+
     case AmbienteExecucao.LOCAL:
         appenders {
 //                    console name: 'sqlFile', file: 'c:/workspaces/logs/apoiasuassql.log', layout: pattern(conversionPattern: '(loc) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n'), threshold:org.apache.log4j.Level.ALL
@@ -159,6 +162,16 @@ log4j.main = {
         console name: 'console', layout: pattern(conversionPattern: '(def) %d{dd-MMM HH:mm:ss} %p %c{8} -> %m%n')
         root { error 'console' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
     }
+*/
+    org.apache.log4j.Level log4jLevel = AmbienteExecucao.isDesenvolvimento() ? org.apache.log4j.Level.DEBUG : org.apache.log4j.Level.ERROR
+    appenders {
+        appender errorAppender;
+        appender infoAppender;
+        appender memAppender;
+        appender sqlAppender;
+        console name: 'stdout', layout: pattern(conversionPattern: '(as) %d{dd-MMM HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: log4jLevel
+    }
+    root { error 'stdout','errorFile', 'infoFile' } //se nao for alterado explicitamente, o nivel de log padrao para todas as classes (loggers) eh "error"
 
     //Liga o appender sqlFile (sql.log) ao trace do hibernate
     debug additivity: true, sqlFile: [

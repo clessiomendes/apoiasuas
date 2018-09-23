@@ -14,6 +14,9 @@ class AmbienteExecucao {
 
     public static final TipoAmbiente LOCAL_POSTGRE2 = new Postgre("", "local");
     public static final TipoAmbiente CLEVERCLOUD_POSTGRE = new Postgre("", "cleverCloud");
+    /**
+     * Definição do ambiente de execução, de forma estática
+     */
     public static final TipoAmbiente CURRENT2 = escolheTipoBD2();
 
     public static final TipoAmbiente[] LOCAL = [LOCAL_POSTGRE2]
@@ -154,7 +157,6 @@ class AmbienteExecucao {
                 System.out.println("Definicao de Banco de Dados nao prevista: ${ds}")
                 throw new RuntimeException("Definicao de Banco de Dados nao prevista: ${ds}")
         }
-        System.out.println("org.apoiasuas.datasource $ds");
     }
 
     public static String getCaminhoRepositorioArquivos() {

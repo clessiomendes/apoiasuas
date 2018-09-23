@@ -21,6 +21,8 @@ import org.springframework.core.io.Resource
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
 
+import javax.sql.DataSource
+
 @Transactional(readOnly = true)
 class ApoiaSuasService implements IASMenuProvider {
 
@@ -47,9 +49,7 @@ class ApoiaSuasService implements IASMenuProvider {
         def sessionFactoryBean = grailsApplication.mainContext.getBean("&"+sessionFactoryName)
         SessionFactory sessionFactory = sessionFactoryBean.sessionFactory
         Configuration conf = sessionFactoryBean.configuration
-        //FIXME as classes Postgree* não podem estar acopladas (levar para AmbienteExecucao)
-        DatabaseMetadata metadata = new DatabaseMetadata(new Sql(dataSource).dataSource.connection, AmbienteExecucao.CURRENT2.getDialect());
-        String[] result = conf.generateSchemaUpdateScriptList(new PostgreSQL81Dialect(), metadata).collect { it.script };
+        String[] result = AmbienteExecucao.CURRENT2.atualizacoesDDL(dataSource, conf)
 
         sessionFactory.currentSession.createSQLQuery(MISSING_SEQUENCES_SQL).with{
             resultTransformer = AliasToEntityMapResultTransformer.INSTANCE

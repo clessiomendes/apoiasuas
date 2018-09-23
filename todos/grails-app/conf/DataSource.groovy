@@ -56,6 +56,7 @@ dataSource {
     }
 }
 
+/*
 dataSource_log {
     dbCreate = ""
     if (! AmbienteExecucao.isProducao() && "true".equalsIgnoreCase(AmbienteExecucao.sysProperties('org.apoiasuas.recriarBD'))) {
@@ -87,6 +88,7 @@ dataSource_log {
         maxIdle = AmbienteExecucao.CURRENT2.maxIdle
     }
 }
+*/
 
 /*
     switch (AmbienteExecucao.CURRENT) {
