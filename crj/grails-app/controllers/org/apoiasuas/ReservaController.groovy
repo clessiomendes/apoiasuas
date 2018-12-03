@@ -4,7 +4,8 @@ import grails.converters.JSON
 import org.apoiasuas.agenda.Compromisso
 import org.apoiasuas.crj.Reserva
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
+import org.hibernate.Hibernate
 import org.springframework.security.access.annotation.Secured
 
 @Secured([DefinicaoPapeis.STR_USUARIO_LEITURA])
@@ -42,8 +43,10 @@ class ReservaController extends AncestralController {
     }
 
 //GET
-    def show(Reserva reserva) {
+    def show(Reserva reserva, String servicoSeguranca) {
+//        Reserva.get(params.id)
         log.debug('show')
+        Hibernate.initialize(reserva.servicoSistemaSeguranca);
 //        respond compromisso;
         if (reserva)
             render reserva as JSON

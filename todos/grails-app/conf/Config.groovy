@@ -1,5 +1,5 @@
 import grails.util.Holders
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao;
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao;
 
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes

@@ -2,7 +2,8 @@ package org.apoiasuas.cidadao
 
 import grails.transaction.Transactional
 import groovy.sql.GroovyRowResult
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.SqlProprietaria
 
 @Transactional(readOnly = true)
 class MonitoramentoService {
@@ -94,9 +95,9 @@ class MonitoramentoService {
             else if (args.efetivado == false) {
                 sql += " and (m.efetivado = false)";
                 if (args.atrasado == true)
-                    sql += " and m.data_prevista < ${AmbienteExecucao.SqlProprietaria.currentDate()}";
+                    sql += " and m.data_prevista < ${AmbienteExecucao.SQL_FACADE.currentDate()}";
                 if (args.dentroPrazo == true)
-                    sql += " and m.data_prevista >= ${AmbienteExecucao.SqlProprietaria.currentDate()}";
+                    sql += " and m.data_prevista >= ${AmbienteExecucao.SQL_FACADE.currentDate()}";
                 if (args.semPrazo == true)
                     sql += " and m.data_prevista is null";
             }

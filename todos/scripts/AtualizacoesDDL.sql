@@ -586,3 +586,9 @@ create sequence crj.sq_reserva;
 --INSERT INTO crj.espaco (id, version, date_created, descricao, last_updated, servico_sistema_seguranca_id) VALUES (9998, 0, '2018-09-21 20:48:43.492000', 'sala 1', '2018-09-21 20:48:50.639000', 4);
 --INSERT INTO crj.reserva (id, version, data_fim, data_inicio, date_created, descricao, dia_inteiro, dias_recorrencia_semanal, espaco_id, hora_fim, hora_inicio, last_updated, servico_sistema_seguranca_id, tipo, tipo_dia_recorrencia_mensal, total_recorrencias, unidade_recorrencia) VALUES (9999, 0, '2018-09-21 22:49:18.746000', '2018-09-21 20:49:30.062000', '2018-09-21 20:49:33.840000', 'curso de teatro de bonecos', false, null, 9999, '2018-09-21 22:50:04.989000', '2018-09-21 20:50:16.712000', '2018-09-21 20:50:21.141000', 4, 'SIMPLES', null, null, null);
 
+marcar opção "gerenciar reservas de espaços (módulo CRJ)" nas configuracoes do servico CRJ:
+  -> servicos utilizando o sistema
+    -> CRJ
+      -> editar
+        -> recursos disponiveis
+

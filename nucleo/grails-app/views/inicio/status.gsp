@@ -5,7 +5,7 @@
   Time: 02:26
 --%>
 
-<%@ page import="org.apoiasuas.util.ambienteExecucao.AmbienteExecucao; org.apoiasuas.util.ApplicationContextHolder; org.apoiasuas.seguranca.DefinicaoPapeis" contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.apoiasuas.ambienteExecucao.AmbienteExecucao; org.apoiasuas.util.ApplicationContextHolder; org.apoiasuas.seguranca.DefinicaoPapeis" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Status</title>
@@ -51,13 +51,13 @@
 <div id="pageBody">
     <h2>Parâmetros de instalação:</h2>
     <ul>
-        %{--<li>Fornecedor de banco de dados: ${fornecedorVersaoBancoDeDados}</li>--}%
-        <li>Ambiente de hospedagem: ${org.apoiasuas.util.ambienteExecucao.AmbienteExecucao.ambienteHospedagem}</li>
+        <li>Ambiente de hospedagem: ${org.apoiasuas.ambienteExecucao.AmbienteExecucao.CONFIGURACOES_FACADE.runtimeHospedagem ?: "indefinido"}</li>
+        <li>Fornecedor de banco de dados: ${org.apoiasuas.ambienteExecucao.AmbienteExecucao.CONFIGURACOES_FACADE.bancoDeDados}</li>
         <li>Container: ${ApplicationContextHolder.getServletContext().getServerInfo()}</li>
-        <li>Ambiente de execução: ${org.apoiasuas.util.ambienteExecucao.AmbienteExecucao.ambienteExecucao}</li>
+        <li>Ambiente de execução: ${org.apoiasuas.ambienteExecucao.AmbienteExecucao.CONFIGURACOES_FACADE.modo}</li>
         <li>Repositorio de arquivos: ${configuracoesRepostiorio}</li>
         <li>Versão: <g:render template="versao"/></li>
-        <li>Rodando desde: <g:formatDate format="dd/MM/yyyy HH:mm:ss" date="${org.apoiasuas.util.ambienteExecucao.AmbienteExecucao.inicioAplicacao}"/></li>
+        <li>Rodando desde: <g:formatDate format="dd/MM/yyyy HH:mm:ss" date="${org.apoiasuas.ambienteExecucao.AmbienteExecucao.inicioAplicacao}"/></li>
         <li>Estado do SO: ${org.apoiasuas.util.SystemUtils.systemStatistics()}</li>
 %{--
         <g:if test="${System.getenv().VCAP_SERVICES}">
@@ -91,7 +91,7 @@
 --}%
         <h2>Parametros de configuracao da aplicacao:</h2>
         <ul>
-            <g:each var="c" in="${AmbienteExecucao.CURRENT2.listaPropriedades()}">
+            <g:each var="c" in="${AmbienteExecucao.CONFIGURACOES_FACADE.listaPropriedades()}">
                 <li class="controller">${c.key} -> '${c.value}'</li>
             </g:each>
         </ul>

@@ -1,9 +1,10 @@
 package org.apoiasuas.redeSocioAssistencial
 
+import org.apoiasuas.ambienteExecucao.SqlProprietaria
 import org.apoiasuas.cidadao.Endereco
 import org.apoiasuas.fileStorage.FileStorageDTO
 //import org.apoiasuas.fileStorage.FileStorageIndex
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.FullTextSearchUtils
 
 class Servico {
@@ -62,7 +63,7 @@ class Servico {
 
     static mapping = {
         id generator: 'native', params: [sequence: 'sq_servico']
-        podeEncaminhar(defaultValue: AmbienteExecucao.SqlProprietaria.getBoolean(true))
+        podeEncaminhar(defaultValue: AmbienteExecucao.SQL_FACADE.getBoolean(true))
         encaminhamentoPadrao length: 1000000
         descricao length: 1000000
         publico length: 1000000

@@ -1,13 +1,15 @@
 package org.apoiasuas.cidadao
 
+import org.apoiasuas.ambienteExecucao.SqlProprietaria
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.SqlProprietaria
 
 class Monitoramento implements Comparable<Monitoramento> {
 
     public enum FiltroPadrao {
-        PENDENTE_NO_PRAZO("pendente, dentro do prazo", "_ref_.suspenso = false and _ref_.efetivado = false and _ref_.data_prevista >= ${AmbienteExecucao.SqlProprietaria.currentDate()}"),
-        ATRASADO("pendente, atrasado", "_ref_.suspenso = false and _ref_.efetivado = false and _ref_.data_prevista < ${AmbienteExecucao.SqlProprietaria.currentDate()}"),
+        PENDENTE_NO_PRAZO("pendente, dentro do prazo", "_ref_.suspenso = false and _ref_.efetivado = false and _ref_.data_prevista >= ${AmbienteExecucao.SQL_FACADE.currentDate()}"),
+        ATRASADO("pendente, atrasado", "_ref_.suspenso = false and _ref_.efetivado = false and _ref_.data_prevista < ${AmbienteExecucao.SQL_FACADE.currentDate()}"),
         SEM_PRAZO("pendente, sem prazo definido", "_ref_.suspenso = false and _ref_.efetivado = false and _ref_.data_prevista is null"),
         SUSPENSO("suspenso", "_ref_.suspenso = true and _ref_.efetivado = false"),
         EFETIVADO("efetivado", "_ref_.efetivado = true")
@@ -53,7 +55,7 @@ class Monitoramento implements Comparable<Monitoramento> {
     static mapping = {
         familia column:'familia', index:'Monitoramento_Familia_Idx'
         id generator: 'native', params: [sequence: 'sq_monitoramento']
-        efetivado(defaultValue: AmbienteExecucao.SqlProprietaria.getBoolean(false))
+        efetivado(defaultValue: AmbienteExecucao.SQL_FACADE.getBoolean(false))
     }
 
     static constraints = {

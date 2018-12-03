@@ -10,7 +10,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph
 import org.apache.xmlbeans.XmlOptions
 import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.seguranca.IASMenuProvider
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
 import org.hibernate.dialect.PostgreSQL81Dialect
@@ -49,7 +49,7 @@ class ApoiaSuasService implements IASMenuProvider {
         def sessionFactoryBean = grailsApplication.mainContext.getBean("&"+sessionFactoryName)
         SessionFactory sessionFactory = sessionFactoryBean.sessionFactory
         Configuration conf = sessionFactoryBean.configuration
-        String[] result = AmbienteExecucao.CURRENT2.atualizacoesDDL(dataSource, conf)
+        String[] result = AmbienteExecucao.atualizacoesDDL(dataSource, conf)
 
         sessionFactory.currentSession.createSQLQuery(MISSING_SEQUENCES_SQL).with{
             resultTransformer = AliasToEntityMapResultTransformer.INSTANCE

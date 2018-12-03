@@ -5,11 +5,12 @@ import fr.opensagres.xdocreport.template.TemplateEngineKind
 import grails.transaction.Transactional
 import org.apache.commons.codec.binary.Base64
 import org.apache.commons.lang.StringEscapeUtils
+import org.apoiasuas.ambienteExecucao.SqlProprietaria
 import org.apoiasuas.fileStorage.FileStorageDTO
 import org.apoiasuas.fileStorage.FileStorageService
 import org.apoiasuas.formulario.ReportDTO
 import org.apoiasuas.seguranca.SegurancaService
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.HqlPagedResultList
 import org.apoiasuas.util.LogHelper
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
@@ -138,7 +139,7 @@ class ServicoService {
             sqlWhere += " ) ";
         }
         if (! params.incluirDesabilitados)
-            sqlWhere += " and a.habilitado = " + AmbienteExecucao.SqlProprietaria.getBoolean(true);
+            sqlWhere += " and a.habilitado = " + AmbienteExecucao.SQL_FACADE.getBoolean(true);
 
         boolean restringirTerritorio = true;
 

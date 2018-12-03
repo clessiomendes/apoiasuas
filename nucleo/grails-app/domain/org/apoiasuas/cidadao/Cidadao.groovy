@@ -10,7 +10,8 @@ import org.apoiasuas.lookup.Sexo
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.DominioProtegidoServico
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.SqlProprietaria
 import org.apoiasuas.util.ApoiaSuasDateUtils
 import org.apoiasuas.DetalheService
 import org.grails.databinding.BindingFormat
@@ -97,7 +98,7 @@ class Cidadao implements Serializable, DominioProtegidoServico, DetalhesJSON {
     }
 
     static mapping = {
-        referencia(defaultValue: AmbienteExecucao.SqlProprietaria.getBoolean(false))
+        referencia(defaultValue: AmbienteExecucao.SQL_FACADE.getBoolean(false))
         id generator: 'native', params: [sequence: 'sq_cidadao']
 //        origemImportacaoAutomatica(defaultValue: AmbienteExecucao.getFalse())
 //        familia column:'familia', index:'Cidadao_Familia_Idx'

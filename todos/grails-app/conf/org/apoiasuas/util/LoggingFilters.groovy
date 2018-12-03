@@ -8,7 +8,7 @@ class LoggingFilters {
     def logEstatisticaService
 
     def filters = {
-        all(controller:'*', action:'*', invert: true /*desabilitando o filtro*/) {
+        all(controller:'*', action:'*', /*invert: true - desabilitando o filtro*/) {
             before = {
                 final String username = request.userPrincipal?.name
                 final String sessionId = request.requestedSessionId

@@ -5,6 +5,7 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Apoia SUAS</title>
+    <r:require modules="typescript"/>
     <asset:stylesheet src="inicio/menu.less"/>
     <asset:javascript src="cidadao/procurarCidadao.js"/>
     %{--<asset:stylesheet src="animate.css"/>--}%

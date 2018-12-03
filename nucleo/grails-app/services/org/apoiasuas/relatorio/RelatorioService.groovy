@@ -2,6 +2,8 @@ package org.apoiasuas.relatorio
 
 import grails.transaction.Transactional
 import groovy.sql.GroovyRowResult
+
+import org.apoiasuas.ambienteExecucao.SqlProprietaria
 import org.apoiasuas.marcador.Acao
 import org.apoiasuas.marcador.OutroMarcador
 import org.apoiasuas.marcador.Programa
@@ -9,7 +11,7 @@ import org.apoiasuas.marcador.Vulnerabilidade
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ListaLigada
 import org.joda.time.LocalDate
 
@@ -104,8 +106,8 @@ class RelatorioService {
         String sqlTelefonesFrom = "from familia f join telefone t "
 
         if (segurancaService.identificacaoCodigoLegado) {
-            sqlPrincipalSelect += AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado') + ' as "' + LABEL_CAD + '"'
-            sqlPrincipalOrder +=  AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado');
+            sqlPrincipalSelect += AmbienteExecucao.SQL_FACADE.StringToNumber('f.codigo_legado') + ' as "' + LABEL_CAD + '"'
+            sqlPrincipalOrder +=  AmbienteExecucao.SQL_FACADE.StringToNumber('f.codigo_legado');
         } else {
             sqlPrincipalSelect += 'f.id as "' + LABEL_CAD + '"';
             sqlPrincipalOrder +=  'f.id';
@@ -116,7 +118,7 @@ class RelatorioService {
 
         if (relatorio == DEFINICAO_CAMPOS.MEMBROS.toString()) {
             sqlPrincipalSelect += ', c.nome_completo as "'+LABEL_NOME+'", c.parentesco_referencia as "'+ LABEL_PARENTESCO+'"';
-            sqlPrincipalFrom += " left join cidadao c on f.id = c.familia_id and c.habilitado = ${AmbienteExecucao.SqlProprietaria.getBoolean(true)} ";
+            sqlPrincipalFrom += " left join cidadao c on f.id = c.familia_id and c.habilitado = ${AmbienteExecucao.SQL_FACADE.getBoolean(true)} ";
             sqlPrincipalOrder += ', c.nome_completo';
         } else if (relatorio == DEFINICAO_CAMPOS.REFERENCIA.toString()) {
             sqlPrincipalSelect += ', c.nome_completo as "'+LABEL_REFERENCIA+'"';
@@ -126,9 +128,9 @@ class RelatorioService {
         }
 
         sqlPrincipalSelect += ', c.nis, c.identidade, c.cpf, ' +
-                AmbienteExecucao.SqlProprietaria.dateToString('c.data_nascimento')+ ' as "' + LABEL_NASCIMENTO + '", ' +
-                AmbienteExecucao.SqlProprietaria.idade('c.data_nascimento')+ ' as "' + LABEL_IDADE + '", ' +
-                AmbienteExecucao.SqlProprietaria.concat("f.endereco_tipo_logradouro", "' '", "f.endereco_nome_logradouro", "', '",
+                AmbienteExecucao.SQL_FACADE.dateToString('c.data_nascimento')+ ' as "' + LABEL_NASCIMENTO + '", ' +
+                AmbienteExecucao.SQL_FACADE.idade('c.data_nascimento')+ ' as "' + LABEL_IDADE + '", ' +
+                AmbienteExecucao.SQL_FACADE.concat("f.endereco_tipo_logradouro", "' '", "f.endereco_nome_logradouro", "', '",
                         "f.endereco_numero", "' '", "f.endereco_complemento")+ ' as "' + LABEL_ENDERECO + '", ' +
                 ' f.endereco_bairro as "' + LABEL_BAIRRO + '", f.endereco_cep as "' + LABEL_CEP + '", ' +
                 ' u.username as "' + LABEL_TECNICO + '"';
@@ -231,7 +233,7 @@ class RelatorioService {
      */
     private List<GroovyRowResult> telefonesTodasFamilias() {
         final String campoCad = (segurancaService.identificacaoCodigoLegado) ?
-                AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado')
+                AmbienteExecucao.SQL_FACADE.StringToNumber('f.codigo_legado')
                 : "f.id";
         String sql = "select distinct t.ddd, t.numero, " + campoCad + ' as "' + LABEL_CAD + '" \n' +
                 " from familia f join telefone t on f.id = t.familia " +
@@ -246,9 +248,9 @@ class RelatorioService {
      */
     private List<GroovyRowResult> programasTodasFamilias() {
         final String campoCad = (segurancaService.identificacaoCodigoLegado) ?
-                AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado')
+                AmbienteExecucao.SQL_FACADE.StringToNumber('f.codigo_legado')
                 : "f.id";
-        String sql = "select distinct "+ AmbienteExecucao.SqlProprietaria.valorNaoNulo("p.sigla","p.descricao")+" as sigla, " +
+        String sql = "select distinct "+ AmbienteExecucao.SQL_FACADE.valorNaoNulo("p.sigla","p.descricao")+" as sigla, " +
                 campoCad + ' as "' + LABEL_CAD + '" \n' +
                 " from familia f join programa_familia pf on f.id = pf.familia_id join programa p on pf.programa_id = p.id " +
                 " where 1=1 and " + campoCad + " is not null \n" +
@@ -307,12 +309,12 @@ class RelatorioService {
         String sqlTelefonesSelect = "select "
         String sqlTelefonesFrom = "from familia f join telefone t "
 
-        sqlPrincipalSelect += AmbienteExecucao.SqlProprietaria.StringToNumber('f.codigo_legado') + ' as "Nº do Cadastro" '
+        sqlPrincipalSelect += AmbienteExecucao.SQL_FACADE.StringToNumber('f.codigo_legado') + ' as "Nº do Cadastro" '
         sqlPrincipalOrder +=  'f.id';
 
         sqlPrincipalFrom += 'familia f ';
 
-        sqlPrincipalSelect += ', '+AmbienteExecucao.SqlProprietaria.dateToString('f.date_created')+ ' as "Data do Cadastro", ' +
+        sqlPrincipalSelect += ', '+AmbienteExecucao.SQL_FACADE.dateToString('f.date_created')+ ' as "Data do Cadastro", ' +
                 'c.nome_completo as "Nome da referência", ' +
                 'c.nis as "NIS da referência", null as "Código Familiar no CAD ÚNICO", f.endereco_tipo_logradouro as "Logradouro", ' +
                 'f.endereco_nome_logradouro as "Nome do logradouro", f.endereco_numero as "Nº", f.endereco_complemento as "Complemento", ' +
@@ -322,9 +324,9 @@ class RelatorioService {
 
 /*
         sqlPrincipalSelect += ', c.nis, c.identidade, c.cpf, ' +
-                AmbienteExecucao.SqlProprietaria.dateToString('c.data_nascimento')+ ' as "' + LABEL_NASCIMENTO + '", ' +
-                AmbienteExecucao.SqlProprietaria.idade('c.data_nascimento')+ ' as "' + LABEL_IDADE + '", ' +
-                AmbienteExecucao.SqlProprietaria.concat("f.endereco_tipo_logradouro", "' '", "f.endereco_nome_logradouro", "', '",
+                AmbienteExecucao.SQL_FACADE.dateToString('c.data_nascimento')+ ' as "' + LABEL_NASCIMENTO + '", ' +
+                AmbienteExecucao.SQL_FACADE.idade('c.data_nascimento')+ ' as "' + LABEL_IDADE + '", ' +
+                AmbienteExecucao.SQL_FACADE.concat("f.endereco_tipo_logradouro", "' '", "f.endereco_nome_logradouro", "', '",
                         "f.endereco_numero", "' '", "f.endereco_complemento")+ ' as "' + LABEL_ENDERECO + '", ' +
                 ' f.endereco_bairro as "' + LABEL_BAIRRO + '", f.endereco_cep as "' + LABEL_CEP + '", ' +
                 ' u.username as "' + LABEL_TECNICO + '"';

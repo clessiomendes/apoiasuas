@@ -28,13 +28,17 @@ grails.project.dependency.resolution = {
         //necessario porque a versao do itext 2.0.8 estava em conflito com itext 2.1.7 usado pelo xdocreport
     }
     log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
-    checksums true // Whether to verify checksums on resolve
+    checksums false // Whether to verify checksums on resolve
     legacyResolve false
     // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
 
     repositories {
         inherits true // Whether to inherit repository definitions from plugins
 
+//        jcenter()
+//        mavenRepo "https://dl.bintray.com/grails/plugins"
+//        mavenRepo "https://dl.bintray.com/bertramlabs"
+//        mavenRepo "https://dl.bintray.com/bertramlabs/asset-pipeline"
         grailsPlugins()
         grailsHome()
         mavenLocal()

@@ -4,7 +4,7 @@ import apoiasuas.ImportacaoJob
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import org.apoiasuas.LinkService
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasException
 
 import java.nio.file.Files
@@ -116,7 +116,7 @@ class LocalFSService implements FileStorageService {
 
     private Path montaCaminho(String bucket, String nomeArquivo = "") {
         if (AmbienteExecucao.desenvolvimento && ! caminhoRepositorio)
-            caminhoRepositorio = AmbienteExecucao.getCaminhoRepositorioArquivos()
+            caminhoRepositorio = AmbienteExecucao.CONFIGURACOES_FACADE.caminhoRepositorio
 
         if (! caminhoRepositorio)
             throw new ApoiaSuasException("Nenhum caminho de repositorio definido nas configuracoes");
@@ -127,7 +127,7 @@ class LocalFSService implements FileStorageService {
     @NotTransactional
     public String showConfig() {
         return "Implementação: ${this.getClass().getSimpleName()}, Classe de domínio para índice: ${FileStorageIndex.getSimpleName()}, " +
-                "Caminho do repositório: ${AmbienteExecucao.getCaminhoRepositorioArquivos()}";
+                "Caminho do repositório: ${AmbienteExecucao.CONFIGURACOES_FACADE.caminhoRepositorio}";
     }
 
     private void inicializaCaminhos(String... caminhos) {

@@ -3,7 +3,7 @@ package org.apoiasuas
 import grails.plugin.springsecurity.LoginController
 import org.apoiasuas.AncestralController
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.access.vote.AuthenticatedVoter
 

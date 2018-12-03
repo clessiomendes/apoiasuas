@@ -69,11 +69,11 @@
           <root url="file://$MODULE_DIR$/src/java" />
           <root url="file://$MODULE_DIR$/src/groovy" />
           <root url="file://$MODULE_DIR$/grails-app/i18n" />
+          <root url="file://$MODULE_DIR$/grails-app/utils" />
           <root url="file://$MODULE_DIR$/grails-app/controllers" />
           <root url="file://$MODULE_DIR$/grails-app/domain" />
           <root url="file://$MODULE_DIR$/grails-app/services" />
           <root url="file://$MODULE_DIR$/grails-app/taglib" />
-          <root url="file://$MODULE_DIR$/grails-app/utils" />
         </sourceRoots>
       </configuration>
     </facet>
@@ -106,7 +106,7 @@
       <excludeFolder url="file://$MODULE_DIR$/tmp_deploy" />
       <excludeFolder url="file://$MODULE_DIR$/web-app/plugins" />
     </content>
-    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (apoiaSUAS)">

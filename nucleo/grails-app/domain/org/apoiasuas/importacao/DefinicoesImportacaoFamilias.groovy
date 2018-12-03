@@ -2,7 +2,7 @@ package org.apoiasuas.importacao
 
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 
 class DefinicoesImportacaoFamilias  implements Serializable {
 

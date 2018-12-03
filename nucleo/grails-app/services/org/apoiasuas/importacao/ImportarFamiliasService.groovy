@@ -16,7 +16,7 @@ import org.apoiasuas.marcador.ProgramaFamilia
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ApplicationContextHolder
 import org.apoiasuas.util.SafeMap
 import org.apoiasuas.util.StringUtils

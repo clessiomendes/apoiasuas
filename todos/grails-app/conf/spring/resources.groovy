@@ -9,7 +9,7 @@ import org.apoiasuas.seguranca.ApoiaSuasDetailsService
 import org.apoiasuas.seguranca.ApoiaSuasPersistenceListener
 import org.apoiasuas.seguranca.SegurancaListener
 import org.apoiasuas.services.ImportarFamiliasJavaService
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ApplicationContextHolder
 import org.codehaus.groovy.grails.commons.spring.BeanConfiguration
 import org.codehaus.groovy.grails.commons.spring.DefaultBeanConfiguration
@@ -19,7 +19,7 @@ beans = {
 
     springConfig.addAlias 'fileStorageService', 'localFSService'
     localFSService(LocalFSService) {
-        caminhoRepositorio=AmbienteExecucao.getCaminhoRepositorioArquivos()
+        caminhoRepositorio=AmbienteExecucao.CONFIGURACOES_FACADE.caminhoRepositorio
     }
 
     localeResolver(org.springframework.web.servlet.i18n.SessionLocaleResolver) {

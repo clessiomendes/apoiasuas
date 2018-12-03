@@ -33,7 +33,7 @@ import org.apoiasuas.marcador.ProgramaFamilia
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.AuditoriaService
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.CollectionUtils
 import org.apoiasuas.util.SimNao
 import org.apoiasuas.util.StringUtils

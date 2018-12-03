@@ -28,7 +28,7 @@ grails.project.dependency.resolution = {
         //necessario porque a versao do itext 2.0.8 estava em conflito com itext 2.1.7 usado pelo xdocreport
     }
     log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
-    checksums true // Whether to verify checksums on resolve
+    checksums false // Whether to verify checksums on resolve
     legacyResolve false
     // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
 
@@ -40,9 +40,10 @@ grails.project.dependency.resolution = {
         mavenLocal()
         grailsCentral()
         mavenCentral()
+        mavenRepo 'https://mvnrepository.com'
         mavenRepo 'http://repo.spring.io/milestone'
         mavenRepo "http://repo.grails.org/grails/core"
-        mavenRepo "http://repo.grails.org/grails/plugins"
+//        mavenRepo "http://repo1.maven.org/maven2/"
         // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -134,6 +135,7 @@ grails.project.dependency.resolution = {
         compile ":scaffolding:2.1.2"
         compile ':cache:1.1.8'
         compile ":asset-pipeline:2.1.5"
+//        compile ":asset-pipeline:3.0.5"
         compile ":spring-security-core:2.0-RC4" //autenticacao e authority, definicao de usuarios e papeis.
 //        compile ":filterpane:2.4.5" //filtros para as telas de busca
 //        compile ":perf4j:0.1.1" //plugin para profiling minucioso
@@ -187,6 +189,10 @@ grails.project.dependency.resolution = {
 
         compile 'org.grails.plugins:cascade-validation:0.1.4'
 
+//        compile 'com.bertramlabs.plugins:typescript-asset-pipeline:3.0.3'
+//        compile 'com.bertramlabs.plugins:typescript-asset-pipeline:3.0.99'
+//    compile 'com.bertramlabs.plugins:typescript-asset-pipeline:0.2.0'
+//        compile 'org.grails.plugins:typescript:0.4.1' //plugin usando resources
 // https://mvnrepository.com/artifact/com.googlecode.log4jdbc/log4jdbc
 //        compile 'com.googlecode.log4jdbc:log4jdbc:1.2'
     }

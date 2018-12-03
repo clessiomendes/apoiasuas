@@ -14,7 +14,7 @@ import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.seguranca.UsuarioSistema
 import org.apoiasuas.util.ApoiaSuasException
 import org.apoiasuas.util.StringUtils
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.ParseException

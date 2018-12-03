@@ -1,4 +1,4 @@
-<%@ page import="org.apoiasuas.util.ambienteExecucao.AmbienteExecucao" %>
+<%@ page import="org.apoiasuas.ambienteExecucao.AmbienteExecucao" %>
 %{--
                 LOGIN EM TELA MODAL VIA AJAX
 

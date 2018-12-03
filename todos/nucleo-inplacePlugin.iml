@@ -46,7 +46,7 @@
       <excludeFolder url="file://$MODULE_DIR$/../nucleo/target/work/scriptCache" />
       <excludeFolder url="file://$MODULE_DIR$/../nucleo/target/work/stubs" />
     </content>
-    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="apoiasuas-grailsPlugins" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.5.4" level="application" />

@@ -4,7 +4,8 @@ import grails.transaction.Transactional
 import org.apache.commons.lang.StringEscapeUtils
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.SqlProprietaria
 import org.apoiasuas.util.StringUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.apoiasuas.util.HqlPagedResultList
@@ -170,7 +171,7 @@ class CidadaoService {
         def filtrosSql = [:]
 
         String sqlSelectCount = "select count(*) ";
-        String sqlSelectList = "select distinct {a.*}, {b.*}, {c.*}, "+AmbienteExecucao.SqlProprietaria.StringToNumber('b.endereco_numero')+" ";
+        String sqlSelectList = "select distinct {a.*}, {b.*}, {c.*}, "+AmbienteExecucao.SQL_FACADE.StringToNumber('b.endereco_numero')+" ";
         String sqlFrom = " FROM cidadao a INNER JOIN familia b ON a.familia_id=b.id " +
                 " LEFT OUTER JOIN usuario_sistema c ON b.tecnico_referencia_id=c.id ";
 
@@ -191,7 +192,7 @@ class CidadaoService {
         }
 
         if (filtrosOperador.idade) {
-            sqlWhere += ' and '+AmbienteExecucao.SqlProprietaria.idade('a.data_Nascimento')+' = :idade ';
+            sqlWhere += ' and '+AmbienteExecucao.SQL_FACADE.idade('a.data_Nascimento')+' = :idade ';
             filtrosSql.put('idade', new Integer(filtrosOperador.idade))
         }
 
@@ -244,9 +245,9 @@ class CidadaoService {
 
         String sqlOrder = ""
         if (filtrosOperador.logradouro)
-            sqlOrder = ' order by ' + AmbienteExecucao.SqlProprietaria.StringToNumber('b.endereco_numero')
+            sqlOrder = ' order by ' + AmbienteExecucao.SQL_FACADE.StringToNumber('b.endereco_numero')
         else if (filtrosOperador.numero)
-            sqlOrder = ' order by b.endereco_nome_logradouro, ' + AmbienteExecucao.SqlProprietaria.StringToNumber('b.endereco_numero')
+            sqlOrder = ' order by b.endereco_nome_logradouro, ' + AmbienteExecucao.SQL_FACADE.StringToNumber('b.endereco_numero')
         else
             sqlOrder = ' order by a.nome_completo';
 

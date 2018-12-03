@@ -3,7 +3,7 @@ package org.apoiasuas.importacao
 import groovy.time.TimeCategory
 import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.apoiasuas.util.ApoiaSuasDateUtils
 
 class TentativaImportacao {

@@ -2,7 +2,7 @@ import org.apache.log4j.Level
 import org.apache.log4j.RollingFileAppender
 import org.apoiasuas.LoginApoiaSuasController
 import org.apoiasuas.seguranca.DefinicaoPapeis
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 
 //      M O D I F I C A D A S     P O R     M I M
 // Levantar excessao sempre que, ao gravar, a validacao falhar (http://www.acnenomor.com/5840084p1/why-doesnt-grails-notify-me-of-error-at-domain-object-saving)
@@ -108,22 +108,22 @@ grails.logging.jul.usebridge = true //permite logar também bibliotecas que usam
 log4j.main = {
 //logs, em arquivos separados:
     def errorAppender = new RollingFileAppender(name: 'errorFile', append: true, maxFileSize: '10000KB',
-            file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/error.log',
+            file: AmbienteExecucao.CONFIGURACOES_FACADE.caminhoRepositorio+'/logs/error.log',
             maxBackupIndex: 3, layout: pattern(conversionPattern: '%d{dd/MM/yy HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: Level.ERROR);
     def infoAppender = new RollingFileAppender(name: 'infoFile', append: true, maxFileSize: '10000KB',
-            file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/info.log',
+            file: AmbienteExecucao.CONFIGURACOES_FACADE.caminhoRepositorio+'/logs/info.log',
             maxBackupIndex: 3, layout: pattern(conversionPattern: '%d{dd-MMM HH:mm:ss} %X{username} %X{requestedSessionId} %c{8} -> %m%n'), threshold: Level.INFO);
 //estatísticas de uso de recursos do sistema
     def memAppender = new RollingFileAppender(name: 'memFile', append: true, maxFileSize: '2000KB',
-            file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/mem.log',
+            file: AmbienteExecucao.CONFIGURACOES_FACADE.caminhoRepositorio+'/logs/mem.log',
             maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm};%m%n'));
 //sqls
     def sqlAppender = new RollingFileAppender(name: 'sqlFile', append: true, maxFileSize: '2000KB',
-            file: AmbienteExecucao.getCaminhoRepositorioArquivos()+'/logs/sql.log',
+            file: AmbienteExecucao.CONFIGURACOES_FACADE.caminhoRepositorio+'/logs/sql.log',
             maxBackupIndex: 2, layout: pattern(conversionPattern: '%d{dd/MM/yyyy;HH:mm:ss};%X{username};%X{requestedSessionId};%m%n'));
 
 /*
-    switch (AmbienteExecucao.CURRENT2) {
+    switch (AmbienteExecucao.CONFIGURACOES_FACADE) {
     case AmbienteExecucao.CLEVERCLOUD:
         appenders {
             appender errorAppender;
@@ -360,3 +360,5 @@ assets {
             ]
     ]
 }
+
+grails.app.context = '/'

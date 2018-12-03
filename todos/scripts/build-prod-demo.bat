@@ -11,7 +11,7 @@ set war=apoiasuas.war
 rmdir /s /q c:\temp\deploy-cc\apoiasuas.war
 mkdir c:\temp\deploy-cc
 mkdir c:\temp\deploy-cc\apoiasuas.war
-call grails prod war --non-interactive --stacktrace -Dorg.apoiasuas.modo=%modo% -Dorg.apoiasuas.datasource=CLEVERCLOUD_POSTGRE -Dgrails.project.work.dir=tmp_deploy
+call grails prod war --non-interactive --stacktrace -Dorg.apoiasuas.modo=%modo% -Dorg.apoiasuas.runtimeHospedagem=clevercloud -Dorg.apoiasuas.bancoDeDados=postgres -Dgrails.project.work.dir=tmp_deploy
 echo on
 
 ::Limpa e copia os arquivos da pasta temporaria para o a pasta de deploy do clever cloud
@@ -22,6 +22,8 @@ copy .\ambientes\ambiente-%modo%.properties c:\workspaces\deploy-cc\%sub_dir_dep
 
 echo Fim do build %modo%
 
+pause
+
 set modo=demo
 set war=apoiasuas_demo.war
 
@@ -29,7 +31,7 @@ set war=apoiasuas_demo.war
 rmdir /s /q c:\temp\deploy-cc\apoiasuas.war
 mkdir c:\temp\deploy-cc
 mkdir c:\temp\deploy-cc\apoiasuas.war
-call grails prod war --non-interactive --stacktrace -Dorg.apoiasuas.modo=%modo% -Dorg.apoiasuas.datasource=CLEVERCLOUD_POSTGRE -Dgrails.project.work.dir=tmp_deploy
+call grails prod war --non-interactive --stacktrace -Dorg.apoiasuas.modo=%modo% -Dorg.apoiasuas.runtimeHospedagem=clevercloud -Dorg.apoiasuas.bancoDeDados=postgres -Dgrails.project.work.dir=tmp_deploy
 echo on
 
 ::Limpa e copia os arquivos da pasta temporaria para o a pasta de deploy do clever cloud

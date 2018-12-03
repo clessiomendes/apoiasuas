@@ -12,7 +12,7 @@ import org.apoiasuas.redeSocioAssistencial.ServicoSistema
 import org.apoiasuas.seguranca.ASMenuBuilder
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.ItemMenuDTO
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsBootstrapClass
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
@@ -77,24 +77,15 @@ class InicioController extends AncestralController {
     }
 
     def menu() {
-
+/*
         if (AmbienteExecucao.isDesenvolvimento()) {
             menuBuilder.novaOpcaoMenu(new ItemMenuDTO(ordem: 50L, descricao: "Reservas",
                     recursoServico: RecursosServico.RESERVAS,
                     hint: "Reservas de espaços para atividades",
-                    imagem: "usecases/reservas-w.png", classeCss: "beje", link: [controller: "reserva", action: "agenda"]));
+                    imagem: "usecases/reservas-w.png", classeCss: "beje", link: [controller: "reserva"]));
 
-/*
-            grailsApplication.bootstrapClasses.each { GrailsBootstrapClass bootstrap ->
-                log.debug(bootstrap);
-                if (bootstrap.name == "Crj")
-                    bootstrap.callInit(servletContext);
-//                    bootstrap.blablaa();
-//                    bootstrap."alimentaMenu"();
-//                    bootstrap."init".call(servletContext);
-            }
-*/
         }
+*/
         render view:'menu'
     }
 

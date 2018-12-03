@@ -16,7 +16,8 @@ import org.apoiasuas.seguranca.ApoiaSuasPersistenceListener
 import org.apoiasuas.seguranca.DefinicaoPapeis
 import org.apoiasuas.seguranca.SegurancaService
 import org.apoiasuas.seguranca.UsuarioSistema
-import org.apoiasuas.util.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.AmbienteExecucao
+import org.apoiasuas.ambienteExecucao.SqlProprietaria
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.apoiasuas.redeSocioAssistencial.RecursosServico
 import java.sql.SQLException
@@ -46,7 +47,7 @@ class NucleoBootStrap {
     ASMenuBuilder menuBuilder
 
     public final String VW_REFERENCIAS = "create view vw_referencias as select min(id) as referencia_id, familia_id " +
-            " from cidadao where habilitado = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+" and referencia = "+AmbienteExecucao.SqlProprietaria.getBoolean(true)+
+            " from cidadao where habilitado = "+AmbienteExecucao.SQL_FACADE.getBoolean(true)+" and referencia = "+AmbienteExecucao.SQL_FACADE.getBoolean(true)+
             " group by familia_id"
 
     def init = { servletContext ->
@@ -126,7 +127,7 @@ class NucleoBootStrap {
     }
 
     private void inicializacoesDiversas(UsuarioSistema admin) {
-//        log.debug(AmbienteExecucao.CURRENT2.parametroTeste)
+//        log.debug(AmbienteExecucao.CONFIGURACOES_FACADE.parametroTeste)
 //        log.debug(AmbienteExecucao.sysProperties("org.apoiasuas.parametroTeste"))
         UsuarioSistema.withTransaction { status ->
             try {
@@ -197,7 +198,8 @@ class NucleoBootStrap {
         String[] atualizacoesPendentes = []
         try {
             atualizacoesPendentes += apoiaSuasService.getAtualizacoesPendentes(dataSource, "sessionFactory")
-            atualizacoesPendentes += apoiaSuasService.getAtualizacoesPendentes(dataSource_log, "sessionFactory_log")
+            if (dataSource_log)
+                atualizacoesPendentes += apoiaSuasService.getAtualizacoesPendentes(dataSource_log, "sessionFactory_log")
         } catch (Exception e) {
             log.error("Impossível verificar estrutura do banco de dados");
             e.printStackTrace();

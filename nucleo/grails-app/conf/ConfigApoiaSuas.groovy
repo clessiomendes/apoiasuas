@@ -1,11 +1,11 @@
 local {
     parametroTeste = "definido em ConfigApoiaSuas.groovy"
 }
-cleverCloud {
+clevercloud {
 }
-postgre {
+postgres {
     local {
     }
-    cleverCloud {
+    clevercloud {
     }
 }
